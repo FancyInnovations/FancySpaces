@@ -12,6 +12,7 @@ import (
 type DB interface {
 	GetByID(id string) (*Space, error)
 	GetBySlug(slug string) (*Space, error)
+	GetAll() ([]Space, error)
 	Create(s *Space) error
 	Update(id string, s *Space) error
 	Delete(id string) error
@@ -37,6 +38,10 @@ func (s *Store) GetByID(id string) (*Space, error) {
 
 func (s *Store) GetBySlug(slug string) (*Space, error) {
 	return s.db.GetBySlug(slug)
+}
+
+func (s *Store) GetAll() ([]Space, error) {
+	return s.db.GetAll()
 }
 
 func (s *Store) Create(creator *auth.User, req *CreateOrUpdateSpaceReq) (*Space, error) {

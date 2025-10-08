@@ -297,6 +297,104 @@ func TestStore_GetBySlug(t *testing.T) {
 	}
 }
 
+func TestStore_GetAll(t *testing.T) {
+	now := time.Now()
+
+	for _, tc := range []struct {
+		Name    string
+		Exiting []spaces.Space
+	}{
+		{
+			Name:    "No spaces exist",
+			Exiting: []spaces.Space{},
+		},
+		{
+			Name: "One space exists",
+			Exiting: []spaces.Space{
+				{
+					ID:          "space-1",
+					Slug:        "spaceOne",
+					Title:       "Space One",
+					Description: "This is the first space.",
+					Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
+					IconURL:     "https://example.com/icon1.png",
+					Status:      spaces.StatusDraft,
+					CreatedAt:   now,
+					Members: []spaces.Member{
+						{UserID: "user-1", Role: spaces.RoleOwner},
+					},
+				},
+			},
+		},
+		{
+			Name: "Multiple spaces exists",
+			Exiting: []spaces.Space{
+				{
+					ID:          "space-1",
+					Slug:        "spaceOne",
+					Title:       "Space One",
+					Description: "This is the first space.",
+					Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
+					IconURL:     "https://example.com/icon1.png",
+					Status:      spaces.StatusDraft,
+					CreatedAt:   now,
+					Members: []spaces.Member{
+						{UserID: "user-1", Role: spaces.RoleOwner},
+					},
+				},
+				{
+					ID:          "space-2",
+					Slug:        "spaceTwo",
+					Title:       "Space Two",
+					Description: "This is the second space.",
+					Categories:  []spaces.Category{spaces.CategoryMinecraftMod},
+					IconURL:     "https://example.com/icon2.png",
+					Status:      spaces.StatusApproved,
+					CreatedAt:   now,
+					Members: []spaces.Member{
+						{UserID: "user-2", Role: spaces.RoleOwner},
+					},
+				},
+				{
+					ID:          "space-3",
+					Slug:        "spaceThree",
+					Title:       "Space Three",
+					Description: "This is the third space.",
+					Categories:  []spaces.Category{spaces.CategoryOther},
+					IconURL:     "https://example.com/icon3.png",
+					Status:      spaces.StatusArchived,
+					CreatedAt:   now,
+					Members: []spaces.Member{
+						{UserID: "user-3", Role: spaces.RoleOwner},
+					},
+				},
+			},
+		},
+	} {
+		t.Run(tc.Name, func(t *testing.T) {
+			db := fake.New()
+			store := spaces.New(spaces.Configuration{
+				DB: db,
+			})
+
+			for _, s := range tc.Exiting {
+				if err := db.Create(&s); err != nil {
+					t.Fatalf("Could not setup db: %v", err)
+				}
+			}
+
+			got, err := store.GetAll()
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+
+			if diff := cmp.Diff(tc.Exiting, got); diff != "" {
+				t.Errorf("Unexpected diff: %s", diff)
+			}
+		})
+	}
+}
+
 func TestStore_Create(t *testing.T) {
 	now := time.Now()
 

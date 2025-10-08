@@ -44,6 +44,13 @@ func (db *DB) GetBySlug(slug string) (*spaces.Space, error) {
 	return nil, spaces.ErrSpaceNotFound
 }
 
+func (db *DB) GetAll() ([]spaces.Space, error) {
+	db.Mu.Lock()
+	defer db.Mu.Unlock()
+
+	return db.Items, nil
+}
+
 func (db *DB) Create(s *spaces.Space) error {
 	db.Mu.Lock()
 	defer db.Mu.Unlock()
