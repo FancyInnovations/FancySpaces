@@ -113,7 +113,7 @@ func (db *DB) GetAll() ([]spaces.Space, error) {
 	}
 	defer rows.Close()
 
-	var spacesList []spaces.Space
+	var spacesList = make([]spaces.Space, 0)
 	for rows.Next() {
 		var s spaces.Space
 		err := rows.Scan(&s.ID, &s.Slug, &s.Title, &s.Description, &s.IconURL, &s.Status, &s.CreatedAt)
