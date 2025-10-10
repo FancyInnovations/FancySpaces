@@ -149,7 +149,7 @@ func (db *DB) Create(s *spaces.Space) error {
 	}
 
 	for _, m := range s.Members {
-		memberStmt := `INSERT INTO members (space_id, user_id, role) VALUES (?, ?, ?)`
+		memberStmt := `INSERT INTO space_members (space_id, user_id, role) VALUES (?, ?, ?)`
 		_, err := db.conn.Exec(memberStmt, s.ID, m.UserID, m.Role)
 		if err != nil {
 			return fmt.Errorf("failed to insert member: %w", err)
@@ -157,7 +157,7 @@ func (db *DB) Create(s *spaces.Space) error {
 	}
 
 	for _, c := range s.Categories {
-		categoryStmt := `INSERT INTO categories (space_id, category) VALUES (?, ?)`
+		categoryStmt := `INSERT INTO space_categories (space_id, category) VALUES (?, ?)`
 		_, err := db.conn.Exec(categoryStmt, s.ID, c)
 		if err != nil {
 			return fmt.Errorf("failed to insert category: %w", err)
@@ -175,14 +175,14 @@ func (db *DB) Update(id string, s *spaces.Space) error {
 	}
 
 	// For simplicity, we'll delete existing members and categories and re-insert them.
-	delMembersStmt := `DELETE FROM members WHERE space_id = ?`
+	delMembersStmt := `DELETE FROM space_members WHERE space_id = ?`
 	_, err = db.conn.Exec(delMembersStmt, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete existing members: %w", err)
 	}
 
 	for _, m := range s.Members {
-		memberStmt := `INSERT INTO members (space_id, user_id, role) VALUES (?, ?, ?)`
+		memberStmt := `INSERT INTO space_members (space_id, user_id, role) VALUES (?, ?, ?)`
 		_, err := db.conn.Exec(memberStmt, id, m.UserID, m.Role)
 		if err != nil {
 			return fmt.Errorf("failed to insert member: %w", err)
@@ -190,7 +190,7 @@ func (db *DB) Update(id string, s *spaces.Space) error {
 	}
 
 	// Similarly for categories
-	delCategoriesStmt := `DELETE FROM categories WHERE space_id = ?`
+	delCategoriesStmt := `DELETE FROM space_categories WHERE space_id = ?`
 	_, err = db.conn.Exec(delCategoriesStmt, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete existing categories: %w", err)
@@ -215,13 +215,13 @@ func (db *DB) Delete(id string) error {
 	}
 
 	// Also delete associated members and categories
-	delMembersStmt := `DELETE FROM members WHERE space_id = ?`
+	delMembersStmt := `DELETE FROM space_members WHERE space_id = ?`
 	_, err = db.conn.Exec(delMembersStmt, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete members: %w", err)
 	}
 
-	delCategoriesStmt := `DELETE FROM categories WHERE space_id = ?`
+	delCategoriesStmt := `DELETE FROM space_categories WHERE space_id = ?`
 	_, err = db.conn.Exec(delCategoriesStmt, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete categories: %w", err)
