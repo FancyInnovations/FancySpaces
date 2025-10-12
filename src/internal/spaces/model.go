@@ -53,6 +53,16 @@ const (
 	CategoryOther           Category = "other"
 )
 
+func (s *Space) IsOwner(u *auth.User) bool {
+	for _, m := range s.Members {
+		if m.UserID == u.ID {
+			return m.Role == RoleOwner
+		}
+	}
+
+	return false
+}
+
 func (s *Space) HasFullAccess(u *auth.User) bool {
 	for _, m := range s.Members {
 		if m.UserID == u.ID {
