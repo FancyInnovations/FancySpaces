@@ -29,6 +29,8 @@ jobs:
 
       - name: Build
         run: go build cmd/local/main.go
+        working-directory: src
 
       - name: Test
         run: go test ./... -v
+        working-directory: src
