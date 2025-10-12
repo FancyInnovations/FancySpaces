@@ -1,0 +1,46 @@
+Space:
+  type: object
+  properties:
+    id:
+      type: string
+    slug:
+      type: string
+    title:
+      type: string
+    description:
+      type: string
+    status:
+      type: string
+CreateOrUpdateSpaceReq:
+  type: object
+  properties:
+    slug:
+      type: string
+    title:
+      type: string
+    description:
+      type: string
+ChangeStatusReq:
+  type: object
+  properties:
+    to:
+      type: string
+Member:
+  type: object
+  properties:
+    user_id:
+      type: string
+    role:
+      type: string
+AddMemberReq:
+  type: object
+  properties:
+    user_id:
+      type: string
+    role:
+      type: string
+UpdateMemberReq:
+  type: object
+  properties:
+    role:
+      type: string

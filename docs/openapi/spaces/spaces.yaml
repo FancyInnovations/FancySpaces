@@ -1,0 +1,196 @@
+openapi: 3.0.3
+info:
+  title: Spaces API
+  version: 0.0.1
+paths:
+  /spaces:
+    get:
+      summary: List all spaces
+      responses:
+        '200':
+          description: List of spaces
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './schemas.yaml#/Space'
+    post:
+      summary: Create a new space
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/CreateOrUpdateSpaceReq'
+      responses:
+        '201':
+          description: Space created
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/Space'
+
+  /spaces/{space_id}:
+    get:
+      summary: Get a space by ID
+      parameters:
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Space details
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/Space'
+    put:
+      summary: Update a space
+      parameters:
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/CreateOrUpdateSpaceReq'
+      responses:
+        '204':
+          description: Space updated
+    delete:
+      summary: Delete a space
+      parameters:
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Space deleted
+
+  /spaces/{space_id}/status:
+    put:
+      summary: Change space status
+      parameters:
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/ChangeStatusReq'
+      responses:
+        '204':
+          description: Status changed
+
+  /spaces/{space_id}/members:
+    get:
+      summary: List members of a space
+      parameters:
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './schemas.yaml#/Member'
+    post:
+      summary: Add a member to a space
+      parameters:
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/AddMemberReq'
+      responses:
+        '201':
+          description: Member added
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/Member'
+
+  /spaces/{space_id}/members/{user_id}:
+    get:
+      summary: Get a member of a space
+      parameters:
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Member details
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/Member'
+    put:
+      summary: Update a member's role in a space
+      parameters:
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/UpdateMemberReq'
+      responses:
+        '204':
+          description: Member updated
+    delete:
+      summary: Remove a member from a space
+      parameters:
+        - name: space_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Member removed
