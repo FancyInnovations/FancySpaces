@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS spaces (
     description TEXT,
     icon_url TEXT,
     status TEXT NOT NULL DEFAULT 'draft',
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME NOT NULL
 );

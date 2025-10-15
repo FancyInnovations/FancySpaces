@@ -6,6 +6,7 @@
 - **User**: Authenticated users with a registered account
 - **SOwner**: Space Owner, the user who created the space
 - **SAdmin**: Space Admin, users with administrative privileges in a space
+- **SMember**: Space Member, regular members of a space
 
 ## Actions
 
@@ -29,3 +30,13 @@
 | Add member          | SOwner                  |
 | Update member       | SOwner                  |
 | Remove member       | SOwner, Member themself |
+
+### Issue Management (within a space)
+
+| Action         | Roles                   |
+|----------------|-------------------------|
+| Get all issues | Everyone                |
+| Get one issue  | Everyone                |
+| Create issue   | SMember                 |
+| Update issue   | SOwner, SAdmin, SMember |
+| Delete issue   | SOwner, SAdmin, SMember |

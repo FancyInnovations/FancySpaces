@@ -1,18 +1,22 @@
 package issues
 
+import (
+	"time"
+)
+
 type Issue struct {
-	ID             string   `json:"id"`
-	Space          string   `json:"space"`
-	Title          string   `json:"title"`
-	Description    string   `json:"description"`
-	Type           Type     `json:"type"`
-	Status         Status   `json:"status"`
-	Priority       Priority `json:"priority"`
-	Assignee       string   `json:"assignee"`
-	Reporter       string   `json:"reporter"`
-	CreatedAt      string   `json:"created_at"`
-	UpdatedAt      string   `json:"updated_at"`
-	ExternalSource string   `json:"external_source,omitempty"`
+	ID             string    `json:"id"`
+	Space          string    `json:"space"`
+	Title          string    `json:"title"`
+	Description    string    `json:"description"`
+	Type           Type      `json:"type"`
+	Status         Status    `json:"status"`
+	Priority       Priority  `json:"priority"`
+	Assignee       string    `json:"assignee"`
+	Reporter       string    `json:"reporter"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	ExternalSource string    `json:"external_source,omitempty"`
 }
 
 type Type string
@@ -50,11 +54,26 @@ const (
 	ExternalSourceDiscord ExternalSource = "discord"
 )
 
+func (i *Issue) Validate() error {
+	if len(i.Title) == 0 {
+		return ErrTitleTooShort
+	}
+	if len(i.Title) > 100 {
+		return ErrTitleTooLong
+	}
+
+	if len(i.Description) > 1000 {
+		return ErrDescriptionTooLong
+	}
+
+	return nil
+}
+
 type Comment struct {
-	ID        string `json:"id"`
-	Issue     string `json:"issue"`
-	Author    string `json:"author"`
-	Content   string `json:"content"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	ID        string    `json:"id"`
+	Issue     string    `json:"issue"`
+	Author    string    `json:"author"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

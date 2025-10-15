@@ -1,5 +1,7 @@
 package issues
 
+import "time"
+
 type DB interface {
 	GetIssues(space string) ([]Issue, error)
 	GetIssue(space, id string) (*Issue, error)
@@ -25,4 +27,58 @@ func New(cfg Configuration) *Store {
 	return &Store{
 		db: cfg.DB,
 	}
+}
+
+func (s *Store) GetIssues(space string) ([]Issue, error) {
+	return s.db.GetIssues(space)
+}
+
+func (s *Store) GetIssue(space, id string) (*Issue, error) {
+	return s.db.GetIssue(space, id)
+}
+
+func (s *Store) CreateIssue(issue *Issue) error {
+	issue.CreatedAt = time.Now()
+	issue.UpdatedAt = time.Now()
+
+	if err := issue.Validate(); err != nil {
+		return err
+	}
+
+	return s.db.CreateIssue(issue)
+}
+
+func (s *Store) UpdateIssue(issue *Issue) error {
+	issue.UpdatedAt = time.Now()
+
+	if err := issue.Validate(); err != nil {
+		return err
+	}
+
+	return s.db.UpdateIssue(issue)
+}
+
+func (s *Store) DeleteIssue(space, id string) error {
+	return s.db.DeleteIssue(space, id)
+}
+
+func (s *Store) GetComments(issue string) ([]Comment, error) {
+	return s.db.GetComments(issue)
+}
+
+func (s *Store) AddComment(comment *Comment) error {
+	comment.CreatedAt = time.Now()
+	comment.UpdatedAt = time.Now()
+
+	return s.db.AddComment(comment)
+}
+
+func (s *Store) UpdateComment(comment *Comment) error {
+	comment.UpdatedAt = time.Now()
+
+	return s.db.UpdateComment(comment)
+}
+
+func (s *Store) DeleteComment(issue, id string) error {
+	return s.db.DeleteComment(issue, id)
 }
