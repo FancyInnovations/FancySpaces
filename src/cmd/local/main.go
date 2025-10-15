@@ -12,6 +12,7 @@ import (
 	"github.com/OliverSchlueter/goutils/middleware"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/src/internal/app"
+	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
 	"github.com/justinas/alice"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -39,9 +40,12 @@ func main() {
 		SQLite: slDB,
 	})
 
+	auth.ApiKey = "" // Don't require authentication for local testing
+
 	go func() {
 		chain := alice.New(
 			middleware.RequestLogging,
+			auth.Middleware,
 			middleware.Recovery,
 		).Then(mux)
 

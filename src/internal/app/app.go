@@ -1,11 +1,9 @@
 package app
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/src/internal/spaces"
@@ -31,21 +29,8 @@ func Start(cfg Configuration) {
 		DB: spacesDB,
 	})
 	spacesHandler := handler.New(handler.Configuration{
-		Store: spacesStore,
-		UserFromCtx: func(ctx context.Context) *auth.User {
-			return &auth.User{
-				ID:        "user-1",
-				Provider:  auth.ProviderBasic,
-				Name:      "AdminUser",
-				Email:     "admin@fancyspaces.net",
-				Verified:  true,
-				Password:  "...",
-				Roles:     []string{"admin", "user"},
-				CreatedAt: time.Now(),
-				IsActive:  true,
-				Metadata:  map[string]string{},
-			}
-		},
+		Store:       spacesStore,
+		UserFromCtx: auth.UserFromContext,
 	})
 	spacesHandler.Register(apiPrefix, cfg.Mux)
 
