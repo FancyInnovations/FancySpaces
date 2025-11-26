@@ -1,6 +1,8 @@
 package versions
 
-import "errors"
+import (
+	"errors"
+)
 
 type DB interface {
 	GetAll(spaceID string) ([]Version, error)
@@ -9,6 +11,7 @@ type DB interface {
 	Create(v *Version) error
 	Update(spaceID, versionID string, v *Version) error
 	Delete(spaceID, versionID string) error
+	LogDownload(spaceID, versionID string) error
 }
 
 type FileStorage interface {
@@ -103,6 +106,10 @@ func (s *Store) DownloadVersionFile(spaceID, versionID, fileName string) ([]byte
 	}
 	if !found {
 		return nil, ErrVersionNotFound
+	}
+
+	if err := s.db.LogDownload(spaceID, versionID); err != nil {
+		return nil, err
 	}
 
 	return s.fileStorage.Download(spaceID, versionID, fileName)

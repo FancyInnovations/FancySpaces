@@ -16,6 +16,9 @@ var createVersionsTable string
 //go:embed sqlStatements/createVersionFilesTable.sql
 var createVersionFilesTable string
 
+//go:embed sqlStatements/createVersionDownloadsTable.sql
+var createVersionDownloadsTable string
+
 type DB struct {
 	conn *sql.DB
 }
@@ -37,6 +40,11 @@ func (db *DB) Setup() error {
 	}
 
 	_, err = db.conn.Exec(createVersionFilesTable, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.conn.Exec(createVersionDownloadsTable, nil)
 	if err != nil {
 		return err
 	}
@@ -259,6 +267,16 @@ func (db *DB) Delete(spaceID, versionID string) error {
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("commit tx: %w", err)
 	}
+	return nil
+}
+
+func (db *DB) LogDownload(spaceID, versionID string) error {
+	q := `INSERT INTO version_downloads (timestamp, space_id, version_id) VALUES (?, ?, ?)`
+	downloadedAt := time.Now().Format(time.RFC3339)
+	if _, err := db.conn.Exec(q, downloadedAt, spaceID, versionID); err != nil {
+		return fmt.Errorf("insert version_download: %w", err)
+	}
+
 	return nil
 }
 
