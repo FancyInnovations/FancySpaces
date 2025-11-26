@@ -40,7 +40,7 @@ func main() {
 		SQLite: slDB,
 	})
 
-	auth.ApiKey = "" // Don't require authentication for local testing
+	auth.ApiKey = "hello"
 
 	go func() {
 		chain := alice.New(

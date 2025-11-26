@@ -29,7 +29,7 @@ func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("Authorization")
 		if apiKey == ApiKey {
-			newCtx := context.WithValue(r.Context(), userContextKey, admin)
+			newCtx := context.WithValue(r.Context(), userContextKey, &admin)
 			next.ServeHTTP(w, r.WithContext(newCtx))
 			return
 		}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -151,6 +152,7 @@ func (h *Handler) handleGetVersion(w http.ResponseWriter, r *http.Request, space
 
 func (h *Handler) handleCreateVersion(w http.ResponseWriter, r *http.Request, spaceID string) {
 	u := h.userFromCtx(r.Context())
+	fmt.Printf("user %#v\n", u)
 	if u == nil || !u.Verified || !u.IsActive {
 		problems.Unauthorized().WriteToHTTP(w)
 		return
@@ -184,6 +186,7 @@ func (h *Handler) handleCreateVersion(w http.ResponseWriter, r *http.Request, sp
 	req.ID = uuid.New().String()
 	req.PublishedAt = time.Now()
 	req.Downloads = 0
+	req.Files = []versions.VersionFile{}
 
 	if err := h.store.Create(&req); err != nil {
 		slog.Error("Failed to create version", sloki.WrapError(err))
