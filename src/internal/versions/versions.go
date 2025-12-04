@@ -1,23 +1,24 @@
 package versions
 
 import (
+	"context"
 	"errors"
 )
 
 type DB interface {
-	GetAll(spaceID string) ([]Version, error)
-	GetByID(spaceID, versionID string) (*Version, error)
-	GetByName(spaceID, versionNumber string) (*Version, error)
-	Create(v *Version) error
-	Update(spaceID, versionID string, v *Version) error
-	Delete(spaceID, versionID string) error
-	LogDownload(spaceID, versionID string) error
+	GetAll(ctx context.Context, spaceID string) ([]Version, error)
+	GetByID(ctx context.Context, spaceID, versionID string) (*Version, error)
+	GetByName(ctx context.Context, spaceID, versionNumber string) (*Version, error)
+	Create(ctx context.Context, v *Version) error
+	Update(ctx context.Context, spaceID, versionID string, v *Version) error
+	Delete(ctx context.Context, spaceID, versionID string) error
+	LogDownload(ctx context.Context, spaceID, versionID string) error
 }
 
 type FileStorage interface {
-	Upload(version *Version, file *VersionFile, data []byte) error
-	Download(spaceID, versionID, fileName string) ([]byte, error)
-	Delete(spaceID, versionID, fileName string) error
+	Upload(ctx context.Context, version *Version, file *VersionFile, data []byte) error
+	Download(ctx context.Context, spaceID, versionID, fileName string) ([]byte, error)
+	Delete(ctx context.Context, spaceID, versionID, fileName string) error
 }
 
 type Store struct {
@@ -37,15 +38,15 @@ func New(cfg Configuration) *Store {
 	}
 }
 
-func (s *Store) GetAll(spaceID string) ([]Version, error) {
-	return s.db.GetAll(spaceID)
+func (s *Store) GetAll(ctx context.Context, spaceID string) ([]Version, error) {
+	return s.db.GetAll(ctx, spaceID)
 }
 
-func (s *Store) Get(spaceID, id string) (*Version, error) {
-	v, err := s.db.GetByID(spaceID, id)
+func (s *Store) Get(ctx context.Context, spaceID, id string) (*Version, error) {
+	v, err := s.db.GetByID(ctx, spaceID, id)
 	if err != nil {
 		if errors.Is(err, ErrVersionNotFound) {
-			v, err = s.db.GetByName(spaceID, id)
+			v, err = s.db.GetByName(ctx, spaceID, id)
 			if err != nil {
 				return nil, err
 			}
@@ -57,41 +58,46 @@ func (s *Store) Get(spaceID, id string) (*Version, error) {
 	return v, nil
 }
 
-func (s *Store) Create(v *Version) error {
-	return s.db.Create(v)
+func (s *Store) Create(ctx context.Context, v *Version) error {
+	return s.db.Create(ctx, v)
 }
 
-func (s *Store) Update(spaceID, versionID string, v *Version) error {
-	return s.db.Update(spaceID, versionID, v)
+func (s *Store) Update(ctx context.Context, spaceID, versionID string, v *Version) error {
+	return s.db.Update(ctx, spaceID, versionID, v)
 }
 
-func (s *Store) Delete(spaceID, versionID string) error {
-	ver, err := s.Get(spaceID, versionID)
+func (s *Store) Delete(ctx context.Context, spaceID, versionID string) error {
+	ver, err := s.Get(ctx, spaceID, versionID)
 	if err != nil {
 		return err
 	}
 
 	for _, f := range ver.Files {
-		if err := s.fileStorage.Delete(spaceID, versionID, f.Name); err != nil {
+		if err := s.fileStorage.Delete(ctx, spaceID, versionID, f.Name); err != nil {
 			return err
 		}
 	}
 
-	return s.db.Delete(spaceID, versionID)
+	return s.db.Delete(ctx, spaceID, versionID)
 }
 
-func (s *Store) UploadVersionFile(version *Version, fileName string, data []byte) error {
+func (s *Store) UploadVersionFile(ctx context.Context, version *Version, fileName string, data []byte) error {
 	verFile := &VersionFile{
 		Name: fileName,
-		URL:  "https://fancyspaces/spaces/" + version.SpaceID + "/versions/" + version.ID + "/files/" + fileName,
+		URL:  "https://fancyspaces.net/api/v1/spaces/" + version.SpaceID + "/versions/" + version.ID + "/files/" + fileName,
 		Size: int64(len(data)),
 	}
 
-	return s.fileStorage.Upload(version, verFile, data)
+	version.Files = append(version.Files, *verFile)
+	if err := s.Update(ctx, version.SpaceID, version.ID, version); err != nil {
+		return err
+	}
+
+	return s.fileStorage.Upload(ctx, version, verFile, data)
 }
 
-func (s *Store) DownloadVersionFile(spaceID, versionID, fileName string) ([]byte, error) {
-	ver, err := s.Get(spaceID, versionID)
+func (s *Store) DownloadVersionFile(ctx context.Context, spaceID, versionID, fileName string) ([]byte, error) {
+	ver, err := s.Get(ctx, spaceID, versionID)
 	if err != nil {
 		return nil, err
 	}
@@ -108,9 +114,9 @@ func (s *Store) DownloadVersionFile(spaceID, versionID, fileName string) ([]byte
 		return nil, ErrVersionNotFound
 	}
 
-	if err := s.db.LogDownload(spaceID, versionID); err != nil {
+	if err := s.db.LogDownload(ctx, spaceID, versionID); err != nil {
 		return nil, err
 	}
 
-	return s.fileStorage.Download(spaceID, versionID, fileName)
+	return s.fileStorage.Download(ctx, spaceID, versionID, fileName)
 }

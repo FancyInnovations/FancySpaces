@@ -18,7 +18,7 @@ func (h *Handler) handleMembers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s, err := h.store.GetByID(sid)
+	s, err := h.store.Get(sid)
 	if err != nil {
 		if errors.Is(err, spaces.ErrSpaceNotFound) {
 			problems.NotFound("Space", sid).WriteToHTTP(w)
@@ -47,7 +47,7 @@ func (h *Handler) handleMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s, err := h.store.GetByID(sid)
+	s, err := h.store.Get(sid)
 	if err != nil {
 		if errors.Is(err, spaces.ErrSpaceNotFound) {
 			problems.NotFound("Space", sid).WriteToHTTP(w)

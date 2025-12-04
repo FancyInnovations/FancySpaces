@@ -57,7 +57,7 @@ func (h *Handler) handleSpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s, err := h.store.GetByID(sid)
+	s, err := h.store.Get(sid)
 	if err != nil {
 		if errors.Is(err, spaces.ErrSpaceNotFound) {
 			problems.NotFound("Space", sid).WriteToHTTP(w)
@@ -107,7 +107,7 @@ func (h *Handler) handleGetSpace(w http.ResponseWriter, r *http.Request, s *spac
 		return
 	}
 
-	s, err := h.store.GetByID(s.ID)
+	s, err := h.store.Get(s.ID)
 	if err != nil {
 		if errors.Is(err, spaces.ErrSpaceNotFound) {
 			problems.NotFound("Space", s.ID).WriteToHTTP(w)
@@ -255,7 +255,7 @@ func (h *Handler) handleChangeStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s, err := h.store.GetByID(sid)
+	s, err := h.store.Get(sid)
 	if err != nil {
 		if errors.Is(err, spaces.ErrSpaceNotFound) {
 			problems.NotFound("Space", sid).WriteToHTTP(w)

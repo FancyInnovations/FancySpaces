@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"os"
 
 	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
@@ -15,7 +16,7 @@ func New() *Storage {
 	return &Storage{}
 }
 
-func (s *Storage) Upload(version *versions.Version, file *versions.VersionFile, data []byte) error {
+func (s *Storage) Upload(_ context.Context, version *versions.Version, file *versions.VersionFile, data []byte) error {
 
 	dirPath := basePath + "/" + version.SpaceID + "/" + version.ID
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
@@ -30,7 +31,7 @@ func (s *Storage) Upload(version *versions.Version, file *versions.VersionFile, 
 	return nil
 }
 
-func (s *Storage) Download(spaceID, versionID, fileName string) ([]byte, error) {
+func (s *Storage) Download(_ context.Context, spaceID, versionID, fileName string) ([]byte, error) {
 	filePath := basePath + "/" + spaceID + "/" + versionID + "/" + fileName
 	data, err := os.ReadFile(filePath)
 	if err != nil {
@@ -40,7 +41,7 @@ func (s *Storage) Download(spaceID, versionID, fileName string) ([]byte, error) 
 	return data, nil
 }
 
-func (s *Storage) Delete(spaceID, versionID, fileName string) error {
+func (s *Storage) Delete(_ context.Context, spaceID, versionID, fileName string) error {
 	filePath := basePath + "/" + spaceID + "/" + versionID + "/" + fileName
 	if err := os.Remove(filePath); err != nil {
 		return err

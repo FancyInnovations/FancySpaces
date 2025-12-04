@@ -29,15 +29,15 @@ func main() {
 	slog.SetDefault(slog.New(logService))
 
 	// Connect to databases
-	slDB := containers.ConnectSqlite("fancyspaces_e2e.db")
+	mc := containers.ConnectToMongoE2E("fancyspaces_e2e")
 
 	// Setup HTTP server
 	mux := http.NewServeMux()
 	port := "8080"
 
 	app.Start(app.Configuration{
-		Mux:    mux,
-		SQLite: slDB,
+		Mux:   mux,
+		Mongo: mc,
 	})
 
 	auth.ApiKey = "hello"
@@ -65,7 +65,7 @@ func main() {
 	case os.Interrupt:
 		slog.Info("Received interrupt signal, shutting down...")
 
-		containers.DisconnectSqlite(slDB)
+		containers.DisconnectMongo(mc)
 
 		slog.Info("Shutdown complete")
 	}

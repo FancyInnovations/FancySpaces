@@ -32,6 +32,23 @@ func New(cfg Configuration) *Store {
 	}
 }
 
+// Get tries to get a space by ID first, then by slug if not found by ID.
+func (s *Store) Get(id string) (*Space, error) {
+	sp, err := s.db.GetBySlug(id)
+	if err != nil {
+		if errors.Is(err, ErrSpaceNotFound) {
+			sp, err = s.db.GetByID(id)
+			if err == nil {
+				return sp, nil
+			}
+		}
+
+		return nil, err
+	}
+
+	return sp, nil
+}
+
 func (s *Store) GetByID(id string) (*Space, error) {
 	return s.db.GetByID(id)
 }

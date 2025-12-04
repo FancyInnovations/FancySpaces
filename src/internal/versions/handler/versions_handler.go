@@ -119,7 +119,7 @@ func (h *Handler) handleGetVersions(w http.ResponseWriter, r *http.Request, spac
 		return
 	}
 
-	all, err := h.store.GetAll(spaceID)
+	all, err := h.store.GetAll(r.Context(), spaceID)
 	if err != nil {
 		slog.Error("Failed to get versions", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
@@ -138,7 +138,7 @@ func (h *Handler) handleGetVersion(w http.ResponseWriter, r *http.Request, space
 		return
 	}
 
-	ver, err := h.store.Get(spaceID, versionID)
+	ver, err := h.store.Get(r.Context(), spaceID, versionID)
 	if err != nil {
 		slog.Error("Failed to get version", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
@@ -158,7 +158,7 @@ func (h *Handler) handleCreateVersion(w http.ResponseWriter, r *http.Request, sp
 		return
 	}
 
-	space, err := h.spaces.GetByID(spaceID)
+	space, err := h.spaces.Get(spaceID)
 	if err != nil {
 		if errors.Is(err, spaces.ErrSpaceNotFound) {
 			problems.NotFound("Space", spaceID).WriteToHTTP(w)
@@ -175,20 +175,26 @@ func (h *Handler) handleCreateVersion(w http.ResponseWriter, r *http.Request, sp
 		return
 	}
 
-	var req versions.Version
+	var req CreateVersionReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		slog.Error("Failed to decode create version request", sloki.WrapError(err))
 		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
 		return
 	}
 
-	req.SpaceID = spaceID
-	req.ID = uuid.New().String()
-	req.PublishedAt = time.Now()
-	req.Downloads = 0
-	req.Files = []versions.VersionFile{}
+	ver := versions.Version{
+		SpaceID:                   req.SpaceID,
+		ID:                        uuid.New().String(),
+		Name:                      req.Name,
+		Channel:                   req.Channel,
+		PublishedAt:               time.Now(),
+		Changelog:                 req.Changelog,
+		SupportedPlatformVersions: req.SupportedPlatformVersions,
+		Files:                     []versions.VersionFile{},
+		Downloads:                 0,
+	}
 
-	if err := h.store.Create(&req); err != nil {
+	if err := h.store.Create(r.Context(), &ver); err != nil {
 		slog.Error("Failed to create version", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
@@ -206,7 +212,7 @@ func (h *Handler) handleDeleteVersion(w http.ResponseWriter, r *http.Request, sp
 		return
 	}
 
-	space, err := h.spaces.GetByID(spaceID)
+	space, err := h.spaces.Get(spaceID)
 	if err != nil {
 		if errors.Is(err, spaces.ErrSpaceNotFound) {
 			problems.NotFound("Space", spaceID).WriteToHTTP(w)
@@ -223,7 +229,7 @@ func (h *Handler) handleDeleteVersion(w http.ResponseWriter, r *http.Request, sp
 		return
 	}
 
-	if err := h.store.Delete(spaceID, versionID); err != nil {
+	if err := h.store.Delete(r.Context(), spaceID, versionID); err != nil {
 		slog.Error("Failed to delete version", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
@@ -239,7 +245,7 @@ func (h *Handler) handleUploadVersionFile(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	space, err := h.spaces.GetByID(spaceID)
+	space, err := h.spaces.Get(spaceID)
 	if err != nil {
 		if errors.Is(err, spaces.ErrSpaceNotFound) {
 			problems.NotFound("Space", spaceID).WriteToHTTP(w)
@@ -256,7 +262,7 @@ func (h *Handler) handleUploadVersionFile(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	ver, err := h.store.Get(spaceID, versionID)
+	ver, err := h.store.Get(r.Context(), spaceID, versionID)
 	if err != nil {
 		slog.Error("Failed to get version", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
@@ -271,7 +277,7 @@ func (h *Handler) handleUploadVersionFile(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if err := h.store.UploadVersionFile(ver, fileName, data); err != nil {
+	if err := h.store.UploadVersionFile(r.Context(), ver, fileName, data); err != nil {
 		slog.Error("Failed to upload version file", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
@@ -281,8 +287,8 @@ func (h *Handler) handleUploadVersionFile(w http.ResponseWriter, r *http.Request
 }
 
 // no auth required
-func (h *Handler) handleDownloadVersionFile(w http.ResponseWriter, _ *http.Request, spaceID, versionID, fileName string) {
-	data, err := h.store.DownloadVersionFile(spaceID, versionID, fileName)
+func (h *Handler) handleDownloadVersionFile(w http.ResponseWriter, r *http.Request, spaceID, versionID, fileName string) {
+	data, err := h.store.DownloadVersionFile(r.Context(), spaceID, versionID, fileName)
 	if err != nil {
 		slog.Error("Failed to download version file", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
