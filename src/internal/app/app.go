@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/src/internal/spaces"
 	fakeSpacesDB "github.com/fancyinnovations/fancyspaces/src/internal/spaces/database/fake"
@@ -19,8 +20,9 @@ import (
 const apiPrefix = "/api/v1"
 
 type Configuration struct {
-	Mux   *http.ServeMux
-	Mongo *mongo.Database
+	Mux        *http.ServeMux
+	Mongo      *mongo.Database
+	ClickHouse driver.Conn
 }
 
 func Start(cfg Configuration) {

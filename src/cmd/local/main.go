@@ -30,14 +30,16 @@ func main() {
 
 	// Connect to databases
 	mc := containers.ConnectToMongoE2E("fancyspaces_e2e")
+	ch := containers.ConnectToClickhouseE2E("fancyspaces_e2e")
 
 	// Setup HTTP server
 	mux := http.NewServeMux()
 	port := "8080"
 
 	app.Start(app.Configuration{
-		Mux:   mux,
-		Mongo: mc,
+		Mux:        mux,
+		Mongo:      mc,
+		ClickHouse: ch,
 	})
 
 	auth.ApiKey = "hello"
@@ -66,6 +68,7 @@ func main() {
 		slog.Info("Received interrupt signal, shutting down...")
 
 		containers.DisconnectMongo(mc)
+		containers.DisconnectClickhouse(ch)
 
 		slog.Info("Shutdown complete")
 	}
