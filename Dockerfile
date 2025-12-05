@@ -11,7 +11,7 @@ COPY . .
 RUN go mod download
 
 # Build the Go application
-RUN go build -C fancyspaces -o main ./src/cmd/local/main.go
+RUN go build -C fancyspaces -o main ./src/cmd/prod/main.go
 
 FROM ubuntu:22.04
 WORKDIR /root/
