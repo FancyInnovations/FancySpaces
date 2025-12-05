@@ -9,7 +9,7 @@ import (
 	"github.com/minio/minio-go/v7"
 )
 
-const BucketName = "version_files"
+const BucketName = "version-files"
 
 type Storage struct {
 	mio *minio.Client
@@ -22,7 +22,7 @@ func NewStorage(mio *minio.Client) *Storage {
 func (s *Storage) Setup(ctx context.Context) error {
 	err := s.mio.MakeBucket(ctx, BucketName, minio.MakeBucketOptions{})
 	if err != nil {
-		exists, errBucketExists := s.mio.BucketExists(context.Background(), BucketName)
+		exists, errBucketExists := s.mio.BucketExists(ctx, BucketName)
 		if errBucketExists == nil && exists {
 			return nil
 		} else {

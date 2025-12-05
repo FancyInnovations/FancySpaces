@@ -41,6 +41,7 @@ func main() {
 		Mux:        mux,
 		Mongo:      mc,
 		ClickHouse: ch,
+		MinIO:      mio,
 	})
 
 	auth.ApiKey = "hello"
