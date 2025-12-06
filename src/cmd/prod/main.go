@@ -68,6 +68,7 @@ func main() {
 	})
 
 	auth.ApiKey = env.MustGetStr("API_KEY")
+	auth.UserAdmin.Password = auth.Hash(auth.ApiKey)
 
 	go func() {
 		middleware.OnlyLogStatusAbove = 399 // log 4xx and 5xx status codes

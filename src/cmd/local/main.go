@@ -45,6 +45,7 @@ func main() {
 	})
 
 	auth.ApiKey = "hello"
+	auth.UserAdmin.Password = auth.Hash(auth.ApiKey)
 
 	go func() {
 		chain := alice.New(
