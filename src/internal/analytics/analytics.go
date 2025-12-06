@@ -9,6 +9,7 @@ import (
 )
 
 type DB interface {
+	GetDownloadCountForSpace(ctx context.Context, spaceID string) (int64, error)
 	GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (int64, error)
 	StoreVersionDownloads(ctx context.Context, records []VersionDownload) error
 }

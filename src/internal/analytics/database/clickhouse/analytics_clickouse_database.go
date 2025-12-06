@@ -41,6 +41,19 @@ func (db *DB) Setup(ctx context.Context) error {
 	return nil
 }
 
+func (db *DB) GetDownloadCountForSpace(ctx context.Context, spaceID string) (int64, error) {
+	var count int64
+	query := `
+		SELECT COUNT(*) 
+		FROM fancyspaces.version_downloads 
+		WHERE space_id = ?`
+	if err := db.ch.QueryRow(ctx, query, spaceID).Scan(&count); err != nil {
+		return -1, err
+	}
+
+	return count, nil
+}
+
 func (db *DB) GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (int64, error) {
 	var count int64
 	query := `
@@ -54,6 +67,7 @@ func (db *DB) GetDownloadCountForVersion(ctx context.Context, spaceID, versionID
 
 	return count, nil
 }
+
 func (db *DB) StoreVersionDownloads(ctx context.Context, records []analytics.VersionDownload) error {
 	batch, err := db.ch.PrepareBatch(ctx, "INSERT INTO fancyspaces.version_downloads")
 	if err != nil {
