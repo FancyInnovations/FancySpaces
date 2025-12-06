@@ -76,6 +76,7 @@ func main() {
 		middleware.OnlyLogStatusAbove = 399 // log 4xx and 5xx status codes
 		chain := alice.New(
 			middleware.RequestLogging,
+			auth.Middleware,
 			middleware.Recovery,
 		).Then(mux)
 
