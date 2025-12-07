@@ -8,6 +8,7 @@ import (
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/src/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
 )
 
 func (h *Handler) handleVersionFile(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +66,11 @@ func (h *Handler) handleUploadVersionFile(w http.ResponseWriter, r *http.Request
 
 	ver, err := h.store.Get(r.Context(), spaceID, versionID)
 	if err != nil {
+		if errors.Is(err, versions.ErrVersionNotFound) {
+			problems.NotFound("Version", "latest").WriteToHTTP(w)
+			return
+		}
+
 		slog.Error("Failed to get version", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
@@ -95,6 +101,11 @@ func (h *Handler) handleDownloadVersionFile(w http.ResponseWriter, r *http.Reque
 
 		ver, err := h.store.GetLatest(r.Context(), spaceID, channel, platform)
 		if err != nil {
+			if errors.Is(err, versions.ErrVersionNotFound) {
+				problems.NotFound("Version", "latest").WriteToHTTP(w)
+				return
+			}
+
 			slog.Error("Failed to get latest version", sloki.WrapError(err))
 			problems.InternalServerError("").WriteToHTTP(w)
 			return
@@ -104,6 +115,11 @@ func (h *Handler) handleDownloadVersionFile(w http.ResponseWriter, r *http.Reque
 
 	data, err := h.store.DownloadVersionFile(r.Context(), r, spaceID, versionID, fileName)
 	if err != nil {
+		if errors.Is(err, versions.ErrVersionNotFound) {
+			problems.NotFound("Version", "latest").WriteToHTTP(w)
+			return
+		}
+
 		slog.Error("Failed to download version file", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
