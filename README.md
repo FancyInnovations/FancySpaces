@@ -12,6 +12,7 @@ GET https://fancyspaces.net/api/v1/spaces/{space_id}/versions/latest
 ```
 
 Append the `?channel={channel}` query parameter to receive the latest version from a specific channel.
+Append the `?platform={platform}` query parameter to receive the latest version for a specific platform.
 
 **Download latest version:**
 
@@ -20,3 +21,4 @@ GET https://fancyspaces.net/api/v1/spaces/{space_id}/versions/latest/files/{file
 ```
 
 Append the `?channel={channel}` query parameter to receive the latest version from a specific channel.
+Append the `?platform={platform}` query parameter to receive the latest version for a specific platform.
