@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/OliverSchlueter/goutils/idgen"
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
@@ -164,7 +165,7 @@ func (h *Handler) handleCreateVersion(w http.ResponseWriter, r *http.Request, sp
 
 	ver := versions.Version{
 		SpaceID:                   spaceID,
-		ID:                        req.Name,
+		ID:                        idgen.GenerateID(8),
 		Name:                      req.Name,
 		Platform:                  req.Platform,
 		Channel:                   req.Channel,

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/OliverSchlueter/goutils/idgen"
 	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
-	"github.com/google/uuid"
 )
 
 type DB interface {
@@ -70,7 +70,7 @@ func (s *Store) Create(creator *auth.User, req *CreateOrUpdateSpaceReq) (*Space,
 	}
 
 	space := &Space{
-		ID:          uuid.New().String(),
+		ID:          idgen.GenerateID(8),
 		Slug:        req.Slug,
 		Title:       req.Title,
 		Description: req.Description,
