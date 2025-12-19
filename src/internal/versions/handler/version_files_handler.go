@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"io"
 	"log/slog"
 	"net/http"
 
@@ -77,8 +78,7 @@ func (h *Handler) handleUploadVersionFile(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	data := make([]byte, r.ContentLength)
-	_, err = r.Body.Read(data)
+	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		slog.Error("Failed to read file data", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
