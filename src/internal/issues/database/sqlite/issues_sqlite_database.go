@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	_ "embed"
 
-	"github.com/fancyinnovations/fancyspaces/src/internal/issues"
+	"github.com/fancyinnovations/fancyspaces/internal/issues"
 )
 
 //go:embed sqlStatements/createIssuesTable.sql

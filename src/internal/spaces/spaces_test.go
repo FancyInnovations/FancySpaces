@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
-	"github.com/fancyinnovations/fancyspaces/src/internal/spaces"
-	"github.com/fancyinnovations/fancyspaces/src/internal/spaces/database/fake"
+	"github.com/fancyinnovations/fancyspaces/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/internal/spaces/database/fake"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 )

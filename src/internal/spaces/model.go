@@ -3,7 +3,7 @@ package spaces
 import (
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/internal/auth"
 )
 
 type Space struct {

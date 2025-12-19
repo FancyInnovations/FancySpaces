@@ -12,9 +12,9 @@ import (
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
-	"github.com/fancyinnovations/fancyspaces/src/internal/spaces"
-	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
+	"github.com/fancyinnovations/fancyspaces/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/internal/versions"
 )
 
 type Handler struct {

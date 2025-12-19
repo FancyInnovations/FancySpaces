@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
+	"github.com/fancyinnovations/fancyspaces/internal/versions"
 )
 
 const basePath = "data/versions"

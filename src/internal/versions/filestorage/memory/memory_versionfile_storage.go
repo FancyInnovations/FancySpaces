@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/dgraph-io/ristretto/v2"
-	"github.com/fancyinnovations/fancyspaces/src/internal/versions"
+	"github.com/fancyinnovations/fancyspaces/internal/versions"
 )
 
 var (

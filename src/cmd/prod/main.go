@@ -13,8 +13,8 @@ import (
 	"github.com/OliverSchlueter/goutils/middleware"
 	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/src/internal/app"
-	"github.com/fancyinnovations/fancyspaces/src/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/internal/app"
+	"github.com/fancyinnovations/fancyspaces/internal/auth"
 	"github.com/justinas/alice"
 )
 

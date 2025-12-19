@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"github.com/fancyinnovations/fancyspaces/src/internal/analytics"
+	"github.com/fancyinnovations/fancyspaces/internal/analytics"
 )
 
 //go:embed create_database.sql
