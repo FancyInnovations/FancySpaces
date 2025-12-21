@@ -37,6 +37,7 @@ const (
 	StatusDraft    Status = "draft"
 	StatusReview   Status = "review"
 	StatusApproved Status = "approved"
+	StatusPrivate  Status = "private"
 	StatusArchived Status = "archived"
 	StatusRejected Status = "rejected"
 	StatusBanned   Status = "banned"
@@ -53,6 +54,16 @@ const (
 	CategoryMobileApp       Category = "mobile_app"
 	CategoryOther           Category = "other"
 )
+
+func (s *Space) IsMember(u *auth.User) bool {
+	for _, m := range s.Members {
+		if m.UserID == u.ID {
+			return true
+		}
+	}
+
+	return false
+}
 
 func (s *Space) IsOwner(u *auth.User) bool {
 	for _, m := range s.Members {

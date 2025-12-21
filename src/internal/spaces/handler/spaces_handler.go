@@ -95,6 +95,23 @@ func (h *Handler) handleGetSpaces(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	u := h.userFromCtx(r.Context())
+
+	var res []spaces.Space
+	for _, s := range all {
+		if s.Status == spaces.StatusApproved || s.Status == spaces.StatusArchived {
+			res = append(res, s)
+			continue
+		}
+
+		if u == nil || !u.Verified || !u.IsActive {
+			continue
+		}
+		if s.IsMember(u) {
+			res = append(res, s)
+		}
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "3600") // 1 hour
 	json.NewEncoder(w).Encode(all)
@@ -117,6 +134,14 @@ func (h *Handler) handleGetSpace(w http.ResponseWriter, r *http.Request, s *spac
 		slog.Error("Failed to get space by id", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
+	}
+
+	if s.Status != spaces.StatusApproved && s.Status != spaces.StatusArchived {
+		u := h.userFromCtx(r.Context())
+		if u == nil || !u.Verified || !u.IsActive || !s.IsMember(u) {
+			problems.NotFound("Space", s.ID).WriteToHTTP(w)
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -283,7 +308,7 @@ func (h *Handler) handleChangeStatus(w http.ResponseWriter, r *http.Request) {
 			problems.Forbidden().WriteToHTTP(w)
 			return
 		}
-	} else if req.To == spaces.StatusReview || req.To == spaces.StatusArchived {
+	} else if req.To == spaces.StatusPrivate || req.To == spaces.StatusArchived {
 		if !s.HasFullAccess(u) {
 			problems.Forbidden().WriteToHTTP(w)
 			return
@@ -291,6 +316,10 @@ func (h *Handler) handleChangeStatus(w http.ResponseWriter, r *http.Request) {
 
 		if req.To == spaces.StatusArchived && s.Status != spaces.StatusApproved {
 			problems.ValidationError("to", "Space must be approved before it can be archived").WriteToHTTP(w)
+			return
+		}
+		if req.To == spaces.StatusPrivate && s.Status != spaces.StatusApproved {
+			problems.ValidationError("to", "Space must be approved before it can be made private").WriteToHTTP(w)
 			return
 		}
 	} else {
