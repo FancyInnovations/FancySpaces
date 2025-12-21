@@ -104,6 +104,126 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		panic(fmt.Errorf("could not seed spaces db: %w", err))
 	}
 
+	fancycorewebsite := &spaces.Space{
+		ID:          "fcw",
+		Slug:        "fancycorewebsite",
+		Title:       "FancyCore Website",
+		Description: "Web frontend for the FancyCore Hytale plugin.",
+		Categories:  []spaces.Category{spaces.CategoryWebApp},
+		IconURL:     "",
+		Status:      spaces.StatusPrivate,
+		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(fancycorewebsite); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
+	fancyplots := &spaces.Space{
+		ID:          "fp",
+		Slug:        "fancyplots",
+		Title:       "FancyPlots",
+		Description: "Plot plugin for Hytale servers.",
+		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:     "",
+		Status:      spaces.StatusPrivate,
+		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(fancyplots); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
+	fancyconnect := &spaces.Space{
+		ID:          "fcon",
+		Slug:        "fancyconnect",
+		Title:       "FancyConnect",
+		Description: "Proxy software for Hytale server networks.",
+		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:     "",
+		Status:      spaces.StatusPrivate,
+		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(fancyconnect); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
+	cityauctions := &spaces.Space{
+		ID:          "ca",
+		Slug:        "cityauctions",
+		Title:       "CityAuctions",
+		Description: "Auction house plugin for Hytale.",
+		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:     "",
+		Status:      spaces.StatusPrivate,
+		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(cityauctions); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
+	citypass := &spaces.Space{
+		ID:          "cp",
+		Slug:        "citypass",
+		Title:       "CityPass",
+		Description: "Pass plugin for Hytale.",
+		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:     "",
+		Status:      spaces.StatusPrivate,
+		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(citypass); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
+	cityquests := &spaces.Space{
+		ID:          "cq",
+		Slug:        "citquests",
+		Title:       "CityQuests",
+		Description: "Quests plugin for Hytale.",
+		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:     "",
+		Status:      spaces.StatusPrivate,
+		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(cityquests); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
 	fancyanalytics := &spaces.Space{
 		ID:          "fa",
 		Slug:        "fancyanalytics",
@@ -125,6 +245,26 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		},
 	}
 	if err := db.Create(fancyanalytics); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
+	fancyverteiler := &spaces.Space{
+		ID:          "fv",
+		Slug:        "fancyverteiler",
+		Title:       "FancyVerteiler",
+		Description: "Deployment Hytale and Minecraft plugins to multiple platforms.",
+		Categories:  []spaces.Category{spaces.CategoryOther},
+		IconURL:     "",
+		Status:      spaces.StatusApproved,
+		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(fancyverteiler); err != nil {
 		panic(fmt.Errorf("could not seed spaces db: %w", err))
 	}
 
