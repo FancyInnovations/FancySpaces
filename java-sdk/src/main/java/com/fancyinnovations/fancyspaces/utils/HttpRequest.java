@@ -33,6 +33,7 @@ public class HttpRequest {
     private Object body = null;
     private Map<String, String> headers = new HashMap<>();
     private Duration timeout = Duration.ofSeconds(5);
+    private HttpResponse.BodyHandler<?> bodyHandler = HttpResponse.BodyHandlers.ofString();
 
     /**
      * Constructs a new HttpRequest with the provided URL, method, body, and headers.
@@ -62,7 +63,7 @@ public class HttpRequest {
      * @throws IOException          if an I/O error occurs when sending or receiving.
      * @throws InterruptedException if the operation is interrupted.
      */
-    public HttpResponse<String> send() throws URISyntaxException, IOException, InterruptedException {
+    public<T> HttpResponse<T> send() throws URISyntaxException, IOException, InterruptedException {
         if (System.currentTimeMillis() < pauseRequestsUntil.get()) {
             throw new HttpTimeoutException("Request paused due to previous timeouts.");
         }
@@ -90,7 +91,7 @@ public class HttpRequest {
         }
 
         try {
-            return client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+            return (HttpResponse<T>) client.send(builder.build(), bodyHandler);
         } catch (HttpTimeoutException e) {
             int timeouts = timeoutCount.incrementAndGet();
             if (timeouts >= 3) {
@@ -175,6 +176,21 @@ public class HttpRequest {
      */
     public HttpRequest withTimeout(Duration timeout) {
         this.timeout = timeout;
+        return this;
+    }
+
+    public HttpResponse.BodyHandler<?> getBodyHandler() {
+        return bodyHandler;
+    }
+
+    /**
+     * Sets the body handler of the request.
+     *
+     * @param bodyHandler The body handler of the request.
+     * @return The HttpRequest.
+     */
+    public HttpRequest withBodyHandler(HttpResponse.BodyHandler<?> bodyHandler) {
+        this.bodyHandler = bodyHandler;
         return this;
     }
 }
