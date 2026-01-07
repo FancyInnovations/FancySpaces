@@ -88,11 +88,11 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		ID:          "fc",
 		Slug:        "fancycore",
 		Title:       "FancyCore",
-		Description: "Essential features every Hytale server needs.",
+		Description: "Essential features every Hytale server needs. From permission management over world management to economy and more.",
 		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
 		IconURL:     "https://fancyinnovations.com/logos-and-banners/fancycore-logo.png",
 		Status:      spaces.StatusApproved,
-		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		CreatedAt:   time.Date(2025, 11, 20, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -228,15 +228,11 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		ID:          "fa",
 		Slug:        "fancyanalytics",
 		Title:       "FancyAnalytics",
-		Description: "Powerful analytics for everyone.",
-		Categories: []spaces.Category{
-			spaces.CategoryWebApp,
-			spaces.CategoryMinecraftPlugin,
-			spaces.CategoryHytalePlugin,
-		},
-		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyanalytics-logo.png",
-		Status:    spaces.StatusApproved,
-		CreatedAt: time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Description: "Universal analytics platform especially made for the Minecraft and Hytale ecosystem. Track metrics, events and logs with ease.",
+		Categories:  []spaces.Category{spaces.CategoryWebApp},
+		IconURL:     "https://fancyinnovations.com/logos-and-banners/fancyanalytics-logo.png",
+		Status:      spaces.StatusApproved,
+		CreatedAt:   time.Date(2024, 1, 25, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -252,11 +248,11 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		ID:          "fv",
 		Slug:        "fancyverteiler",
 		Title:       "FancyVerteiler",
-		Description: "Deployment Hytale and Minecraft plugins to multiple platforms.",
+		Description: "Tool to deploy Hytale and Minecraft plugins to multiple platforms via GitHub actions.",
 		Categories:  []spaces.Category{spaces.CategoryOther},
-		IconURL:     "",
+		IconURL:     "https://fancyinnovations.com/logos-and-banners/fancyverteiler-logo.png",
 		Status:      spaces.StatusApproved,
-		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		CreatedAt:   time.Date(2025, 12, 2, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
