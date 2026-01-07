@@ -55,6 +55,7 @@ func Start(cfg Configuration) {
 	sh := spacesHandler.New(spacesHandler.Configuration{
 		Store:       spacesStore,
 		UserFromCtx: auth.UserFromContext,
+		Analytics:   as,
 	})
 	sh.Register(apiPrefix, cfg.Mux)
 
@@ -76,6 +77,7 @@ func Start(cfg Configuration) {
 	vh := versionsHandler.New(versionsHandler.Configuration{
 		Store:       versionsStore,
 		Spaces:      spacesStore,
+		Analytics:   as,
 		UserFromCtx: auth.UserFromContext,
 	})
 	vh.Register(apiPrefix, cfg.Mux)

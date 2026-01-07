@@ -39,6 +39,15 @@ func New(cfg Configuration) *Store {
 	}
 }
 
+func (s *Store) GetDownloadCountForSpace(ctx context.Context, spaceID string) (int64, error) {
+	count, err := s.db.GetDownloadCountForSpace(ctx, spaceID)
+	if err != nil {
+		return -1, err
+	}
+
+	return count, nil
+}
+
 func (s *Store) GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (int64, error) {
 	if count := s.c.GetDownloadCountForVersion(spaceID, versionID); count >= 0 {
 		return count, nil

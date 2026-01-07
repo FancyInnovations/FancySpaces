@@ -9,23 +9,27 @@ import (
 
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
+	"github.com/fancyinnovations/fancyspaces/internal/analytics"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 )
 
 type Handler struct {
 	store       *spaces.Store
+	analytics   *analytics.Store
 	userFromCtx func(ctx context.Context) *auth.User
 }
 
 type Configuration struct {
 	Store       *spaces.Store
+	Analytics   *analytics.Store
 	UserFromCtx func(ctx context.Context) *auth.User
 }
 
 func New(cfg Configuration) *Handler {
 	return &Handler{
 		store:       cfg.Store,
+		analytics:   cfg.Analytics,
 		userFromCtx: cfg.UserFromCtx,
 	}
 }
@@ -34,6 +38,7 @@ func (h *Handler) Register(prefix string, mux *http.ServeMux) {
 	mux.HandleFunc(prefix+"/spaces", h.handleSpaces)
 	mux.HandleFunc(prefix+"/spaces/{space_id}", h.handleSpace)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/status", h.handleChangeStatus)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/downloads", h.handleDownloads)
 
 	mux.HandleFunc(prefix+"/spaces/{space_id}/members", h.handleMembers)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/members/{user_id}", h.handleMember)
@@ -338,4 +343,45 @@ func (h *Handler) handleChangeStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// no auth required
+func (h *Handler) handleDownloads(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		problems.MethodNotAllowed(r.Method, []string{http.MethodGet}).WriteToHTTP(w)
+		return
+	}
+
+	sid := r.PathValue("space_id")
+	if sid == "" {
+		problems.ValidationError("space_id", "Space ID is required").WriteToHTTP(w)
+		return
+	}
+
+	s, err := h.store.Get(sid)
+	if err != nil {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
+			problems.NotFound("Space", sid).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get space by id", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	count, err := h.analytics.GetDownloadCountForSpace(r.Context(), s.ID)
+	if err != nil {
+		slog.Error("Failed to get download count for space", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	resp := SpaceDownloadsResp{
+		Downloads: count,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "public, 300") // 5 minutes
+	json.NewEncoder(w).Encode(resp)
 }
