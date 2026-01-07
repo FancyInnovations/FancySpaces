@@ -83,9 +83,9 @@ func (h *Handler) handleVersions(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		h.handleGetVersions(w, r, sid)
+		h.handleGetVersions(w, r, space.ID)
 	case http.MethodPost:
-		h.handleCreateVersion(w, r, sid)
+		h.handleCreateVersion(w, r, space.ID)
 	default:
 		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodPost}).WriteToHTTP(w)
 	}
@@ -125,9 +125,9 @@ func (h *Handler) handleVersion(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		h.handleGetVersion(w, r, sid, vid)
+		h.handleGetVersion(w, r, space.ID, vid)
 	case http.MethodDelete:
-		h.handleDeleteVersion(w, r, sid, vid)
+		h.handleDeleteVersion(w, r, space.ID, vid)
 	default:
 		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodDelete}).WriteToHTTP(w)
 	}
@@ -298,7 +298,7 @@ func (h *Handler) handleVersionDownloads(w http.ResponseWriter, r *http.Request)
 		problems.ValidationError("version_id", "Version ID is required").WriteToHTTP(w)
 		return
 	}
-	ver, err := h.store.Get(r.Context(), sid, vid)
+	ver, err := h.store.Get(r.Context(), space.ID, vid)
 	if err != nil {
 		if errors.Is(err, versions.ErrVersionNotFound) {
 			problems.NotFound("Version", vid).WriteToHTTP(w)

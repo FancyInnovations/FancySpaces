@@ -53,9 +53,9 @@ func (h *Handler) handleVersionFile(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		h.handleDownloadVersionFile(w, r, sid, vid, fileName)
+		h.handleDownloadVersionFile(w, r, space.ID, vid, fileName)
 	case http.MethodPost:
-		h.handleUploadVersionFile(w, r, sid, vid, fileName)
+		h.handleUploadVersionFile(w, r, space.ID, vid, fileName)
 	default:
 		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodPost}).WriteToHTTP(w)
 	}
