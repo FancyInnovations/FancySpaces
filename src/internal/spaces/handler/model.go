@@ -7,5 +7,5 @@ type ChangeStatusReq struct {
 }
 
 type SpaceDownloadsResp struct {
-	Downloads int64 `json:"downloads"`
+	Downloads uint64 `json:"downloads"`
 }

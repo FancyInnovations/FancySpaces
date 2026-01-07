@@ -9,14 +9,14 @@ import (
 )
 
 type DB interface {
-	GetDownloadCountForSpace(ctx context.Context, spaceID string) (int64, error)
-	GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (int64, error)
+	GetDownloadCountForSpace(ctx context.Context, spaceID string) (uint64, error)
+	GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (uint64, error)
 	StoreVersionDownloads(ctx context.Context, records []VersionDownload) error
 }
 
 type Cache interface {
-	GetDownloadCountForVersion(spaceID, versionID string) int64
-	SetDownloadCountForVersion(spaceID, versionID string, count int64)
+	GetDownloadCountForVersion(spaceID, versionID string) (error, uint64)
+	SetDownloadCountForVersion(spaceID, versionID string, count uint64)
 }
 
 type Store struct {
@@ -39,23 +39,31 @@ func New(cfg Configuration) *Store {
 	}
 }
 
-func (s *Store) GetDownloadCountForSpace(ctx context.Context, spaceID string) (int64, error) {
-	count, err := s.db.GetDownloadCountForSpace(ctx, spaceID)
-	if err != nil {
-		return -1, err
+func (s *Store) GetDownloadCountForSpace(ctx context.Context, spaceID string) (uint64, error) {
+	err, count := s.c.GetDownloadCountForVersion(spaceID, "*")
+	if err == nil {
+		return count, nil
 	}
+
+	count, err = s.db.GetDownloadCountForSpace(ctx, spaceID)
+	if err != nil {
+		return 0, err
+	}
+
+	s.c.SetDownloadCountForVersion(spaceID, "*", count)
 
 	return count, nil
 }
 
-func (s *Store) GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (int64, error) {
-	if count := s.c.GetDownloadCountForVersion(spaceID, versionID); count >= 0 {
+func (s *Store) GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (uint64, error) {
+	err, count := s.c.GetDownloadCountForVersion(spaceID, versionID)
+	if err == nil {
 		return count, nil
 	}
 
-	count, err := s.db.GetDownloadCountForVersion(ctx, spaceID, versionID)
+	count, err = s.db.GetDownloadCountForVersion(ctx, spaceID, versionID)
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 
 	s.c.SetDownloadCountForVersion(spaceID, versionID, count)

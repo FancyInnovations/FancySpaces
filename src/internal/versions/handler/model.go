@@ -11,5 +11,5 @@ type CreateVersionReq struct {
 }
 
 type VersionDownloadsResp struct {
-	Downloads int64 `json:"downloads"`
+	Downloads uint64 `json:"downloads"`
 }

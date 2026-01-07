@@ -41,28 +41,28 @@ func (db *DB) Setup(ctx context.Context) error {
 	return nil
 }
 
-func (db *DB) GetDownloadCountForSpace(ctx context.Context, spaceID string) (int64, error) {
-	var count int64
+func (db *DB) GetDownloadCountForSpace(ctx context.Context, spaceID string) (uint64, error) {
+	var count uint64
 	query := `
 		SELECT COUNT(*) 
 		FROM fancyspaces.version_downloads 
 		WHERE space_id = ?`
 	if err := db.ch.QueryRow(ctx, query, spaceID).Scan(&count); err != nil {
-		return -1, err
+		return 0, err
 	}
 
 	return count, nil
 }
 
-func (db *DB) GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (int64, error) {
-	var count int64
+func (db *DB) GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (uint64, error) {
+	var count uint64
 	query := `
 		SELECT COUNT(*) 
 		FROM fancyspaces.version_downloads 
 		WHERE space_id = ? 
 	    AND version_id = ?`
 	if err := db.ch.QueryRow(ctx, query, spaceID, versionID).Scan(&count); err != nil {
-		return -1, err
+		return 0, err
 	}
 
 	return count, nil
