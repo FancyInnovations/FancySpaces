@@ -93,6 +93,84 @@ func Start(cfg Configuration) {
 func seedSpacesDB() *fakeSpacesDB.DB {
 	db := fakeSpacesDB.New()
 
+	fancynpcs := &spaces.Space{
+		ID:          "fn",
+		Slug:        "fancynpcs",
+		Title:       "FancyNpcs",
+		Summary:     "Simple, lightweight and fast NPC plugin using packets.",
+		Description: "<div align=\"center\">\n\n![FancyNpcs Banner](https://github.com/FancyInnovations/FancyPlugins/blob/main/docs/src/static/logos-and-banners/fancynpcs-banner.png?raw=true)\n\n<br />\n\nSimple, lightweight and feature-rich NPC plugin for **[Paper](https://papermc.io/software/paper)** (and **[Folia](https://papermc.io/software/folia)**) servers using packets.\n\n</div>\n\n## Features\n\nWith this plugin you can create NPCs with customizable properties like:\n\n- **Type** (Cow, Pig, Player, etc.)\n- **Skin** (from username or texture URL)\n- **Glowing** (in all colors)\n- **Attributes** (pose, visibility, variant, etc.)\n- **Equipment** (eg. holding a diamond sword and wearing leather armor)\n- **Interactions** (player commands, console commands, messages)\n- ...and much more!\n\nCheck out **[images section](#images)** down below.\n\n<br />\n\n## Installation\n\nPaper **1.20** or newer with **Java 21** (or higher) is required. Plugin should also work on **Paper** forks.\n\n**Spigot** is **not** supported.\n\n<br />\n\n## Documentation\n\nOfficial documentation is hosted **[here](https://fancyinnovations.com/docs/minecraft-plugins/fancynpcs)**. Quick reference:\n\n- **[Getting started](https://fancyinnovations.com/docs/minecraft-plugins/fancynpcs/getting-started)**\n- **[Command Reference](https://fancyinnovations.com/docs/minecraft-plugins/fancynpcs/commands/npc)**\n- **[Using API](https://fancyinnovations.com/docs/minecraft-plugins/fancynpcs/api/getting-started)**\n\n**Have more questions?** Feel free to ask them on our **[Discord](https://discord.gg/ZUgYCEJUEx)** server.\n\n<br />\n\n## Developer API\n\nMore information can be found in **[Documentation](https://fancyinnovations.com/docs/minecraft-plugins/fancynpcs/api/getting-started)** and **[Javadocs](https://repo.fancyinnovations.com/javadoc/releases/de/oliver/FancyNpcs/latest)**.\n\n### Maven\n\n```xml\n<repository>\n    <id>fancyinnovations-releases</id>\n    <name>FancyInnovations Repository</name>\n    <url>https://repo.fancyinnovations.com/releases</url>\n</repository>\n```\n\n```xml\n<dependency>\n    <groupId>de.oliver</groupId>\n    <artifactId>FancyNpcs</artifactId>\n    <version>[VERSION]</version>\n    <scope>provided</scope>\n</dependency>\n```\n\n### Gradle\n\n```groovy\nrepositories {\n    maven(\"https://repo.fancyinnovations.com/releases\")\n}\n\ndependencies {\n    compileOnly(\"de.oliver:FancyNpcs:[VERSION]\")\n}\n```\n\n<br />\n\n## Images\n\nImages showcasing the plugin, sent to us by our community.\n\n![Screenshot 1](https://github.com/FancyMcPlugins/FancyNpcs/blob/main/images/screenshots/niceron1.jpeg?raw=true)  \n<sup>Provided by [Explorer's Eden](https://explorerseden.eu/)</sup>\n\n![Screenshot 2](https://github.com/FancyMcPlugins/FancyNpcs/blob/main/images/screenshots/niceron2.jpeg?raw=true)  \n<sup>Provided by [Explorer's Eden](https://explorerseden.eu/)</sup>\n\n![Screenshot 3](https://github.com/FancyMcPlugins/FancyNpcs/blob/main/images/screenshots/niceron3.jpeg?raw=true)  \n<sup>Provided by [Explorer's Eden](https://explorerseden.eu/)</sup>\n\n![Screenshot 4](https://github.com/FancyMcPlugins/FancyNpcs/blob/main/images/screenshots/dave1.jpeg?raw=true)  \n<sup>Provided by [Beacon's Quest](https://www.beaconsquest.net/)</sup>\n\n![Screenshot 5](https://github.com/FancyMcPlugins/FancyNpcs/blob/main/images/screenshots/oliver1.jpeg?raw=true)  \n<sup>Provided by [@OliverSchlueter](https://github.com/OliverSchlueter)</sup>\n\n![Screenshot 6](https://github.com/FancyMcPlugins/FancyNpcs/blob/main/images/screenshots/oliver2.jpeg?raw=true)  \n<sup>Provided by [@OliverSchlueter](https://github.com/OliverSchlueter)</sup>\n\n![Screenshot 7](https://github.com/FancyMcPlugins/FancyNpcs/blob/main/images/screenshots/grabsky1.jpeg?raw=true)  \n<sup>Provided by [@Grabsky](https://github.com/Grabsky)</sup>\n",
+		Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
+		Links: []spaces.Link{
+			{Name: "source_code", URL: "https://github.com/FancyInnovations/FancyPlugins"},
+			{Name: "documentation", URL: "https://fancyinnovations.com/docs/minecraft-plugins/fancynpcs"},
+			{Name: "discord", URL: "https://discord.gg/ZUgYCEJUEx"},
+		},
+		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancynpcs-logo.png",
+		Status:    spaces.StatusApproved,
+		CreatedAt: time.Date(2022, 12, 19, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(fancynpcs); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
+	fancyholograms := &spaces.Space{
+		ID:          "fh",
+		Slug:        "fancyholograms",
+		Title:       "FancyHolograms",
+		Summary:     "Simple, lightweight and fast NPC plugin using packets.",
+		Description: "<div align=\"center\">\n\n![FancyHolograms Banner](https://github.com/FancyInnovations/FancyPlugins/blob/main/docs/src/static/logos-and-banners/fancyholograms-banner.png?raw=true)\n\n<br />\n\nSimple, lightweight and feature-rich hologram plugin for **[Paper](https://papermc.io/software/paper)** (and **[Folia](https://papermc.io/software/folia)**) servers using **[display entities](https://minecraft.wiki/w/Display)**\nand packets.\n\n</div>\n\n## Features\n\nWith this plugin you can create holograms with customizable properties like:\n\n- **Hologram Type** (text, item or block)\n- **Position**, **Rotation** and **Scale**\n- **Text Alignment**, **Background Color** and **Shadow**.\n- **Billboard** (fixed, center, horizontal, vertical)\n- **MiniMessage** formatting.\n- Placeholders support through **[PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI)** and **[MiniPlaceholders](https://github.com/MiniPlaceholders/MiniPlaceholders)** integration.\n- **[FancyNpcs](https://modrinth.com/plugin/fancynpcs)** integration.\n- ...and much more!\n\nCheck out **[images section](#images)** down below.\n\n<br />\n\n## Installation\n\nPaper **1.20** or newer with **Java 21** (or higher) is required. Plugin should also work on **Paper** forks.\n\n**Spigot** is **not** supported.\n\n<br />\n\n## Documentation\n\nOfficial documentation is hosted **[here](https://fancyinnovations.com/docs/minecraft-plugins/fancyholograms)**. Quick reference:\n\n- **[Getting Started](https://fancyinnovations.com/docs/minecraft-plugins/fancyholograms/getting-started)**\n- **[Command Reference](https://fancyinnovations.com/docs/minecraft-plugins/fancyholograms/commands/hologram)**\n- **[Using API](https://fancyinnovations.com/docs/minecraft-plugins/fancyholograms/api/getting-started)**\n\n**Have more questions?** Feel free to ask them on our **[Discord](https://discord.gg/ZUgYCEJUEx)** server.\n\n<br />\n\n## Developer API\n\nMore information can be found in **[Documentation](https://fancyinnovations.com/docs/minecraft-plugins/fancyholograms/api/getting-started)** and **[Javadocs](https://repo.fancyinnovations.com/javadoc/releases/de/oliver/FancyHolograms/latest)**.\n\n### Maven\n\n```xml\n<repository>\n    <id>fancyinnovations-releases</id>\n    <name>FancyInnovations Repository</name>\n    <url>https://repo.fancyinnovations.com/releases</url>\n</repository>\n```\n\n```xml\n<dependency>\n    <groupId>de.oliver</groupId>\n    <artifactId>FancyHolograms</artifactId>\n    <version>[VERSION]</version>\n    <scope>provided</scope>\n</dependency>\n```\n\n### Gradle\n\n```groovy\nrepositories {\n    maven(\"https://repo.fancyinnovations.com/releases\")\n}\n\ndependencies {\n    compileOnly(\"de.oliver:FancyHolograms:[VERSION]\")\n}\n```\n\n<br />\n\n## Images\n\nImages showcasing the plugin, sent to us by our community.\n\n![Screenshot 1](https://github.com/FancyMcPlugins/FancyHolograms/blob/main/images/screenshots/example1.jpeg?raw=true)  \n<sup>Provided by [@OliverSchlueter](https://github.com/OliverSchlueter)</sup>\n\n![Screenshot 2](https://github.com/FancyMcPlugins/FancyHolograms/blob/main/images/screenshots/example2.jpeg?raw=true)  \n<sup>Provided by [@OliverSchlueter](https://github.com/OliverSchlueter)</sup>\n\n![Screenshot 3](https://github.com/FancyMcPlugins/FancyHolograms/blob/main/images/screenshots/example3.jpeg?raw=true)  \n<sup>Provided by [@OliverSchlueter](https://github.com/OliverSchlueter)</sup>\n\n![Screenshot 4](https://github.com/FancyMcPlugins/FancyHolograms/blob/main/images/screenshots/example4.jpeg?raw=true)  \n<sup>Provided by [@OliverSchlueter](https://github.com/OliverSchlueter)</sup>\n\n![Screenshot 5](https://github.com/FancyMcPlugins/FancyHolograms/blob/main/images/screenshots/example5.jpeg?raw=true)  \n<sup>Provided by [@OliverSchlueter](https://github.com/OliverSchlueter)</sup>\n",
+		Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
+		Links: []spaces.Link{
+			{Name: "source_code", URL: "https://github.com/FancyInnovations/FancyPlugins"},
+			{Name: "documentation", URL: "https://fancyinnovations.com/docs/minecraft-plugins/fancyholograms"},
+			{Name: "discord", URL: "https://discord.gg/ZUgYCEJUEx"},
+		},
+		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyholograms-logo.png",
+		Status:    spaces.StatusApproved,
+		CreatedAt: time.Date(2023, 2, 18, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(fancyholograms); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
+	fancydialogs := &spaces.Space{
+		ID:          "fd",
+		Slug:        "fancydialogs",
+		Title:       "FancyDialogs",
+		Summary:     "Simple, easy to use and lightweight plugin to show dialogs. You can show a welcome-screen. Other plugins can use FancyDialogs to integrate fancy dialogs into their plugins.",
+		Description: "![FancyNpcs Banner](https://github.com/FancyInnovations/FancyPlugins/blob/main/docs/src/static/logos-and-banners/fancydialogs-banner.png?raw=true)\n\n<br />\n\nSimple and lightweight plugin to create and manage the new dialogs.\nBecause the dialogs were added in 1.21.6, only players on 1.21.6 or newer can view them.\n\nYou can create create dialogs (in JSON files) and then assign them to many cool features.\n\n## Features\n- Welcome dialog: shows when a player joins for the first time\n- Tutorials: explain how your amazing server works in multiple chapters [WIP]\n- MiniMessage formatting is supported\n- You can use placeholders by PlaceholderAPI and MiniPlaceholders\n- Awesome API for other plugin developers to use\n\n**Core advantages of FancyDialogs:**\n- Simple custom dialog creation (in JSON format or in code)\n- A lot of different dialog components (text, buttons, input fields, etc.)\n- Custom button actions (e.g. run commands, give items, open other dialogs)\n- MiniMessages and PlaceholderAPI support\n\n**For servers**\n\nIf you use FancyDialogs as a plugin, you can take advantage of the following features:\n- Dialog as welcome-screen for players joining the first time\n- Custom tutorial dialogs\n- FancyNpcs 'open_dialog' action for NPCs\n\n**For plugin developers**\n\nIf you are a plugin developer and want to spice up your plugin with dialogs, you can use FancyDialogs as a library.\n\nYou can define default dialogs, which will be persisted in the `plugins/FancyDialogs/data/dialogs` folder.\nThis allows server administrators to customize the dialogs for their server.\nYou can then use the dialogs in your plugin and show them to the players whenever you want.\n\n**Common use cases are:**\n- Help dialogs (e.g. for commands or features)\n- Confirmation dialogs for critical actions\n- Shop UIs (replacing inventories UIs)\n- Dialogs for quests\n",
+		Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
+		Links: []spaces.Link{
+			{Name: "source_code", URL: "https://github.com/FancyInnovations/FancyPlugins"},
+			{Name: "documentation", URL: "https://fancyinnovations.com/docs/minecraft-plugins/fancydialogs"},
+			{Name: "discord", URL: "https://discord.gg/ZUgYCEJUEx"},
+		},
+		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancydialogs-logo.png",
+		Status:    spaces.StatusApproved,
+		CreatedAt: time.Date(2023, 2, 18, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "admin-1",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(fancydialogs); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
 	fancycore := &spaces.Space{
 		ID:          "fc",
 		Slug:        "fancycore",
