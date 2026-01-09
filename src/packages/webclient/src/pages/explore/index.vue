@@ -2,16 +2,18 @@
 
 import AppHeader from "@/components/AppHeader.vue";
 import type {Space} from "@/api/spaces/types.ts";
-import {getAllSpaces} from "@/api/spaces/spaces.ts";
+import {getSpace} from "@/api/spaces/spaces.ts";
 
 const spaces = ref<Space[]>();
 
 onMounted(async () => {
-  spaces.value = await getAllSpaces();
-
-  spaces.value.sort((a, b) => {
-    return b.created_at.getTime() - a.created_at.getTime();
-  });
+  spaces.value = [];
+  spaces.value.push(await getSpace("fn"));
+  spaces.value.push(await getSpace("fh"));
+  spaces.value.push(await getSpace("fd"));
+  spaces.value.push(await getSpace("fc"));
+  spaces.value.push(await getSpace("fa"));
+  spaces.value.push(await getSpace("fv"));
 });
 
 </script>

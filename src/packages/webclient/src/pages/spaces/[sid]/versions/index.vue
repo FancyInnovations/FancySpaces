@@ -19,7 +19,7 @@ const tableHeaders = [
   { title: 'Version', key: 'name', sortable: false },
   { title: 'Channel', key: 'channel', value: (ver: SpaceVersion) => ver.channel.toUpperCase(), sortable: false },
   { title: 'Platform', key: 'platform', value: (ver: SpaceVersion) => mapPlatformToDisplayname(ver.platform), sortable: false },
-  { title: 'Platform versions', key: 'supported_platform_versions', sortable: false, value: (ver: SpaceVersion) => ver.supported_platform_versions.join(", ") },
+  { title: 'Platform versions', key: 'supported_platform_versions', sortable: false, value: (ver: SpaceVersion) => ver.supported_platform_versions.join(", "), class: 'platform-versions__max-width' },
   { title: 'Released at', key: 'published_at', sortable: false, value: (ver: SpaceVersion) => new Date(ver.published_at).toLocaleDateString() },
   { title: 'Downloads', key: 'downloads', sortable: false, value: (ver: SpaceVersion) => downloadCounts.value[ver.id] || 0 },
   { title: '', key: 'actions', sortable: false, align: 'end' as any },
@@ -89,6 +89,7 @@ function copyToClipboard(text: string) {
               @click:row="onRowClick"
             >
               <template v-slot:item.actions="{ item }">
+                <div class="actions__width">
                   <v-btn
                     v-if="item.files.length != 1"
                     :to="`/spaces/${space?.slug}/versions/${item.name}`"
@@ -104,11 +105,12 @@ function copyToClipboard(text: string) {
                     variant="text"
                   />
 
-                <v-btn
-                  icon="mdi-link-variant"
-                  variant="text"
-                  @click="copyToClipboard(`https://fancyspaces.net/spaces/${space?.slug}/versions/${item.name}`)"
-                />
+                  <v-btn
+                    icon="mdi-link-variant"
+                    variant="text"
+                    @click="copyToClipboard(`https://fancyspaces.net/spaces/${space?.slug}/versions/${item.name}`)"
+                  />
+                </div>
               </template>
 
             </v-data-table>
@@ -127,5 +129,9 @@ function copyToClipboard(text: string) {
 table, tr, td, thead, tbody {
   background: transparent;
   border-collapse: collapse;
+}
+
+.actions__width {
+  min-width: 130px;
 }
 </style>
