@@ -13,6 +13,7 @@ import (
 	analyticsDatabase "github.com/fancyinnovations/fancyspaces/internal/analytics/database/clickhouse"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/internal/frontend"
+	"github.com/fancyinnovations/fancyspaces/internal/sitemap"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	fakeSpacesDB "github.com/fancyinnovations/fancyspaces/internal/spaces/database/fake"
 	spacesHandler "github.com/fancyinnovations/fancyspaces/internal/spaces/handler"
@@ -88,6 +89,12 @@ func Start(cfg Configuration) {
 		Files: frontend.Files,
 	})
 	fh.Register(cfg.Mux)
+
+	// Site
+	sm := sitemap.NewHandler(sitemap.Configuration{
+		Spaces: spacesStore,
+	})
+	sm.Register(cfg.Mux)
 }
 
 func seedSpacesDB() *fakeSpacesDB.DB {
