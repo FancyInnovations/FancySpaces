@@ -369,5 +369,32 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		panic(fmt.Errorf("could not seed spaces db: %w", err))
 	}
 
+	clovepluralprojects := &spaces.Space{
+		ID:          "cpp",
+		Slug:        "cpp",
+		Title:       "ClovePluralProjects",
+		Summary:     "A plural accessibility tool",
+		Description: "An accessibility tool for plural communities everywhere, over Minecraft and Hytale, with a web dash",
+		Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin, spaces.CategoryHytalePlugin, spaces.CategoryWebApp, spaces.CategoryMinecraftMod},
+		Links: []spaces.Link{
+			{Name: "website", URL: "https://clovelib.win"},
+			{Name: "source_code", URL: "https://github.com/CloveLib/"},
+			{Name: "documentation", URL: "https://clovelib.win/docs"},
+			{Name: "discord", URL: "https://discord.gg/k8HrBvDaQn"},
+		},
+		IconURL:   "https://clovelib.win/icons/cpt.png",
+		Status:    spaces.StatusApproved,
+		CreatedAt: time.Date(2026, 1, 9, 17, 17, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "clovelib",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(clovepluralprojects); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
 	return db
 }
