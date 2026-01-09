@@ -9,10 +9,6 @@ const spaces = ref<Space[]>();
 onMounted(async () => {
   spaces.value = [];
   spaces.value.push(await getSpace("fc"));
-
-  spaces.value.sort((a, b) => {
-    return b.created_at.getTime() - a.created_at.getTime();
-  });
 });
 
 </script>

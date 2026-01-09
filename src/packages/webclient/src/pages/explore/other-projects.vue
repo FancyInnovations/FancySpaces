@@ -11,10 +11,6 @@ onMounted(async () => {
 
   spaces.value.push(await getSpace("fa"));
   spaces.value.push(await getSpace("fv"));
-
-  spaces.value.sort((a, b) => {
-    return b.created_at.getTime() - a.created_at.getTime();
-  });
 });
 
 </script>

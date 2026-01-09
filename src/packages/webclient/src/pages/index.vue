@@ -46,14 +46,7 @@ onMounted(async () => {
           <v-card-title>
             <div class="d-flex align-center">
               <v-icon class="mr-2" color="green lighten-1">mdi-minecraft</v-icon>
-
               <p>Minecraft plugins</p>
-
-              <v-badge
-                class="ml-2"
-                content="Coming soon"
-                inline
-              />
             </div>
           </v-card-title>
 

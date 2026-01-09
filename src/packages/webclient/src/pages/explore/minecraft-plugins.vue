@@ -1,6 +1,17 @@
 <script lang="ts" setup>
 
 import AppHeader from "@/components/AppHeader.vue";
+import type {Space} from "@/api/spaces/types.ts";
+import {getSpace} from "@/api/spaces/spaces.ts";
+
+const spaces = ref<Space[]>();
+
+onMounted(async () => {
+  spaces.value = [];
+  spaces.value.push(await getSpace("fn"));
+  spaces.value.push(await getSpace("fh"));
+  spaces.value.push(await getSpace("fd"));
+});
 </script>
 
 <template>
@@ -12,7 +23,14 @@ import AppHeader from "@/components/AppHeader.vue";
     <v-row class="mt-16 mb-8" justify="center">
       <v-col>
         <h1 class="text-h3 text-center">Minecraft plugins</h1>
-        <p class="text-body-1 text-center mt-4 text-error font-weight-bold">Our Minecraft plugins will be available on this page soon. Stay tuned!</p>
+      </v-col>
+    </v-row>
+
+    <v-row justify="center">
+      <v-col v-for="space in spaces" :key="space.id" class="mb-4" md="12">
+        <SpaceCard
+          :space="space"
+        />
       </v-col>
     </v-row>
   </v-container>
