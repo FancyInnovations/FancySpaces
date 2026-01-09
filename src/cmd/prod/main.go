@@ -11,7 +11,6 @@ import (
 	"github.com/OliverSchlueter/goutils/containers"
 	"github.com/OliverSchlueter/goutils/env"
 	"github.com/OliverSchlueter/goutils/middleware"
-	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/internal/app"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
@@ -74,14 +73,14 @@ func main() {
 	auth.UserAdmin.Password = auth.Hash(auth.ApiKey)
 
 	go func() {
-		rl := ratelimit.NewService(ratelimit.Configuration{
-			TokensPerSecond: 3,
-			MaxTokens:       300,
-		})
+		//rl := ratelimit.NewService(ratelimit.Configuration{
+		//	TokensPerSecond: 3,
+		//	MaxTokens:       50,
+		//})
 
 		middleware.OnlyLogStatusAbove = 399 // log 4xx and 5xx status codes
 		chain := alice.New(
-			rl.Middleware,
+			//rl.Middleware,
 			middleware.RequestLogging,
 			auth.Middleware,
 			middleware.Recovery,
