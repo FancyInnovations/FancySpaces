@@ -76,7 +76,7 @@ func main() {
 	go func() {
 		rl := ratelimit.NewService(ratelimit.Configuration{
 			TokensPerSecond: 3,
-			MaxTokens:       50,
+			MaxTokens:       300,
 		})
 
 		middleware.OnlyLogStatusAbove = 399 // log 4xx and 5xx status codes

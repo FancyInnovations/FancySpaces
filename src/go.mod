@@ -4,12 +4,12 @@ go 1.25.5
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.42.0
-	github.com/OliverSchlueter/goutils v0.0.24
+	github.com/OliverSchlueter/goutils v0.0.25
 	github.com/dgraph-io/ristretto/v2 v2.3.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/justinas/alice v1.2.0
-	github.com/mattn/go-sqlite3 v1.14.32
+	github.com/mattn/go-sqlite3 v1.14.33
 	github.com/minio/minio-go/v7 v7.0.97
 	go.mongodb.org/mongo-driver/v2 v2.4.1
 )
@@ -73,12 +73,12 @@ require (
 	github.com/redis/go-redis/v9 v9.17.2 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
-	github.com/shirou/gopsutil/v4 v4.25.11 // indirect
+	github.com/shirou/gopsutil/v4 v4.25.12 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/testcontainers/testcontainers-go v0.40.0 // indirect
-	github.com/tinylib/msgp v1.6.1 // indirect
+	github.com/tinylib/msgp v1.6.3 // indirect
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
@@ -95,7 +95,7 @@ require (
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
 	google.golang.org/grpc v1.75.1 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
