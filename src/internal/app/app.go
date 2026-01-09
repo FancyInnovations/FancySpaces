@@ -12,6 +12,7 @@ import (
 	analyticsCache "github.com/fancyinnovations/fancyspaces/internal/analytics/cache"
 	analyticsDatabase "github.com/fancyinnovations/fancyspaces/internal/analytics/database/clickhouse"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/internal/frontend"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	fakeSpacesDB "github.com/fancyinnovations/fancyspaces/internal/spaces/database/fake"
 	spacesHandler "github.com/fancyinnovations/fancyspaces/internal/spaces/handler"
@@ -81,6 +82,12 @@ func Start(cfg Configuration) {
 		UserFromCtx: auth.UserFromContext,
 	})
 	vh.Register(apiPrefix, cfg.Mux)
+
+	// Frontend
+	fh := frontend.NewHandler(frontend.Configuration{
+		Files: frontend.Files,
+	})
+	fh.Register(cfg.Mux)
 }
 
 func seedSpacesDB() *fakeSpacesDB.DB {

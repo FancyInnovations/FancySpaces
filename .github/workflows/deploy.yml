@@ -11,6 +11,36 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v4
 
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '24.5.0'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install pnpm dependencies
+        run: pnpm install
+        working-directory: ./src/packages/webclient/
+
+      - name: Build web app
+        run: pnpm run build
+        working-directory: ./src/packages/webclient/
+
+      - name: Copy website files
+        run: |
+          chmod +x copy-website-files.sh
+          ./copy-website-files.sh
+        working-directory: ./scripts/
+
       - name: Build Docker image
         run: docker build -t oliverschlueter/fancyspaces:latest .
 
