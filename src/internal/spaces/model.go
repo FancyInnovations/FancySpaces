@@ -10,12 +10,19 @@ type Space struct {
 	ID          string     `json:"id"`
 	Slug        string     `json:"slug"`
 	Title       string     `json:"title"`
+	Summary     string     `json:"summary"`
 	Description string     `json:"description"`
 	Categories  []Category `json:"categories"`
+	Links       []Link     `json:"links"`
 	IconURL     string     `json:"icon_url"`
 	Status      Status     `json:"status"`
 	CreatedAt   time.Time  `json:"created_at"`
 	Members     []Member   `json:"members"`
+}
+
+type Link struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
 }
 
 type Member struct {

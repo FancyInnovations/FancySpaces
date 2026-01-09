@@ -90,11 +90,17 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		ID:          "fc",
 		Slug:        "fancycore",
 		Title:       "FancyCore",
-		Description: "Essential features every Hytale server needs. From permission management over world management to economy and more.",
+		Summary:     "Essential features every Hytale server needs. From permission management over world management to economy and more.",
+		Description: "![](https://raw.githubusercontent.com/FancyInnovations/FancyDocs/refs/heads/main/public/logos-and-banners/fancycore-banner.png)\n\n> The all-in-one core plugin for Hytale servers. From powerful permission management and moderation tools to a flexible economy with multiple currencies and much more.\n\n## Why FancyCore?\n\n- All-in-one core plugin – fewer dependencies, fewer conflicts\n- Designed for both small servers and large networks\n- Highly configurable without sacrificing performance\n- Actively maintained with a clear development roadmap\n- Built with developers in mind (clean API & extensions)\n\n## Features\n\nWith **FancyCore**, you get a wide variety of features that are essential for running a modern Hytale server.\nIt includes **80+ commands** covering countless use cases for both small community servers and large server networks.\n\nFancyCore is designed with ease of use, high performance, and extensibility in mind.\n\n### Core Feature Categories\n\n- Flexible group and permission system\n- Robust economy system\n- Easy to use placeholders\n- Chat management\n- Powerful moderation tools\n- Teleportation features\n- World management\n- Player specific features\n- Inventory utilities\n- Server statistics\n- API for developers\n\nLearn more about each feature in the documentation: https://fancyinnovations.com/docs/hytale-plugins/fancycore/\n\n### Permissions\n\nFancyCore provides a powerful and flexible permission system suitable for any server size.\n\n- Create unlimited groups with inheritance\n- Per-group and per-player permissions\n- Temporary permissions and groups\n- Prefixes, suffixes, and priorities\n- Fully configurable via commands and files\n\nPerfect for managing staff hierarchies and player ranks.\n\n### Economy\n\nA feature-rich economy system built directly into the core.\n\n- Multiple currencies\n- Player balances with full command control\n- Admin and player economy commands\n- Optional integration with shops and other plugins\n- High-performance and safe data handling\n\nWhether you run a survival server or a complex RPG economy, FancyCore has you covered.\n\n### Placeholders\n\nFancyCore includes a built-in placeholder system for maximum compatibility.\n\n- Many placeholders from every feature category \n- Easy integration with chat messages, UIs and more\n- Lightweight and fast\n\n### Chat\n\nTake full control over your server chat.\n\n- Customizable chat formats\n- Group-based prefixes and suffixes\n- Chat channels (global, staff, per rank, etc.)\n- Chat cooldowns and filters\n- Player nicknames\n- Messaging system\n- Placeholder support in chat messages\n\nKeep your chat clean, organized, and immersive.\n\n### Moderation\n\nAll the moderation tools you need in one plugin.\n\n- Kick, mute, warn, and ban commands\n- Player reports\n- Chat and command logs\n- Staff-only chat channels\n- Silent punishments\n- Full permission control\n- Clear and consistent punishment messages\n\nDesigned to make moderation fast and effective.\n\n### Teleportation\n\nComprehensive teleportation features for players and staff.\n\n- Spawn\n- Server Warps\n- Homes and multiple home support\n- Teleport requests (TPA)\n- Cooldowns and permission-based limits\n\n### Worlds\n\nManage your worlds with ease.\n\n- Create worlds with different settings and environments\n- Teleport between worlds\n- Control player interactions per world\n- Ideal for hubs, minigames, and survival worlds\n\n### Player\n\nQuality-of-life features for everyday gameplay.\n\n- Player information commands\n- Inventory and gamemode utilities\n- AFK detection\n- Custom join and leave messages\n- Player-specific settings\n\n### Inventory\n\nAdvanced inventory utilities for players and staff.\n\n- View and manage player inventories\n- Create configurable kits\n- Virtual player backpacks\n\n### Server\n\n- View server health and statistics\n- Manage plugins\n\n### API\n\nFancyCore is built to be extended.\n\n- Clean and well-documented API\n- Access permissions, economy, placeholders, and more\n- Designed for developers and plugin integrations\n- Future-proof and actively maintained",
 		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:     "https://fancyinnovations.com/logos-and-banners/fancycore-logo.png",
-		Status:      spaces.StatusApproved,
-		CreatedAt:   time.Date(2025, 11, 20, 20, 0, 0, 0, time.UTC),
+		Links: []spaces.Link{
+			{Name: "source_code", URL: "https://github.com/FancyInnovations/HytalePlugins"},
+			{Name: "documentation", URL: "https://fancyinnovations.com/docs/hytale-plugins/fancycore"},
+			{Name: "discord", URL: "https://discord.gg/ZUgYCEJUEx"},
+		},
+		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancycore-logo.png",
+		Status:    spaces.StatusApproved,
+		CreatedAt: time.Date(2025, 11, 20, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -107,14 +113,14 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	fancycorewebsite := &spaces.Space{
-		ID:          "fcw",
-		Slug:        "fancycorewebsite",
-		Title:       "FancyCore Website",
-		Description: "Web frontend for the FancyCore Hytale plugin.",
-		Categories:  []spaces.Category{spaces.CategoryWebApp},
-		IconURL:     "",
-		Status:      spaces.StatusPrivate,
-		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		ID:         "fcw",
+		Slug:       "fancycorewebsite",
+		Title:      "FancyCore Website",
+		Summary:    "Web frontend for the FancyCore Hytale plugin.",
+		Categories: []spaces.Category{spaces.CategoryWebApp},
+		IconURL:    "",
+		Status:     spaces.StatusPrivate,
+		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -127,14 +133,14 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	fancyplots := &spaces.Space{
-		ID:          "fp",
-		Slug:        "fancyplots",
-		Title:       "FancyPlots",
-		Description: "Plot plugin for Hytale servers.",
-		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:     "",
-		Status:      spaces.StatusPrivate,
-		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		ID:         "fp",
+		Slug:       "fancyplots",
+		Title:      "FancyPlots",
+		Summary:    "Plot plugin for Hytale servers.",
+		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:    "",
+		Status:     spaces.StatusPrivate,
+		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -147,14 +153,14 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	fancyconnect := &spaces.Space{
-		ID:          "fcon",
-		Slug:        "fancyconnect",
-		Title:       "FancyConnect",
-		Description: "Proxy software for Hytale server networks.",
-		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:     "",
-		Status:      spaces.StatusPrivate,
-		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		ID:         "fcon",
+		Slug:       "fancyconnect",
+		Title:      "FancyConnect",
+		Summary:    "Proxy software for Hytale server networks.",
+		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:    "",
+		Status:     spaces.StatusPrivate,
+		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -167,14 +173,14 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	cityauctions := &spaces.Space{
-		ID:          "ca",
-		Slug:        "cityauctions",
-		Title:       "CityAuctions",
-		Description: "Auction house plugin for Hytale.",
-		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:     "",
-		Status:      spaces.StatusPrivate,
-		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		ID:         "ca",
+		Slug:       "cityauctions",
+		Title:      "CityAuctions",
+		Summary:    "Auction house plugin for Hytale.",
+		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:    "",
+		Status:     spaces.StatusPrivate,
+		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -187,14 +193,14 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	citypass := &spaces.Space{
-		ID:          "cp",
-		Slug:        "citypass",
-		Title:       "CityPass",
-		Description: "Pass plugin for Hytale.",
-		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:     "",
-		Status:      spaces.StatusPrivate,
-		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		ID:         "cp",
+		Slug:       "citypass",
+		Title:      "CityPass",
+		Summary:    "Pass plugin for Hytale.",
+		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:    "",
+		Status:     spaces.StatusPrivate,
+		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -207,14 +213,14 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	cityquests := &spaces.Space{
-		ID:          "cq",
-		Slug:        "cityquests",
-		Title:       "CityQuests",
-		Description: "Quests plugin for Hytale.",
-		Categories:  []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:     "",
-		Status:      spaces.StatusPrivate,
-		CreatedAt:   time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		ID:         "cq",
+		Slug:       "cityquests",
+		Title:      "CityQuests",
+		Summary:    "Quests plugin for Hytale.",
+		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:    "",
+		Status:     spaces.StatusPrivate,
+		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -230,11 +236,18 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		ID:          "fa",
 		Slug:        "fancyanalytics",
 		Title:       "FancyAnalytics",
+		Summary:     "Universal analytics platform especially made for the Minecraft and Hytale ecosystem. Track metrics, events and logs with ease.",
 		Description: "Universal analytics platform especially made for the Minecraft and Hytale ecosystem. Track metrics, events and logs with ease.",
 		Categories:  []spaces.Category{spaces.CategoryWebApp},
-		IconURL:     "https://fancyinnovations.com/logos-and-banners/fancyanalytics-logo.png",
-		Status:      spaces.StatusApproved,
-		CreatedAt:   time.Date(2024, 1, 25, 20, 0, 0, 0, time.UTC),
+		Links: []spaces.Link{
+			{Name: "website", URL: "https://fancyanalytics.net"},
+			{Name: "source_code", URL: "https://github.com/FancyInnovations/FancyAnalytics"},
+			{Name: "documentation", URL: "https://fancyinnovations.com/docs/web-services/fancyanalytics"},
+			{Name: "discord", URL: "https://discord.gg/ZUgYCEJUEx"},
+		},
+		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyanalytics-logo.png",
+		Status:    spaces.StatusApproved,
+		CreatedAt: time.Date(2024, 1, 25, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
@@ -250,11 +263,16 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		ID:          "fv",
 		Slug:        "fancyverteiler",
 		Title:       "FancyVerteiler",
+		Summary:     "Tool to deploy Hytale and Minecraft plugins to multiple platforms via GitHub actions.",
 		Description: "Tool to deploy Hytale and Minecraft plugins to multiple platforms via GitHub actions.",
 		Categories:  []spaces.Category{spaces.CategoryOther},
-		IconURL:     "https://fancyinnovations.com/logos-and-banners/fancyverteiler-logo.png",
-		Status:      spaces.StatusApproved,
-		CreatedAt:   time.Date(2025, 12, 2, 20, 0, 0, 0, time.UTC),
+		Links: []spaces.Link{
+			{Name: "source_code", URL: "https://github.com/FancyInnovations/FancyVerteiler"},
+			{Name: "discord", URL: "https://discord.gg/ZUgYCEJUEx"},
+		},
+		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyverteiler-logo.png",
+		Status:    spaces.StatusApproved,
+		CreatedAt: time.Date(2025, 12, 2, 20, 0, 0, 0, time.UTC),
 		Members: []spaces.Member{
 			{
 				UserID: "admin-1",
