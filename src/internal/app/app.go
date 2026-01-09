@@ -375,7 +375,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		Title:       "ClovePluralProjects",
 		Summary:     "A plural accessibility tool",
 		Description: "An accessibility tool for plural communities everywhere, over Minecraft and Hytale, with a web dash",
-		Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin, spaces.CategoryOther, spaces.CategoryWebApp},
+		Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin, spaces.CategoryHytalePlugin, spaces.CategoryWebApp, spaces.CategoryMinecraftMod},
 		Links: []spaces.Link{
 			{Name: "website", URL: "https://clovelib.win"},
 			{Name: "source_code", URL: "https://github.com/CloveLib/"},
