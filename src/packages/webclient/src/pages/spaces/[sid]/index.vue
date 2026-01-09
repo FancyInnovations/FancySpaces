@@ -6,6 +6,7 @@ import SpaceHeader from "@/components/SpaceHeader.vue";
 import type {SpaceVersion} from "@/api/versions/types.ts";
 import {getLatestVersion} from "@/api/versions/versions.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
+import {useHead} from "@vueuse/head";
 
 const space = ref<Space>();
 const latestVersion = ref<SpaceVersion>();
@@ -16,8 +17,17 @@ onMounted(async () => {
   space.value = await getSpace(spaceID);
   latestVersion.value = await getLatestVersion(space.value.id);
   downloadCount.value = await getDownloadCountForSpace(space.value.id);
-});
 
+  useHead({
+    title: `${space.value.title} - FancySpaces`,
+    meta: [
+      {
+        name: 'description',
+        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
+      }
+    ]
+  });
+});
 
 </script>
 

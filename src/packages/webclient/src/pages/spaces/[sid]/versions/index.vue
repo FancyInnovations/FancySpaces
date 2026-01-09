@@ -6,6 +6,7 @@ import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types.
 import {getAllVersions, getDownloadCountForVersion, getLatestVersion} from "@/api/versions/versions.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useHead} from "@vueuse/head";
 
 const router = useRouter();
 
@@ -35,6 +36,16 @@ onMounted(async () => {
   for (const version of versions.value) {
     downloadCounts.value[version.id] = await getDownloadCountForVersion(version.space_id, version.id);
   }
+
+  useHead({
+    title: `${space.value.title} versions - FancySpaces`,
+    meta: [
+      {
+        name: 'description',
+        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
+      }
+    ]
+  });
 });
 
 function onRowClick(event: any, { item }: any) {

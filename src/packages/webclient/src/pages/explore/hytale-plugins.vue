@@ -3,6 +3,17 @@
 import AppHeader from "@/components/AppHeader.vue";
 import type {Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
+import {useHead} from "@vueuse/head";
+
+useHead({
+  title: 'Explore Hytale Plugins - FancySpaces',
+  meta: [
+    {
+      name: 'description',
+      content: 'Discover and explore Hytale plugin project spaces on FancySpaces, your hub for innovative Hytale creations.'
+    }
+  ]
+});
 
 const spaces = ref<Space[]>();
 

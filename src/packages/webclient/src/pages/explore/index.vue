@@ -3,6 +3,18 @@
 import AppHeader from "@/components/AppHeader.vue";
 import type {Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
+import {useHead} from "@vueuse/head";
+
+
+useHead({
+  title: 'Explore Spaces - FancySpaces',
+  meta: [
+    {
+      name: 'description',
+      content: 'Discover and explore a variety of project spaces on FancySpaces, your hub for innovative creations.'
+    }
+  ]
+});
 
 const spaces = ref<Space[]>();
 
