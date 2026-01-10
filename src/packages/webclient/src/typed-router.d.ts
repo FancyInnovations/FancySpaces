@@ -27,6 +27,7 @@ declare module 'vue-router/auto-routes' {
     '/spaces/[sid]/': RouteRecordInfo<'/spaces/[sid]/', '/spaces/:sid', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/versions/': RouteRecordInfo<'/spaces/[sid]/versions/', '/spaces/:sid/versions', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/versions/[vid]/': RouteRecordInfo<'/spaces/[sid]/versions/[vid]/', '/spaces/:sid/versions/:vid', { sid: ParamValue<true>, vid: ParamValue<true> }, { sid: ParamValue<false>, vid: ParamValue<false> }>,
+    '/tools/markdown-editor': RouteRecordInfo<'/tools/markdown-editor', '/tools/markdown-editor', Record<never, never>, Record<never, never>>,
   }
 
   /**
@@ -74,6 +75,10 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/spaces/[sid]/versions/[vid]/index.vue': {
       routes: '/spaces/[sid]/versions/[vid]/'
+      views: never
+    }
+    'src/pages/tools/markdown-editor.vue': {
+      routes: '/tools/markdown-editor'
       views: never
     }
   }

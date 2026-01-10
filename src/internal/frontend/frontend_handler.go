@@ -62,6 +62,8 @@ func (h *Handler) Register(mux *http.ServeMux) {
 		"explore/minecraft-plugins",
 		"explore/hytale-plugins",
 		"explore/other-projects",
+		"explore/by-other-creators",
+		"tools/markdown-editor",
 		"spaces/{space_id}",
 		"spaces/{space_id}/versions",
 		"spaces/{space_id}/versions/{version_id}",
