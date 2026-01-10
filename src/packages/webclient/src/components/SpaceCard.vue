@@ -9,6 +9,7 @@ const props = defineProps<{
   space?: Space
   withBadge?: boolean
   withAuthor?: boolean
+  soon?: boolean
 }>();
 
 const latestVersion = ref<SpaceVersion>();
@@ -25,6 +26,7 @@ onMounted(async () => {
 
 <template>
   <v-card
+    :disabled="soon"
     class="card__border"
     color="#29152550"
     elevation="12"
@@ -79,6 +81,7 @@ onMounted(async () => {
 
         <div class="d-flex flex-column justify-center">
           <v-btn
+            v-if="!soon"
             :to="`/spaces/${space?.slug}/versions`"
             color="primary"
             icon="mdi-download"
