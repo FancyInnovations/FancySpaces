@@ -34,6 +34,8 @@ const props = defineProps<{
       </div>
 
       <div class="d-flex mt-2 text-grey-lighten-1">
+        <p class="text-body-2">Created {{ space?.created_at.toLocaleDateString() }}</p>
+        <p class="text-body-2 mx-4">-</p>
         <p class="text-body-2">Updated {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
         <p class="text-body-2 mx-4">-</p>
         <p class="text-body-2">{{ downloadCount }} downloads</p>

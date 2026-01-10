@@ -45,7 +45,7 @@ onMounted(async () => {
           rounded="xl"
           to="/explore/minecraft-plugins"
         >
-          <v-card-title>
+          <v-card-title class="mt-2">
             <div class="d-flex align-center">
               <v-icon class="mr-2" color="green lighten-1">mdi-minecraft</v-icon>
               <p>Minecraft plugins</p>
@@ -67,7 +67,7 @@ onMounted(async () => {
           rounded="xl"
           to="/explore/hytale-plugins"
         >
-          <v-card-title>
+          <v-card-title class="mt-2">
             <v-icon class="mr-2" color="blue lighten-1">mdi-sword-cross</v-icon>
             Hytale plugins
           </v-card-title>
@@ -87,9 +87,8 @@ onMounted(async () => {
           rounded="xl"
           to="/explore/other-projects"
         >
-          <v-card-title>
+          <v-card-title class="mt-2">
             <v-icon class="mr-2" color="purple lighten-1">mdi-cube-outline</v-icon>
-
             Other projects
           </v-card-title>
 

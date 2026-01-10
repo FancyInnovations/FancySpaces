@@ -101,6 +101,7 @@ onMounted(async () => {
             <div v-for="category in space?.categories" :key="category">
               <v-chip
                 class="ma-1"
+                color="tertiary"
                 rounded
                 variant="tonal"
               >

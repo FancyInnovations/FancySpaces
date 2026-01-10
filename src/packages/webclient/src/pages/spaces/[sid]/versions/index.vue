@@ -21,7 +21,7 @@ const tableHeaders = [
   { title: 'Channel', key: 'channel', value: (ver: SpaceVersion) => ver.channel.toUpperCase(), sortable: false },
   { title: 'Platform', key: 'platform', value: (ver: SpaceVersion) => mapPlatformToDisplayname(ver.platform), sortable: false },
   { title: 'Platform versions', key: 'supported_platform_versions', sortable: false, value: (ver: SpaceVersion) => ver.supported_platform_versions.join(", "), class: 'platform-versions__max-width' },
-  { title: 'Released at', key: 'published_at', sortable: false, value: (ver: SpaceVersion) => new Date(ver.published_at).toLocaleDateString() },
+  { title: 'Released at', key: 'published_at', sortable: false, value: (ver: SpaceVersion) => new Date(ver.published_at).toLocaleString() },
   { title: 'Downloads', key: 'downloads', sortable: false, value: (ver: SpaceVersion) => downloadCounts.value[ver.id] || 0 },
   { title: '', key: 'actions', sortable: false, align: 'end' as any },
 ]
