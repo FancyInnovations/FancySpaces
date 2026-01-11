@@ -4,7 +4,7 @@
 
 <template>
   <v-footer
-    class="mt-16 footer--max-height footer--bottom"
+    class="mt-16"
     color="tertiary-container"
     height="fit-content"
   >
@@ -64,8 +64,5 @@
 </template>
 
 <style scoped>
-.footer--max-height {
-  max-height: 300px;
-}
 
 </style>
