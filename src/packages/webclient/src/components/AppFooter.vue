@@ -18,13 +18,6 @@
         </v-col>
 
         <v-col md="auto">
-          <h3 class="mb-2">About</h3>
-          <a class="hide-link" href="/coming-soon" target="_blank"><p>News</p></a>
-          <a class="hide-link" href="/coming-soon" target="_blank"><p>Changelog</p></a>
-          <a class="hide-link" href="/coming-soon" target="_blank"><p>Status</p></a>
-        </v-col>
-
-        <v-col md="auto">
           <h3 class="mb-2">Links</h3>
           <a class="hide-link" href="https://github.com/fancyinnovations/fancyspaces" target="_blank"><p>
             GitHub</p></a>
