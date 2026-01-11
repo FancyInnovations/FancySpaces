@@ -5,9 +5,6 @@ const rawMarkdown = ref<string>("# Welcome to the Markdown Editor!\n\nType your 
 </script>
 
 <template>
-
-  <AppHeader/>
-
   <v-container width="70%">
     <v-row class="mt-4">
       <v-col md="6" >

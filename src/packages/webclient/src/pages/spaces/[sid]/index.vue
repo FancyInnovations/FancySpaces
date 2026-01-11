@@ -32,8 +32,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <AppHeader/>
-
   <v-container width="90%">
     <v-row>
       <v-col class="flex-grow-0 pa-0">

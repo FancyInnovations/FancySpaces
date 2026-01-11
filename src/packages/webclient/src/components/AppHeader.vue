@@ -16,69 +16,112 @@
         />
       </RouterLink>
 
-      <v-menu
-        :close-on-content-click="false"
-        open-delay="0"
-        open-on-hover
-      >
-        <template v-slot:activator="{ props }">
-          <v-btn
-            append-icon="mdi-menu-down"
-            color="secondary"
-            prepend-icon="mdi-compass-outline"
-            v-bind="props"
-          >
-            Explore projects
-          </v-btn>
-        </template>
-
-        <v-list
-          class="bg-secondary-container pa-2"
-          rounded="xl"
+      <div>
+        <v-menu
+          :close-on-content-click="false"
+          open-delay="0"
+          open-on-hover
         >
-          <v-list-item
-            class="mb-2"
-            exact
-            prepend-icon="mdi-earth"
-            rounded="xl"
-            title="All projects"
-            to="/explore"
-          />
+          <template v-slot:activator="{ props }">
+            <v-btn
+              append-icon="mdi-menu-down"
+              color="secondary"
+              prepend-icon="mdi-compass-outline"
+              v-bind="props"
+            >
+              Explore projects
+            </v-btn>
+          </template>
 
-          <v-list-item
-            class="mb-2"
-            prepend-icon="mdi-minecraft"
+          <v-list
+            class="bg-secondary-container pa-2"
             rounded="xl"
-            title="Minecraft plugins"
-            to="/explore/minecraft-plugins"
-          />
+          >
+            <v-list-item
+              class="mb-2"
+              exact
+              prepend-icon="mdi-earth"
+              rounded="xl"
+              title="All projects"
+              to="/explore"
+            />
 
-          <v-list-item
-            class="mb-2"
-            prepend-icon="mdi-sword-cross"
+            <v-list-item
+              class="mb-2"
+              prepend-icon="mdi-minecraft"
+              rounded="xl"
+              title="Minecraft plugins"
+              to="/explore/minecraft-plugins"
+            />
+
+            <v-list-item
+              class="mb-2"
+              prepend-icon="mdi-sword-cross"
+              rounded="xl"
+              title="Hytale plugins"
+              to="/explore/hytale-plugins"
+            />
+
+            <v-list-item
+              class="mb-2"
+              prepend-icon="mdi-cube-outline"
+              rounded="xl"
+              title="Other projects"
+              to="/explore/other-projects"
+            />
+
+            <v-list-item
+              prepend-icon="mdi-account-group-outline"
+              rounded="xl"
+              title="By other creators"
+              to="/explore/by-other-creators"
+            />
+
+          </v-list>
+        </v-menu>
+
+        <v-menu
+          :close-on-content-click="false"
+          open-delay="0"
+          open-on-hover
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+              append-icon="mdi-menu-down"
+              class="ml-4"
+              color="secondary"
+              prepend-icon="mdi-toolbox-outline"
+              v-bind="props"
+            >
+              Tools
+            </v-btn>
+          </template>
+
+          <v-list
+            class="bg-secondary-container pa-2"
             rounded="xl"
-            title="Hytale plugins"
-            to="/explore/hytale-plugins"
-          />
+          >
+            <v-list-item
+              class="mb-2"
+              exact
+              prepend-icon="mdi-file-document-edit-outline"
+              rounded="xl"
+              subtitle="Live markdown preview"
+              title="Markdown Editor"
+              to="/tools/markdown-editor"
+            />
 
-          <v-list-item
-            class="mb-2"
-            prepend-icon="mdi-cube-outline"
-            rounded="xl"
-            title="Other projects"
-            to="/explore/other-projects"
-          />
-
-          <v-list-item
-            class="mb-2"
-            prepend-icon="mdi-account-group-outline"
-            rounded="xl"
-            title="By other creators"
-            to="/explore/by-other-creators"
-          />
-
-        </v-list>
-      </v-menu>
+            <v-list-item
+              exact
+              href="https://github.com/fancyinnovations/fancyverteiler"
+              prepend-icon="mdi-upload-network-outline"
+              rounded="xl"
+              subtitle="Deploy your plugins with ease"
+              title="FancyVerteiler"
+            />
+          </v-list>
+        </v-menu>
+      </div>
 
       <v-menu>
         <template v-slot:activator="{ props }">

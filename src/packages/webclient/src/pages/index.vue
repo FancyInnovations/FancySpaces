@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 
-import AppHeader from "@/components/AppHeader.vue";
 import type {Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
 
@@ -16,8 +15,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <AppHeader/>
-
   <v-container
     width="60%"
   >
