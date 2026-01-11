@@ -3,6 +3,8 @@
     <AppHeader/>
 
     <router-view />
+
+    <AppFooter/>
   </v-app>
 </template>
 
