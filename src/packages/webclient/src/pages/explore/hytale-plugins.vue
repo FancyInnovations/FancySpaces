@@ -61,6 +61,19 @@ onMounted(async () => {
     created_at: new Date(),
     members: [],
   });
+  plannedPlugins.value.push({
+    id: "fancyaudits",
+    slug: "fancyaudits",
+    title: "FancyAudits",
+    summary: "Log player and world related actions to a database for auditing and rollback purposes.",
+    description: "",
+    categories: ["hytale_plugin"],
+    links: [],
+    icon_url: "/soon-logo.png",
+    status: "approved",
+    created_at: new Date(),
+    members: [],
+  });
 });
 
 </script>

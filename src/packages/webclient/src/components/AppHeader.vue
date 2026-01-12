@@ -82,6 +82,7 @@
 
         <v-menu
           :close-on-content-click="false"
+          location="bottom center"
           open-delay="0"
           open-on-hover
         >
@@ -112,12 +113,32 @@
             />
 
             <v-list-item
+              class="mb-2"
               exact
-              href="https://github.com/fancyinnovations/fancyverteiler"
+              prepend-icon="mdi-coffee-outline"
+              rounded="xl"
+              subtitle="SDK for the FancySpaces API"
+              title="Java SDK"
+              to="/tools/java-sdk"
+            />
+
+            <v-list-item
+              class="mb-2"
+              exact
+              href="/spaces/fancyverteiler"
               prepend-icon="mdi-upload-network-outline"
               rounded="xl"
               subtitle="Deploy your plugins with ease"
               title="FancyVerteiler"
+            />
+
+            <v-list-item
+              exact
+              href="/spaces/fancyanalytics"
+              prepend-icon="mdi-chart-box-outline"
+              rounded="xl"
+              subtitle="Powerful analytics for your projects"
+              title="FancyAnalytics"
             />
           </v-list>
         </v-menu>
