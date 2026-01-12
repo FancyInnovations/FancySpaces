@@ -1,9 +1,15 @@
 <script lang="ts" setup>
 
 import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import {getAllSpaces, getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces.ts";
+import {getAllVersions} from "@/api/versions/versions.ts";
 
 const spaces = ref<Space[]>();
+
+const totalSpaces = ref<number | null>(null);
+const totalVersions = ref<number | null>(null);
+const totalDownloads = ref<number | null>(null);
+const statsLoading = ref(false);
 
 onMounted(async () => {
   spaces.value = [];
@@ -11,7 +17,46 @@ onMounted(async () => {
   spaces.value.push(await getSpace("fc"));
   spaces.value.push(await getSpace("fh"));
   spaces.value.push(await getSpace("fa"));
+
+  void fetchStats();
 });
+
+async function fetchStats() {
+  statsLoading.value = true;
+  try {
+    const all = await getAllSpaces();
+    totalSpaces.value = all.length;
+
+    // Parallel requests for versions count per space
+    const versionsPromises = all.map(s =>
+      getAllVersions(s.id)
+        .then(vs => vs.length)
+        .catch(err => {
+          console.error("Failed to fetch versions for", s.id, err);
+          return 0;
+        })
+    );
+
+    // Parallel requests for download counts per space
+    const downloadsPromises = all.map(s =>
+      getDownloadCountForSpace(s.id)
+        .catch(err => {
+          console.error("Failed to fetch downloads for", s.id, err);
+          return 0;
+        })
+    );
+
+    const versionsCounts = await Promise.all(versionsPromises);
+    const downloadsCounts = await Promise.all(downloadsPromises);
+
+    totalVersions.value = versionsCounts.reduce((a, b) => a + b, 0);
+    totalDownloads.value = downloadsCounts.reduce((a, b) => a + b, 0);
+  } catch (e) {
+    console.error("Failed to fetch stats:", e);
+  } finally {
+    statsLoading.value = false;
+  }
+}
 </script>
 
 <template>
@@ -92,6 +137,50 @@ onMounted(async () => {
           <v-card-text>
             Explore our other exciting projects and tools like FancyAnalytics or FancyVerteiler.
           </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row class="mt-10" justify="center">
+      <v-col md="7">
+        <v-card
+          class="py-4"
+          color="#29152550"
+          elevation="12"
+          height="100%"
+          rounded="xl"
+        >
+          <v-row>
+            <v-col class="text-center">
+              <div class="text-h6">Projects</div>
+              <div class="text-h4 mt-2">
+                <v-skeleton-loader v-if="statsLoading" type="heading" />
+                <template v-else>
+                  {{ totalSpaces !== null ? totalSpaces : '—' }}
+                </template>
+              </div>
+            </v-col>
+
+            <v-col class="text-center">
+              <div class="text-h6">Versions</div>
+              <div class="text-h4 mt-2">
+                <v-skeleton-loader v-if="statsLoading" type="heading" />
+                <template v-else>
+                  {{ totalVersions !== null ? totalVersions : '—' }}
+                </template>
+              </div>
+            </v-col>
+
+            <v-col class="text-center">
+              <div class="text-h6">Downloads</div>
+              <div class="text-h4 mt-2">
+                <v-skeleton-loader v-if="statsLoading" type="heading" />
+                <template v-else>
+                  {{ totalDownloads !== null ? totalDownloads : '—' }}
+                </template>
+              </div>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
     </v-row>
