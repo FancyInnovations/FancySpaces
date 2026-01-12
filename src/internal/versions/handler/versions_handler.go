@@ -143,7 +143,7 @@ func (h *Handler) handleGetVersions(w http.ResponseWriter, r *http.Request, spac
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "public, max-age=3600")
+	w.Header().Set("Cache-Control", "public, max-age=60") // 1 minute
 	json.NewEncoder(w).Encode(all)
 }
 
