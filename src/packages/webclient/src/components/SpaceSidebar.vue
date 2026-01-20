@@ -9,7 +9,7 @@ const props = defineProps<{
 
 <template>
   <v-navigation-drawer
-    class="sidebar__background ma-4"
+    class="sidebar__mobile sidebar__background ma-4"
     elevation="12"
     rounded="xl"
   >
@@ -66,5 +66,11 @@ const props = defineProps<{
   background-color: #29152550 !important;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 960px) {
+  .sidebar__mobile {
+    display: none;
+  }
 }
 </style>

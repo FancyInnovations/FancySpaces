@@ -46,6 +46,7 @@ const props = defineProps<{
       <v-btn
         v-if="latestVersion?.files.length != 1"
         :to="`/spaces/${space?.slug}/versions/latest`"
+        class="sidebar__mobile"
         color="primary"
         prepend-icon="mdi-download"
         size="large"
@@ -56,6 +57,7 @@ const props = defineProps<{
       <v-btn
         v-else
         :href="latestVersion?.files[0]?.url"
+        class="sidebar__mobile"
         color="primary"
         prepend-icon="mdi-download"
         size="large"
@@ -68,5 +70,9 @@ const props = defineProps<{
 </template>
 
 <style scoped>
-
+@media (max-width: 960px) {
+  .sidebar__mobile {
+    display: none;
+  }
+}
 </style>

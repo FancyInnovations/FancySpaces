@@ -30,17 +30,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-container
-    width="40%"
-  >
+  <v-container>
     <v-row class="my-4" justify="center">
       <v-col>
         <h1 class="text-h3 text-center">All projects</h1>
       </v-col>
     </v-row>
 
-    <v-row justify="center">
-      <v-col v-for="space in spaces" :key="space.id" class="mb-4" md="12">
+    <v-row v-for="space in spaces" :key="space.id" justify="center">
+      <v-col class="mb-4" md="5">
         <SpaceCard
           :space="space"
           :with-badge="true"

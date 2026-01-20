@@ -53,6 +53,31 @@ onMounted(async () => {
       </v-col>
     </v-row>
 
+    <v-row class="mobile-space-sidebar-buttons">
+      <v-col>
+        <v-btn
+          :to="`/spaces/${space?.id}`"
+          class="mr-4"
+          color="secondary"
+          prepend-icon="mdi-information-slab-circle-outline"
+          size="large"
+          variant="tonal"
+        >
+          Information
+        </v-btn>
+
+        <v-btn
+          :to="`/spaces/${space?.id}/versions`"
+          color="secondary"
+          prepend-icon="mdi-file-download-outline"
+          size="large"
+          variant="tonal"
+        >
+          Versions
+        </v-btn>
+      </v-col>
+    </v-row>
+
     <v-row>
       <v-col md="8">
         <v-card
@@ -69,11 +94,12 @@ onMounted(async () => {
         </v-card>
       </v-col>
 
-      <v-col>
+      <v-col md="4">
         <v-card
           class="mb-4 card__border"
           color="#29152550"
           elevation="12"
+          min-width="300"
           rounded="xl"
         >
           <v-card-title class="mt-2">Details</v-card-title>
@@ -91,6 +117,7 @@ onMounted(async () => {
           class="mb-4 card__border"
           color="#29152550"
           elevation="12"
+          min-width="300"
           rounded="xl"
         >
           <v-card-title class="mt-2">Categories</v-card-title>
@@ -113,6 +140,7 @@ onMounted(async () => {
           class="mb-4 card__border"
           color="#29152550"
           elevation="12"
+          min-width="300"
           rounded="xl"
         >
           <v-card-title class="mt-2">Links</v-card-title>
@@ -139,6 +167,7 @@ onMounted(async () => {
           class="mb-4 card__border"
           color="#29152550"
           elevation="12"
+          min-width="300"
           rounded="xl"
         >
           <v-card-title class="mt-2">Authors</v-card-title>
@@ -169,5 +198,17 @@ onMounted(async () => {
 
 .link--hover:hover {
   text-decoration: underline;
+}
+
+.mobile-space-sidebar-buttons {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .mobile-space-sidebar-buttons {
+    display: block;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
 }
 </style>

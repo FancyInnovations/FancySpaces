@@ -60,11 +60,9 @@ async function fetchStats() {
 </script>
 
 <template>
-  <v-container
-    width="60%"
-  >
+  <v-container>
     <v-row class="mt-16" justify="center">
-      <v-col>
+      <v-col md="7">
         <v-img
           src="/banner.png"
         />
@@ -78,7 +76,7 @@ async function fetchStats() {
     </v-row>
 
     <v-row class="mt-16" justify="center">
-      <v-col md="4">
+      <v-col md="2">
         <v-card
           class="card__border"
           color="#29152550"
@@ -100,7 +98,7 @@ async function fetchStats() {
         </v-card>
       </v-col>
 
-      <v-col md="4">
+      <v-col md="2">
         <v-card
           class="card__border"
           color="#29152550"
@@ -120,7 +118,7 @@ async function fetchStats() {
         </v-card>
       </v-col>
 
-      <v-col md="4">
+      <v-col md="2">
         <v-card
           class="card__border"
           color="#29152550"
@@ -142,7 +140,7 @@ async function fetchStats() {
     </v-row>
 
     <v-row class="mt-10" justify="center">
-      <v-col md="7">
+      <v-col md="6">
         <v-card
           class="py-4"
           color="#29152550"
@@ -192,7 +190,7 @@ async function fetchStats() {
     </v-row>
 
     <v-row v-if="spaces && spaces.length > 0" justify="center">
-      <v-col md="8">
+      <v-col md="6">
         <v-carousel
           :show-arrows="false"
           cycle
