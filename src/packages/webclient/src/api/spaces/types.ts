@@ -21,6 +21,12 @@ export interface SpaceMember {
   role: string;
 }
 
+export interface DownloadsResponse {
+  downloads: number;
+  versions: Record<string, number>;
+}
+
+
 export function mapCategoryToDisplayname(name?: string): string {
   if (!name) return 'Unknown';
 

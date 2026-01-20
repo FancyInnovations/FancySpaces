@@ -59,3 +59,19 @@ export async function getDownloadCountForSpace(spaceId: string): Promise<number>
 
   return (await response.json()).downloads as number;
 }
+
+export async function getDownloadCountForSpacePerVersion(spaceId: string): Promise<Record<string, number>> {
+  const response = await fetch(
+    `/api/v1/spaces/${spaceId}/downloads`,
+    {
+      method: "GET",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch download count for version: " + await response.text());
+  }
+
+  return (await response.json()).versions as Record<string, number>;
+}
+

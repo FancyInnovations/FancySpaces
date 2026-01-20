@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 
 import type {Space} from "@/api/spaces/types.ts";
-import {getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces.ts";
+import {getDownloadCountForSpace, getDownloadCountForSpacePerVersion, getSpace} from "@/api/spaces/spaces.ts";
 import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types.ts";
-import {getAllVersions, getDownloadCountForVersion, getLatestVersion} from "@/api/versions/versions.ts";
+import {getAllVersions, getLatestVersion} from "@/api/versions/versions.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";
@@ -51,9 +51,7 @@ onMounted(async () => {
   versions.value = await getAllVersions(space.value.id);
 
   downloadCount.value = await getDownloadCountForSpace(space.value.id);
-  for (const version of versions.value) {
-    downloadCounts.value[version.id] = await getDownloadCountForVersion(version.space_id, version.id);
-  }
+  downloadCounts.value = await getDownloadCountForSpacePerVersion(space.value.id);
 
   useHead({
     title: `${space.value.title} versions - FancySpaces`,
