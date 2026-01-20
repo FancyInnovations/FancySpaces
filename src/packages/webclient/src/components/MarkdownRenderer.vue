@@ -37,10 +37,28 @@ const renderedHtml = computed(() => {
   text-align: justify;
 }
 
+::v-deep a {
+  color: #1e90ff !important;
+  text-decoration: underline;
+}
+
+::v-deep code, ::v-deep pre {
+  background-color: rgba(104, 104, 104, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+::v-deep pre code {
+  background-color: transparent;
+}
+
 ::v-deep img {
   max-width: 100%;
   height: auto;
   display: block;
   margin: 1em auto;
 }
+
+
 </style>
