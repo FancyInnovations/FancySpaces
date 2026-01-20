@@ -81,7 +81,7 @@ func (db *DB) GetDownloadCountForVersions(ctx context.Context, spaceID string) (
 		FROM fancyspaces.version_downloads
 		WHERE space_id = ?
 		GROUP BY space_id, version_id`
-	if err := db.ch.QueryRow(ctx, query, spaceID).Scan(&res); err != nil {
+	if err := db.ch.Select(ctx, &res, query, spaceID); err != nil {
 		return nil, err
 	}
 
