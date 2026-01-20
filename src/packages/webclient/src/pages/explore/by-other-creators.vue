@@ -18,8 +18,11 @@ const spaces = ref<Space[]>();
 
 onMounted(async () => {
   spaces.value = [];
+  spaces.value.push(await getSpace("orbisguard"));
+  spaces.value.push(await getSpace("orbismines"));
+  spaces.value.push(await getSpace("wiflowscoreboard"));
+
   spaces.value.push(await getSpace("cpp"));
-  spaces.value.push(await getSpace("fp"));
 });
 
 </script>
