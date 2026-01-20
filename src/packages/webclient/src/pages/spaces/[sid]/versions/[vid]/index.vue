@@ -3,7 +3,7 @@
 import type {Space} from "@/api/spaces/types.ts";
 import {getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces.ts";
 import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types.ts";
-import {getLatestVersion, getVersion} from "@/api/versions/versions.ts";
+import {getDownloadCountForVersion, getLatestVersion, getVersion} from "@/api/versions/versions.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";
@@ -15,6 +15,7 @@ const spaceDownloadCount = ref<number>(0);
 const latestVersion = ref<SpaceVersion>();
 
 const currentVersion = ref<SpaceVersion>();
+const currentVersionDownloadCount = ref<number>(0);
 
 onMounted(async () => {
   const spaceID = (route.params as any).sid as string;
@@ -22,6 +23,7 @@ onMounted(async () => {
 
   const versionID = (route.params as any).vid as string;
   currentVersion.value = await getVersion(space.value.id, versionID);
+  currentVersionDownloadCount.value = await getDownloadCountForVersion(space.value.id, currentVersion.value.id);
 
   spaceDownloadCount.value = await getDownloadCountForSpace(space.value.id);
   latestVersion.value = await getLatestVersion(space.value.id);
@@ -148,6 +150,7 @@ function formatSize(sizeInBytes: number): string {
             <p class="text-body-1"><strong>Platform:</strong> {{ mapPlatformToDisplayname(currentVersion?.platform) }}</p>
             <p class="text-body-1"><strong>Platform versions:</strong> {{ currentVersion?.supported_platform_versions.join(", ") }}</p>
             <p class="text-body-1"><strong>Released at:</strong> {{ currentVersion?.published_at.toLocaleString() }}</p>
+            <p class="text-body-1"><strong>Downloads:</strong> {{ currentVersionDownloadCount }}</p>
           </v-card-text>
         </v-card>
       </v-col>
