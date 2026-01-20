@@ -68,6 +68,31 @@ func (db *DB) GetDownloadCountForVersion(ctx context.Context, spaceID, versionID
 	return count, nil
 }
 
+func (db *DB) GetDownloadCountForVersions(ctx context.Context, spaceID string) (map[string]uint64, error) {
+	var res []struct {
+		VersionID string `ch:"version_id"`
+		Downloads uint64 `ch:"downloads"`
+	}
+
+	query := `
+		SELECT
+			version_id,
+			count(*) AS downloads
+		FROM fancyspaces.version_downloads
+		WHERE space_id = ?
+		GROUP BY space_id, version_id`
+	if err := db.ch.QueryRow(ctx, query, spaceID).Scan(&res); err != nil {
+		return nil, err
+	}
+
+	asMap := make(map[string]uint64)
+	for _, r := range res {
+		asMap[r.VersionID] = r.Downloads
+	}
+
+	return asMap, nil
+}
+
 func (db *DB) StoreVersionDownloads(ctx context.Context, records []analytics.VersionDownload) error {
 	batch, err := db.ch.PrepareBatch(ctx, "INSERT INTO fancyspaces.version_downloads")
 	if err != nil {

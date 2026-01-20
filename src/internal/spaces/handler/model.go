@@ -7,5 +7,6 @@ type ChangeStatusReq struct {
 }
 
 type SpaceDownloadsResp struct {
-	Downloads uint64 `json:"downloads"`
+	Downloads uint64            `json:"downloads"`
+	Versions  map[string]uint64 `json:"versions"`
 }

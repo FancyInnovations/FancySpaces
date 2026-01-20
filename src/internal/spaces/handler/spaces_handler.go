@@ -377,8 +377,16 @@ func (h *Handler) handleDownloads(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	versions, err := h.analytics.GetDownloadCountForVersions(r.Context(), s.ID)
+	if err != nil {
+		slog.Error("Failed to get download count for space versions", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
 	resp := SpaceDownloadsResp{
 		Downloads: count,
+		Versions:  versions,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
