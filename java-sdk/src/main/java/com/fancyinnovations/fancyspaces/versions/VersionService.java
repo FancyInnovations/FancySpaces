@@ -17,9 +17,11 @@ import java.util.List;
 public class VersionService {
 
     private final FancySpaces fs;
+    private final String apiKey;
 
-    public VersionService(FancySpaces fs) {
+    public VersionService(FancySpaces fs, String apiKey) {
         this.fs = fs;
+        this.apiKey = apiKey;
     }
 
     public List<Version> getVersions(String spaceID, @Nullable String platform, @Nullable String channel) {
@@ -34,6 +36,10 @@ public class VersionService {
         HttpRequest req = new HttpRequest(fs.getBaseURL() + "/spaces/" + spaceID + "/versions"+query)
                 .withHeader("Accept", "application/json")
                 .withHeader("User-Agent", "FancySpaces Java-SDK");
+
+        if (apiKey != null && !apiKey.isEmpty()) {
+            req = req.withHeader("Authorization", apiKey);
+        }
 
         try {
             HttpResponse<String> resp = req.send();
@@ -66,6 +72,10 @@ public class VersionService {
         HttpRequest req = new HttpRequest(fs.getBaseURL() + "/spaces/" + spaceID + "/versions/"+version)
                 .withHeader("Accept", "application/json")
                 .withHeader("User-Agent", "FancySpaces Java-SDK");
+
+        if (apiKey != null && !apiKey.isEmpty()) {
+            req = req.withHeader("Authorization", apiKey);
+        }
 
         try {
             HttpResponse<String> resp = req.send();
@@ -101,6 +111,10 @@ public class VersionService {
         HttpRequest req = new HttpRequest(fs.getBaseURL() + "/spaces/" + spaceID + "/versions/latest"+query)
                 .withHeader("Accept", "application/json")
                 .withHeader("User-Agent", "FancySpaces Java-SDK");
+
+        if (apiKey != null && !apiKey.isEmpty()) {
+            req = req.withHeader("Authorization", apiKey);
+        }
 
         try {
             HttpResponse<String> resp = req.send();
