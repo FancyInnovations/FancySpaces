@@ -7,6 +7,7 @@ export async function getVersion(spaceId: string, versionId: string): Promise<Sp
       method: "GET",
       headers: {
         "Accept": "application/json",
+        "Authorization": localStorage.getItem("fs_api_key") || "",
       }
     },
   );
@@ -32,6 +33,7 @@ export async function getAllVersions(spaceId: string): Promise<SpaceVersion[]> {
       method: "GET",
       headers: {
         "Accept": "application/json",
+        "Authorization": localStorage.getItem("fs_api_key") || "",
       }
     },
   );
@@ -53,6 +55,9 @@ export async function getDownloadCountForVersion(spaceId: string, versionId: str
     `/api/v1/spaces/${spaceId}/versions/${versionId}/downloads`,
     {
       method: "GET",
+      headers: {
+        "Authorization": localStorage.getItem("fs_api_key") || "",
+      }
     },
   );
 

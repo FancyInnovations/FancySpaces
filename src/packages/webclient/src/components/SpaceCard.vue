@@ -39,7 +39,7 @@ onMounted(async () => {
           <RouterLink :to="`/spaces/${space?.slug}`">
             <v-img
               :href="`/spaces/${space?.slug}`"
-              :src="space?.icon_url || '/logo.png'"
+              :src="space?.icon_url || '/na-logo.png'"
               alt="Space Icon"
               height="100"
               max-height="100"

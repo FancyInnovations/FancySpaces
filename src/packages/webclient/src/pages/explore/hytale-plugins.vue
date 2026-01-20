@@ -21,6 +21,15 @@ onMounted(async () => {
   spaces.value = [];
   spaces.value.push(await getSpace("fc"));
 
+  spaces.value.push(await getSpace("fancyplots"));
+  spaces.value.push(await getSpace("fancyconnect"));
+  spaces.value.push(await getSpace("fancyaudits"));
+  spaces.value.push(await getSpace("fancycorewebsite"));
+  spaces.value.push(await getSpace("fancyshops"));
+  spaces.value.push(await getSpace("citypass"));
+  spaces.value.push(await getSpace("cityquests"));
+  spaces.value.push(await getSpace("cityshops"));
+
   plannedPlugins.value = [];
   plannedPlugins.value.push({
     id: "fcw",

@@ -7,6 +7,7 @@ export async function getAllSpaces(): Promise<Space[]> {
       method: "GET",
       headers: {
         "Accept": "application/json",
+        "Authorization": localStorage.getItem("fs_api_key") || "",
       }
     },
   );
@@ -31,6 +32,7 @@ export async function getSpace(id: string): Promise<Space> {
       method: "GET",
       headers: {
         "Accept": "application/json",
+        "Authorization": localStorage.getItem("fs_api_key") || "",
       }
     },
   );
@@ -50,6 +52,9 @@ export async function getDownloadCountForSpace(spaceId: string): Promise<number>
     `/api/v1/spaces/${spaceId}/downloads`,
     {
       method: "GET",
+      headers: {
+        "Authorization": localStorage.getItem("fs_api_key") || "",
+      }
     },
   );
 
@@ -65,6 +70,9 @@ export async function getDownloadCountForSpacePerVersion(spaceId: string): Promi
     `/api/v1/spaces/${spaceId}/downloads`,
     {
       method: "GET",
+      headers: {
+        "Authorization": localStorage.getItem("fs_api_key") || "",
+      }
     },
   );
 

@@ -214,7 +214,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	fancycorewebsite := &spaces.Space{
-		ID:         "fcw",
+		ID:         "fancycorewebsite",
 		Slug:       "fancycorewebsite",
 		Title:      "FancyCore Website",
 		Summary:    "Web frontend for the FancyCore Hytale plugin.",
@@ -234,7 +234,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	fancyplots := &spaces.Space{
-		ID:         "fp",
+		ID:         "fancyplots",
 		Slug:       "fancyplots",
 		Title:      "FancyPlots",
 		Summary:    "Plot plugin for Hytale servers.",
@@ -253,8 +253,28 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		panic(fmt.Errorf("could not seed spaces db: %w", err))
 	}
 
+	fancyaudits := &spaces.Space{
+		ID:         "fancyaudits",
+		Slug:       "fancyaudits",
+		Title:      "FancyAudits",
+		Summary:    "Log various player actions + dupe detection for Hytale.",
+		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
+		IconURL:    "",
+		Status:     spaces.StatusPrivate,
+		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "oliver",
+				Role:   spaces.RoleOwner,
+			},
+		},
+	}
+	if err := db.Create(fancyaudits); err != nil {
+		panic(fmt.Errorf("could not seed spaces db: %w", err))
+	}
+
 	fancyconnect := &spaces.Space{
-		ID:         "fcon",
+		ID:         "fancyconnect",
 		Slug:       "fancyconnect",
 		Title:      "FancyConnect",
 		Summary:    "Proxy software for Hytale server networks.",
@@ -273,11 +293,11 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 		panic(fmt.Errorf("could not seed spaces db: %w", err))
 	}
 
-	cityauctions := &spaces.Space{
-		ID:         "ca",
-		Slug:       "cityauctions",
-		Title:      "CityAuctions",
-		Summary:    "Auction house plugin for Hytale.",
+	fancyshops := &spaces.Space{
+		ID:         "fancyshops",
+		Slug:       "fancyshops",
+		Title:      "FancyShops",
+		Summary:    "Admin shops, chest shops, auctions, trade system and more for Hytale.",
 		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
 		IconURL:    "",
 		Status:     spaces.StatusPrivate,
@@ -289,12 +309,12 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 			},
 		},
 	}
-	if err := db.Create(cityauctions); err != nil {
+	if err := db.Create(fancyshops); err != nil {
 		panic(fmt.Errorf("could not seed spaces db: %w", err))
 	}
 
 	citypass := &spaces.Space{
-		ID:         "cp",
+		ID:         "citypass",
 		Slug:       "citypass",
 		Title:      "CityPass",
 		Summary:    "Pass plugin for Hytale.",
@@ -314,7 +334,7 @@ func seedSpacesDB() *fakeSpacesDB.DB {
 	}
 
 	cityquests := &spaces.Space{
-		ID:         "cq",
+		ID:         "cityquests",
 		Slug:       "cityquests",
 		Title:      "CityQuests",
 		Summary:    "Quests plugin for Hytale.",

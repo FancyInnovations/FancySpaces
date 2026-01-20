@@ -19,6 +19,7 @@ const spaces = ref<Space[]>();
 onMounted(async () => {
   spaces.value = [];
   spaces.value.push(await getSpace("cpp"));
+  spaces.value.push(await getSpace("fp"));
 });
 
 </script>
