@@ -45,7 +45,7 @@ const renderedHtml = computed(() => {
 ::v-deep code, ::v-deep pre {
   background-color: rgba(104, 104, 104, 0.2);
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 8px;
   font-family: 'Courier New', Courier, monospace;
 }
 
@@ -58,6 +58,24 @@ const renderedHtml = computed(() => {
   height: auto;
   display: block;
   margin: 1em auto;
+}
+
+::v-deep table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+::v-deep th, ::v-deep td {
+  border: 1px solid rgba(185, 166, 201, 0.5);
+  padding: 8px;
+  text-align: left;
+}
+
+::v-deep hr {
+  border: none;
+  border-top: 1px solid rgba(185, 166, 201, 0.5);
+  margin: 3em 0;
 }
 
 
