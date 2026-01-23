@@ -38,7 +38,7 @@ const renderedHtml = computed(() => {
 }
 
 ::v-deep a {
-  color: #1e90ff !important;
+  color: #E0B7FF !important;
   text-decoration: underline;
 }
 
@@ -78,5 +78,16 @@ const renderedHtml = computed(() => {
   margin: 3em 0;
 }
 
+::v-deep blockquote {
+  border-left: 4px solid #C9A7FF;
+  border-radius: 8px;
+  background: rgba(201, 167, 255, 0.1);
+  padding: 1em;
+  margin: 1em 0;
+}
+
+::v-deep blockquote p {
+  margin: 0;
+}
 
 </style>
