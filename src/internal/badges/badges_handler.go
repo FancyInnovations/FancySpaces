@@ -1,4 +1,4 @@
-package handler
+package badges
 
 import (
 	"errors"
@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/OliverSchlueter/goutils/badgegen"
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/internal/analytics"
-	"github.com/fancyinnovations/fancyspaces/internal/badges"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/internal/versions"
 )
@@ -65,7 +65,7 @@ func (h *Handler) handleSpaceDownloadsBadge(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	badge := badges.GenerateBadge("Downloads", fmt.Sprintf("%d", downloads), "#541ea6")
+	badge := badgegen.Generate("Downloads", fmt.Sprintf("%d", downloads), "#541ea6")
 
 	w.Header().Set("Content-Type", "image/svg+xml;charset=utf-8")
 	w.Header().Set("Cache-Control", "public, max-age=300") // 5 minutes
@@ -105,7 +105,7 @@ func (h *Handler) handleSpaceLatestVersionBadge(w http.ResponseWriter, r *http.R
 		}
 	}
 
-	badge := badges.GenerateBadge("Latest version", latestVer.Name, "green")
+	badge := badgegen.Generate("Latest version", latestVer.Name, "green")
 
 	w.Header().Set("Content-Type", "image/svg+xml;charset=utf-8")
 	w.Header().Set("Cache-Control", "public, max-age=300") // 5 minutes

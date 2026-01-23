@@ -8,13 +8,14 @@ import (
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/OliverSchlueter/goutils/ratelimit"
+	"github.com/OliverSchlueter/goutils/sitemapgen"
 	"github.com/fancyinnovations/fancyspaces/internal/analytics"
 	analyticsCache "github.com/fancyinnovations/fancyspaces/internal/analytics/cache"
 	analyticsDatabase "github.com/fancyinnovations/fancyspaces/internal/analytics/database/clickhouse"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
-	"github.com/fancyinnovations/fancyspaces/internal/badges/handler"
+	"github.com/fancyinnovations/fancyspaces/internal/badges"
 	"github.com/fancyinnovations/fancyspaces/internal/frontend"
-	"github.com/fancyinnovations/fancyspaces/internal/sitemap"
+	"github.com/fancyinnovations/fancyspaces/internal/sitemapprovider"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	fakeSpacesDB "github.com/fancyinnovations/fancyspaces/internal/spaces/database/fake"
 	spacesHandler "github.com/fancyinnovations/fancyspaces/internal/spaces/handler"
@@ -92,13 +93,18 @@ func Start(cfg Configuration) {
 	fh.Register(cfg.Mux)
 
 	// Sitemap
-	sm := sitemap.NewHandler(sitemap.Configuration{
+	smp := sitemapprovider.NewService(&sitemapprovider.Configuration{
 		Spaces: spacesStore,
 	})
-	sm.Register(cfg.Mux)
+	smg := sitemapgen.NewHandler(sitemapgen.Configuration{
+		Provider:      smp.GenerateUrls,
+		Ratelimit:     nil, // leave to default
+		CacheDuration: nil, // leave to default
+	})
+	smg.Register(cfg.Mux)
 
 	// Badges
-	bh := handler.NewHandler(handler.Configuration{
+	bh := badges.NewHandler(badges.Configuration{
 		Spaces:    spacesStore,
 		Versions:  versionsStore,
 		Analytics: as,
