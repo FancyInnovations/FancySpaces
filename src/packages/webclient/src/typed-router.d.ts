@@ -25,6 +25,7 @@ declare module 'vue-router/auto-routes' {
     '/explore/minecraft-plugins': RouteRecordInfo<'/explore/minecraft-plugins', '/explore/minecraft-plugins', Record<never, never>, Record<never, never>>,
     '/explore/other-projects': RouteRecordInfo<'/explore/other-projects', '/explore/other-projects', Record<never, never>, Record<never, never>>,
     '/spaces/[sid]/': RouteRecordInfo<'/spaces/[sid]/', '/spaces/:sid', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
+    '/spaces/[sid]/issues/': RouteRecordInfo<'/spaces/[sid]/issues/', '/spaces/:sid/issues', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/versions/': RouteRecordInfo<'/spaces/[sid]/versions/', '/spaces/:sid/versions', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/versions/[vid]/': RouteRecordInfo<'/spaces/[sid]/versions/[vid]/', '/spaces/:sid/versions/:vid', { sid: ParamValue<true>, vid: ParamValue<true> }, { sid: ParamValue<false>, vid: ParamValue<false> }>,
     '/tools/java-sdk': RouteRecordInfo<'/tools/java-sdk', '/tools/java-sdk', Record<never, never>, Record<never, never>>,
@@ -68,6 +69,10 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/spaces/[sid]/index.vue': {
       routes: '/spaces/[sid]/'
+      views: never
+    }
+    'src/pages/spaces/[sid]/issues/index.vue': {
+      routes: '/spaces/[sid]/issues/'
       views: never
     }
     'src/pages/spaces/[sid]/versions/index.vue': {

@@ -33,16 +33,43 @@ const props = defineProps<{
         :to="`/spaces/${space?.slug}/versions`"
         link
         prepend-icon="mdi-file-download-outline"
-        title="Versions"
+        title="Downloads"
       />
 
-      <v-list-item
-        :to="`/spaces/${space?.slug}/stats`"
-        disabled
-        link
-        prepend-icon="mdi-chart-box-outline"
-        title="Stats"
-      />
+<!--      <v-list-item-->
+<!--        :to="`/spaces/${space?.slug}/docs`"-->
+<!--        link-->
+<!--        prepend-icon="mdi-book-open-variant-outline"-->
+<!--        title="Knowledge Base"-->
+<!--      />-->
+
+<!--      <v-list-item-->
+<!--        :to="`/spaces/${space?.slug}/roadmap`"-->
+<!--        link-->
+<!--        prepend-icon="mdi-road-variant"-->
+<!--        title="Roadmap"-->
+<!--      />-->
+
+<!--      <v-list-item-->
+<!--        :to="`/spaces/${space?.slug}/issues`"-->
+<!--        link-->
+<!--        prepend-icon="mdi-format-list-checks"-->
+<!--        title="Issues"-->
+<!--      />-->
+
+<!--      <v-list-item-->
+<!--        :to="`/spaces/${space?.slug}/bugs`"-->
+<!--        link-->
+<!--        prepend-icon="mdi-bug-outline"-->
+<!--        title="Report bug"-->
+<!--      />-->
+
+<!--      <v-list-item-->
+<!--        :to="`/spaces/${space?.slug}/stats`"-->
+<!--        link-->
+<!--        prepend-icon="mdi-chart-box-outline"-->
+<!--        title="Statistics"-->
+<!--      />-->
 
       <v-divider />
       <v-list-subheader>External links</v-list-subheader>
