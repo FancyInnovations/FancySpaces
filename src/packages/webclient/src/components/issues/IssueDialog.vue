@@ -19,6 +19,10 @@ const showDialog = ref(true);
     width="64%"
   >
     <div class="rounded-xl">
+      <div class="py-2 border-b">
+        <h1 class="text-center text-h4 text-secondary">{{ props.issue.title }}</h1>
+      </div>
+
       <div class="d-flex">
         <IssueDialogSidebar
           :comments="comments"
@@ -108,7 +112,7 @@ const showDialog = ref(true);
 
 <style scoped>
 .issue-dialog {
-  max-height: 85vh;
+  max-height: 75vh;
   overflow-y: auto;
 }
 

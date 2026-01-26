@@ -70,12 +70,6 @@ onMounted(() => {
     rounded="xl"
   >
     <v-list-item>
-      <v-list-item-title class="text-h6 font-weight-bold">{{ props.issue.title }}</v-list-item-title>
-    </v-list-item>
-
-    <v-divider />
-
-    <v-list-item>
       <v-list-item-title>
         ID:
         <IssueIDChip
