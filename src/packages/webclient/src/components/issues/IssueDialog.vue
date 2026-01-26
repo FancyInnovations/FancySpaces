@@ -16,7 +16,7 @@ const showDialog = ref(true);
 <template>
   <Dialog
     :shown="showDialog"
-    width="60%"
+    width="64%"
   >
     <div class="rounded-xl">
       <div class="d-flex">
