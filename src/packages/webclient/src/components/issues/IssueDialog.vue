@@ -18,8 +18,8 @@ const showDialog = ref(true);
     :shown="showDialog"
     width="60%"
   >
-    <div class="issue-dialog rounded-xl">
-      <div class="d-flex">
+    <div class="rounded-xl">
+      <div class="issue-dialog d-flex">
         <IssueDialogSidebar
           :comments="comments"
           :issue="issue"
