@@ -64,8 +64,8 @@ onMounted(() => {
   <v-list
     class="sidebar__background ma-4"
     elevation="12"
-    height="max-content"
     location="right"
+    min-height="100%"
     min-width="250px"
     rounded="xl"
   >

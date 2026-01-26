@@ -19,13 +19,13 @@ const showDialog = ref(true);
     width="60%"
   >
     <div class="rounded-xl">
-      <div class="issue-dialog d-flex">
+      <div class="d-flex">
         <IssueDialogSidebar
           :comments="comments"
           :issue="issue"
         />
 
-        <div class="pr-4 flex-grow-1">
+        <div class="issue-dialog pr-4 flex-grow-1">
           <v-card
             class="card__border mt-4 bg-transparent"
             color="#150D1950"
