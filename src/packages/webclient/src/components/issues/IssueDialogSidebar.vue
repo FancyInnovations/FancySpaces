@@ -12,6 +12,52 @@ const props = defineProps<{
   comments: IssueComment[]
 }>();
 
+const formattedCreatedAt = ref('');
+const formattedUpdatedAt = ref('');
+
+function formatDate(date: Date): string {
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const diffInHours = diff / (1000 * 60 * 60);
+  if (diffInHours < 12) {
+    if (diffInHours < 1) {
+      const diffInMinutes = diff / (1000 * 60);
+      if (diffInMinutes < 1) {
+        return `${Math.floor(diff / 1000)}s ago`;
+      } else {
+        return `${Math.floor(diffInMinutes)}min ago`;
+      }
+    } else {
+      return `${Math.floor(diffInHours)}h ago`;
+    }
+  } else {
+    const createdAtDate = date.getDate();
+    const nowDate = now.getDate();
+    const createdAtMonth = date.getMonth();
+    const nowMonth = now.getMonth();
+    const createdAtYear = date.getFullYear();
+    const nowYear = now.getFullYear();
+
+    if (createdAtYear === nowYear && createdAtMonth === nowMonth && createdAtDate === nowDate - 1) {
+      return 'Yesterday';
+    } else if (createdAtYear === nowYear && createdAtMonth === nowMonth && createdAtDate === nowDate) {
+      return 'Today';
+    } else {
+      return date.toLocaleDateString();
+    }
+  }
+}
+
+onMounted(() => {
+  formattedCreatedAt.value = formatDate(new Date(props.issue.created_at));
+  formattedUpdatedAt.value = formatDate(new Date(props.issue.updated_at));
+
+  setInterval(() => {
+    formattedCreatedAt.value = formatDate(new Date(props.issue.created_at));
+    formattedUpdatedAt.value = formatDate(new Date(props.issue.updated_at));
+  }, 1000);
+});
+
 </script>
 
 <template>
@@ -84,20 +130,34 @@ const props = defineProps<{
       </v-list-item-title>
     </v-list-item>
 
+    <v-list-item>
+      <v-list-item-title>
+        Reporter:
+        <UserChip
+          :user="props.issue.reporter"
+          class="ml-2"
+          density="compact"
+        />
+      </v-list-item-title>
+    </v-list-item>
+
+    <v-list-item>
+      <v-list-item-title>
+        Assignee:
+        <UserChip
+          :user="props.issue.assignee"
+          class="ml-2"
+          density="compact"
+        />
+      </v-list-item-title>
+    </v-list-item>
+
     <v-list-item
-      :title="'Reported by: ' + props.issue.reporter"
+      :title="'Created at: ' + formattedCreatedAt"
     />
 
     <v-list-item
-      :title="'Assigned to: ' + (props.issue.assignee || 'Unassigned')"
-    />
-
-    <v-list-item
-      :title="'Created at: ' + new Date(props.issue.created_at).toLocaleDateString()"
-    />
-
-    <v-list-item
-      :title="'Last updated: ' + new Date(props.issue.updated_at).toLocaleDateString()"
+      :title="'Last updated: ' + formattedUpdatedAt"
     />
 
     <v-list-item

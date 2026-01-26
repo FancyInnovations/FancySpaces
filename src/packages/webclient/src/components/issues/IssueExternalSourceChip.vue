@@ -14,9 +14,9 @@ const color = computed(() => {
 
   switch (props.issue.external_source.toLowerCase()) {
     case 'github':
-      return 'grey darken-4';
+      return 'grey';
     case 'discord':
-      return 'indigo darken-4';
+      return 'indigo';
     default:
       return 'primary';
   }

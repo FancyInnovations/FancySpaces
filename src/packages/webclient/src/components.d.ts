@@ -28,5 +28,6 @@ declare module 'vue' {
     SpaceCard: typeof import('./components/SpaceCard.vue')['default']
     SpaceHeader: typeof import('./components/SpaceHeader.vue')['default']
     SpaceSidebar: typeof import('./components/SpaceSidebar.vue')['default']
+    UserChip: typeof import('./components/UserChip.vue')['default']
   }
 }

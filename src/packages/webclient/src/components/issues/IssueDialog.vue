@@ -18,7 +18,7 @@ const showDialog = ref(true);
     :shown="showDialog"
     width="60%"
   >
-    <div class="rounded-xl">
+    <div class="issue-dialog rounded-xl">
       <div class="d-flex">
         <IssueDialogSidebar
           :comments="comments"
@@ -53,22 +53,34 @@ const showDialog = ref(true);
             rounded="xl"
           >
             <v-card-title class="mt-2">
-              Comments
+              Comments ({{ props.comments.length }})
             </v-card-title>
 
             <v-card-text>
               <p v-if="props.comments.length === 0">
                 No comments yet.
               </p>
-              <div v-else>
-                <div
+              <div v-else class="issue-comments">
+                <v-card
                   v-for="comment in props.comments"
                   :key="comment.id"
-                  class="mb-3"
+                  class="card__border bg-transparent mb-3"
+                  color="#29152550"
+                  elevation="6"
+                  rounded="xl"
                 >
-                  <strong>{{ comment.author }}:</strong>
-                  <p>{{ comment.content }}</p>
-                </div>
+                  <v-card-text>
+                    <div class="d-flex justify-space-between mb-2">
+                      <div class="d-flex align-center">
+                        <span class="font-weight-medium">{{ comment.author }}</span>
+                      </div>
+                      <span class="text-caption grey--text">{{ comment.created_at.toLocaleString() }}</span>
+                    </div>
+                    <MarkdownRenderer
+                      :markdown="comment.content"
+                    />
+                  </v-card-text>
+                </v-card>
               </div>
             </v-card-text>
           </v-card>
@@ -95,6 +107,11 @@ const showDialog = ref(true);
 </template>
 
 <style scoped>
+.issue-dialog {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
 .issue-description {
   max-height: 500px;
   overflow-y: auto;

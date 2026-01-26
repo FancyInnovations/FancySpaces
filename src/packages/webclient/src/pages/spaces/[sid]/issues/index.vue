@@ -154,7 +154,32 @@ onMounted(async () => {
   </v-container>
 
   <IssueDialog
-    :comments="[]"
+    :comments="[
+      {
+        id: 'CMT123',
+        issue: '7G5B1',
+        author: 'user789',
+        content: 'I have encountered this bug as well. It seems to occur when performing [specific action].',
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
+        id: 'CMT124',
+        issue: '7G5B1',
+        author: 'user321',
+        content: 'A temporary workaround is to [workaround details], but a permanent fix is needed.',
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
+        id: 'CMT125',
+        issue: '7G5B1',
+        author: 'user654',
+        content: 'The development team is actively investigating this issue and will provide updates as they become available.',
+        created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
+        updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
+      }
+    ]"
     :issue="{
     id: '7G5B1',
     space: 'example-space',
@@ -182,12 +207,12 @@ onMounted(async () => {
 '- Frequency: `[always / intermittent / once]`\n'+
 '- Severity: `[low / medium / high / critical]`\n'+
 '- Attachments: `[logs / screenshots / videos if any]`',
-    type: 'bug',
-    priority: 'high',
-    status: 'in_progress',
+    type: 'story',
+    priority: 'medium',
+    status: 'todo',
     assignee: 'user123',
     reporter: 'user456',
-    created_at: new Date(),
+    created_at: new Date(2026, 0, 26, 21, 0, 0, 0),
     updated_at: new Date(),
     external_source: 'github'
     }"

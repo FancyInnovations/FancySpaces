@@ -16,7 +16,7 @@ const color = computed(() => {
     case 'done':
       return 'grey';
     case 'closed':
-      return 'red';
+      return 'grey darken-1';
     default:
       return 'primary';
   }

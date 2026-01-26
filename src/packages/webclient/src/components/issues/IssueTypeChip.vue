@@ -18,7 +18,7 @@ const color = computed(() => {
     case 'bug':
       return 'red';
       case 'idea':
-      return 'orange';
+      return 'yellow';
     default:
       return 'primary';
   }

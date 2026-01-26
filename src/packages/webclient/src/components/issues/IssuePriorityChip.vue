@@ -12,7 +12,7 @@ const color = computed(() => {
     case 'low':
       return 'green';
     case 'medium':
-      return 'blue';
+      return 'orange';
     case 'high':
       return 'red';
     case 'critical':
