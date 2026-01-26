@@ -162,9 +162,7 @@ onMounted(() => {
 
 <style scoped>
 .sidebar__background {
-  max-height: calc(100vh - 96px);
   background-color: transparent !important;
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 </style>
