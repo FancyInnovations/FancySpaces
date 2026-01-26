@@ -152,6 +152,46 @@ onMounted(async () => {
 
     </v-row>
   </v-container>
+
+  <IssueDialog
+    :comments="[]"
+    :issue="{
+    id: '7G5B1',
+    space: 'example-space',
+    title: 'Sample Bug Report',
+    description: '## 🐞 Bug Description\n'+
+'A defect was identified that causes unexpected behavior in the application. Further investigation is required to determine the root cause and scope of impact.\n'+
+'\n'+
+'## 🔁 Steps to Reproduce\n'+
+'1. Navigate to `[page / feature]`\n'+
+'2. Perform `[action]`\n'+
+'3. Observe the result\n'+
+'\n'+
+'## ✅ Expected Result\n'+
+'The system should `[expected behavior]`.\n'+
+'\n'+
+'## ❌ Actual Result\n'+
+'The system instead `[actual behavior]`.\n'+
+'\n'+
+'## 🌍 Environment\n'+
+'- App version: `[version]`\n'+
+'- Environment: `[dev / staging / prod]`\n'+
+'- Browser / Device: `[if applicable]`\n'+
+'\n'+
+'## 📎 Additional Notes\n'+
+'- Frequency: `[always / intermittent / once]`\n'+
+'- Severity: `[low / medium / high / critical]`\n'+
+'- Attachments: `[logs / screenshots / videos if any]`',
+    type: 'bug',
+    priority: 'high',
+    status: 'in_progress',
+    assignee: 'user123',
+    reporter: 'user456',
+    created_at: new Date(),
+    updated_at: new Date(),
+    external_source: null
+    }"
+  />
 </template>
 
 <style scoped>
