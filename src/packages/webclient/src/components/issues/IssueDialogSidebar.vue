@@ -5,6 +5,7 @@ import IssueIDChip from "@/components/issues/IssueIDChip.vue";
 import IssueStatusChip from "@/components/issues/IssueStatusChip.vue";
 import IssuePriorityChip from "@/components/issues/IssuePriorityChip.vue";
 import IssueTypeChip from "@/components/issues/IssueTypeChip.vue";
+import IssueExternalSourceChip from "@/components/issues/IssueExternalSourceChip.vue";
 
 const props = defineProps<{
   issue: Issue,
@@ -26,7 +27,7 @@ const props = defineProps<{
       <v-list-item-title class="text-h6 font-weight-bold">{{ props.issue.title }}</v-list-item-title>
     </v-list-item>
 
-    <v-divider class="mt-2"/>
+    <v-divider />
 
     <v-list-item>
       <v-list-item-title>
@@ -39,10 +40,16 @@ const props = defineProps<{
       </v-list-item-title>
     </v-list-item>
 
-    <v-list-item
-      v-if="props.issue.external_source"
-      :title="'Source: ' + props.issue.external_source"
-    />
+    <v-list-item>
+      <v-list-item-title>
+        Source:
+        <IssueExternalSourceChip
+          :issue="props.issue"
+          class="ml-2"
+          density="compact"
+        />
+      </v-list-item-title>
+    </v-list-item>
 
     <v-list-item>
       <v-list-item-title>
@@ -102,7 +109,7 @@ const props = defineProps<{
 <style scoped>
 .sidebar__background {
   max-height: calc(100vh - 96px);
-  background-color: rgba(21, 13, 25, 0.2) !important;
+  background-color: transparent !important;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }

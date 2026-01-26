@@ -189,7 +189,7 @@ onMounted(async () => {
     reporter: 'user456',
     created_at: new Date(),
     updated_at: new Date(),
-    external_source: null
+    external_source: 'github'
     }"
   />
 </template>

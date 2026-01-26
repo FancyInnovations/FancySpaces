@@ -16,7 +16,6 @@ const showDialog = ref(true);
 <template>
   <Dialog
     :shown="showDialog"
-    height="80%"
     width="60%"
   >
     <div class="rounded-xl">
@@ -28,7 +27,7 @@ const showDialog = ref(true);
 
         <div class="pr-4 flex-grow-1">
           <v-card
-            class="card__border mt-4"
+            class="card__border mt-4 bg-transparent"
             color="#150D1950"
             elevation="12"
             min-width="600"
@@ -47,7 +46,7 @@ const showDialog = ref(true);
           </v-card>
 
           <v-card
-            class="card__border my-4"
+            class="card__border my-4 bg-transparent"
             color="#150D1950"
             elevation="12"
             min-width="600"

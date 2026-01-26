@@ -15,7 +15,7 @@ const props = defineProps<{
     :height="props.height ?? 'max-content'"
     :persistent="props.persistent ?? false"
     :width="props.width ?? 'max-content'"
-    opacity="0.6"
+    opacity="0.5"
     transition="dialog-transition"
   >
     <div class="dialog__background">
