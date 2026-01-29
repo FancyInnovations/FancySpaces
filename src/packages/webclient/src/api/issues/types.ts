@@ -4,13 +4,18 @@ export interface Issue {
   title: string;
   description: string;
   type: 'epic' | 'bug' | 'task' | 'story' | 'idea';
-  status: 'todo' | 'in_progress' | 'done' | 'closed';
+  status: 'backlog' | 'todo' | 'in_progress' | 'done' | 'closed';
   priority: 'low' | 'medium' | 'high' | 'critical';
   assignee: string;
   reporter: string;
   created_at: Date;
   updated_at: Date;
-  external_source: 'github' | 'discord' | null;
+  external_source: 'github' | 'discord_forum_post' | 'discord_ticket_bot' | null;
+  fix_version?: string;
+  affected_versions?: string[];
+  resolved_at?: Date;
+  parent_issue?: string;
+  extra_fields?: Record<string, any>;
 }
 
 export interface IssueComment {

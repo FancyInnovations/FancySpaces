@@ -14,12 +14,15 @@ declare module 'vue' {
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     AppHeader: typeof import('./components/AppHeader.vue')['default']
     Dialog: typeof import('./components/common/Dialog.vue')['default']
+    IssueBoard: typeof import('./components/issues/IssueBoard.vue')['default']
+    IssueCard: typeof import('./components/issues/IssueCard.vue')['default']
     IssueDialog: typeof import('./components/issues/IssueDialog.vue')['default']
     IssueDialogSidebar: typeof import('./components/issues/IssueDialogSidebar.vue')['default']
     IssueExternalSourceChip: typeof import('./components/issues/IssueExternalSourceChip.vue')['default']
     IssueIDChip: typeof import('./components/issues/IssueIDChip.vue')['default']
     IssuePriorityChip: typeof import('./components/issues/IssuePriorityChip.vue')['default']
     IssueStatusChip: typeof import('./components/issues/IssueStatusChip.vue')['default']
+    IssueTable: typeof import('./components/issues/IssueTable.vue')['default']
     IssueTypeChip: typeof import('./components/issues/IssueTypeChip.vue')['default']
     MarkdownRenderer: typeof import('./components/MarkdownRenderer.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -29,5 +32,6 @@ declare module 'vue' {
     SpaceHeader: typeof import('./components/SpaceHeader.vue')['default']
     SpaceSidebar: typeof import('./components/SpaceSidebar.vue')['default']
     UserChip: typeof import('./components/UserChip.vue')['default']
+    VersionChip: typeof import('./components/VersionChip.vue')['default']
   }
 }

@@ -5,6 +5,8 @@
     <router-view />
 
     <AppFooter/>
+
+    <IssueDialog/>
   </v-app>
 </template>
 

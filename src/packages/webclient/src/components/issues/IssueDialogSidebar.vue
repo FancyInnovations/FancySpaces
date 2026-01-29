@@ -6,14 +6,16 @@ import IssueStatusChip from "@/components/issues/IssueStatusChip.vue";
 import IssuePriorityChip from "@/components/issues/IssuePriorityChip.vue";
 import IssueTypeChip from "@/components/issues/IssueTypeChip.vue";
 import IssueExternalSourceChip from "@/components/issues/IssueExternalSourceChip.vue";
+import VersionChip from "@/components/VersionChip.vue";
 
 const props = defineProps<{
-  issue: Issue,
+  issue?: Issue,
   comments: IssueComment[]
 }>();
 
 const formattedCreatedAt = ref('');
 const formattedUpdatedAt = ref('');
+const formattedResolvedAt = ref('');
 
 function formatDate(date: Date): string {
   const now = new Date();
@@ -49,12 +51,18 @@ function formatDate(date: Date): string {
 }
 
 onMounted(() => {
-  formattedCreatedAt.value = formatDate(new Date(props.issue.created_at));
-  formattedUpdatedAt.value = formatDate(new Date(props.issue.updated_at));
+  formattedCreatedAt.value = formatDate(new Date(props.issue?.created_at || ''));
+  formattedUpdatedAt.value = formatDate(new Date(props.issue?.updated_at || ''));
+  formattedResolvedAt.value = props.issue?.resolved_at
+    ? formatDate(new Date(props.issue?.resolved_at))
+    : 'Unresolved';
 
   setInterval(() => {
-    formattedCreatedAt.value = formatDate(new Date(props.issue.created_at));
-    formattedUpdatedAt.value = formatDate(new Date(props.issue.updated_at));
+    formattedCreatedAt.value = formatDate(new Date(props.issue?.created_at || ''));
+    formattedUpdatedAt.value = formatDate(new Date(props.issue?.updated_at || ''));
+    formattedResolvedAt.value = props.issue?.resolved_at
+      ? formatDate(new Date(props.issue?.resolved_at))
+      : 'Unresolved';
   }, 1000);
 });
 
@@ -62,6 +70,7 @@ onMounted(() => {
 
 <template>
   <v-list
+    v-if="props.issue"
     class="sidebar__background ma-4"
     elevation="12"
     location="right"
@@ -80,11 +89,22 @@ onMounted(() => {
       </v-list-item-title>
     </v-list-item>
 
+    <v-list-item v-if="props.issue?.parent_issue">
+      <v-list-item-title>
+        Parent:
+        <IssueIDChip
+          :issueName="props.issue?.parent_issue"
+          class="ml-2"
+          density="compact"
+        />
+      </v-list-item-title>
+    </v-list-item>
+
     <v-list-item>
       <v-list-item-title>
         Source:
         <IssueExternalSourceChip
-          :issue="props.issue"
+          :issue="props.issue!"
           class="ml-2"
           density="compact"
         />
@@ -95,7 +115,7 @@ onMounted(() => {
       <v-list-item-title>
         Type:
         <IssueTypeChip
-          :issue="props.issue"
+          :issue="props.issue!"
           class="ml-2"
           density="compact"
         />
@@ -106,7 +126,7 @@ onMounted(() => {
       <v-list-item-title>
         Status:
         <IssueStatusChip
-          :issue="props.issue"
+          :issue="props.issue!"
           class="ml-2"
           density="compact"
         />
@@ -117,18 +137,54 @@ onMounted(() => {
       <v-list-item-title>
         Priority:
         <IssuePriorityChip
-          :issue="props.issue"
+          :issue="props.issue!"
           class="ml-2"
           density="compact"
         />
       </v-list-item-title>
     </v-list-item>
 
+    <v-list-item v-if="props.issue?.affected_versions && props.issue?.affected_versions.length > 0">
+      <v-list-item-title>
+        Affected versions:
+      </v-list-item-title>
+    </v-list-item>
+
+    <div
+      v-if="props.issue?.affected_versions && props.issue?.affected_versions.length > 0"
+      class="ml-4"
+    >
+      <VersionChip
+        v-for="version in props.issue.affected_versions"
+        :key="version"
+        :spaceID="issue!.space"
+        :version="version"
+        density="compact"
+      />
+    </div>
+
+    <v-list-item v-if="props.issue?.fix_version">
+      <v-list-item-title>
+        Fix version:
+        <VersionChip
+          :spaceID="issue!.space"
+          :version="props.issue.fix_version"
+          class="ml-2"
+          density="compact"
+        />
+      </v-list-item-title>
+    </v-list-item>
+
+    <v-list-item
+      v-if="props.issue?.resolved_at"
+      :title="'Resolved at: ' + formattedResolvedAt"
+    />
+
     <v-list-item>
       <v-list-item-title>
         Reporter:
         <UserChip
-          :user="props.issue.reporter"
+          :user="props.issue!.reporter"
           class="ml-2"
           density="compact"
         />
@@ -139,7 +195,7 @@ onMounted(() => {
       <v-list-item-title>
         Assignee:
         <UserChip
-          :user="props.issue.assignee"
+          :user="props.issue!.assignee"
           class="ml-2"
           density="compact"
         />
@@ -155,7 +211,7 @@ onMounted(() => {
     />
 
     <v-list-item
-      :title="'Comments: ' + props.comments.length"
+      :title="'Comments: ' + props.comments?.length"
     />
   </v-list>
 </template>
@@ -164,5 +220,6 @@ onMounted(() => {
 .sidebar__background {
   background-color: transparent !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  scrollbar-width: none;
 }
 </style>

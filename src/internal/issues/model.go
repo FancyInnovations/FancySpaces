@@ -5,18 +5,23 @@ import (
 )
 
 type Issue struct {
-	ID             string    `json:"id"`
-	Space          string    `json:"space"`
-	Title          string    `json:"title"`
-	Description    string    `json:"description"`
-	Type           Type      `json:"type"`
-	Status         Status    `json:"status"`
-	Priority       Priority  `json:"priority"`
-	Assignee       string    `json:"assignee"`
-	Reporter       string    `json:"reporter"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	ExternalSource string    `json:"external_source,omitempty"`
+	ID               string                 `json:"id"`
+	Space            string                 `json:"space"`
+	Title            string                 `json:"title"`
+	Description      string                 `json:"description"`
+	Type             Type                   `json:"type"`
+	Status           Status                 `json:"status"`
+	Priority         Priority               `json:"priority"`
+	Assignee         string                 `json:"assignee"`
+	Reporter         string                 `json:"reporter"`
+	CreatedAt        time.Time              `json:"created_at"`
+	UpdatedAt        time.Time              `json:"updated_at"`
+	ExternalSource   string                 `json:"external_source,omitempty"`
+	FixVersion       string                 `json:"fix_version,omitempty"`
+	AffectedVersions []string               `json:"affected_versions,omitempty"`
+	ResolvedAt       *time.Time             `json:"resolved_at,omitempty"`
+	ParentIssue      string                 `json:"parent_issue,omitempty"`
+	ExtraFields      map[string]interface{} `json:"extra_fields,omitempty"`
 }
 
 type Type string
@@ -32,6 +37,7 @@ const (
 type Status string
 
 const (
+	StatusBacklog    Status = "backlog"
 	StatusToDo       Status = "todo"
 	StatusInProgress Status = "in_progress"
 	StatusDone       Status = "done"
@@ -50,8 +56,9 @@ const (
 type ExternalSource string
 
 const (
-	ExternalSourceGitHub  ExternalSource = "github"
-	ExternalSourceDiscord ExternalSource = "discord"
+	ExternalSourceGitHub           ExternalSource = "github"
+	ExternalSourceDiscordForumPost ExternalSource = "discord_forum_post"
+	ExternalSourceDiscordTicketBot ExternalSource = "discord_ticket_bot"
 )
 
 func (i *Issue) Validate() error {

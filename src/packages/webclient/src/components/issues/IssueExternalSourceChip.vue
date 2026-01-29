@@ -15,7 +15,9 @@ const color = computed(() => {
   switch (props.issue.external_source.toLowerCase()) {
     case 'github':
       return 'grey';
-    case 'discord':
+    case 'discord_forum_post':
+      return 'indigo';
+    case 'discord_ticket_bot':
       return 'indigo';
     default:
       return 'primary';
@@ -30,10 +32,29 @@ const icon = computed(() => {
   switch (props.issue.external_source.toLowerCase()) {
     case 'github':
       return 'mdi-github';
-    case 'discord':
+    case 'discord_forum_post':
+      return 'mdi-chat';
+    case 'discord_ticket_bot':
       return 'mdi-chat';
     default:
       return 'mdi-help-circle-outline';
+  }
+});
+
+const externalLink = computed(() => {
+  if (!props.issue.external_source) {
+    return null;
+  }
+
+  switch (props.issue.external_source.toLowerCase()) {
+    case 'github':
+      return props.issue.extra_fields?.github_url || null;
+    case 'discord_forum_post':
+      return props.issue.extra_fields?.discord_forum_post_url || null;
+    case 'discord_ticket_bot':
+      return props.issue.extra_fields?.discord_ticket_url || null;
+    default:
+      return null;
   }
 });
 
@@ -43,6 +64,7 @@ const icon = computed(() => {
   <v-chip
     :color="color"
     :density="props.density || 'default'"
+    :href="externalLink"
     :prepend-icon="icon"
     rounded
     variant="tonal"
