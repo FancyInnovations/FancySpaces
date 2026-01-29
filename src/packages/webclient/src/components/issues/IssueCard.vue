@@ -16,7 +16,7 @@ const props = defineProps<{
     v-for="i in 6"
     :key="i"
     class="mb-4"
-    color="#3E1A6D20"
+    color="#382F2960"
     elevation="6"
     rounded="xl"
   >

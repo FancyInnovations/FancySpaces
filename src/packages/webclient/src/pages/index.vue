@@ -79,7 +79,7 @@ async function fetchStats() {
       <v-col md="2">
         <v-card
           class="card__border"
-          color="#29152550"
+          color="#29231550"
           elevation="12"
           height="100%"
           rounded="xl"
@@ -87,7 +87,7 @@ async function fetchStats() {
         >
           <v-card-title class="mt-2">
             <div class="d-flex align-center">
-              <v-icon class="mr-2" color="green lighten-1">mdi-minecraft</v-icon>
+              <v-icon class="mr-2" color="green-lighten-1">mdi-minecraft</v-icon>
               <p>Minecraft plugins</p>
             </div>
           </v-card-title>
@@ -101,14 +101,14 @@ async function fetchStats() {
       <v-col md="2">
         <v-card
           class="card__border"
-          color="#29152550"
+          color="#29231550"
           elevation="12"
           height="100%"
           rounded="xl"
           to="/explore/hytale-plugins"
         >
           <v-card-title class="mt-2">
-            <v-icon class="mr-2" color="blue lighten-1">mdi-sword-cross</v-icon>
+            <v-icon class="mr-2" color="blue-lighten-1">mdi-sword-cross</v-icon>
             Hytale plugins
           </v-card-title>
 
@@ -121,14 +121,14 @@ async function fetchStats() {
       <v-col md="2">
         <v-card
           class="card__border"
-          color="#29152550"
+          color="#29231550"
           elevation="12"
           height="100%"
           rounded="xl"
           to="/explore/other-projects"
         >
           <v-card-title class="mt-2">
-            <v-icon class="mr-2" color="purple lighten-1">mdi-cube-outline</v-icon>
+            <v-icon class="mr-2" color="orange-lighten-1">mdi-cube-outline</v-icon>
             Other projects
           </v-card-title>
 
@@ -143,7 +143,7 @@ async function fetchStats() {
       <v-col md="6">
         <v-card
           class="py-4"
-          color="#29152550"
+          color="#29231550"
           elevation="12"
           height="100%"
           rounded="xl"

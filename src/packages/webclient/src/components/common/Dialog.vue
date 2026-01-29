@@ -31,7 +31,7 @@ const props = defineProps<{
 }
 
 .dialog__background > * {
-  background-color: rgba(21, 13, 25, 0.6) !important;
+  background-color: rgba(25, 21, 13, 0.4) !important;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }

@@ -101,7 +101,7 @@ function copyToClipboard(text: string) {
       <v-col md="6">
         <v-card
           class="card__border"
-          color="#29152550"
+          color="#29231550"
           elevation="12"
           rounded="xl"
         >
@@ -150,7 +150,7 @@ function copyToClipboard(text: string) {
       <v-col>
         <v-card
           class="card__border"
-          color="#29152550"
+          color="#29231550"
           elevation="12"
           rounded="xl"
         >

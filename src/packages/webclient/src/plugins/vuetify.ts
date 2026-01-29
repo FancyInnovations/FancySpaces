@@ -15,47 +15,40 @@ import {createVuetify, type ThemeDefinition} from 'vuetify'
 const darkTheme: ThemeDefinition = {
   dark: true,
   colors: {
-    // Primary (purple accent)
-    primary: '#C9A7FF',
-    'on-primary': '#2A004F',
-    'primary-container': '#3E1A6D',
-    'on-primary-container': '#E9DDFF',
+    primary: '#FFB783',
+    'on-primary': '#4F2500',
+    'primary-container': '#6D390B',
+    'on-primary-container': '#FFDCC5',
 
-    // Secondary (muted purple / gray)
-    secondary: '#B9A6C9',
-    'on-secondary': '#2C1E35',
-    'secondary-container': '#43314F',
-    'on-secondary-container': '#EADCF4',
+    secondary: '#E4BFA7',
+    'on-secondary': '#422B1B',
+    'secondary-container': '#5B412F',
+    'on-secondary-container': '#FFDCC5',
 
-    // Tertiary (slightly warmer violet)
-    tertiary: '#E0B7FF',
-    'on-tertiary': '#3A004D',
-    'tertiary-container': '#552068',
-    'on-tertiary-container': '#F3DBFF',
+    tertiary: '#EEBF6D',
+    'on-tertiary': '#422D00',
+    'tertiary-container': '#5E4200',
+    'on-tertiary-container': '#FFDEA8',
 
-    // Error (unchanged but tuned darker)
     error: '#FFB4AB',
     'on-error': '#690005',
     'error-container': '#93000A',
     'on-error-container': '#FFDAD6',
 
-    // Backgrounds (near-black with purple bias)
-    background: '#0F0B14',
-    'on-background': '#E6DFF0',
+    background: '#19120D',
+    'on-background': '#F0DFD6',
 
-    surface: '#0F0B14',
-    'on-surface': '#E6DFF0',
-    'surface-variant': '#2A2233',
-    'on-surface-variant': '#CCC2D9',
+    surface: '#19120D',
+    'on-surface': '#F0DFD6',
+    'surface-variant': '#52443B',
+    'on-surface-variant': '#D6C3B7',
 
-    // Utility
-    outline: '#8C8299',
+    outline: '#9F8D83',
     shadow: '#000000',
 
-    // Inverse (for light surfaces like dialogs/snackbars)
-    'inverse-surface': '#E6DFF0',
-    'inverse-on-surface': '#1E1824',
-    'inverse-primary': '#5E2D91',
+    'inverse-surface': '#F0DFD6',
+    'inverse-on-surface': '#382F29',
+    'inverse-primary': '#8A5021',
   },
 }
 

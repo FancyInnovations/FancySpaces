@@ -63,7 +63,7 @@ const props = defineProps<{
       <v-col v-for="category in ['TODO', 'In Progress', 'Done']" :key="category" cols="12" md="4">
         <v-card
           class="card__border"
-          color="#29152550"
+          color="#29231550"
           elevation="12"
           rounded="xl"
         >

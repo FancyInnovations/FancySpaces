@@ -84,7 +84,7 @@ onMounted(async () => {
       <v-col>
         <v-card
           class="card__border"
-          color="#29152550"
+          color="#29231550"
           elevation="12"
           rounded="xl"
         >

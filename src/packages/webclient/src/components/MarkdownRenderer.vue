@@ -38,7 +38,7 @@ const renderedHtml = computed(() => {
 }
 
 ::v-deep a {
-  color: #E0B7FF !important;
+  color: #ffddb7 !important;
   text-decoration: underline;
 }
 
@@ -67,21 +67,21 @@ const renderedHtml = computed(() => {
 }
 
 ::v-deep th, ::v-deep td {
-  border: 1px solid rgba(185, 166, 201, 0.5);
+  border: 1px solid rgba(201, 189, 166, 0.5);
   padding: 8px;
   text-align: left;
 }
 
 ::v-deep hr {
   border: none;
-  border-top: 1px solid rgba(185, 166, 201, 0.5);
+  border-top: 1px solid rgba(201, 189, 166, 0.5);
   margin: 3em 0;
 }
 
 ::v-deep blockquote {
-  border-left: 4px solid #C9A7FF;
+  border-left: 4px solid #e69469;
   border-radius: 8px;
-  background: rgba(201, 167, 255, 0.1);
+  background: rgba(255, 220, 167, 0.1);
   padding: 1em;
   margin: 1em 0;
 }

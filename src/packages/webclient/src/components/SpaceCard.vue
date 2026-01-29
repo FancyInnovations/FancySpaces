@@ -28,7 +28,7 @@ onMounted(async () => {
   <v-card
     :disabled="soon"
     class="card__border"
-    color="#29152550"
+    color="#29231550"
     elevation="12"
     min-width="600"
     rounded="xl"

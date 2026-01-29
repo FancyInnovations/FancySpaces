@@ -99,7 +99,7 @@ function copyLink() {
                   v-for="comment in comments"
                   :key="comment.id"
                   class="card__border bg-transparent mb-3"
-                  color="#29152550"
+                  color="#29231550"
                   elevation="6"
                   rounded="xl"
                 >

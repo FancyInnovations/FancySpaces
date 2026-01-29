@@ -31,7 +31,7 @@ const rawMarkdown = ref<string>("# Welcome to the Markdown Editor!\n\nType your 
       <v-col md="6">
         <v-card
           class="mb-4 card__border"
-          color="#29152550"
+          color="#29231550"
           elevation="12"
           height="100%"
           rounded="xl"
