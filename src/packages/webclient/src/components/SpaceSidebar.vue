@@ -90,7 +90,7 @@ const props = defineProps<{
 <style scoped>
 .sidebar__background {
   max-height: calc(100vh - 96px);
-  background-color: #29231550 !important;
+  background-color: #19120D33 !important;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }

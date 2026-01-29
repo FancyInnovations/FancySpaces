@@ -79,7 +79,7 @@ function formatSize(sizeInBytes: number): string {
       <v-col md="8">
         <v-card
           class="card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           rounded="xl"
         >
@@ -94,7 +94,7 @@ function formatSize(sizeInBytes: number): string {
 
         <v-card
           class="mt-4 card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           rounded="xl"
         >
@@ -137,7 +137,7 @@ function formatSize(sizeInBytes: number): string {
       <v-col>
         <v-card
           class="mb-4 card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           rounded="xl"
         >

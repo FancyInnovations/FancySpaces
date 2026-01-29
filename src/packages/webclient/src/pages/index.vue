@@ -79,7 +79,7 @@ async function fetchStats() {
       <v-col md="2">
         <v-card
           class="card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           height="100%"
           rounded="xl"
@@ -101,7 +101,7 @@ async function fetchStats() {
       <v-col md="2">
         <v-card
           class="card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           height="100%"
           rounded="xl"
@@ -121,7 +121,7 @@ async function fetchStats() {
       <v-col md="2">
         <v-card
           class="card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           height="100%"
           rounded="xl"
@@ -142,8 +142,8 @@ async function fetchStats() {
     <v-row class="mt-10" justify="center">
       <v-col md="6">
         <v-card
-          class="py-4"
-          color="#29231550"
+          class="py-4 card__border"
+          color="#19120D33"
           elevation="12"
           height="100%"
           rounded="xl"

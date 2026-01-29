@@ -82,7 +82,7 @@ onMounted(async () => {
       <v-col md="8">
         <v-card
           class="mb-4 card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           rounded="xl"
         >
@@ -97,7 +97,7 @@ onMounted(async () => {
       <v-col md="4">
         <v-card
           class="mb-4 card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           min-width="300"
           rounded="xl"
@@ -115,7 +115,7 @@ onMounted(async () => {
 
         <v-card
           class="mb-4 card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           min-width="300"
           rounded="xl"
@@ -138,7 +138,7 @@ onMounted(async () => {
 
         <v-card
           class="mb-4 card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           min-width="300"
           rounded="xl"
@@ -165,7 +165,7 @@ onMounted(async () => {
 
         <v-card
           class="mb-4 card__border"
-          color="#29231550"
+          color="#19120D33"
           elevation="12"
           min-width="300"
           rounded="xl"
