@@ -38,7 +38,7 @@ type Status string
 
 const (
 	StatusBacklog    Status = "backlog"
-	StatusToDo       Status = "todo"
+	StatusPlanned    Status = "planned"
 	StatusInProgress Status = "in_progress"
 	StatusDone       Status = "done"
 	StatusClosed     Status = "closed"

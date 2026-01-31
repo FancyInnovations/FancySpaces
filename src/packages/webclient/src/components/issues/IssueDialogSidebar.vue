@@ -100,7 +100,7 @@ onMounted(() => {
       </v-list-item-title>
     </v-list-item>
 
-    <v-list-item>
+    <v-list-item v-if="props.issue?.external_source">
       <v-list-item-title>
         Source:
         <IssueExternalSourceChip
@@ -191,7 +191,7 @@ onMounted(() => {
       </v-list-item-title>
     </v-list-item>
 
-    <v-list-item>
+    <v-list-item v-if="props.issue?.assignee">
       <v-list-item-title>
         Assignee:
         <UserChip

@@ -4,55 +4,21 @@ import type {Issue} from "@/api/issues/types.ts";
 import type {Space} from "@/api/spaces/types.ts";
 import IssueCard from "@/components/issues/IssueCard.vue";
 
-const issue = ref<Issue>({
-  id: '7G5B1',
-  space: 'fc',
-  title: 'NPE in some module causing crashes',
-  description: '## 🐞 Bug Description\n'+
-    'A defect was identified that causes unexpected behavior in the application. Further investigation is required to determine the root cause and scope of impact.\n'+
-    '\n'+
-    '## 🔁 Steps to Reproduce\n'+
-    '1. Navigate to `[page / feature]`\n'+
-    '2. Perform `[action]`\n'+
-    '3. Observe the result\n'+
-    '\n'+
-    '## ✅ Expected Result\n'+
-    'The system should `[expected behavior]`.\n'+
-    '\n'+
-    '## ❌ Actual Result\n'+
-    'The system instead `[actual behavior]`.\n'+
-    '\n'+
-    '## 🌍 Environment\n'+
-    '- App version: `[version]`\n'+
-    '- Environment: `[dev / staging / prod]`\n'+
-    '- Browser / Device: `[if applicable]`\n'+
-    '\n'+
-    '## 📎 Additional Notes\n'+
-    '- Frequency: `[always / intermittent / once]`\n'+
-    '- Severity: `[low / medium / high / critical]`\n'+
-    '- Attachments: `[logs / screenshots / videos if any]`',
-  type: 'bug',
-  priority: 'low',
-  status: 'done',
-  assignee: 'user123',
-  reporter: 'user456',
-  created_at: new Date(2026, 0, 26, 21, 0, 0, 0),
-  updated_at: new Date(),
-  external_source: 'github',
-  affected_versions: ['1.2.2', '1.2.3', '1.2.4'],
-  fix_version: '2.0.0',
-  resolved_at: new Date(2026, 0, 27, 15, 30, 0, 0),
-  parent_issue: 'fc-ABC123',
-  extra_fields: {
-    github_url: 'https://github.com/FancyInnovations/FancyPlugins/issues/195'
-  }
+const plannedIssues = computed(() => {
+  return props.issues.filter(issue => issue.status === 'planned');
+});
+
+const inProgressIssues = computed(() => {
+  return props.issues.filter(issue => issue.status === 'in_progress');
+});
+
+const doneIssues = computed(() => {
+  return props.issues.filter(issue => issue.status === 'done');
 });
 
 const props = defineProps<{
   space: Space,
-  typeFilter: string|undefined,
-  priorityFilter: string|undefined,
-  statusFilter: string|undefined
+  issues: Issue[],
 }>();
 
 </script>
@@ -60,17 +26,68 @@ const props = defineProps<{
 <template>
   <v-container>
     <v-row>
-      <v-col v-for="category in ['TODO', 'In Progress', 'Done']" :key="category" cols="12" md="4">
+      <v-col cols="12" md="4">
         <v-card
           class="card__border"
           color="#19120D33"
           elevation="12"
+          min-height="600"
           rounded="xl"
         >
-          <v-card-title class="my-2 ml-2">{{ category }}</v-card-title>
+          <v-card-title class="my-2 ml-2">Planned</v-card-title>
 
           <v-card-text>
-            <IssueCard :issue="issue" />
+            <IssueCard
+              v-for="issue in plannedIssues"
+              v-if="plannedIssues.length > 0"
+              :key="issue.id"
+              :issue="issue"
+            />
+            <p v-else class="text-center my-4">No planned issues.</p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" md="4">
+        <v-card
+          class="card__border"
+          color="#19120D33"
+          elevation="12"
+          min-height="600"
+          rounded="xl"
+        >
+          <v-card-title class="my-2 ml-2">In Progress</v-card-title>
+
+          <v-card-text>
+            <IssueCard
+              v-for="issue in inProgressIssues"
+              v-if="inProgressIssues.length > 0"
+              :key="issue.id"
+              :issue="issue"
+            />
+            <p v-else class="text-center my-4">No issues in progress.</p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" md="4">
+        <v-card
+          class="card__border"
+          color="#19120D33"
+          elevation="12"
+          min-height="600"
+          rounded="xl"
+        >
+          <v-card-title class="my-2 ml-2">Done</v-card-title>
+
+          <v-card-text>
+            <IssueCard
+              v-for="issue in doneIssues"
+              v-if="doneIssues.length > 0"
+              :key="issue.id"
+              :issue="issue"
+            />
+            <p v-else class="text-center my-4">No done issues.</p>
           </v-card-text>
         </v-card>
       </v-col>

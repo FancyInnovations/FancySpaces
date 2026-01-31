@@ -85,10 +85,13 @@ export default defineConfig({
   server: {
     port: 3001,
     proxy: {
+      // '/api/v1/': {
+      //   target: 'https://fancyspaces.net',
+      //   changeOrigin: true,
+      //   secure: true,
+      // },
       '/api/v1/': {
-        target: 'https://fancyspaces.net',
-        changeOrigin: true,
-        secure: true,
+        target: 'http://localhost:8080',
       },
     },
     watch: {

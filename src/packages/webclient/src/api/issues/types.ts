@@ -4,7 +4,7 @@ export interface Issue {
   title: string;
   description: string;
   type: 'epic' | 'bug' | 'task' | 'story' | 'idea';
-  status: 'backlog' | 'todo' | 'in_progress' | 'done' | 'closed';
+  status: 'backlog' | 'planned' | 'in_progress' | 'done' | 'closed';
   priority: 'low' | 'medium' | 'high' | 'critical';
   assignee?: string;
   reporter: string;

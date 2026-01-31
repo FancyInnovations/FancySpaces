@@ -9,7 +9,7 @@ const props = defineProps<{
 
 const color = computed(() => {
   switch (props.issue.status.toLowerCase()) {
-    case 'todo':
+    case 'planned':
       return 'green';
     case 'in_progress':
       return 'blue';
@@ -24,7 +24,7 @@ const color = computed(() => {
 
 const icon = computed(() => {
   switch (props.issue.status.toLowerCase()) {
-    case 'todo':
+    case 'planned':
       return 'mdi-checkbox-blank-circle-outline';
     case 'in_progress':
       return 'mdi-progress-clock';

@@ -4,11 +4,30 @@ import {type Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
+import {createIssue, getAllIssues} from "@/api/issues/issues.ts";
+import type {Issue} from "@/api/issues/types.ts";
 
 
 const space = ref<Space>();
+const issues = ref<Issue[]>([]);
+const filteredIssues = computed(() => {
+  return issues.value.filter(issue => {
+    console.log("Search Query:", searchQuery.value);
+    console.log("Issue Title:", issue.title);
+    const matchesSearch = searchQuery.value ?
+      issue.title.toLowerCase().includes(searchQuery.value.toLowerCase()) :
+      true;
+
+    const matchesType = typeFilter.value ? issue.type === typeFilter.value : true;
+    const matchesPriority = priorityFilter.value ? issue.priority === priorityFilter.value : true;
+    const matchesStatus = statusFilter.value ? issue.status === statusFilter.value : true;
+
+    return matchesSearch && matchesType && matchesPriority && matchesStatus;
+  });
+});
 
 const displayType = ref<'board' | 'list'>('board');
+const searchQuery = ref('');
 const typeFilter = ref();
 const priorityFilter = ref();
 const statusFilter = ref();
@@ -16,6 +35,8 @@ const statusFilter = ref();
 onMounted(async () => {
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
+
+  issues.value = await getAllIssues(space.value.id);
 
   useHead({
     title: `${space.value.title} issues - FancySpaces`,
@@ -27,6 +48,15 @@ onMounted(async () => {
     ]
   });
 });
+
+async function createNewIssue() {
+  await createIssue(space.value!.id, {
+    title: 'My New Issue',
+    description: 'Describe your issue here.',
+    type: 'task',
+    priority: 'medium'
+  });
+}
 
 </script>
 
@@ -66,8 +96,10 @@ onMounted(async () => {
             <v-btn
               :to="`/spaces/${space?.slug}/issues/new`"
               color="primary"
+              disabled
               size="large"
               variant="tonal"
+              @click="createNewIssue"
             >
               New Issue
             </v-btn>
@@ -75,7 +107,7 @@ onMounted(async () => {
         </div>
 
         <hr
-          class="mt-4 grey-border-color"
+          class="grey-border-color"
         />
       </v-col>
     </v-row>
@@ -91,16 +123,28 @@ onMounted(async () => {
           <v-card-text>
             <div class="d-flex align-center justify-space-between">
               <div class="d-flex align-center">
+                <v-text-field
+                  v-model="searchQuery"
+                  clearable
+                  color="primary"
+                  density="compact"
+                  hide-details
+                  label="Search issues"
+                  min-width="300"
+                  prepend-inner-icon="mdi-magnify"
+                />
+
                 <v-select
                   v-model="typeFilter"
                   :items="[
                     { title: 'Epic', value: 'epic' },
                     { title: 'Bug', value: 'bug' },
                     { title: 'Task', value: 'task' },
-                    { title: 'Storie', value: 'story' },
+                    { title: 'Story', value: 'story' },
                     { title: 'Idea', value: 'idea' },
 
                   ]"
+                  class="ml-4"
                   clearable
                   color="primary"
                   density="compact"
@@ -131,7 +175,7 @@ onMounted(async () => {
                   v-model="statusFilter"
                   :items="[
                     { title: 'Backlog', value: 'backlog' },
-                    { title: 'TODO', value: 'todo' },
+                    { title: 'Planned', value: 'planned' },
                     { title: 'In Progress', value: 'in_progress' },
                     { title: 'Done', value: 'done' },
                     { title: 'Closed', value: 'closed' },
@@ -177,17 +221,13 @@ onMounted(async () => {
     <v-row>
       <IssueBoard
         v-if="displayType === 'board'"
-        :priority-filter="priorityFilter"
+        :issues="filteredIssues"
         :space="space!"
-        :status-filter="statusFilter"
-        :type-filter="typeFilter"
       />
       <IssueTable
         v-else
-        :priority-filter="priorityFilter"
+        :issues="filteredIssues"
         :space="space!"
-        :status-filter="statusFilter"
-        :type-filter="typeFilter"
       />
     </v-row>
   </v-container>
