@@ -5,23 +5,23 @@ import (
 )
 
 type Issue struct {
-	ID               string                 `json:"id"`
-	Space            string                 `json:"space"`
-	Title            string                 `json:"title"`
-	Description      string                 `json:"description"`
-	Type             Type                   `json:"type"`
-	Status           Status                 `json:"status"`
-	Priority         Priority               `json:"priority"`
-	Assignee         string                 `json:"assignee"`
-	Reporter         string                 `json:"reporter"`
-	CreatedAt        time.Time              `json:"created_at"`
-	UpdatedAt        time.Time              `json:"updated_at"`
-	ExternalSource   string                 `json:"external_source,omitempty"`
-	FixVersion       string                 `json:"fix_version,omitempty"`
-	AffectedVersions []string               `json:"affected_versions,omitempty"`
-	ResolvedAt       *time.Time             `json:"resolved_at,omitempty"`
-	ParentIssue      string                 `json:"parent_issue,omitempty"`
-	ExtraFields      map[string]interface{} `json:"extra_fields,omitempty"`
+	ID               string                 `json:"id" bson:"id"`
+	Space            string                 `json:"space" bson:"space"`
+	Title            string                 `json:"title" bson:"title"`
+	Description      string                 `json:"description" bson:"description"`
+	Type             Type                   `json:"type" bson:"type"`
+	Status           Status                 `json:"status" bson:"status"`
+	Priority         Priority               `json:"priority" bson:"priority"`
+	Assignee         string                 `json:"assignee" bson:"assignee"`
+	Reporter         string                 `json:"reporter" bson:"reporter"`
+	CreatedAt        time.Time              `json:"created_at" bson:"created_at"`
+	UpdatedAt        time.Time              `json:"updated_at" bson:"updated_at"`
+	ExternalSource   string                 `json:"external_source,omitempty" bson:"external_source"`
+	FixVersion       string                 `json:"fix_version,omitempty" json:"fix_version"`
+	AffectedVersions []string               `json:"affected_versions,omitempty" bson:"affected_versions"`
+	ResolvedAt       *time.Time             `json:"resolved_at,omitempty" bson:"resolved_at"`
+	ParentIssue      string                 `json:"parent_issue,omitempty" bson:"parent_issue"`
+	ExtraFields      map[string]interface{} `json:"extra_fields,omitempty" bson:"extra_fields"`
 }
 
 type Type string
@@ -77,10 +77,10 @@ func (i *Issue) Validate() error {
 }
 
 type Comment struct {
-	ID        string    `json:"id"`
-	Issue     string    `json:"issue"`
+	ID        string    `json:"id" bson:"id"`
+	Issue     string    `json:"issue" bson:"issue"`
 	Author    string    `json:"author"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Content   string    `json:"content" bson:"content"`
+	CreatedAt time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }
