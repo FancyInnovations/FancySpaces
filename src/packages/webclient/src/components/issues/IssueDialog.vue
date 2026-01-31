@@ -12,32 +12,34 @@ const isLoggedIn = computed(() => {
 });
 
 const comments = computed<IssueComment[]>(() => {
-  return [
-    {
-      id: 'CMT123',
-      issue: '7G5B1',
-      author: 'user789',
-      content: 'I have encountered this bug as well. It seems to occur when performing [specific action].',
-      created_at: new Date(),
-      updated_at: new Date()
-    },
-    {
-      id: 'CMT124',
-      issue: '7G5B1',
-      author: 'user321',
-      content: 'A temporary workaround is to [workaround details], but a permanent fix is needed.',
-      created_at: new Date(),
-      updated_at: new Date()
-    },
-    {
-      id: 'CMT125',
-      issue: '7G5B1',
-      author: 'user654',
-      content: 'The development team is actively investigating this issue and will provide updates as they become available.',
-      created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
-      updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
-    }
-  ];
+  // return [
+  //   {
+  //     id: 'CMT123',
+  //     issue: '7G5B1',
+  //     author: 'user789',
+  //     content: 'I have encountered this bug as well. It seems to occur when performing [specific action].',
+  //     created_at: new Date(),
+  //     updated_at: new Date()
+  //   },
+  //   {
+  //     id: 'CMT124',
+  //     issue: '7G5B1',
+  //     author: 'user321',
+  //     content: 'A temporary workaround is to [workaround details], but a permanent fix is needed.',
+  //     created_at: new Date(),
+  //     updated_at: new Date()
+  //   },
+  //   {
+  //     id: 'CMT125',
+  //     issue: '7G5B1',
+  //     author: 'user654',
+  //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
+  //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
+  //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
+  //   }
+  // ];
+
+  return [];
 });
 
 function copyLink() {
@@ -100,6 +102,7 @@ async function typeChanged(newType: string) {
             :href="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`"
             class="mr-2"
             color="secondary"
+            disabled
             icon="mdi-open-in-new"
             target="_blank"
             variant="text"
@@ -202,6 +205,7 @@ async function typeChanged(newType: string) {
         <v-btn
           v-if="isLoggedIn"
           class="mr-2"
+          disabled
           variant="text"
         >
           Edit

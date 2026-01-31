@@ -50,12 +50,12 @@ const props = defineProps<{
 <!--        title="Roadmap"-->
 <!--      />-->
 
-<!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/issues`"-->
-<!--        link-->
-<!--        prepend-icon="mdi-format-list-checks"-->
-<!--        title="Issues"-->
-<!--      />-->
+      <v-list-item
+        :to="`/spaces/${space?.slug}/issues`"
+        link
+        prepend-icon="mdi-format-list-checks"
+        title="Issues"
+      />
 
 <!--      <v-list-item-->
 <!--        :to="`/spaces/${space?.slug}/bugs`"-->

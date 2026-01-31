@@ -34,7 +34,7 @@ const props = defineProps<{
           min-height="600"
           rounded="xl"
         >
-          <v-card-title class="my-2 ml-2">Planned</v-card-title>
+          <v-card-title class="my-2 ml-2">Planned ({{ plannedIssues.length }})</v-card-title>
 
           <v-card-text>
             <IssueCard
@@ -56,7 +56,7 @@ const props = defineProps<{
           min-height="600"
           rounded="xl"
         >
-          <v-card-title class="my-2 ml-2">In Progress</v-card-title>
+          <v-card-title class="my-2 ml-2">In Progress ({{ inProgressIssues.length }})</v-card-title>
 
           <v-card-text>
             <IssueCard
@@ -78,7 +78,7 @@ const props = defineProps<{
           min-height="600"
           rounded="xl"
         >
-          <v-card-title class="my-2 ml-2">Done</v-card-title>
+          <v-card-title class="my-2 ml-2">Done ({{ doneIssues.length }})</v-card-title>
 
           <v-card-text>
             <IssueCard
