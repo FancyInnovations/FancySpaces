@@ -12,7 +12,7 @@ type Issue struct {
 	Type             Type                   `json:"type" bson:"type"`
 	Status           Status                 `json:"status" bson:"status"`
 	Priority         Priority               `json:"priority" bson:"priority"`
-	Assignee         string                 `json:"assignee" bson:"assignee"`
+	Assignee         string                 `json:"assignee,omitempty" bson:"assignee"`
 	Reporter         string                 `json:"reporter" bson:"reporter"`
 	CreatedAt        time.Time              `json:"created_at" bson:"created_at"`
 	UpdatedAt        time.Time              `json:"updated_at" bson:"updated_at"`

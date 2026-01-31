@@ -14,6 +14,9 @@ import (
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/internal/badges"
 	"github.com/fancyinnovations/fancyspaces/internal/frontend"
+	"github.com/fancyinnovations/fancyspaces/internal/issues"
+	mongoIssuesDB "github.com/fancyinnovations/fancyspaces/internal/issues/database/mongo"
+	issuesHandler "github.com/fancyinnovations/fancyspaces/internal/issues/handler"
 	"github.com/fancyinnovations/fancyspaces/internal/sitemapprovider"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	spacesHandler "github.com/fancyinnovations/fancyspaces/internal/spaces/handler"
@@ -83,6 +86,20 @@ func Start(cfg Configuration) {
 		UserFromCtx: auth.UserFromContext,
 	})
 	vh.Register(apiPrefix, cfg.Mux)
+
+	// Issues
+	issuesDB := mongoIssuesDB.NewDB(&mongoIssuesDB.Configuration{
+		Mongo: cfg.Mongo,
+	})
+	issuesStore := issues.New(issues.Configuration{
+		DB: issuesDB,
+	})
+	ih := issuesHandler.New(issuesHandler.Configuration{
+		Store:       issuesStore,
+		Spaces:      spacesStore,
+		UserFromCtx: auth.UserFromContext,
+	})
+	ih.Register(apiPrefix, cfg.Mux)
 
 	// Frontend
 	fh := frontend.NewHandler(frontend.Configuration{

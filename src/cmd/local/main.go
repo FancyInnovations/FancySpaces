@@ -35,10 +35,10 @@ func main() {
 	mio := containers.ConnectToMinIOE2E()
 
 	// Setup default admin user
-	auth.Users["admin-1"] = &auth.User{
-		ID:        "admin-1",
+	auth.Users["oliver"] = &auth.User{
+		ID:        "oliver",
 		Provider:  auth.ProviderBasic,
-		Name:      "Admin",
+		Name:      "Oliver",
 		Email:     "oliver@fancyinnovations.com",
 		Verified:  true,
 		Password:  auth.Hash("hello"),

@@ -160,6 +160,9 @@ func (h *Handler) handleCreateIssue(w http.ResponseWriter, r *http.Request, spac
 		return
 	}
 	issue.Space = space.ID
+	issue.Reporter = u.ID
+	issue.Status = issues.StatusBacklog
+	issue.ExternalSource = ""
 
 	if err := h.store.CreateIssue(&issue); err != nil {
 		if errors.Is(err, issues.ErrIssueAlreadyExists) {
