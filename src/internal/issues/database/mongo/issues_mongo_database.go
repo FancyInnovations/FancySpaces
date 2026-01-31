@@ -85,8 +85,16 @@ func (db *DB) UpdateIssue(issue *issues.Issue) error {
 		{"$set", issue},
 	}
 
-	_, err := db.icoll.UpdateOne(nil, filter, update)
-	return err
+	res, err := db.icoll.UpdateOne(nil, filter, update)
+	if err != nil {
+		return err
+	}
+
+	if res.MatchedCount == 0 {
+		return issues.ErrIssueNotFound
+	}
+
+	return nil
 }
 
 func (db *DB) DeleteIssue(space, id string) error {
@@ -135,8 +143,16 @@ func (db *DB) UpdateComment(comment *issues.Comment) error {
 		{"$set", comment},
 	}
 
-	_, err := db.ccoll.UpdateOne(nil, filter, update)
-	return err
+	res, err := db.ccoll.UpdateOne(nil, filter, update)
+	if err != nil {
+		return err
+	}
+
+	if res.MatchedCount == 0 {
+		return issues.ErrCommentNotFound
+	}
+
+	return nil
 }
 
 func (db *DB) DeleteComment(issue, id string) error {

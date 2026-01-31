@@ -38,6 +38,10 @@ func (s *Store) GetIssue(space, id string) (*Issue, error) {
 }
 
 func (s *Store) CreateIssue(issue *Issue) error {
+	if _, err := s.db.GetIssue(issue.Space, issue.ID); err == nil {
+		return ErrIssueAlreadyExists
+	}
+
 	issue.CreatedAt = time.Now()
 	issue.UpdatedAt = time.Now()
 
@@ -67,6 +71,10 @@ func (s *Store) GetComments(issue string) ([]Comment, error) {
 }
 
 func (s *Store) AddComment(comment *Comment) error {
+	if _, err := s.db.GetIssue(comment.Issue, comment.ID); err != nil {
+		return ErrCommentAlreadyExists
+	}
+
 	comment.CreatedAt = time.Now()
 	comment.UpdatedAt = time.Now()
 
