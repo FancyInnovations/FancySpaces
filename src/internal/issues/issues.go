@@ -1,6 +1,10 @@
 package issues
 
-import "time"
+import (
+	"time"
+
+	"github.com/OliverSchlueter/goutils/idgen"
+)
 
 type DB interface {
 	GetIssues(space string) ([]Issue, error)
@@ -42,6 +46,7 @@ func (s *Store) CreateIssue(issue *Issue) error {
 		return ErrIssueAlreadyExists
 	}
 
+	issue.ID = idgen.GenerateID(8)
 	issue.CreatedAt = time.Now()
 	issue.UpdatedAt = time.Now()
 
