@@ -6,7 +6,7 @@ export interface Issue {
   type: 'epic' | 'bug' | 'task' | 'story' | 'idea';
   status: 'backlog' | 'todo' | 'in_progress' | 'done' | 'closed';
   priority: 'low' | 'medium' | 'high' | 'critical';
-  assignee: string;
+  assignee?: string;
   reporter: string;
   created_at: Date;
   updated_at: Date;
