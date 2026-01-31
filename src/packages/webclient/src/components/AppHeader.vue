@@ -153,6 +153,23 @@
           />
         </template>
         <v-list>
+          <v-list-subheader title="Account"/>
+
+          <v-list-item
+            href="/auth/login"
+            prepend-icon="mdi-login"
+            title="Login"
+          />
+
+          <v-list-item
+            disabled
+            href="/auth/register"
+            prepend-icon="mdi-account-plus"
+            title="Register"
+          />
+
+          <v-list-subheader title="Links"/>
+
           <v-list-item
             href="https://github.com/fancyinnovations"
             prepend-icon="mdi-github"

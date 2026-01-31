@@ -19,6 +19,7 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
+    '/auth/login': RouteRecordInfo<'/auth/login', '/auth/login', Record<never, never>, Record<never, never>>,
     '/explore/': RouteRecordInfo<'/explore/', '/explore', Record<never, never>, Record<never, never>>,
     '/explore/by-other-creators': RouteRecordInfo<'/explore/by-other-creators', '/explore/by-other-creators', Record<never, never>, Record<never, never>>,
     '/explore/hytale-plugins': RouteRecordInfo<'/explore/hytale-plugins', '/explore/hytale-plugins', Record<never, never>, Record<never, never>>,
@@ -45,6 +46,10 @@ declare module 'vue-router/auto-routes' {
   export interface _RouteFileInfoMap {
     'src/pages/index.vue': {
       routes: '/'
+      views: never
+    }
+    'src/pages/auth/login.vue': {
+      routes: '/auth/login'
       views: never
     }
     'src/pages/explore/index.vue': {
