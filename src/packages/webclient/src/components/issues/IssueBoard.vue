@@ -26,7 +26,7 @@ const props = defineProps<{
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" md="4">
+      <v-col class="pl-0 pt-0" cols="12" md="4">
         <v-card
           class="card__border"
           color="#19120D33"
@@ -48,7 +48,7 @@ const props = defineProps<{
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="4">
+      <v-col class="pt-0" cols="12" md="4">
         <v-card
           class="card__border"
           color="#19120D33"
@@ -70,7 +70,7 @@ const props = defineProps<{
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="4">
+      <v-col class="pt-0 pr-0" cols="12" md="4">
         <v-card
           class="card__border"
           color="#19120D33"

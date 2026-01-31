@@ -29,7 +29,7 @@ function openIssueDialog() {
     <v-card-text class="d-flex">
       <div class="d-flex flex-column justify-space-between">
         <p
-          class="text-body-1 mb-2"
+          class="text-body-1"
         >
           {{ issue.title }}
         </p>
@@ -37,16 +37,17 @@ function openIssueDialog() {
         <div class="d-inline-block">
           <IssueIDChip
             :issue="issue"
+            class="ma-1"
           />
 
           <IssueTypeChip
             :issue="issue"
-            class="ml-2 mr-2"
+            class="ma-1"
           />
 
           <IssuePriorityChip
             :issue="issue"
-            class="mr-2"
+            class="ma-1"
           />
         </div>
       </div>

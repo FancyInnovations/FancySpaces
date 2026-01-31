@@ -9,14 +9,16 @@ const props = defineProps<{
 
 const color = computed(() => {
   switch (props.issue.status.toLowerCase()) {
+    case 'backlog':
+      return 'yellow';
     case 'planned':
-      return 'green';
+      return 'orange';
     case 'in_progress':
       return 'blue';
     case 'done':
-      return 'grey';
+      return 'green';
     case 'closed':
-      return 'grey darken-1';
+      return 'grey';
     default:
       return 'primary';
   }
@@ -24,6 +26,8 @@ const color = computed(() => {
 
 const icon = computed(() => {
   switch (props.issue.status.toLowerCase()) {
+    case 'backlog':
+      return 'mdi-timer-sand-empty';
     case 'planned':
       return 'mdi-checkbox-blank-circle-outline';
     case 'in_progress':

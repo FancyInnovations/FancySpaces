@@ -7,13 +7,14 @@ import {useHead} from "@vueuse/head";
 import {createIssue, getAllIssues} from "@/api/issues/issues.ts";
 import type {Issue} from "@/api/issues/types.ts";
 
+const isLoggedIn = computed(() => {
+  return localStorage.getItem("fs_api_key") !== null;
+});
 
 const space = ref<Space>();
 const issues = ref<Issue[]>([]);
 const filteredIssues = computed(() => {
   return issues.value.filter(issue => {
-    console.log("Search Query:", searchQuery.value);
-    console.log("Issue Title:", issue.title);
     const matchesSearch = searchQuery.value ?
       issue.title.toLowerCase().includes(searchQuery.value.toLowerCase()) :
       true;
@@ -94,6 +95,7 @@ async function createNewIssue() {
 
           <div class="d-flex flex-column justify-center">
             <v-btn
+              v-if="isLoggedIn"
               :to="`/spaces/${space?.slug}/issues/new`"
               color="primary"
               disabled
@@ -113,7 +115,9 @@ async function createNewIssue() {
     </v-row>
 
     <v-row>
-      <v-col>
+      <v-col
+        class="d-flex align-center justify-space-between flex-wrap"
+      >
         <v-card
           class="card__border"
           color="#19120D33"
@@ -122,9 +126,10 @@ async function createNewIssue() {
         >
           <v-card-text>
             <div class="d-flex align-center justify-space-between">
-              <div class="d-flex align-center">
+              <div class="d-flex align-center flex-wrap">
                 <v-text-field
                   v-model="searchQuery"
+                  class="ma-2"
                   clearable
                   color="primary"
                   density="compact"
@@ -144,7 +149,7 @@ async function createNewIssue() {
                     { title: 'Idea', value: 'idea' },
 
                   ]"
-                  class="ml-4"
+                  class="ma-2"
                   clearable
                   color="primary"
                   density="compact"
@@ -162,7 +167,7 @@ async function createNewIssue() {
                     { title: 'Critical', value: 'critical' },
 
                   ]"
-                  class="ml-4"
+                  class="ma-2"
                   clearable
                   color="primary"
                   density="compact"
@@ -181,7 +186,7 @@ async function createNewIssue() {
                     { title: 'Closed', value: 'closed' },
 
                   ]"
-                  class="ml-4"
+                  class="ma-2"
                   clearable
                   color="primary"
                   density="compact"
@@ -190,45 +195,57 @@ async function createNewIssue() {
                   min-width="200"
                 />
               </div>
-
-              <v-btn-group
-                density="compact"
-              >
-                <v-btn
-                  :variant="displayType === 'board' ? 'tonal' : 'outlined'"
-                  color="primary"
-                  prepend-icon="mdi-view-dashboard"
-                  @click="displayType = 'board'"
-                >
-                  Board
-                </v-btn>
-
-                <v-btn
-                  :variant="displayType === 'list' ? 'tonal' : 'outlined'"
-                  color="primary"
-                  prepend-icon="mdi-format-list-bulleted"
-                  @click="displayType = 'list'"
-                >
-                  List
-                </v-btn>
-              </v-btn-group>
             </div>
+          </v-card-text>
+        </v-card>
+
+        <v-card
+          class="card__border margin-top flex-grow-1"
+          color="#19120D33"
+          elevation="12"
+          max-width="fit-content"
+          rounded="xl"
+        >
+          <v-card-text>
+            <v-btn-group
+              density="compact"
+            >
+              <v-btn
+                :variant="displayType === 'board' ? 'tonal' : 'outlined'"
+                color="primary"
+                prepend-icon="mdi-view-dashboard"
+                @click="displayType = 'board'"
+              >
+                Board
+              </v-btn>
+
+              <v-btn
+                :variant="displayType === 'list' ? 'tonal' : 'outlined'"
+                color="primary"
+                prepend-icon="mdi-format-list-bulleted"
+                @click="displayType = 'list'"
+              >
+                List
+              </v-btn>
+            </v-btn-group>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
 
     <v-row>
-      <IssueBoard
-        v-if="displayType === 'board'"
-        :issues="filteredIssues"
-        :space="space!"
-      />
-      <IssueTable
-        v-else
-        :issues="filteredIssues"
-        :space="space!"
-      />
+      <v-col>
+        <IssueBoard
+          v-if="displayType === 'board'"
+          :issues="filteredIssues"
+          :space="space!"
+        />
+        <IssueTable
+          v-else
+          :issues="filteredIssues"
+          :space="space!"
+        />
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -236,5 +253,11 @@ async function createNewIssue() {
 <style scoped>
 .grey-border-color {
   border-color: rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 1919px) {
+  .margin-top {
+    margin-top: 16px !important;
+  }
 }
 </style>

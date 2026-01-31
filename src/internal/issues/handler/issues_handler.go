@@ -208,6 +208,9 @@ func (h *Handler) handleUpdateIssue(w http.ResponseWriter, r *http.Request, spac
 		now := time.Now()
 		issue.ResolvedAt = &now
 	}
+	if (req.Status != issues.StatusDone && req.Status != issues.StatusClosed) && (issue.Status == issues.StatusDone || issue.Status == issues.StatusClosed) {
+		issue.ResolvedAt = nil
+	}
 
 	issue.Title = req.Title
 	issue.Description = req.Description

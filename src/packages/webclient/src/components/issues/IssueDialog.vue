@@ -4,8 +4,12 @@ import Dialog from "@/components/common/Dialog.vue";
 import IssueDialogSidebar from "@/components/issues/IssueDialogSidebar.vue";
 import {useIssueDialogStore} from "@/stores/issue-dialog.ts";
 import type {IssueComment} from "@/api/issues/types.ts";
+import {updateIssue} from "@/api/issues/issues.ts";
 
 const issueDialogStore = useIssueDialogStore();
+const isLoggedIn = computed(() => {
+  return localStorage.getItem("fs_api_key") !== null;
+});
 
 const comments = computed<IssueComment[]>(() => {
   return [
@@ -39,6 +43,24 @@ const comments = computed<IssueComment[]>(() => {
 function copyLink() {
   const issueLink = `${window.location.origin}/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`;
   navigator.clipboard.writeText(issueLink);
+
+  window.alert('Issue link copied to clipboard!');
+}
+
+function copyID() {
+  const issueID = issueDialogStore.issue?.id;
+  if (issueID) {
+    navigator.clipboard.writeText(issueID);
+    window.alert('Issue ID copied to clipboard!');
+  }
+}
+
+async function typeChanged(newType: string) {
+  if (!issueDialogStore.issue) return;
+
+  const newIssue = { ...issueDialogStore.issue! };
+  newIssue.status = newType as any;
+  await updateIssue(newIssue.space, newIssue.id, newIssue);
 }
 
 </script>
@@ -49,8 +71,47 @@ function copyLink() {
     width="64%"
   >
     <div class="rounded-xl">
-      <div class="py-2 border-b">
-        <h1 class="text-center text-h4 text-secondary">{{ issueDialogStore.issue?.title }}</h1>
+
+      <div class="py-2 border-b d-flex align-center px-4">
+        <h1 class="ml-2 text-h4 text-secondary">{{ issueDialogStore.issue?.title }}</h1>
+
+        <div class="flex-grow-1 d-flex justify-end align-center">
+          <v-select
+            v-if="issueDialogStore.issue && isLoggedIn"
+            v-model="issueDialogStore.issue!.status"
+            :items="[
+                    { title: 'Backlog', value: 'backlog' },
+                    { title: 'Planned', value: 'planned' },
+                    { title: 'In Progress', value: 'in_progress' },
+                    { title: 'Done', value: 'done' },
+                    { title: 'Closed', value: 'closed' },
+
+                  ]"
+            class="mr-4"
+            color="primary"
+            density="compact"
+            hide-details
+            max-width="200"
+            variant="solo"
+            @update:modelValue="typeChanged"
+          />
+
+          <v-btn
+            :href="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`"
+            class="mr-2"
+            color="secondary"
+            icon="mdi-open-in-new"
+            target="_blank"
+            variant="text"
+          />
+
+          <v-btn
+            color="secondary"
+            icon="mdi-close"
+            variant="text"
+            @click="() => issueDialogStore.close()"
+          />
+        </div>
       </div>
 
       <div class="issue-dialog-inner d-flex">
@@ -122,19 +183,28 @@ function copyLink() {
       </div>
 
       <div class="d-flex justify-end pa-2 border-t">
-          <v-btn
-            class="mr-4"
-            variant="text"
-            @click="copyLink"
-          >
-            Copy Link
-          </v-btn>
+        <v-btn
+          class="mr-2"
+          variant="text"
+          @click="copyLink"
+        >
+          Copy Link
+        </v-btn>
 
         <v-btn
+          class="mr-2"
           variant="text"
-          @click="() => issueDialogStore.close()"
+          @click="copyID"
         >
-          Close
+          Copy ID
+        </v-btn>
+
+        <v-btn
+          v-if="isLoggedIn"
+          class="mr-2"
+          variant="text"
+        >
+          Edit
         </v-btn>
       </div>
     </div>
