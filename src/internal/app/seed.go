@@ -1,12 +1,27 @@
 package app
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"time"
 
+	"github.com/fancyinnovations/fancyspaces/internal/maven"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	fakeSpacesDB "github.com/fancyinnovations/fancyspaces/internal/spaces/database/fake"
 )
+
+func seedMavenRepos(store *maven.Store) {
+	err := store.CreateRepository(context.Background(), "fi", maven.Repository{
+		SpaceID:   "fi",
+		Name:      "releases",
+		Public:    true,
+		CreatedAt: time.Now(),
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+}
 
 func seedSpacesDB() *fakeSpacesDB.DB {
 	db := fakeSpacesDB.New()
