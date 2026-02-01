@@ -194,6 +194,7 @@ async function statusChanged(newStatus: string) {
         />
 
         <v-card
+          v-if="isLoggedIn"
           class="card__border bg-transparent mt-4"
           color="#19120D33"
           elevation="6"
