@@ -13,17 +13,17 @@ type Repository struct {
 }
 
 type Artifact struct {
-	SpaceID    string            `json:"space_id" bson:"space_id"`
-	Repository string            `json:"repository" bson:"repository"`
-	Group      string            `json:"group" bson:"group"`
-	ID         string            `json:"id" bson:"id"`
-	Versions   []ArtifactVersion `json:"versions" bson:"versions"`
+	SpaceID    string             `json:"space_id" bson:"space_id"`
+	Repository string             `json:"repository" bson:"repository"`
+	Group      string             `json:"group" bson:"group"`
+	ID         string             `json:"id" bson:"id"`
+	Versions   []*ArtifactVersion `json:"versions" bson:"versions"`
 }
 
 type ArtifactVersion struct {
-	Version     string                `json:"version" bson:"version"`
-	PublishedAt time.Time             `json:"published_at" bson:"published_at"`
-	Files       []ArtifactVersionFile `json:"files" bson:"files"`
+	Version     string                 `json:"version" bson:"version"`
+	PublishedAt time.Time              `json:"published_at" bson:"published_at"`
+	Files       []*ArtifactVersionFile `json:"files" bson:"files"`
 }
 
 type ArtifactVersionFile struct {
@@ -40,6 +40,19 @@ type MetadataXML struct {
 	Versions   []string `xml:"versioning>versions>version"`
 	Latest     string   `xml:"versioning>latest"`
 	Release    string   `xml:"versioning>release"`
+}
+
+func (a *Artifact) GetVersion(version string) *ArtifactVersion {
+	if version == "latest" && len(a.Versions) > 0 {
+		return a.Versions[len(a.Versions)-1]
+	}
+
+	for _, v := range a.Versions {
+		if v.Version == version {
+			return v
+		}
+	}
+	return nil
 }
 
 func (a *Artifact) ToMetadataXML() MetadataXML {
@@ -63,4 +76,13 @@ func (a *Artifact) ToMetadataXML() MetadataXML {
 		Latest:     latest,
 		Release:    release,
 	}
+}
+
+func (f *ArtifactVersion) GetFile(fileName string) *ArtifactVersionFile {
+	for _, file := range f.Files {
+		if file.Name == fileName {
+			return file
+		}
+	}
+	return nil
 }

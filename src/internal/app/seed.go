@@ -59,7 +59,7 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancynpcs); err != nil {
@@ -94,7 +94,7 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyholograms); err != nil {
@@ -129,7 +129,7 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancydialogs); err != nil {
@@ -168,7 +168,7 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancycore); err != nil {
@@ -197,7 +197,7 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancycorewebsite); err != nil {
@@ -226,7 +226,7 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyplots); err != nil {
@@ -255,7 +255,7 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyaudits); err != nil {
@@ -284,7 +284,7 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyconnect); err != nil {
@@ -313,7 +313,7 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyshops); err != nil {
@@ -342,7 +342,7 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(citypass); err != nil {
@@ -371,7 +371,7 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(cityquests); err != nil {
@@ -382,6 +382,41 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 }
 
 func seedOther(db *fakeSpacesDB.DB) error {
+	fancyinnovations := &spaces.Space{
+		ID:          "fi",
+		Slug:        "fancyinnovations",
+		Title:       "FancyInnovations",
+		Summary:     "Organisation for Minecraft plugins, Hytale plugins and other projects",
+		Description: "",
+		Categories:  []spaces.Category{spaces.CategoryOther},
+		Links: []spaces.Link{
+			{Name: "source_code", URL: "https://github.com/FancyInnovations"},
+			{Name: "website", URL: "https://fancyinnovations.com/"},
+			{Name: "discord", URL: "https://discord.gg/ZUgYCEJUEx"},
+		},
+		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyinnovations-logo.png",
+		Status:    spaces.StatusApproved,
+		CreatedAt: time.Date(2022, 12, 19, 20, 0, 0, 0, time.UTC),
+		Members: []spaces.Member{
+			{
+				UserID: "oliver",
+				Role:   spaces.RoleOwner,
+			},
+		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: false,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: true,
+		},
+	}
+	if err := db.Create(fancyinnovations); err != nil {
+		return fmt.Errorf("could not seed spaces db: %w", err)
+	}
+
 	fancyanalytics := &spaces.Space{
 		ID:          "fa",
 		Slug:        "fancyanalytics",
@@ -411,7 +446,7 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyanalytics); err != nil {
@@ -445,7 +480,7 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyverteiler); err != nil {

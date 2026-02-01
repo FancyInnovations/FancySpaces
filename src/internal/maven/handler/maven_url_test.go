@@ -9,11 +9,23 @@ func TestGroupFromURL(t *testing.T) {
 	}{
 		{
 			url:      "/maven/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
-			expected: "com.example.myapp",
+			expected: "com.example",
 		},
 		{
 			url:      "/maven/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
-			expected: "org.apache.commons.lang3",
+			expected: "org.apache.commons",
+		},
+		{
+			url:      "/maven/space3/repo3/net/sf/jopt-simple/5.0/jopt-simple-5.0.pom",
+			expected: "net.sf",
+		},
+		{
+			url:      "/maven/space4/repo4/io/github/user/project/maven-metadata.xml",
+			expected: "io.github.user.project",
+		},
+		{
+			url:      "/maven/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
+			expected: "com.example.lib",
 		},
 	}
 
@@ -41,6 +53,18 @@ func TestArtifactFromURL(t *testing.T) {
 		{
 			url:      "/maven/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
 			expected: "lang3",
+		},
+		{
+			url:      "/maven/space3/repo3/net/sf/jopt-simple/5.0/jopt-simple-5.0.pom",
+			expected: "jopt-simple",
+		},
+		{
+			url:      "/maven/space4/repo4/io/github/user/project/maven-metadata.xml",
+			expected: "project",
+		},
+		{
+			url:      "/maven/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
+			expected: "lib",
 		},
 	}
 
@@ -79,6 +103,53 @@ func TestVersionFromURL(t *testing.T) {
 
 		if version != tc.expected {
 			t.Errorf("For URL %s, expected version %s but got %s", tc.url, tc.expected, version)
+		}
+	}
+}
+
+func TestIsMetadataURL(t *testing.T) {
+	tests := []struct {
+		url      string
+		expected bool
+	}{
+		{
+			url:      "/maven/space4/repo4/io/github/user/project/maven-metadata.xml",
+			expected: true,
+		},
+		{
+			url:      "/maven/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
+			expected: true,
+		},
+		{
+			url:      "/maven/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
+			expected: false,
+		},
+		{
+			url:      "/maven/space1/repo1/com/example/lib/maven-metadata.xmlish",
+			expected: false,
+		},
+		{
+			url:      "maven-metadata.xml",
+			expected: true,
+		},
+		{
+			url:      "maven-metadata.xml.sha1",
+			expected: true,
+		},
+		{
+			url:      "some/other/path/artifact.jar",
+			expected: false,
+		},
+		{
+			url:      "/maven/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
+			expected: false,
+		},
+	}
+
+	for _, tc := range tests {
+		got := IsMetadataURL(tc.url)
+		if got != tc.expected {
+			t.Errorf("IsMetadataURL(%q) = %v, expected %v", tc.url, got, tc.expected)
 		}
 	}
 }

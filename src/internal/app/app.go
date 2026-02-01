@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/OliverSchlueter/goutils/ratelimit"
@@ -104,6 +105,14 @@ func Start(cfg Configuration) {
 		FileStore: mavenFileStorage,
 		Analytics: as,
 	})
+
+	_ = mavenStore.CreateRepository(context.Background(), "fi", maven.Repository{
+		SpaceID:   "fi",
+		Name:      "releases",
+		Public:    true,
+		CreatedAt: time.Now(),
+	})
+
 	mh := mavenHandler.New(mavenHandler.Configuration{
 		Store:       mavenStore,
 		Spaces:      spacesStore,

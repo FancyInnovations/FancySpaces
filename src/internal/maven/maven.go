@@ -2,6 +2,7 @@ package maven
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/fancyinnovations/fancyspaces/internal/analytics"
@@ -134,9 +135,13 @@ func (s *Store) DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, 
 }
 
 func (s *Store) UploadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string, data []byte) error {
-	return s.fileStore.UploadArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version, fileName, data)
+	groupPath := strings.ReplaceAll(groupID, ".", "/")
+
+	return s.fileStore.UploadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName, data)
 }
 
 func (s *Store) DownloadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string) ([]byte, error) {
-	return s.fileStore.DownloadArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version, fileName)
+	groupPath := strings.ReplaceAll(groupID, ".", "/")
+
+	return s.fileStore.DownloadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName)
 }
