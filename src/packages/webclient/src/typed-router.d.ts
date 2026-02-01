@@ -28,6 +28,7 @@ declare module 'vue-router/auto-routes' {
     '/spaces/[sid]/': RouteRecordInfo<'/spaces/[sid]/', '/spaces/:sid', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/issues/': RouteRecordInfo<'/spaces/[sid]/issues/', '/spaces/:sid/issues', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/issues/[iid]/': RouteRecordInfo<'/spaces/[sid]/issues/[iid]/', '/spaces/:sid/issues/:iid', { sid: ParamValue<true>, iid: ParamValue<true> }, { sid: ParamValue<false>, iid: ParamValue<false> }>,
+    '/spaces/[sid]/issues/new': RouteRecordInfo<'/spaces/[sid]/issues/new', '/spaces/:sid/issues/new', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/versions/': RouteRecordInfo<'/spaces/[sid]/versions/', '/spaces/:sid/versions', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/versions/[vid]/': RouteRecordInfo<'/spaces/[sid]/versions/[vid]/', '/spaces/:sid/versions/:vid', { sid: ParamValue<true>, vid: ParamValue<true> }, { sid: ParamValue<false>, vid: ParamValue<false> }>,
     '/tools/java-sdk': RouteRecordInfo<'/tools/java-sdk', '/tools/java-sdk', Record<never, never>, Record<never, never>>,
@@ -83,6 +84,10 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/spaces/[sid]/issues/[iid]/index.vue': {
       routes: '/spaces/[sid]/issues/[iid]/'
+      views: never
+    }
+    'src/pages/spaces/[sid]/issues/new.vue': {
+      routes: '/spaces/[sid]/issues/new'
       views: never
     }
     'src/pages/spaces/[sid]/versions/index.vue': {

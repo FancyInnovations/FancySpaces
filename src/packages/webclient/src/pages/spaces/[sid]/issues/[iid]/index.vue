@@ -23,13 +23,13 @@ onMounted(async () => {
 
   const issueID = (route.params as any).iid as string;
   currentIssue.value = await getIssue(spaceID, issueID);
-  
+
   useHead({
-    title: `${space.value.title} ${currentIssue.value?.id} - FancySpaces`,
+    title: `${space.value.title} Issue #${currentIssue.value?.id} - FancySpaces`,
     meta: [
       {
         name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
+        content: space.value.summary || `View issue #${currentIssue.value?.id} for this space on FancySpaces.`
       }
     ]
   });
@@ -93,7 +93,6 @@ onMounted(async () => {
               v-if="isLoggedIn"
               :to="`/spaces/${space?.slug}/issues/new`"
               color="primary"
-              disabled
               size="large"
               variant="tonal"
             >

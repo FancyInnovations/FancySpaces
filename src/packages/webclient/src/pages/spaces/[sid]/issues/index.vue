@@ -4,7 +4,7 @@ import {type Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
-import {createIssue, getAllIssues} from "@/api/issues/issues.ts";
+import {getAllIssues} from "@/api/issues/issues.ts";
 import type {Issue} from "@/api/issues/types.ts";
 
 const isLoggedIn = computed(() => {
@@ -49,15 +49,6 @@ onMounted(async () => {
     ]
   });
 });
-
-async function createNewIssue() {
-  await createIssue(space.value!.id, {
-    title: 'My New Issue',
-    description: 'Describe your issue here.',
-    type: 'task',
-    priority: 'medium'
-  });
-}
 
 </script>
 
@@ -117,10 +108,8 @@ async function createNewIssue() {
               v-if="isLoggedIn"
               :to="`/spaces/${space?.slug}/issues/new`"
               color="primary"
-              disabled
               size="large"
               variant="tonal"
-              @click="createNewIssue"
             >
               New Issue
             </v-btn>
@@ -184,7 +173,6 @@ async function createNewIssue() {
                     { title: 'Medium', value: 'medium' },
                     { title: 'High', value: 'high' },
                     { title: 'Critical', value: 'critical' },
-
                   ]"
                   class="ma-2"
                   clearable
