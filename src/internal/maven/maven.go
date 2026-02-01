@@ -2,75 +2,100 @@ package maven
 
 import (
 	"context"
-	"fmt"
+	"time"
 
 	"github.com/fancyinnovations/fancyspaces/internal/analytics"
 )
 
 type DB interface {
+	GetRepository(ctx context.Context, spaceID, repoName string) (*Repository, error)
+	GetRepositories(ctx context.Context, spaceID string) ([]Repository, error)
+	CreateRepository(ctx context.Context, repo Repository) error
+	UpdateRepository(ctx context.Context, repo Repository) error
+	DeleteRepository(ctx context.Context, spaceID, repoName string) error
+
+	GetArtifact(ctx context.Context, spaceID, repoName, groupID, artifactID string) (*Artifact, error)
+	GetArtifacts(ctx context.Context, spaceID, repoName string) ([]Artifact, error)
+	CreateArtifact(ctx context.Context, spaceID, repoName string, artifact Artifact) error
+	UpdateArtifact(ctx context.Context, spaceID, repoName string, artifact Artifact) error
+	DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, artifactID string) error
+}
+
+type FileStorage interface {
+	UploadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string, data []byte) error
+	DownloadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string) ([]byte, error)
+	DeleteArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string) error
 }
 
 type Store struct {
 	db        DB
+	fileStore FileStorage
 	analytics *analytics.Store
 }
 
 type Configuration struct {
 	DB        DB
+	FileStore FileStorage
 	Analytics *analytics.Store
 }
 
 func New(cfg Configuration) *Store {
 	return &Store{
 		db:        cfg.DB,
+		fileStore: cfg.FileStore,
 		analytics: cfg.Analytics,
 	}
 }
 
 func (s *Store) GetRepository(ctx context.Context, spaceID, repoName string) (*Repository, error) {
-	return nil, fmt.Errorf("not implemented")
+	return s.db.GetRepository(ctx, spaceID, repoName)
 }
 
 func (s *Store) GetRepositories(ctx context.Context, spaceID string) ([]Repository, error) {
-	return nil, fmt.Errorf("not implemented")
+	return s.db.GetRepositories(ctx, spaceID)
 }
 
-func (s *Store) CreateRepository(ctx context.Context, repo Repository) error {
-	return fmt.Errorf("not implemented")
+func (s *Store) CreateRepository(ctx context.Context, spaceID string, repo Repository) error {
+	repo.CreatedAt = time.Now()
+	repo.SpaceID = spaceID
+
+	return s.db.CreateRepository(ctx, repo)
 }
 
-func (s *Store) UpdateRepository(ctx context.Context, repo Repository) error {
-	return fmt.Errorf("not implemented")
+func (s *Store) UpdateRepository(ctx context.Context, spaceID string, repo Repository) error {
+	repo.SpaceID = spaceID
+
+	return s.db.UpdateRepository(ctx, repo)
 }
 
 func (s *Store) DeleteRepository(ctx context.Context, spaceID, repoName string) error {
-	return fmt.Errorf("not implemented")
+	return s.db.DeleteRepository(ctx, spaceID, repoName)
 }
 
 func (s *Store) GetArtifact(ctx context.Context, spaceID, repoName, groupID, artifactID string) (*Artifact, error) {
-	return nil, fmt.Errorf("not implemented")
+	return s.db.GetArtifact(ctx, spaceID, repoName, groupID, artifactID)
 }
 
 func (s *Store) GetArtifacts(ctx context.Context, spaceID, repoName string) ([]Artifact, error) {
-	return nil, fmt.Errorf("not implemented")
+	return s.db.GetArtifacts(ctx, spaceID, repoName)
 }
 
 func (s *Store) CreateArtifact(ctx context.Context, spaceID, repoName string, artifact Artifact) error {
-	return fmt.Errorf("not implemented")
+	return s.db.CreateArtifact(ctx, spaceID, repoName, artifact)
 }
 
 func (s *Store) UpdateArtifact(ctx context.Context, spaceID, repoName string, artifact Artifact) error {
-	return fmt.Errorf("not implemented")
+	return s.db.UpdateArtifact(ctx, spaceID, repoName, artifact)
 }
 
 func (s *Store) DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, artifactID string) error {
-	return fmt.Errorf("not implemented")
+	return s.db.DeleteArtifact(ctx, spaceID, repoName, groupID, artifactID)
 }
 
 func (s *Store) UploadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string, data []byte) error {
-	return fmt.Errorf("not implemented")
+	return s.fileStore.UploadArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version, fileName, data)
 }
 
 func (s *Store) DownloadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string) ([]byte, error) {
-	return nil, fmt.Errorf("not implemented")
+	return s.fileStore.DownloadArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version, fileName)
 }

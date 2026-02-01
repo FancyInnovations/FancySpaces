@@ -6,9 +6,10 @@ import (
 )
 
 type Repository struct {
-	SpaceID string `json:"space_id" bson:"space_id"`
-	Name    string `json:"name" bson:"name"`
-	Public  bool   `json:"public" bson:"public"`
+	SpaceID   string    `json:"space_id" bson:"space_id"`
+	Name      string    `json:"name" bson:"name"`
+	Public    bool      `json:"public" bson:"public"`
+	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 }
 
 type Artifact struct {
