@@ -51,6 +51,11 @@ func (h *Handler) handleVersionFile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if !space.ReleaseSettings.Enabled {
+		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		return
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		h.handleDownloadVersionFile(w, r, space.ID, vid, fileName)

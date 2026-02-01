@@ -81,12 +81,27 @@ func (s *Service) GenerateUrls() []sitemapgen.Url {
 				ChangeFreq: "weekly",
 				Priority:   "0.75",
 			},
-			sitemapgen.Url{
-				Loc:        fmt.Sprintf("%s/spaces/%s/versions", baseURL, space.Slug),
-				ChangeFreq: "daily",
-				Priority:   "0.5",
-			},
 		)
+
+		if space.ReleaseSettings.Enabled {
+			urls = append(urls,
+				sitemapgen.Url{
+					Loc:        fmt.Sprintf("%s/spaces/%s/versions", baseURL, space.Slug),
+					ChangeFreq: "daily",
+					Priority:   "0.5",
+				},
+			)
+		}
+
+		if space.IssueSettings.Enabled {
+			urls = append(urls,
+				sitemapgen.Url{
+					Loc:        fmt.Sprintf("%s/spaces/%s/issues", baseURL, space.Slug),
+					ChangeFreq: "daily",
+					Priority:   "0.5",
+				},
+			)
+		}
 	}
 
 	return urls

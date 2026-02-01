@@ -65,6 +65,11 @@ func (h *Handler) handleIssues(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if !space.ReleaseSettings.Enabled {
+		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		return
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		h.handleListIssues(w, r, space)
@@ -98,6 +103,11 @@ func (h *Handler) handleIssue(w http.ResponseWriter, r *http.Request) {
 			problems.NotFound("Space", space.ID).WriteToHTTP(w)
 			return
 		}
+	}
+
+	if !space.ReleaseSettings.Enabled {
+		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		return
 	}
 
 	iid := r.PathValue("issue_id")

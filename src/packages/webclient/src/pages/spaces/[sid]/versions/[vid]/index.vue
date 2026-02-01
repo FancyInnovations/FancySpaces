@@ -9,6 +9,7 @@ import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";
 
 const route = useRoute();
+const router = useRouter();
 
 const space = ref<Space>();
 const spaceDownloadCount = ref<number>(0);
@@ -20,6 +21,11 @@ const currentVersionDownloadCount = ref<number>(0);
 onMounted(async () => {
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
+
+  if (!space.value.release_settings.enabled) {
+    router.push(`/spaces/${space.value.slug}`);
+    return;
+  }
 
   const versionID = (route.params as any).vid as string;
   currentVersion.value = await getVersion(space.value.id, versionID);

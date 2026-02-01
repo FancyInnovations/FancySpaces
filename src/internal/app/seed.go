@@ -52,6 +52,12 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 				Role:   spaces.RoleOwner,
 			},
 		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancynpcs); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -78,6 +84,12 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 				Role:   spaces.RoleOwner,
 			},
 		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancyholograms); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -103,6 +115,12 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
+		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancydialogs); err != nil {
@@ -134,6 +152,12 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 				Role:   spaces.RoleOwner,
 			},
 		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancycore); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -153,6 +177,12 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
+		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancycorewebsite); err != nil {
@@ -174,6 +204,12 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 				Role:   spaces.RoleOwner,
 			},
 		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancyplots); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -193,6 +229,12 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
+		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancyaudits); err != nil {
@@ -214,6 +256,12 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 				Role:   spaces.RoleOwner,
 			},
 		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancyconnect); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -233,6 +281,12 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
+		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancyshops); err != nil {
@@ -254,6 +308,12 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 				Role:   spaces.RoleOwner,
 			},
 		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(citypass); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -273,6 +333,12 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
+		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
 		},
 	}
 	if err := db.Create(cityquests); err != nil {
@@ -305,6 +371,12 @@ func seedOther(db *fakeSpacesDB.DB) error {
 				Role:   spaces.RoleOwner,
 			},
 		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancyanalytics); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -329,6 +401,12 @@ func seedOther(db *fakeSpacesDB.DB) error {
 				UserID: "oliver",
 				Role:   spaces.RoleOwner,
 			},
+		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancyverteiler); err != nil {
@@ -361,6 +439,12 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 				Role:   spaces.RoleOwner,
 			},
 		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(clovepluralprojects); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -385,6 +469,12 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 				UserID: "wiflow",
 				Role:   spaces.RoleOwner,
 			},
+		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
 		},
 	}
 	if err := db.Create(orbisguard); err != nil {
@@ -411,6 +501,12 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 				Role:   spaces.RoleOwner,
 			},
 		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(orbismines); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -435,6 +531,12 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 				UserID: "wiflow",
 				Role:   spaces.RoleOwner,
 			},
+		},
+		IssueSettings: spaces.IssueSettings{
+			Enabled: true,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
 		},
 	}
 	if err := db.Create(wiflowsScoreboard); err != nil {

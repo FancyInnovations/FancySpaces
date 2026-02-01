@@ -10,7 +10,18 @@ export interface Space {
   status: string;
   created_at: Date;
   members: SpaceMember[];
+  issue_settings: SpaceIssueSettings;
+  release_settings: SpaceReleaseSettings;
 }
+
+export interface SpaceIssueSettings {
+  enabled: boolean;
+}
+
+export interface SpaceReleaseSettings {
+  enabled: boolean;
+}
+
 export interface SpaceLink {
   name: string;
   url: string;

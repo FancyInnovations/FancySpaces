@@ -58,6 +58,11 @@ func (h *Handler) handleSpaceDownloadsBadge(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	if !s.ReleaseSettings.Enabled {
+		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		return
+	}
+
 	downloads, err := h.analytics.GetDownloadCountForSpace(r.Context(), s.ID)
 	if err != nil {
 		slog.Error("Failed to get download count for space", sloki.WrapError(err), slog.String("space_id", s.ID))
@@ -89,6 +94,11 @@ func (h *Handler) handleSpaceLatestVersionBadge(w http.ResponseWriter, r *http.R
 
 		slog.Error("Failed to get space by id", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	if !s.ReleaseSettings.Enabled {
+		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 

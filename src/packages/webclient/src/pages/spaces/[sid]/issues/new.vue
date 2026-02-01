@@ -19,6 +19,11 @@ onMounted(async () => {
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
 
+  if (!space.value.issue_settings.enabled) {
+    router.push(`/spaces/${space.value.slug}`);
+    return;
+  }
+
   useHead({
     title: `${space.value.title} - FancySpaces`,
     meta: [

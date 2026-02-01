@@ -7,6 +7,8 @@ import {useHead} from "@vueuse/head";
 import {getAllIssues} from "@/api/issues/issues.ts";
 import type {Issue} from "@/api/issues/types.ts";
 
+const router = useRouter();
+
 const isLoggedIn = computed(() => {
   return localStorage.getItem("fs_api_key") !== null;
 });
@@ -36,6 +38,11 @@ const statusFilter = ref();
 onMounted(async () => {
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
+
+  if (!space.value.issue_settings.enabled) {
+    router.push(`/spaces/${space.value.slug}`);
+    return;
+  }
 
   issues.value = await getAllIssues(space.value.id);
 

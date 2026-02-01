@@ -17,6 +17,11 @@ onMounted(async () => {
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
+  if (!space.value.issue_settings.enabled) {
+    router.push(`/spaces/${space.value.slug}`);
+    return;
+  }
+
   const issueID = (route.params as any).iid as string;
   issue.value = await getIssue(spaceID, issueID);
 

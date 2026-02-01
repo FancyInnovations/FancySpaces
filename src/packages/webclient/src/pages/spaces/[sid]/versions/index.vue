@@ -47,6 +47,12 @@ const tableHeaders = [
 onMounted(async () => {
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
+
+  if (!space.value.release_settings.enabled) {
+    router.push(`/spaces/${space.value.slug}`);
+    return;
+  }
+
   latestVersion.value = await getLatestVersion(space.value.id);
   versions.value = await getAllVersions(space.value.id);
 

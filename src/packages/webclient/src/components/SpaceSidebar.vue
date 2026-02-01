@@ -30,6 +30,7 @@ const props = defineProps<{
       />
 
       <v-list-item
+        v-if="space?.release_settings.enabled"
         :to="`/spaces/${space?.slug}/versions`"
         link
         prepend-icon="mdi-file-download-outline"
@@ -51,6 +52,7 @@ const props = defineProps<{
 <!--      />-->
 
       <v-list-item
+        v-if="space?.issue_settings.enabled"
         :to="`/spaces/${space?.slug}/issues`"
         link
         prepend-icon="mdi-format-list-checks"

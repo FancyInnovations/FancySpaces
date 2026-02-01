@@ -18,6 +18,27 @@ type Space struct {
 	Status      Status     `json:"status"`
 	CreatedAt   time.Time  `json:"created_at"`
 	Members     []Member   `json:"members"`
+
+	IssueSettings   IssueSettings   `json:"issue_settings"`
+	ReleaseSettings ReleaseSettings `json:"release_settings"`
+}
+
+type IssueSettings struct {
+	Enabled bool `json:"enabled"`
+
+	// TODO: Implement these settings in the future
+	//AllowOtherUsersToCreateIssues bool `json:"allow_other_users_to_create_issues"`
+	//GitHubSync         bool   `json:"github_sync"`
+	//GitHubSyncURL      string `json:"github_sync_url"`
+	//GitHubSyncInterval int    `json:"github_sync_interval"` // in minutes
+}
+
+type ReleaseSettings struct {
+	Enabled bool `json:"enabled"`
+
+	// TODO: Implement these settings in the future
+	//DiscordNotifications          bool   `json:"discord_notifications"`
+	//DiscordNotificationWebhookURL string `json:"discord_notification_webhook_url"`
 }
 
 type Link struct {

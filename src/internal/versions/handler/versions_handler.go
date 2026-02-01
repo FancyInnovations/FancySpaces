@@ -81,6 +81,11 @@ func (h *Handler) handleVersions(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if !space.ReleaseSettings.Enabled {
+		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		return
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		h.handleGetVersions(w, r, space.ID)
@@ -121,6 +126,11 @@ func (h *Handler) handleVersion(w http.ResponseWriter, r *http.Request) {
 			problems.NotFound("Space", space.ID).WriteToHTTP(w)
 			return
 		}
+	}
+
+	if !space.ReleaseSettings.Enabled {
+		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		return
 	}
 
 	switch r.Method {
@@ -290,6 +300,11 @@ func (h *Handler) handleVersionDownloads(w http.ResponseWriter, r *http.Request)
 		}
 		slog.Error("Failed to get space by id", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	if !space.ReleaseSettings.Enabled {
+		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
