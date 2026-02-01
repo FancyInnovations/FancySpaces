@@ -31,12 +31,14 @@ type FileStorage interface {
 type Store struct {
 	db        DB
 	fileStore FileStorage
+	fileCache FileStorage
 	analytics *analytics.Store
 }
 
 type Configuration struct {
 	DB        DB
 	FileStore FileStorage
+	FileCache FileStorage
 	Analytics *analytics.Store
 }
 
@@ -44,6 +46,7 @@ func New(cfg Configuration) *Store {
 	return &Store{
 		db:        cfg.DB,
 		fileStore: cfg.FileStore,
+		fileCache: cfg.FileCache,
 		analytics: cfg.Analytics,
 	}
 }
@@ -128,6 +131,9 @@ func (s *Store) DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, 
 			if err := s.fileStore.DeleteArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version.Version, file.Name); err != nil {
 				return err
 			}
+			if err := s.fileCache.DeleteArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version.Version, file.Name); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -137,11 +143,20 @@ func (s *Store) DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, 
 func (s *Store) UploadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string, data []byte) error {
 	groupPath := strings.ReplaceAll(groupID, ".", "/")
 
+	if err := s.fileCache.UploadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName, data); err != nil {
+		return err
+	}
+
 	return s.fileStore.UploadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName, data)
 }
 
 func (s *Store) DownloadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string) ([]byte, error) {
 	groupPath := strings.ReplaceAll(groupID, ".", "/")
+
+	data, err := s.fileCache.DownloadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName)
+	if err == nil {
+		return data, nil
+	}
 
 	return s.fileStore.DownloadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName)
 }

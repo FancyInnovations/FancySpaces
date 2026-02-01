@@ -20,6 +20,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/internal/issues/issuesync"
 	"github.com/fancyinnovations/fancyspaces/internal/maven"
 	mongoMavenDB "github.com/fancyinnovations/fancyspaces/internal/maven/database/mongo"
+	memoryMavenFileStorage "github.com/fancyinnovations/fancyspaces/internal/maven/filestorage/memory"
 	minioMavenFileStorage "github.com/fancyinnovations/fancyspaces/internal/maven/filestorage/minio"
 	mavenHandler "github.com/fancyinnovations/fancyspaces/internal/maven/handler"
 	"github.com/fancyinnovations/fancyspaces/internal/sitemapprovider"
@@ -100,9 +101,11 @@ func Start(cfg Configuration) {
 	if err := mavenFileStorage.Setup(context.Background()); err != nil {
 		panic(fmt.Errorf("could not setup maven file storage: %w", err))
 	}
+	mavenFileCache := memoryMavenFileStorage.NewStorage()
 	mavenStore := maven.New(maven.Configuration{
 		DB:        mavenDB,
 		FileStore: mavenFileStorage,
+		FileCache: mavenFileCache,
 		Analytics: as,
 	})
 	seedMavenRepos(mavenStore)
