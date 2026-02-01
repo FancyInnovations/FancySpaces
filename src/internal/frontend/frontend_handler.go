@@ -64,9 +64,14 @@ func (h *Handler) Register(mux *http.ServeMux) {
 		"explore/other-projects",
 		"explore/by-other-creators",
 		"tools/markdown-editor",
+		"auth/login",
 		"spaces/{space_id}",
 		"spaces/{space_id}/versions",
 		"spaces/{space_id}/versions/{version_id}",
+		"spaces/{space_id}/issues",
+		"spaces/{space_id}/issues/new",
+		"spaces/{space_id}/issues/{issue_id}",
+		"spaces/{space_id}/issues/{issue_id}/edit",
 	}
 
 	mux.HandleFunc("/{$}", h.handleIndex)
