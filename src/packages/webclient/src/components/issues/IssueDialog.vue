@@ -73,11 +73,11 @@ function copyID() {
   }
 }
 
-async function typeChanged(newType: string) {
+async function statusChanged(newStatus: string) {
   if (!issueDialogStore.issue) return;
 
   const newIssue = { ...issueDialogStore.issue! };
-  newIssue.status = newType as any;
+  newIssue.status = newStatus as any;
   await updateIssue(newIssue.space, newIssue.id, newIssue);
 }
 
@@ -111,7 +111,7 @@ async function typeChanged(newType: string) {
             hide-details
             max-width="200"
             variant="solo"
-            @update:modelValue="typeChanged"
+            @update:modelValue="statusChanged"
           />
 
           <v-btn

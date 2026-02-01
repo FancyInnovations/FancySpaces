@@ -5,9 +5,11 @@ import {getSpace} from "@/api/spaces/spaces.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import type {Issue, IssueComment} from "@/api/issues/types.ts";
-import {getIssue} from "@/api/issues/issues.ts";
+import {deleteIssue, getIssue, updateIssue} from "@/api/issues/issues.ts";
 
 const route = useRoute();
+const router = useRouter();
+
 const isLoggedIn = computed(() => {
   return localStorage.getItem("fs_api_key") !== null;
 });
@@ -34,6 +36,19 @@ onMounted(async () => {
     ]
   });
 });
+
+async function deleteIssueReq() {
+  if (!space.value || !currentIssue.value) return;
+
+  await deleteIssue(space.value!.id, currentIssue.value.id);
+
+  await router.push(`/spaces/${space.value?.slug}/issues`);
+}
+
+async function statusChanged(newStatus: string) {
+  currentIssue.value!.status = newStatus as any;
+  await updateIssue(currentIssue.value!.space, currentIssue.value!.id, currentIssue.value!);
+}
 
 </script>
 
@@ -110,14 +125,21 @@ onMounted(async () => {
     <v-row>
       <v-col md="9">
         <v-card
-          class="card__border"
+          class="card__border mb-4"
           color="#19120D33"
           elevation="12"
           rounded="xl"
         >
-          <v-card-title class="mt-2">Description</v-card-title>
+          <v-card-title class="my-2">{{ currentIssue?.title }}</v-card-title>
+        </v-card>
 
-          <v-card-text>
+        <v-card
+          class="card__border mb-4"
+          color="#19120D33"
+          elevation="12"
+          rounded="xl"
+        >
+          <v-card-text class="py-0">
             <MarkdownRenderer
               :markdown="currentIssue?.description"
             />
@@ -125,7 +147,7 @@ onMounted(async () => {
         </v-card>
 
         <v-card
-          class="card__border my-4 bg-transparent"
+          class="card__border bg-transparent"
           color="#150D1950"
           elevation="12"
           min-width="600"
@@ -170,6 +192,54 @@ onMounted(async () => {
           :comments="comments"
           :issue="currentIssue"
         />
+
+        <v-card
+          class="card__border bg-transparent mt-4"
+          color="#19120D33"
+          elevation="6"
+          rounded="xl"
+        >
+          <v-card-text>
+            <v-select
+              v-if="currentIssue"
+              v-model="currentIssue!.status"
+              :items="[
+                    { title: 'Backlog', value: 'backlog' },
+                    { title: 'Planned', value: 'planned' },
+                    { title: 'In Progress', value: 'in_progress' },
+                    { title: 'Done', value: 'done' },
+                    { title: 'Closed', value: 'closed' },
+
+                  ]"
+              class="mb-4"
+              color="primary"
+              density="compact"
+              hide-details
+              rounded="xl"
+              @update:modelValue="statusChanged"
+            />
+
+            <v-btn
+              :to="`/spaces/${space?.slug}/issues/${currentIssue?.id}/edit`"
+              block
+              class="mb-2"
+              color="primary"
+              variant="tonal"
+            >
+              Edit Issue
+            </v-btn>
+
+            <v-btn
+              :to="`/spaces/${space?.slug}/issues`"
+              block
+              color="error"
+              variant="tonal"
+              @click="deleteIssueReq"
+            >
+              Delete Issue
+            </v-btn>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>

@@ -5,26 +5,24 @@ import IssueIDChip from "@/components/issues/IssueIDChip.vue";
 import IssuePriorityChip from "@/components/issues/IssuePriorityChip.vue";
 import type {Issue} from "@/api/issues/types.ts";
 import {useIssueDialogStore} from "@/stores/issue-dialog.ts";
+import type {Space} from "@/api/spaces/types.ts";
 
 const issueDialogStore = useIssueDialogStore();
 
 const props = defineProps<{
+  space: Space,
   issue: Issue
 }>();
-
-function openIssueDialog() {
-  issueDialogStore.open(props.issue);
-}
 
 </script>
 
 <template>
   <v-card
+    :to="`/spaces/${space.slug}/issues/${issue.id}`"
     class="mb-4"
     color="#382F2960"
     elevation="6"
     rounded="xl"
-    @click="openIssueDialog"
   >
     <v-card-text class="d-flex">
       <div class="d-flex flex-column justify-space-between">

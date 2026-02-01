@@ -139,7 +139,7 @@ func (h *Handler) handleListIssues(w http.ResponseWriter, r *http.Request, space
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "public, max-age=60") // 1 minute
+	w.Header().Set("Cache-Control", "public, max-age=5") // 5 seconds
 	json.NewEncoder(w).Encode(all)
 }
 
@@ -182,7 +182,7 @@ func (h *Handler) handleCreateIssue(w http.ResponseWriter, r *http.Request, spac
 // no auth required
 func (h *Handler) handleGetIssue(w http.ResponseWriter, r *http.Request, space *spaces.Space, issue *issues.Issue) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "public, max-age=60") // 1 minute
+	w.Header().Set("Cache-Control", "public, max-age=5") // 5 seconds
 	json.NewEncoder(w).Encode(issue)
 }
 

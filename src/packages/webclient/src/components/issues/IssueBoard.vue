@@ -42,6 +42,7 @@ const props = defineProps<{
               v-if="plannedIssues.length > 0"
               :key="issue.id"
               :issue="issue"
+              :space="space"
             />
             <p v-else class="text-center my-4">No planned issues.</p>
           </v-card-text>
@@ -64,6 +65,7 @@ const props = defineProps<{
               v-if="inProgressIssues.length > 0"
               :key="issue.id"
               :issue="issue"
+              :space="space"
             />
             <p v-else class="text-center my-4">No issues in progress.</p>
           </v-card-text>
@@ -86,6 +88,7 @@ const props = defineProps<{
               v-if="doneIssues.length > 0"
               :key="issue.id"
               :issue="issue"
+              :space="space"
             />
             <p v-else class="text-center my-4">No done issues.</p>
           </v-card-text>

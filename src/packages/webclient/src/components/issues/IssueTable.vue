@@ -4,10 +4,16 @@ import IssueIDChip from "@/components/issues/IssueIDChip.vue";
 import type {Issue} from "@/api/issues/types.ts";
 import type {Space} from "@/api/spaces/types.ts";
 
+const router = useRouter();
+
 const props = defineProps<{
   space: Space,
   issues: Issue[],
 }>();
+
+const sortedIssues = computed(() => {
+  return props.issues.slice().sort((a, b) => b.updated_at.getTime() - a.updated_at.getTime());
+});
 
 const tableHeaders = [
   { title: 'ID', key: 'id', sortable: false },
@@ -18,7 +24,11 @@ const tableHeaders = [
   { title: 'Reporter', key: 'reporter' },
   { title: 'Created at', key: 'created_at', value: (issue: Issue) => issue.created_at.toLocaleString() },
   { title: 'Updated at', key: 'updated_at', value: (issue: Issue) => issue.updated_at.toLocaleString() },
-]
+];
+
+function onRowClick(event: any, { item }: any) {
+  router.push(`/spaces/${props.space.slug}/issues/${item.id}`);
+}
 
 </script>
 
@@ -33,10 +43,11 @@ const tableHeaders = [
     <v-card-text>
       <v-data-table
         :headers="tableHeaders"
-        :items="issues"
+        :items="sortedIssues"
         class="bg-transparent"
         hover
         item-key="id"
+        @click:row="onRowClick"
       >
         <template v-slot:item.id="{ item }">
           <IssueIDChip :issue="item" />
