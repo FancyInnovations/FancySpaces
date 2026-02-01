@@ -27,7 +27,6 @@ declare module 'vue' {
     MarkdownRenderer: typeof import('./components/MarkdownRenderer.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Sidebar: typeof import('./components/common/Sidebar.vue')['default']
     SpaceCard: typeof import('./components/SpaceCard.vue')['default']
     SpaceHeader: typeof import('./components/SpaceHeader.vue')['default']
     SpaceSidebar: typeof import('./components/SpaceSidebar.vue')['default']

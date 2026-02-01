@@ -45,6 +45,12 @@ onMounted(async () => {
     status: "approved",
     created_at: new Date(),
     members: [],
+    issue_settings: {
+      enabled: false
+    },
+    release_settings: {
+      enabled: false
+    }
   });
   plannedPlugins.value.push({
     id: "fcon",
@@ -58,6 +64,12 @@ onMounted(async () => {
     status: "approved",
     created_at: new Date(),
     members: [],
+    issue_settings: {
+      enabled: false
+    },
+    release_settings: {
+      enabled: false
+    }
   });
   plannedPlugins.value.push({
     id: "fp",
@@ -71,6 +83,12 @@ onMounted(async () => {
     status: "approved",
     created_at: new Date(),
     members: [],
+    issue_settings: {
+      enabled: false
+    },
+    release_settings: {
+      enabled: false
+    }
   });
   plannedPlugins.value.push({
     id: "fancyaudits",
@@ -84,6 +102,12 @@ onMounted(async () => {
     status: "approved",
     created_at: new Date(),
     members: [],
+    issue_settings: {
+      enabled: false
+    },
+    release_settings: {
+      enabled: false
+    }
   });
 });
 
