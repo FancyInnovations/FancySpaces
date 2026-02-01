@@ -17,6 +17,8 @@ import (
 	"github.com/fancyinnovations/fancyspaces/internal/issues"
 	mongoIssuesDB "github.com/fancyinnovations/fancyspaces/internal/issues/database/mongo"
 	issuesHandler "github.com/fancyinnovations/fancyspaces/internal/issues/handler"
+	"github.com/fancyinnovations/fancyspaces/internal/maven"
+	mavenHandler "github.com/fancyinnovations/fancyspaces/internal/maven/handler"
 	"github.com/fancyinnovations/fancyspaces/internal/sitemapprovider"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	spacesHandler "github.com/fancyinnovations/fancyspaces/internal/spaces/handler"
@@ -86,6 +88,19 @@ func Start(cfg Configuration) {
 		UserFromCtx: auth.UserFromContext,
 	})
 	vh.Register(apiPrefix, cfg.Mux)
+
+	// Maven
+	mavenStore := maven.New(maven.Configuration{
+		DB:        nil,
+		Analytics: as,
+	})
+	mh := mavenHandler.New(mavenHandler.Configuration{
+		Store:       mavenStore,
+		Spaces:      spacesStore,
+		Analytics:   as,
+		UserFromCtx: auth.UserFromContext,
+	})
+	mh.Register(cfg.Mux)
 
 	// Issues
 	issuesDB := mongoIssuesDB.NewDB(&mongoIssuesDB.Configuration{

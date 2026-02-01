@@ -26,24 +26,42 @@ tasks {
     publishing {
         repositories {
             maven {
-                name = "fancyinnovationsReleases"
-                url = uri("https://repo.fancyinnovations.com/releases")
-                credentials(PasswordCredentials::class)
+                name = "fancyspacesReleases"
+                url = uri("http://localhost:8080/maven/fn/releases")
+                isAllowInsecureProtocol = true
+
+                credentials(HttpHeaderCredentials::class) {
+                    name = "Authorization"
+                    value = providers
+                        .environmentVariable("FANCYSPACES_API_KEY")
+                        .orElse("hello")
+                        .get()
+                }
+
                 authentication {
-                    isAllowInsecureProtocol = true
-                    create<BasicAuthentication>("basic")
+                    create<HttpHeaderAuthentication>("header")
                 }
             }
 
-            maven {
-                name = "fancyinnovationsSnapshots"
-                url = uri("https://repo.fancyinnovations.com/snapshots")
-                credentials(PasswordCredentials::class)
-                authentication {
-                    isAllowInsecureProtocol = true
-                    create<BasicAuthentication>("basic")
-                }
-            }
+//            maven {
+//                name = "fancyinnovationsReleases"
+//                url = uri("https://repo.fancyinnovations.com/releases")
+//                credentials(PasswordCredentials::class)
+//                authentication {
+//                    isAllowInsecureProtocol = true
+//                    create<BasicAuthentication>("basic")
+//                }
+//            }
+//
+//            maven {
+//                name = "fancyinnovationsSnapshots"
+//                url = uri("https://repo.fancyinnovations.com/snapshots")
+//                credentials(PasswordCredentials::class)
+//                authentication {
+//                    isAllowInsecureProtocol = true
+//                    create<BasicAuthentication>("basic")
+//                }
+//            }
         }
         publications {
             create<MavenPublication>("maven") {
@@ -68,6 +86,8 @@ tasks {
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+    withJavadocJar()
+    withSourcesJar()
 }
 
 fun getSDKVersion(): String {
