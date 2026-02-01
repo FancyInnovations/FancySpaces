@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/OliverSchlueter/goutils/problems"
+	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/internal/analytics"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
@@ -19,10 +20,11 @@ import (
 )
 
 type Handler struct {
-	store       *maven.Store
-	spaces      *spaces.Store
-	analytics   *analytics.Store
-	userFromCtx func(ctx context.Context) *auth.User
+	store             *maven.Store
+	spaces            *spaces.Store
+	analytics         *analytics.Store
+	userFromCtx       func(ctx context.Context) *auth.User
+	downloadRatelimit *ratelimit.Service
 }
 
 type Configuration struct {
@@ -33,11 +35,17 @@ type Configuration struct {
 }
 
 func New(cfg Configuration) *Handler {
+	downloadRatelimit := ratelimit.NewService(ratelimit.Configuration{
+		TokensPerSecond: 1,
+		MaxTokens:       5,
+	})
+
 	return &Handler{
-		store:       cfg.Store,
-		spaces:      cfg.Spaces,
-		analytics:   cfg.Analytics,
-		userFromCtx: cfg.UserFromCtx,
+		store:             cfg.Store,
+		spaces:            cfg.Spaces,
+		analytics:         cfg.Analytics,
+		userFromCtx:       cfg.UserFromCtx,
+		downloadRatelimit: downloadRatelimit,
 	}
 }
 
@@ -236,6 +244,12 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 		problems.NotFound("Maven Artifact", "<url>").WriteToHTTP(w)
 		return
 	}
+
+	if err := h.downloadRatelimit.CheckRequest(r, group+":"+artifactID); err != nil {
+		ratelimit.RateLimitExceededProblem().WriteToHTTP(w)
+		return
+	}
+
 	artifact, err := h.store.GetArtifact(r.Context(), space.ID, repo.Name, group, artifactID)
 	if err != nil {
 		if errors.Is(err, maven.ErrArtifactNotFound) {
