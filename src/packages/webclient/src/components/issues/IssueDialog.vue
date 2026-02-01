@@ -36,6 +36,22 @@ const comments = computed<IssueComment[]>(() => {
   //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
   //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
   //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
+  //   },
+  //   {
+  //     id: 'CMT125',
+  //     issue: '7G5B1',
+  //     author: 'user654',
+  //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
+  //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
+  //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
+  //   },
+  //   {
+  //     id: 'CMT125',
+  //     issue: '7G5B1',
+  //     author: 'user654',
+  //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
+  //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
+  //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
   //   }
   // ];
 
@@ -102,7 +118,6 @@ async function typeChanged(newType: string) {
             :href="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`"
             class="mr-2"
             color="secondary"
-            disabled
             icon="mdi-open-in-new"
             target="_blank"
             variant="text"
@@ -121,6 +136,7 @@ async function typeChanged(newType: string) {
         <IssueDialogSidebar
           :comments="comments"
           :issue="issueDialogStore.issue!"
+          class="ma-4"
         />
 
         <div class="issue-dialog-inner pr-4 flex-grow-1">

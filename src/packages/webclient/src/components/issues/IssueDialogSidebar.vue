@@ -71,10 +71,9 @@ onMounted(() => {
 <template>
   <v-list
     v-if="props.issue"
-    class="sidebar__background ma-4"
+    class="sidebar__background"
     elevation="12"
     location="right"
-    min-height="100%"
     min-width="250px"
     rounded="xl"
   >
