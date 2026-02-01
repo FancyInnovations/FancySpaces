@@ -27,11 +27,10 @@ type Space struct {
 type IssueSettings struct {
 	Enabled bool `json:"enabled"`
 
-	// TODO: Implement these settings in the future
-	//AllowOtherUsersToCreateIssues bool `json:"allow_other_users_to_create_issues"`
-	//GitHubSync         bool   `json:"github_sync"`
-	//GitHubSyncURL      string `json:"github_sync_url"`
-	//GitHubSyncInterval int    `json:"github_sync_interval"` // in minutes
+	GitHubSync      bool   `json:"github_sync"`
+	GitHubSyncOwner string `json:"github_sync_owner"` // GitHub username or organization (required if GitHubSync is true)
+	GitHubSyncRepo  string `json:"github_sync_repo"`  // GitHub repository name (required if GitHubSync is true)
+	GitHubSyncLabel string `json:"github_sync_label"` // only sync issues with this label (optional)
 }
 
 type ReleaseSettings struct {

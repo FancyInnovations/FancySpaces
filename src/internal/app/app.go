@@ -17,6 +17,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/internal/issues"
 	mongoIssuesDB "github.com/fancyinnovations/fancyspaces/internal/issues/database/mongo"
 	issuesHandler "github.com/fancyinnovations/fancyspaces/internal/issues/handler"
+	"github.com/fancyinnovations/fancyspaces/internal/issues/issuesync"
 	"github.com/fancyinnovations/fancyspaces/internal/maven"
 	mongoMavenDB "github.com/fancyinnovations/fancyspaces/internal/maven/database/mongo"
 	minioMavenFileStorage "github.com/fancyinnovations/fancyspaces/internal/maven/filestorage/minio"
@@ -151,4 +152,14 @@ func Start(cfg Configuration) {
 		Analytics: as,
 	})
 	bh.Register(apiPrefix, cfg.Mux)
+
+	// Issue Syncer
+	issueSyncer := issuesync.NewService(&issuesync.Configuration{
+		SpacesStore: spacesStore,
+		IssuesStore: issuesStore,
+	})
+	issueSyncer.StartScheduler()
+	go func() {
+		issueSyncer.SyncIssuesForAllSpaces()
+	}()
 }

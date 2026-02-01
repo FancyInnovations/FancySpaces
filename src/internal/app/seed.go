@@ -68,7 +68,11 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			},
 		},
 		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
+			Enabled:         true,
+			GitHubSync:      true,
+			GitHubSyncOwner: "FancyInnovations",
+			GitHubSyncRepo:  "FancyPlugins",
+			GitHubSyncLabel: "FancyNpcs",
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
@@ -103,7 +107,11 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			},
 		},
 		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
+			Enabled:         true,
+			GitHubSync:      true,
+			GitHubSyncOwner: "FancyInnovations",
+			GitHubSyncRepo:  "FancyPlugins",
+			GitHubSyncLabel: "FancyHolograms",
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
@@ -138,7 +146,11 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			},
 		},
 		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
+			Enabled:         true,
+			GitHubSync:      true,
+			GitHubSyncOwner: "FancyInnovations",
+			GitHubSyncRepo:  "FancyPlugins",
+			GitHubSyncLabel: "FancyDialogs",
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
@@ -177,7 +189,11 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			},
 		},
 		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
+			Enabled:         true,
+			GitHubSync:      true,
+			GitHubSyncOwner: "FancyInnovations",
+			GitHubSyncRepo:  "HytalePlugins",
+			GitHubSyncLabel: "", // TODO: add label once there are more plugins in that repo
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,

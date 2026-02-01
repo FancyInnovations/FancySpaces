@@ -57,6 +57,10 @@ func (s *Store) CreateIssue(issue *Issue) error {
 	return s.db.CreateIssue(issue)
 }
 
+func (s *Store) ForceCreateIssue(issue *Issue) error {
+	return s.db.CreateIssue(issue)
+}
+
 func (s *Store) UpdateIssue(issue *Issue) error {
 	issue.UpdatedAt = time.Now()
 
@@ -64,6 +68,10 @@ func (s *Store) UpdateIssue(issue *Issue) error {
 		return err
 	}
 
+	return s.db.UpdateIssue(issue)
+}
+
+func (s *Store) ForceUpdateIssue(issue *Issue) error {
 	return s.db.UpdateIssue(issue)
 }
 
