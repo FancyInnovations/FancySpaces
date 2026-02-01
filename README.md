@@ -1,7 +1,13 @@
 # FancySpaces
 
-A platform to distribute artifacts like Minecraft plugins or other files.
+A platform every software project needs.
 This platform is only available to FancyInnovations products at the moment, but might be opened to everyone in the future.
+
+Features:
+* Distribute artifacts (executables, jar files ...) to users
+* Publish maven artifacts (for example libraries)
+* Create issues and visualize them on a kanban board
+* Sync issues from GitHub
 
 ### API usage
 
