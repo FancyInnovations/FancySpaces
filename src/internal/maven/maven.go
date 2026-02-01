@@ -56,6 +56,11 @@ func (s *Store) GetRepositories(ctx context.Context, spaceID string) ([]Reposito
 }
 
 func (s *Store) CreateRepository(ctx context.Context, spaceID string, repo Repository) error {
+	_, err := s.GetRepository(ctx, spaceID, repo.Name)
+	if err == nil {
+		return ErrRepositoryAlreadyExists
+	}
+
 	repo.CreatedAt = time.Now()
 	repo.SpaceID = spaceID
 
@@ -81,6 +86,11 @@ func (s *Store) GetArtifacts(ctx context.Context, spaceID, repoName string) ([]A
 }
 
 func (s *Store) CreateArtifact(ctx context.Context, spaceID, repoName string, artifact Artifact) error {
+	_, err := s.GetArtifact(ctx, spaceID, repoName, artifact.Group, artifact.ID)
+	if err == nil {
+		return ErrArtifactAlreadyExists
+	}
+
 	return s.db.CreateArtifact(ctx, spaceID, repoName, artifact)
 }
 
