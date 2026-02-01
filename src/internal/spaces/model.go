@@ -19,8 +19,9 @@ type Space struct {
 	CreatedAt   time.Time  `json:"created_at"`
 	Members     []Member   `json:"members"`
 
-	IssueSettings   IssueSettings   `json:"issue_settings"`
-	ReleaseSettings ReleaseSettings `json:"release_settings"`
+	IssueSettings           IssueSettings           `json:"issue_settings"`
+	ReleaseSettings         ReleaseSettings         `json:"release_settings"`
+	MavenRepositorySettings MavenRepositorySettings `json:"maven_repository_settings"`
 }
 
 type IssueSettings struct {
@@ -39,6 +40,10 @@ type ReleaseSettings struct {
 	// TODO: Implement these settings in the future
 	//DiscordNotifications          bool   `json:"discord_notifications"`
 	//DiscordNotificationWebhookURL string `json:"discord_notification_webhook_url"`
+}
+
+type MavenRepositorySettings struct {
+	Enabled bool `json:"enabled"`
 }
 
 type Link struct {

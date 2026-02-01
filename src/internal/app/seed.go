@@ -58,6 +58,9 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
 		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancynpcs); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -90,6 +93,9 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
 		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancyholograms); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -120,6 +126,9 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
 			Enabled: true,
 		},
 	}
@@ -158,6 +167,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
 		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancycore); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -182,6 +194,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
 			Enabled: true,
 		},
 	}
@@ -210,6 +225,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
 		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancyplots); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -234,6 +252,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
 			Enabled: true,
 		},
 	}
@@ -262,6 +283,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
 		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancyconnect); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -286,6 +310,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
 			Enabled: true,
 		},
 	}
@@ -314,6 +341,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
 		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(citypass); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -338,6 +368,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
 			Enabled: true,
 		},
 	}
@@ -377,6 +410,9 @@ func seedOther(db *fakeSpacesDB.DB) error {
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
 		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancyanalytics); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -406,6 +442,9 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: true,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
 			Enabled: true,
 		},
 	}
@@ -445,6 +484,9 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
 		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(clovepluralprojects); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -475,6 +517,9 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: false,
 		},
 	}
 	if err := db.Create(orbisguard); err != nil {
@@ -507,6 +552,9 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
 		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(orbismines); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -537,6 +585,9 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: false,
 		},
 	}
 	if err := db.Create(wiflowsScoreboard); err != nil {
