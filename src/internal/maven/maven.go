@@ -74,6 +74,23 @@ func (s *Store) UpdateRepository(ctx context.Context, spaceID string, repo Repos
 }
 
 func (s *Store) DeleteRepository(ctx context.Context, spaceID, repoName string) error {
+	repo, err := s.GetRepository(ctx, spaceID, repoName)
+	if err != nil {
+		return err
+	}
+
+	artifacts, err := s.GetArtifacts(ctx, spaceID, repo.Name)
+	if err != nil {
+		return err
+	}
+
+	// Delete all artifacts
+	for _, artifact := range artifacts {
+		if err := s.DeleteArtifact(ctx, spaceID, repo.Name, artifact.Group, artifact.ID); err != nil {
+			return err
+		}
+	}
+
 	return s.db.DeleteRepository(ctx, spaceID, repoName)
 }
 
@@ -99,6 +116,20 @@ func (s *Store) UpdateArtifact(ctx context.Context, spaceID, repoName string, ar
 }
 
 func (s *Store) DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, artifactID string) error {
+	artifact, err := s.GetArtifact(ctx, spaceID, repoName, groupID, artifactID)
+	if err != nil {
+		return err
+	}
+
+	// Delete all artifact files from file storage
+	for _, version := range artifact.Versions {
+		for _, file := range version.Files {
+			if err := s.fileStore.DeleteArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version.Version, file.Name); err != nil {
+				return err
+			}
+		}
+	}
+
 	return s.db.DeleteArtifact(ctx, spaceID, repoName, groupID, artifactID)
 }
 
