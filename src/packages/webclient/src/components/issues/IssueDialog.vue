@@ -220,9 +220,10 @@ async function typeChanged(newType: string) {
 
         <v-btn
           v-if="isLoggedIn"
+          :to="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}/edit`"
           class="mr-2"
-          disabled
           variant="text"
+          @click="issueDialogStore.close()"
         >
           Edit
         </v-btn>

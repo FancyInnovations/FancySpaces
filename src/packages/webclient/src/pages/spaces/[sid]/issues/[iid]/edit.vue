@@ -3,21 +3,22 @@
 import type {Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
 import {useHead} from "@vueuse/head";
-import {createIssue} from "@/api/issues/issues.ts";
+import {deleteIssue, getIssue, updateIssue} from "@/api/issues/issues.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
+import type {Issue} from "@/api/issues/types.ts";
 
 const router = useRouter();
+const route = useRoute();
 
 const space = ref<Space>();
-
-const title = ref('');
-const description = ref('');
-const type = ref('task');
-const priority = ref('medium');
+const issue = ref<Issue>();
 
 onMounted(async () => {
-  const spaceID = (useRoute().params as any).sid as string;
+  const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
+
+  const issueID = (route.params as any).iid as string;
+  issue.value = await getIssue(spaceID, issueID);
 
   useHead({
     title: `${space.value.title} - FancySpaces`,
@@ -30,26 +31,26 @@ onMounted(async () => {
   });
 });
 
-async function createNewIssue() {
-  const issue = await createIssue(space.value!.id, {
-    title: title.value,
-    description: description.value,
-    type: type.value as any,
-    priority: priority.value as any
-  });
+async function editIssueReq() {
+  if (!space.value || !issue.value) return;
 
-  title.value = '';
-  description.value = '';
-  type.value = 'task';
-  priority.value = 'medium';
+  await updateIssue(space.value!.id, issue.value.id, issue.value);
 
-  await router.push(`/spaces/${space.value?.slug}/issues/${issue.id}`);
+  await router.push(`/spaces/${space.value?.slug}/issues/${issue.value.id}`);
+}
+
+async function deleteIssueReq() {
+  if (!space.value || !issue.value) return;
+
+  await deleteIssue(space.value!.id, issue.value.id);
+
+  await router.push(`/spaces/${space.value?.slug}/issues`);
 }
 
 </script>
 
 <template>
-  <v-container width="90%">
+  <v-container v-if="issue" width="90%">
     <v-row>
       <v-col class="flex-grow-0 pa-0">
         <SpaceSidebar
@@ -89,14 +90,14 @@ async function createNewIssue() {
 
     <v-row>
       <v-col>
-        <h1 class="text-center">Create new issue in {{ space?.title }}</h1>
+        <h1 class="text-center">Edit Issue #{{issue?.id}}</h1>
       </v-col>
     </v-row>
 
     <v-row justify="center">
       <v-col md="6">
         <v-text-field
-          v-model="title"
+          v-model="issue!.title"
           color="primary"
           hide-details
           label="Title"
@@ -108,7 +109,7 @@ async function createNewIssue() {
     <v-row justify="center">
       <v-col md="6">
         <v-textarea
-          v-model="description"
+          v-model="issue!.description"
           color="primary"
           hide-details
           label="Description"
@@ -118,9 +119,40 @@ async function createNewIssue() {
     </v-row>
 
     <v-row justify="center">
+      <v-col md="6">
+        <v-text-field
+          v-model="issue!.parent_issue"
+          color="primary"
+          hide-details
+          label="Parent Issue"
+          required
+        />
+      </v-col>
+    </v-row>
+
+    <v-row justify="center">
+      <v-col md="6">
+          <v-select
+            v-model="issue!.status"
+            :items="[
+                    { title: 'Backlog', value: 'backlog' },
+                    { title: 'Planned', value: 'planned' },
+                    { title: 'In Progress', value: 'in_progress' },
+                    { title: 'Done', value: 'done' },
+                    { title: 'Closed', value: 'closed' },
+                  ]"
+            color="primary"
+            hide-details
+            label="Status"
+            required
+          />
+      </v-col>
+    </v-row>
+
+    <v-row justify="center">
       <v-col md="3">
         <v-select
-          v-model="type"
+          v-model="issue!.type"
           :items="[
                     { title: 'Epic', value: 'epic' },
                     { title: 'Bug', value: 'bug' },
@@ -138,7 +170,7 @@ async function createNewIssue() {
 
       <v-col md="3">
         <v-select
-          v-model="priority"
+          v-model="issue!.priority"
           :items="[
                     { title: 'Low', value: 'low' },
                     { title: 'Medium', value: 'medium' },
@@ -155,11 +187,45 @@ async function createNewIssue() {
 
     <v-row justify="center">
       <v-col md="6">
-        <v-btn
+        <v-text-field
+          v-model="issue!.assignee"
           color="primary"
-          @click="createNewIssue"
+          hide-details
+          label="Issue Assignee"
+          required
+        />
+      </v-col>
+    </v-row>
+
+    <v-row justify="center">
+      <v-col md="6">
+        <v-text-field
+          v-model="issue!.fix_version"
+          color="primary"
+          hide-details
+          label="Fix Version"
+          required
+        />
+      </v-col>
+    </v-row>
+
+    <v-row justify="center">
+      <v-col md="6">
+        <v-btn
+          class="mr-4"
+          color="primary"
+          variant="tonal"
+          @click="editIssueReq"
         >
-          Create Issue
+          Edit Issue
+        </v-btn>
+
+        <v-btn
+          color="error"
+          variant="tonal"
+          @click="deleteIssueReq"
+        >
+          Delete Issue
         </v-btn>
       </v-col>
     </v-row>
