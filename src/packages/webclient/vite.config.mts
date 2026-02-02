@@ -90,7 +90,15 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      'javadoc': {
+        target: 'https://fancyspaces.net',
+        changeOrigin: true,
+        secure: true,
+      },
       // '/api/v1/': {
+      //   target: 'http://localhost:8080',
+      // },
+      // '/javadoc/': {
       //   target: 'http://localhost:8080',
       // },
     },

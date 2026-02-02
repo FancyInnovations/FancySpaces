@@ -32,7 +32,7 @@ const javadocURL = computed(() => {
   }
 
   const baseURL = window.location.origin;
-  return `${baseURL}/api/v1/spaces/${space.value?.id}/maven-repositories/${selectedRepo.value.name}/artifacts/${selectedArtifact.value.group + ':' + selectedArtifact.value.id}/version/${selectedVersion.value.version}/javadoc/index.html`;
+  return `${baseURL}/javadoc/${space.value?.id}/${selectedRepo.value.name}/${selectedArtifact.value.group + ':' + selectedArtifact.value.id}/${selectedVersion.value.version}/index.html`;
 });
 
 watch(selectedRepo, async (newRepo) => {
