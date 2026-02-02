@@ -90,7 +90,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
-      'javadoc': {
+      '/javadoc/': {
         target: 'https://fancyspaces.net',
         changeOrigin: true,
         secure: true,
