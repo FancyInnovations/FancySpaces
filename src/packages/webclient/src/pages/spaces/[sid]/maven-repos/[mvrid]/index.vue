@@ -19,11 +19,19 @@ const space = ref<Space>();
 const repo = ref<SpaceMavenRepository>();
 const artifacts = ref<SpaceMavenRepositoryArtifact[]>([]);
 
+const latestVersion = computed(() => {
+  return artifacts.value
+    .flatMap(art => art.versions)
+    .sort((a, b) => {
+      return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
+    })[0];
+});
+
 const tableHeaders = [
   { title: 'Group ID', value: 'group' },
   { title: 'Artifact ID', value: 'id' },
   { title: 'Versions', key: 'versions', value: (art: SpaceMavenRepositoryArtifact) => art.versions.length || 'N/A' },
-  { title: 'Latest version', key: 'latest-version', value: (art: SpaceMavenRepositoryArtifact) => art.versions[0]?.version || 'N/A' },
+  { title: 'Latest version', key: 'latest-version', value: (art: SpaceMavenRepositoryArtifact) => latestVersion.value?.version || 'N/A' },
 ];
 
 onMounted(async () => {

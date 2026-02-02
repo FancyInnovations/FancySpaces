@@ -16,12 +16,6 @@ const isLoggedIn = computed(() => {
 const space = ref<Space>();
 const repos = ref<SpaceMavenRepository[]>();
 
-const tableHeaders = [
-  { title: 'Name', key: 'name', sortable: false },
-  { title: 'Public', key: 'public', sortable: false },
-  { title: 'Created at', key: 'created_at', value: (repo: SpaceMavenRepository) => repo.created_at.toLocaleString() }
-]
-
 onMounted(async () => {
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
@@ -43,11 +37,6 @@ onMounted(async () => {
     ]
   });
 });
-
-function onRowClick(event: any, { item }: any) {
-  router.push(`/spaces/${space.value?.slug}/maven-repos/${item.name}`);
-}
-
 </script>
 
 <template>
