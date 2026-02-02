@@ -33,7 +33,8 @@ const tableHeaders = [
   { title: 'Group ID', value: 'group' },
   { title: 'Artifact ID', value: 'id' },
   { title: 'Versions', key: 'versions', value: (art: SpaceMavenRepositoryArtifact) => art.versions.length || 'N/A' },
-  { title: 'Latest version', key: 'latest-version', value: (art: SpaceMavenRepositoryArtifact) => latestVersion.value?.version || 'N/A' },
+  { title: 'Latest version', key: 'latest-version', value: () => latestVersion.value?.version || 'N/A' },
+  { title: 'Last update', key: 'last-update', value: () => latestVersion.value?.published_at.toLocaleDateString() || 'N/A' },
 ];
 
 onMounted(async () => {
@@ -133,8 +134,31 @@ function onRowClick(event: any, { item }: any) {
         </div>
 
         <hr
-          class="grey-border-color"
+          class="grey-border-color mt-4"
         />
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col class="mb-4">
+        <v-card
+          class="card__border bg-transparent"
+          color="#150D1950"
+          elevation="12"
+          min-width="600"
+          rounded="xl"
+        >
+          <v-card-text>
+            <v-breadcrumbs
+              :items="[
+                { title: 'Maven Repositories', to: `/spaces/${space?.slug}/maven-repos` },
+                { title: repo?.name || '', to: `/spaces/${space?.slug}/maven-repos/${repo?.name}` },
+              ]"
+              class="pa-0"
+              color="primary"
+            />
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
 
@@ -148,12 +172,8 @@ function onRowClick(event: any, { item }: any) {
           rounded="xl"
         >
           <v-card-title class="mt-2">
-            Artifacts in {{ repo?.name }} ({{ artifacts.length }})
+            Artifacts in {{ repo?.name }}
           </v-card-title>
-
-          <v-card-subtitle>
-            Created at: {{ repo?.created_at.toLocaleDateString() }}
-          </v-card-subtitle>
 
           <v-card-text>
             <v-data-table

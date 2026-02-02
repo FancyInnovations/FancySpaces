@@ -105,23 +105,8 @@ onMounted(async () => {
         </div>
 
         <hr
-          class="grey-border-color"
+          class="grey-border-color mt-4"
         />
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col>
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
-          <v-card-title>
-            Maven Repositories ({{ repos?.length || 0 }})
-          </v-card-title>
-        </v-card>
       </v-col>
     </v-row>
 

@@ -107,7 +107,7 @@ async function deleteIssueReq() {
         </div>
 
         <hr
-          class="grey-border-color"
+          class="grey-border-color mt-4"
         />
       </v-col>
     </v-row>
