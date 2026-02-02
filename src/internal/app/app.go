@@ -13,6 +13,7 @@ import (
 	analyticsDatabase "github.com/fancyinnovations/fancyspaces/internal/analytics/database/clickhouse"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/internal/badges"
+	"github.com/fancyinnovations/fancyspaces/internal/fflags"
 	"github.com/fancyinnovations/fancyspaces/internal/frontend"
 	"github.com/fancyinnovations/fancyspaces/internal/issues"
 	mongoIssuesDB "github.com/fancyinnovations/fancyspaces/internal/issues/database/mongo"
@@ -157,12 +158,14 @@ func Start(cfg Configuration) {
 	bh.Register(apiPrefix, cfg.Mux)
 
 	// Issue Syncer
-	issueSyncer := issuesync.NewService(&issuesync.Configuration{
-		SpacesStore: spacesStore,
-		IssuesStore: issuesStore,
-	})
-	issueSyncer.StartScheduler()
-	go func() {
-		issueSyncer.SyncIssuesForAllSpaces()
-	}()
+	if !fflags.DisableIssueSyncer.IsEnabled() {
+		issueSyncer := issuesync.NewService(&issuesync.Configuration{
+			SpacesStore: spacesStore,
+			IssuesStore: issuesStore,
+		})
+		issueSyncer.StartScheduler()
+		go func() {
+			issueSyncer.SyncIssuesForAllSpaces()
+		}()
+	}
 }

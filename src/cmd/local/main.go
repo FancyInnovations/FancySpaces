@@ -14,11 +14,16 @@ import (
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/internal/app"
 	"github.com/fancyinnovations/fancyspaces/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/internal/fflags"
 	"github.com/justinas/alice"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
+	// Feature flags
+	fflags.DisableIssueSyncer.Enable()
+
+	// Setup logging
 	logService := sloki.NewService(sloki.Configuration{
 		URL:          "http://localhost:3100/loki/api/v1/push",
 		Service:      "fancyspaces",
