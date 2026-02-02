@@ -55,12 +55,12 @@ func (h *Handler) Register(prefix string, mux *http.ServeMux) {
 	mux.HandleFunc("/maven/{space_id}/{repository_name}/", h.handleMavenRequest)
 
 	// API endpoints
-	mux.HandleFunc(prefix+"/spaces/{space_id}/maven/repositories", h.handleRepositories)
-	mux.HandleFunc(prefix+"/spaces/{space_id}/maven/repositories/{repository_name}", h.handleRepository)
-	mux.HandleFunc(prefix+"/spaces/{space_id}/maven/repositories/{repository_name}/artifacts", h.handleArtifacts)
-	mux.HandleFunc(prefix+"/spaces/{space_id}/maven/repositories/{repository_name}/artifacts/{group_artifact_id}", h.handleArtifact)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories", h.handleRepositories)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}", h.handleRepository)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts", h.handleArtifacts)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts/{group_artifact_id}", h.handleArtifact)
 
-	mux.HandleFunc(prefix+"/spaces/{space_id}/maven/repositories/{repository_name}/artifacts/{group_artifact_id}/version/{version}/javadoc/", h.handleJavadoc)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts/{group_artifact_id}/version/{version}/javadoc/", h.handleJavadoc)
 }
 
 func (h *Handler) handleMavenRequest(w http.ResponseWriter, r *http.Request) {

@@ -37,6 +37,22 @@ const props = defineProps<{
         title="Downloads"
       />
 
+      <v-list-item
+        v-if="space?.maven_repository_settings.enabled"
+        :to="`/spaces/${space?.slug}/maven-repos`"
+        link
+        prepend-icon="mdi-database-outline"
+        title="Maven Repository"
+      />
+
+      <v-list-item
+        v-if="space?.maven_repository_settings.enabled"
+        :to="`/spaces/${space?.slug}/javadoc`"
+        link
+        prepend-icon="mdi-book-outline"
+        title="JavaDoc"
+      />
+
 <!--      <v-list-item-->
 <!--        :to="`/spaces/${space?.slug}/docs`"-->
 <!--        link-->

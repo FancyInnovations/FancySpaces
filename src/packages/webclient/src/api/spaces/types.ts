@@ -12,6 +12,7 @@ export interface Space {
   members: SpaceMember[];
   issue_settings: SpaceIssueSettings;
   release_settings: SpaceReleaseSettings;
+  maven_repository_settings: MavenRepositorySettings;
 }
 
 export interface SpaceIssueSettings {
@@ -19,6 +20,10 @@ export interface SpaceIssueSettings {
 }
 
 export interface SpaceReleaseSettings {
+  enabled: boolean;
+}
+
+export interface MavenRepositorySettings {
   enabled: boolean;
 }
 

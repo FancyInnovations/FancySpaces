@@ -438,7 +438,7 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
-			Enabled: false,
+			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
 			Enabled: true,
