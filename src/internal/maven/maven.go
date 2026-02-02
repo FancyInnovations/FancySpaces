@@ -2,10 +2,13 @@ package maven
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
 	"github.com/fancyinnovations/fancyspaces/internal/analytics"
+	"github.com/fancyinnovations/fancyspaces/internal/maven/javadoccache"
+	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 )
 
 type DB interface {
@@ -28,26 +31,35 @@ type FileStorage interface {
 	DeleteArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string) error
 }
 
+type JavadocCache interface {
+	CacheJavadoc(key string, javadocZipData []byte) (map[string][]byte, error)
+	GetJavadocFile(key, filePath string) ([]byte, error)
+	IsJavadocCached(key string) bool
+}
+
 type Store struct {
-	db        DB
-	fileStore FileStorage
-	fileCache FileStorage
-	analytics *analytics.Store
+	db           DB
+	fileStore    FileStorage
+	fileCache    FileStorage
+	javadocCache JavadocCache
+	analytics    *analytics.Store
 }
 
 type Configuration struct {
-	DB        DB
-	FileStore FileStorage
-	FileCache FileStorage
-	Analytics *analytics.Store
+	DB           DB
+	FileStore    FileStorage
+	FileCache    FileStorage
+	JavadocCache JavadocCache
+	Analytics    *analytics.Store
 }
 
 func New(cfg Configuration) *Store {
 	return &Store{
-		db:        cfg.DB,
-		fileStore: cfg.FileStore,
-		fileCache: cfg.FileCache,
-		analytics: cfg.Analytics,
+		db:           cfg.DB,
+		fileStore:    cfg.FileStore,
+		fileCache:    cfg.FileCache,
+		javadocCache: cfg.JavadocCache,
+		analytics:    cfg.Analytics,
 	}
 }
 
@@ -159,4 +171,27 @@ func (s *Store) DownloadArtifactFile(ctx context.Context, spaceID, repoName, gro
 	}
 
 	return s.fileStore.DownloadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName)
+}
+
+func (s *Store) GetJavadocFile(ctx context.Context, space *spaces.Space, repo *Repository, artifact *Artifact, version string, filePath string) ([]byte, error) {
+	key := fmt.Sprintf("%s/%s/%s/%s/%s", space.ID, repo.Name, artifact.Group, artifact.ID, version)
+
+	if !s.javadocCache.IsJavadocCached(key) {
+		javadocData, err := s.DownloadArtifactFile(ctx, space.ID, repo.Name, artifact.Group, artifact.ID, version, fmt.Sprintf("%s-%s-javadoc.jar", artifact.ID, version))
+		if err != nil {
+			return nil, err
+		}
+
+		files, err := s.javadocCache.CacheJavadoc(key, javadocData)
+		if err != nil {
+			return nil, err
+		}
+		data, exists := files[filePath]
+		if !exists {
+			return nil, javadoccache.ErrJavadocNotFound
+		}
+		return data, nil
+	}
+
+	return s.javadocCache.GetJavadocFile(key, filePath)
 }

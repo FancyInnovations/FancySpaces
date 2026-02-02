@@ -30,6 +30,7 @@ declare module 'vue-router/auto-routes' {
     '/spaces/[sid]/issues/[iid]/': RouteRecordInfo<'/spaces/[sid]/issues/[iid]/', '/spaces/:sid/issues/:iid', { sid: ParamValue<true>, iid: ParamValue<true> }, { sid: ParamValue<false>, iid: ParamValue<false> }>,
     '/spaces/[sid]/issues/[iid]/edit': RouteRecordInfo<'/spaces/[sid]/issues/[iid]/edit', '/spaces/:sid/issues/:iid/edit', { sid: ParamValue<true>, iid: ParamValue<true> }, { sid: ParamValue<false>, iid: ParamValue<false> }>,
     '/spaces/[sid]/issues/new': RouteRecordInfo<'/spaces/[sid]/issues/new', '/spaces/:sid/issues/new', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
+    '/spaces/[sid]/javadoc/': RouteRecordInfo<'/spaces/[sid]/javadoc/', '/spaces/:sid/javadoc', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/maven-repos/': RouteRecordInfo<'/spaces/[sid]/maven-repos/', '/spaces/:sid/maven-repos', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/maven-repos/[mvrid]/': RouteRecordInfo<'/spaces/[sid]/maven-repos/[mvrid]/', '/spaces/:sid/maven-repos/:mvrid', { sid: ParamValue<true>, mvrid: ParamValue<true> }, { sid: ParamValue<false>, mvrid: ParamValue<false> }>,
     '/spaces/[sid]/maven-repos/[mvrid]/[mvaid]/': RouteRecordInfo<'/spaces/[sid]/maven-repos/[mvrid]/[mvaid]/', '/spaces/:sid/maven-repos/:mvrid/:mvaid', { sid: ParamValue<true>, mvrid: ParamValue<true>, mvaid: ParamValue<true> }, { sid: ParamValue<false>, mvrid: ParamValue<false>, mvaid: ParamValue<false> }>,
@@ -96,6 +97,10 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/spaces/[sid]/issues/new.vue': {
       routes: '/spaces/[sid]/issues/new'
+      views: never
+    }
+    'src/pages/spaces/[sid]/javadoc/index.vue': {
+      routes: '/spaces/[sid]/javadoc/'
       views: never
     }
     'src/pages/spaces/[sid]/maven-repos/index.vue': {

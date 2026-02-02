@@ -24,6 +24,7 @@ import (
 	memoryMavenFileStorage "github.com/fancyinnovations/fancyspaces/internal/maven/filestorage/memory"
 	minioMavenFileStorage "github.com/fancyinnovations/fancyspaces/internal/maven/filestorage/minio"
 	mavenHandler "github.com/fancyinnovations/fancyspaces/internal/maven/handler"
+	"github.com/fancyinnovations/fancyspaces/internal/maven/javadoccache"
 	"github.com/fancyinnovations/fancyspaces/internal/sitemapprovider"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 	spacesHandler "github.com/fancyinnovations/fancyspaces/internal/spaces/handler"
@@ -104,10 +105,11 @@ func Start(cfg Configuration) {
 	}
 	mavenFileCache := memoryMavenFileStorage.NewStorage()
 	mavenStore := maven.New(maven.Configuration{
-		DB:        mavenDB,
-		FileStore: mavenFileStorage,
-		FileCache: mavenFileCache,
-		Analytics: as,
+		DB:           mavenDB,
+		FileStore:    mavenFileStorage,
+		FileCache:    mavenFileCache,
+		JavadocCache: javadoccache.NewService(),
+		Analytics:    as,
 	})
 	seedMavenRepos(mavenStore)
 	mh := mavenHandler.New(mavenHandler.Configuration{

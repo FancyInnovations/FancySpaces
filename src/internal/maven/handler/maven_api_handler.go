@@ -10,8 +10,38 @@ import (
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/internal/maven"
+	"github.com/fancyinnovations/fancyspaces/internal/maven/javadoccache"
 	"github.com/fancyinnovations/fancyspaces/internal/spaces"
 )
+
+var contentTypes = map[string]string{
+	".css":   "text/css",
+	".js":    "application/javascript",
+	".html":  "text/html",
+	".json":  "application/json",
+	".png":   "image/png",
+	".jpg":   "image/jpeg",
+	".gif":   "image/gif",
+	".svg":   "image/svg+xml",
+	".woff":  "font/woff",
+	".woff2": "font/woff2",
+	".ttf":   "font/ttf",
+	".ico":   "image/x-icon",
+	".webp":  "image/webp",
+	".mp4":   "video/mp4",
+	".mp3":   "audio/mpeg",
+	".ogg":   "audio/ogg",
+	".wav":   "audio/wav",
+	".pdf":   "application/pdf",
+	".xml":   "application/xml",
+	".zip":   "application/zip",
+	".tar":   "application/x-tar",
+	".gz":    "application/gzip",
+	".xz":    "application/x-xz",
+	".rar":   "application/x-rar-compressed",
+	".csv":   "text/csv",
+	".txt":   "text/plain",
+}
 
 func (h *Handler) handleRepositories(w http.ResponseWriter, r *http.Request) {
 	sid := r.PathValue("space_id")
@@ -330,6 +360,116 @@ func (h *Handler) handleDeleteArtifact(w http.ResponseWriter, r *http.Request, s
 }
 
 func (h *Handler) handleJavadoc(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement
-	w.WriteHeader(http.StatusNotImplemented)
+	sid := r.PathValue("space_id")
+	if sid == "" {
+		problems.ValidationError("space_id", "Space ID is required").WriteToHTTP(w)
+		return
+	}
+
+	space, err := h.spaces.Get(sid)
+	if err != nil {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
+			problems.NotFound("Space", sid).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get space by id", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	if space.Status != spaces.StatusApproved && space.Status != spaces.StatusArchived {
+		u := h.userFromCtx(r.Context())
+		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
+			problems.NotFound("Space", space.ID).WriteToHTTP(w)
+			return
+		}
+	}
+
+	if !space.MavenRepositorySettings.Enabled {
+		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		return
+	}
+
+	repoName := r.PathValue("repository_name")
+	if repoName == "" {
+		problems.ValidationError("repository_name", "Maven Repository is required").WriteToHTTP(w)
+		return
+	}
+	repo, err := h.store.GetRepository(r.Context(), space.ID, repoName)
+	if err != nil {
+		if errors.Is(err, maven.ErrRepositoryNotFound) {
+			problems.NotFound("Maven Repository", repoName).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get maven repository", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	if !repo.Public {
+		u := h.userFromCtx(r.Context())
+		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
+			problems.NotFound("Maven Repository", repo.Name).WriteToHTTP(w)
+			return
+		}
+	}
+
+	groupArtifactID := r.PathValue("group_artifact_id") // {groupId}:{artifactId}
+	if groupArtifactID == "" {
+		problems.ValidationError("group_artifact_id", "Maven Artifact is required").WriteToHTTP(w)
+		return
+	}
+	groupID := strings.SplitN(groupArtifactID, ":", 2)[0]
+	artifactID := strings.SplitN(groupArtifactID, ":", 2)[1]
+	artifact, err := h.store.GetArtifact(r.Context(), space.ID, repo.Name, groupID, artifactID)
+	if err != nil {
+		if errors.Is(err, maven.ErrArtifactNotFound) {
+			problems.NotFound("Maven Artifact", groupArtifactID).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get maven artifact", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	versionName := r.PathValue("version")
+	if versionName == "" {
+		problems.ValidationError("version", "Maven Artifact Version is required").WriteToHTTP(w)
+		return
+	}
+	version := artifact.GetVersion(versionName)
+	if version == nil {
+		problems.NotFound("Maven Artifact Version", versionName).WriteToHTTP(w)
+		return
+	}
+
+	filePath := r.PathValue("file_path")
+	if filePath == "" {
+		problems.ValidationError("file_path", "Javadoc file path is required").WriteToHTTP(w)
+		return
+	}
+
+	data, err := h.store.GetJavadocFile(r.Context(), space, repo, artifact, version.Version, filePath)
+	if err != nil {
+		if errors.Is(err, javadoccache.ErrJavadocNotFound) {
+			problems.NotFound("Javadoc File", filePath).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get javadoc file", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	for ext, ct := range contentTypes {
+		if strings.HasSuffix(filePath, ext) {
+			w.Header().Set("Content-Type", ct)
+			break
+		}
+	}
+
+	w.Header().Set("Cache-Control", "public, max-age=86400") // 1 day
+	w.Write(data)
 }

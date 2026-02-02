@@ -63,6 +63,10 @@ export async function getAllMavenArtifacts(spaceId: string, repoName: string): P
   }
 
   const artifacts = await response.json();
+  if (!Array.isArray(artifacts)) {
+    return [];
+  }
+
   artifacts.forEach((artifact: SpaceMavenRepositoryArtifact) => {
     artifact.versions.forEach((version) => {
       version.published_at = new Date(version.published_at);
