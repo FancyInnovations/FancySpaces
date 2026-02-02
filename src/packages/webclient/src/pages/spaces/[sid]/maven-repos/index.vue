@@ -94,6 +94,7 @@ onMounted(async () => {
     <v-row>
       <v-col
         v-for="repo in repos"
+        v-if="repos && repos.length > 0"
         :key="repo.name"
         md="3"
       >
@@ -110,6 +111,9 @@ onMounted(async () => {
           <v-card-text>
             <p><strong>Public:</strong> {{ repo.public ? 'Yes' : 'No' }}</p>
             <p><strong>Created at:</strong> {{ repo.created_at.toLocaleString() }}</p>
+            <template v-if="repo.internal_mirror">
+              <p><strong>Internal Mirror:</strong> {{ repo.internal_mirror?.space_id }} / {{ repo.internal_mirror?.repository }}</p>
+            </template>
           </v-card-text>
 
           <v-card-actions>
@@ -122,6 +126,13 @@ onMounted(async () => {
             </v-btn>
           </v-card-actions>
         </v-card>
+      </v-col>
+      <v-col
+        v-else
+        class="text-center"
+        cols="12"
+      >
+        <h2>No repositories found.</h2>
       </v-col>
     </v-row>
   </v-container>

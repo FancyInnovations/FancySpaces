@@ -60,7 +60,7 @@ func (h *Handler) Register(prefix string, mux *http.ServeMux) {
 	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts", h.handleArtifacts)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts/{group_artifact_id}", h.handleArtifact)
 
-	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts/{group_artifact_id}/version/{version}/javadoc/", h.handleJavadoc)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts/{group_artifact_id}/version/{version}/javadoc/{file_path...}", h.handleJavadoc)
 }
 
 func (h *Handler) handleMavenRequest(w http.ResponseWriter, r *http.Request) {
@@ -131,6 +131,11 @@ func (h *Handler) handleMavenRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleStoreFile(w http.ResponseWriter, r *http.Request, space *spaces.Space, repo *maven.Repository) {
+	if repo.InternalMirror != nil {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+
 	u := h.userFromCtx(r.Context())
 	if u == nil || !u.Verified || !u.IsActive || !space.HasWriteAccess(u) {
 		problems.Forbidden().WriteToHTTP(w)

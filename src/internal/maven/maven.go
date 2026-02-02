@@ -95,15 +95,17 @@ func (s *Store) DeleteRepository(ctx context.Context, spaceID, repoName string) 
 		return err
 	}
 
-	artifacts, err := s.GetArtifacts(ctx, spaceID, repo.Name)
-	if err != nil {
-		return err
-	}
-
-	// Delete all artifacts
-	for _, artifact := range artifacts {
-		if err := s.DeleteArtifact(ctx, spaceID, repo.Name, artifact.Group, artifact.ID); err != nil {
+	if repo.InternalMirror == nil {
+		artifacts, err := s.GetArtifacts(ctx, spaceID, repo.Name)
+		if err != nil {
 			return err
+		}
+
+		// Delete all artifacts
+		for _, artifact := range artifacts {
+			if err := s.DeleteArtifact(ctx, spaceID, repo.Name, artifact.Group, artifact.ID); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -111,15 +113,45 @@ func (s *Store) DeleteRepository(ctx context.Context, spaceID, repoName string) 
 }
 
 func (s *Store) GetArtifact(ctx context.Context, spaceID, repoName, groupID, artifactID string) (*Artifact, error) {
+	repo, err := s.GetRepository(ctx, spaceID, repoName)
+	if err != nil {
+		return nil, err
+	}
+
+	// If the repository is an internal mirror, redirect the request to the mirrored repository
+	if repo.InternalMirror != nil {
+		return s.GetArtifact(ctx, repo.InternalMirror.SpaceID, repo.InternalMirror.Repository, groupID, artifactID)
+	}
+
 	return s.db.GetArtifact(ctx, spaceID, repoName, groupID, artifactID)
 }
 
 func (s *Store) GetArtifacts(ctx context.Context, spaceID, repoName string) ([]Artifact, error) {
+	repo, err := s.GetRepository(ctx, spaceID, repoName)
+	if err != nil {
+		return nil, err
+	}
+
+	// If the repository is an internal mirror, redirect the request to the mirrored repository
+	if repo.InternalMirror != nil {
+		return s.GetArtifacts(ctx, repo.InternalMirror.SpaceID, repo.InternalMirror.Repository)
+	}
+
 	return s.db.GetArtifacts(ctx, spaceID, repoName)
 }
 
 func (s *Store) CreateArtifact(ctx context.Context, spaceID, repoName string, artifact Artifact) error {
-	_, err := s.GetArtifact(ctx, spaceID, repoName, artifact.Group, artifact.ID)
+	repo, err := s.GetRepository(ctx, spaceID, repoName)
+	if err != nil {
+		return err
+	}
+
+	// If the repository is an internal mirror, forbid artifact creation
+	if repo.InternalMirror != nil {
+		return ErrCannotModifyArtifactInMirrorRepository
+	}
+
+	_, err = s.GetArtifact(ctx, spaceID, repoName, artifact.Group, artifact.ID)
 	if err == nil {
 		return ErrArtifactAlreadyExists
 	}
@@ -128,10 +160,30 @@ func (s *Store) CreateArtifact(ctx context.Context, spaceID, repoName string, ar
 }
 
 func (s *Store) UpdateArtifact(ctx context.Context, spaceID, repoName string, artifact Artifact) error {
+	repo, err := s.GetRepository(ctx, spaceID, repoName)
+	if err != nil {
+		return err
+	}
+
+	// If the repository is an internal mirror, forbid artifact update
+	if repo.InternalMirror != nil {
+		return ErrCannotModifyArtifactInMirrorRepository
+	}
+
 	return s.db.UpdateArtifact(ctx, spaceID, repoName, artifact)
 }
 
 func (s *Store) DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, artifactID string) error {
+	repo, err := s.GetRepository(ctx, spaceID, repoName)
+	if err != nil {
+		return err
+	}
+
+	// If the repository is an internal mirror, forbid artifact deletion
+	if repo.InternalMirror != nil {
+		return ErrCannotModifyArtifactInMirrorRepository
+	}
+
 	artifact, err := s.GetArtifact(ctx, spaceID, repoName, groupID, artifactID)
 	if err != nil {
 		return err
@@ -153,6 +205,16 @@ func (s *Store) DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, 
 }
 
 func (s *Store) UploadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string, data []byte) error {
+	repo, err := s.GetRepository(ctx, spaceID, repoName)
+	if err != nil {
+		return err
+	}
+
+	// If the repository is an internal mirror, forbid artifact file upload
+	if repo.InternalMirror != nil {
+		return ErrCannotModifyArtifactInMirrorRepository
+	}
+
 	groupPath := strings.ReplaceAll(groupID, ".", "/")
 
 	if err := s.fileCache.UploadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName, data); err != nil {
@@ -163,6 +225,16 @@ func (s *Store) UploadArtifactFile(ctx context.Context, spaceID, repoName, group
 }
 
 func (s *Store) DownloadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string) ([]byte, error) {
+	repo, err := s.GetRepository(ctx, spaceID, repoName)
+	if err != nil {
+		return nil, err
+	}
+
+	// If the repository is an internal mirror, redirect the request to the mirrored repository
+	if repo.InternalMirror != nil {
+		return s.DownloadArtifactFile(ctx, repo.InternalMirror.SpaceID, repo.InternalMirror.Repository, groupID, artifactID, version, fileName)
+	}
+
 	groupPath := strings.ReplaceAll(groupID, ".", "/")
 
 	data, err := s.fileCache.DownloadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName)
@@ -174,6 +246,15 @@ func (s *Store) DownloadArtifactFile(ctx context.Context, spaceID, repoName, gro
 }
 
 func (s *Store) GetJavadocFile(ctx context.Context, space *spaces.Space, repo *Repository, artifact *Artifact, version string, filePath string) ([]byte, error) {
+	// If the repository is an internal mirror, redirect the request to the mirrored repository
+	if repo.InternalMirror != nil {
+		mirroredRepo, err := s.GetRepository(ctx, repo.InternalMirror.SpaceID, repo.InternalMirror.Repository)
+		if err != nil {
+			return nil, err
+		}
+		return s.GetJavadocFile(ctx, space, mirroredRepo, artifact, version, filePath)
+	}
+
 	key := fmt.Sprintf("%s/%s/%s/%s/%s", space.ID, repo.Name, artifact.Group, artifact.ID, version)
 
 	if !s.javadocCache.IsJavadocCached(key) {

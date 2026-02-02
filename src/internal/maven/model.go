@@ -6,10 +6,16 @@ import (
 )
 
 type Repository struct {
-	SpaceID   string    `json:"space_id" bson:"space_id"`
-	Name      string    `json:"name" bson:"name"`
-	Public    bool      `json:"public" bson:"public"`
-	CreatedAt time.Time `json:"created_at" bson:"created_at"`
+	SpaceID        string          `json:"space_id" bson:"space_id"`
+	Name           string          `json:"name" bson:"name"`
+	Public         bool            `json:"public" bson:"public"`
+	CreatedAt      time.Time       `json:"created_at" bson:"created_at"`
+	InternalMirror *InternalMirror `json:"internal_mirror,omitempty" bson:"internal_mirror,omitempty"`
+}
+
+type InternalMirror struct {
+	SpaceID    string `json:"space_id" bson:"space_id"`
+	Repository string `json:"repository" bson:"repository"`
 }
 
 type Artifact struct {

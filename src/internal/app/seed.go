@@ -13,14 +13,139 @@ import (
 
 func seedMavenRepos(store *maven.Store) {
 	err := store.CreateRepository(context.Background(), "fi", maven.Repository{
-		SpaceID:   "fi",
-		Name:      "releases",
-		Public:    true,
-		CreatedAt: time.Now(),
+		SpaceID:        "fi",
+		Name:           "releases",
+		Public:         true,
+		CreatedAt:      time.Now(),
+		InternalMirror: nil,
 	})
 	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
 		panic(fmt.Errorf("could not seed maven repos: %w", err))
 	}
+
+	err = store.CreateRepository(context.Background(), "fi", maven.Repository{
+		SpaceID:        "fi",
+		Name:           "snapshots",
+		Public:         true,
+		CreatedAt:      time.Now(),
+		InternalMirror: nil,
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+
+	err = store.CreateRepository(context.Background(), "fn", maven.Repository{
+		SpaceID:   "fn",
+		Name:      "fi-releases",
+		Public:    true,
+		CreatedAt: time.Now(),
+		InternalMirror: &maven.InternalMirror{
+			SpaceID:    "fi",
+			Repository: "releases",
+		},
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+
+	err = store.CreateRepository(context.Background(), "fn", maven.Repository{
+		SpaceID:   "fn",
+		Name:      "fi-snapshots",
+		Public:    true,
+		CreatedAt: time.Now(),
+		InternalMirror: &maven.InternalMirror{
+			SpaceID:    "fi",
+			Repository: "snapshots",
+		},
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+
+	err = store.CreateRepository(context.Background(), "fh", maven.Repository{
+		SpaceID:   "fh",
+		Name:      "fi-releases",
+		Public:    true,
+		CreatedAt: time.Now(),
+		InternalMirror: &maven.InternalMirror{
+			SpaceID:    "fi",
+			Repository: "releases",
+		},
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+
+	err = store.CreateRepository(context.Background(), "fh", maven.Repository{
+		SpaceID:   "fh",
+		Name:      "fi-snapshots",
+		Public:    true,
+		CreatedAt: time.Now(),
+		InternalMirror: &maven.InternalMirror{
+			SpaceID:    "fi",
+			Repository: "snapshots",
+		},
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+
+	err = store.CreateRepository(context.Background(), "fd", maven.Repository{
+		SpaceID:   "fd",
+		Name:      "fi-releases",
+		Public:    true,
+		CreatedAt: time.Now(),
+		InternalMirror: &maven.InternalMirror{
+			SpaceID:    "fi",
+			Repository: "releases",
+		},
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+
+	err = store.CreateRepository(context.Background(), "fd", maven.Repository{
+		SpaceID:   "fd",
+		Name:      "fi-snapshots",
+		Public:    true,
+		CreatedAt: time.Now(),
+		InternalMirror: &maven.InternalMirror{
+			SpaceID:    "fi",
+			Repository: "snapshots",
+		},
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+
+	err = store.CreateRepository(context.Background(), "fc", maven.Repository{
+		SpaceID:   "fc",
+		Name:      "fi-releases",
+		Public:    true,
+		CreatedAt: time.Now(),
+		InternalMirror: &maven.InternalMirror{
+			SpaceID:    "fi",
+			Repository: "releases",
+		},
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+
+	err = store.CreateRepository(context.Background(), "fc", maven.Repository{
+		SpaceID:   "fc",
+		Name:      "fi-snapshots",
+		Public:    true,
+		CreatedAt: time.Now(),
+		InternalMirror: &maven.InternalMirror{
+			SpaceID:    "fi",
+			Repository: "snapshots",
+		},
+	})
+	if err != nil && !errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+		panic(fmt.Errorf("could not seed maven repos: %w", err))
+	}
+
 }
 
 func seedSpacesDB() *fakeSpacesDB.DB {
@@ -78,7 +203,7 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancynpcs); err != nil {
@@ -117,7 +242,7 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancyholograms); err != nil {
@@ -156,7 +281,7 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancydialogs); err != nil {
@@ -199,7 +324,7 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancycore); err != nil {
@@ -477,7 +602,7 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
+			Enabled: true,
 		},
 	}
 	if err := db.Create(fancyanalytics); err != nil {

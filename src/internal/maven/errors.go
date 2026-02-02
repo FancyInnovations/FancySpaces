@@ -8,4 +8,6 @@ var (
 
 	ErrArtifactNotFound      = errors.New("artifact not found")
 	ErrArtifactAlreadyExists = errors.New("artifact already exists")
+
+	ErrCannotModifyArtifactInMirrorRepository = errors.New("cannot modify artifact in mirror repository")
 )

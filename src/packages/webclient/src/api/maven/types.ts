@@ -3,6 +3,12 @@ export interface SpaceMavenRepository {
   name: string;
   public: boolean;
   created_at: Date;
+  internal_mirror?: SpaceMavenRepositoryInternalMirror | null;
+}
+
+export interface SpaceMavenRepositoryInternalMirror {
+  space_id: string;
+  repository: string;
 }
 
 export interface SpaceMavenRepositoryArtifact {
