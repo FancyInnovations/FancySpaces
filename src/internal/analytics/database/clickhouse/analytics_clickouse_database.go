@@ -15,6 +15,9 @@ var createDatabaseSQL string
 //go:embed create_version_downloads_table.sql
 var createVersionDownloadsTableSQL string
 
+//go:embed create_maven_artifact_downloads_table.sql
+var createMavenArtifactDownloadsTableSQL string
+
 type DB struct {
 	ch driver.Conn
 }
@@ -36,6 +39,10 @@ func (db *DB) Setup(ctx context.Context) error {
 
 	if err := db.ch.Exec(ctx, createVersionDownloadsTableSQL); err != nil {
 		return fmt.Errorf("failed to create version_downloads table: %w", err)
+	}
+
+	if err := db.ch.Exec(ctx, createMavenArtifactDownloadsTableSQL); err != nil {
+		return fmt.Errorf("failed to create maven_artifact_downloads table: %w", err)
 	}
 
 	return nil
@@ -95,6 +102,25 @@ func (db *DB) GetDownloadCountForVersions(ctx context.Context, spaceID string) (
 
 func (db *DB) StoreVersionDownloads(ctx context.Context, records []analytics.VersionDownload) error {
 	batch, err := db.ch.PrepareBatch(ctx, "INSERT INTO fancyspaces.version_downloads")
+	if err != nil {
+		return err
+	}
+
+	for _, r := range records {
+		if err := batch.AppendStruct(&r); err != nil {
+			return err
+		}
+	}
+
+	if err := batch.Send(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *DB) StoreMavenArtifactDownloads(ctx context.Context, records []analytics.MavenArtifactDownload) error {
+	batch, err := db.ch.PrepareBatch(ctx, "INSERT INTO fancyspaces.maven_artifact_downloads")
 	if err != nil {
 		return err
 	}

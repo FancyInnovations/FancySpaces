@@ -6,6 +6,6 @@ CREATE TABLE IF NOT EXISTS fancyspaces.version_downloads
     ip_hash       String,
     user_agent    String
 )
-    ENGINE MergeTree
-        PARTITION BY toYYYYMM(downloaded_at)
-        ORDER BY (space_id, version_id, downloaded_at);
+ENGINE MergeTree
+PARTITION BY toYYYYMM(downloaded_at)
+ORDER BY (space_id, version_id, downloaded_at);

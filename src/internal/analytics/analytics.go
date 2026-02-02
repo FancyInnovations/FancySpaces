@@ -13,6 +13,8 @@ type DB interface {
 	GetDownloadCountForVersion(ctx context.Context, spaceID, versionID string) (uint64, error)
 	GetDownloadCountForVersions(ctx context.Context, spaceID string) (map[string]uint64, error)
 	StoreVersionDownloads(ctx context.Context, records []VersionDownload) error
+
+	StoreMavenArtifactDownloads(ctx context.Context, records []MavenArtifactDownload) error
 }
 
 type Cache interface {
@@ -121,6 +123,32 @@ func (s *Store) LogDownloadForVersion(ctx context.Context, spaceID, versionID st
 	if err == nil {
 		s.c.SetDownloadCountForVersion(spaceID, AllVersionsID, spaceDownloads+1)
 	}
+
+	return nil
+}
+
+func (s *Store) LogMavenArtifactDownload(ctx context.Context, spaceID, repositoryName, groupID, artifactID, version string, r *http.Request) error {
+	ip := s.getIP(r)
+	if ip != "unknown" {
+		ip = hashIP(ip)
+	}
+
+	mad := MavenArtifactDownload{
+		SpaceID:        spaceID,
+		RepositoryName: repositoryName,
+		GroupID:        groupID,
+		ArtifactID:     artifactID,
+		Version:        version,
+		DownloadedAt:   time.Now(),
+		IPHash:         ip,
+	}
+
+	// TODO: batch inserts
+	if err := s.db.StoreMavenArtifactDownloads(ctx, []MavenArtifactDownload{mad}); err != nil {
+		return err
+	}
+
+	// TODO: cache updates
 
 	return nil
 }

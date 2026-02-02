@@ -304,6 +304,12 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 		return
 	}
 
+	if artifactVersionFile.Name == artifactID+"-"+version+".jar" && h.analytics != nil {
+		if err := h.analytics.LogMavenArtifactDownload(r.Context(), space.ID, repo.Name, group, artifactID, version, r); err != nil {
+			slog.Error("Failed to log maven artifact download", sloki.WrapError(err))
+		}
+	}
+
 	data, err := h.store.DownloadArtifactFile(r.Context(), space.ID, repo.Name, group, artifactID, version, fileName)
 	if err != nil {
 		slog.Error("Failed to get artifact file", sloki.WrapError(err))
