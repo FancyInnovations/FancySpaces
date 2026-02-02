@@ -57,25 +57,6 @@ async function deleteIssueReq() {
 <template>
   <v-container v-if="issue" width="90%">
     <v-row>
-      <v-col>
-        <v-card
-          color="error"
-          rounded="xl"
-          variant="tonal"
-        >
-          <v-card-text>
-            <v-icon
-              class="mr-2"
-            >
-              mdi-alert-circle
-            </v-icon>
-            The issues feature is currently in beta and may not function as expected. We appreciate your patience as we work to improve it!
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row>
       <v-col class="flex-grow-0 pa-0">
         <SpaceSidebar
           :space="space"
