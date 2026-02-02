@@ -116,7 +116,7 @@ func Start(cfg Configuration) {
 		Analytics:   as,
 		UserFromCtx: auth.UserFromContext,
 	})
-	mh.Register(cfg.Mux)
+	mh.Register(apiPrefix, cfg.Mux)
 
 	// Issues
 	issuesDB := mongoIssuesDB.NewDB(&mongoIssuesDB.Configuration{
