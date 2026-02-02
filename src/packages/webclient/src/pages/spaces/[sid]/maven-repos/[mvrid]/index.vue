@@ -27,6 +27,8 @@ const latestVersion = computed(() => {
     })[0];
 });
 
+const howToUseTab = ref("build.gradle.kts");
+
 const tableHeaders = [
   { title: 'Group ID', value: 'group' },
   { title: 'Artifact ID', value: 'id' },
@@ -137,7 +139,7 @@ function onRowClick(event: any, { item }: any) {
     </v-row>
 
     <v-row>
-      <v-col md="9">
+      <v-col md="7">
         <v-card
           class="card__border bg-transparent"
           color="#150D1950"
@@ -166,7 +168,52 @@ function onRowClick(event: any, { item }: any) {
         </v-card>
       </v-col>
 
-      <v-col>
+      <v-col md="5">
+        <v-card
+          class="card__border bg-transparent mb-4"
+          color="#19120D33"
+          elevation="6"
+          rounded="xl"
+        >
+          <v-card-title class="mt-2">How to use</v-card-title>
+
+          <v-card-text>
+            <v-tabs
+              v-model="howToUseTab"
+              background-color="#150D1950"
+              color="primary"
+              grow
+            >
+              <v-tab value="build.gradle.kts">build.gradle.kts</v-tab>
+              <v-tab value="build.gradle">build.gradle</v-tab>
+              <v-tab value="pom.xml">pom.xml</v-tab>
+            </v-tabs>
+
+            <v-tabs-window v-model="howToUseTab" class="mt-4">
+              <v-tabs-window-item value="build.gradle.kts">
+                <pre><code>repositories {
+    maven (url = "https://fancyspaces.net/maven/{{ space?.slug }}/{{ repo?.name }}")
+}</code></pre>
+              </v-tabs-window-item>
+              <v-tabs-window-item value="build.gradle">
+                <pre><code>repositories {
+    maven {
+        url "https://fancyspaces.net/maven/{{ space?.slug }}/{{ repo?.name }}"
+    }
+}</code></pre>
+              </v-tabs-window-item>
+              <v-tabs-window-item value="pom.xml">
+                <pre><code>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;fancyspaces-{{ space?.slug }}-{{ repo?.name }}&lt;/id&gt;
+        &lt;url&gt;https://fancyspaces.net/maven/{{ space?.slug }}/{{ repo?.name }}&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;</code></pre>
+              </v-tabs-window-item>
+            </v-tabs-window>
+          </v-card-text>
+        </v-card>
+
         <v-card
           v-if="isLoggedIn"
           class="card__border bg-transparent"
@@ -203,5 +250,9 @@ function onRowClick(event: any, { item }: any) {
 <style scoped>
 .grey-border-color {
   border-color: rgba(0, 0, 0, 0.8);
+}
+
+pre {
+  overflow-x: auto;
 }
 </style>

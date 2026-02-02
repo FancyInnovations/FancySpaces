@@ -29,6 +29,8 @@ function toggleExpand(key: any) {
   expanded.value[key] = !expanded.value[key]
 }
 
+const howToUseTab = ref("build.gradle.kts");
+
 onMounted(async () => {
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
@@ -178,7 +180,7 @@ function formatSize(sizeInBytes: number): string {
       <v-col
         v-for="version in sortedVersions"
         :key="version.version"
-        md="4"
+        md="12"
       >
         <v-card
           class="card__border bg-transparent"
@@ -186,9 +188,12 @@ function formatSize(sizeInBytes: number): string {
           elevation="12"
           rounded="xl"
         >
-          <v-card-title class="d-flex align-center justify-space-between">
+          <v-card-title
+            class="d-flex align-center justify-space-between cursor-pointer"
+            @click="toggleExpand(version.version)"
+          >
             <span>
-              Version files for {{ version.version }}
+              Version {{ version.version }}
             </span>
 
             <v-btn
@@ -198,7 +203,7 @@ function formatSize(sizeInBytes: number): string {
               @click="toggleExpand(version.version)"
             >
               <v-icon>
-                {{ expanded[version.version] ? 'mdi-chevron-down' : 'mdi-chevron-up' }}
+                {{ expanded[version.version] ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
               </v-icon>
             </v-btn>
           </v-card-title>
@@ -208,37 +213,114 @@ function formatSize(sizeInBytes: number): string {
           </v-card-subtitle>
 
           <v-expand-transition>
-            <div v-show="!expanded[version.version]">
-              <v-card-text>
-                <v-table class="bg-transparent">
-                  <thead>
-                  <tr>
-                    <th class="text-left">Name</th>
-                    <th class="text-left">Size</th>
-                    <th class="text-right"></th>
-                  </tr>
-                  </thead>
+            <div v-show="expanded[version.version]">
+              <v-card-text class="d-flex align-start justify-space-between">
 
-                  <tbody>
-                  <tr
-                    v-for="file in filesWithoutChecksums(version.version)"
-                    :key="file.name"
-                  >
-                    <td>{{ file.name }}</td>
-                    <td>{{ formatSize(file.size) }}</td>
-                    <td class="text-right">
-                      <v-btn
-                        :href="file.url"
-                        color="primary"
-                        icon="mdi-download"
-                        size="small"
-                        target="_blank"
-                        variant="text"
-                      />
-                    </td>
-                  </tr>
-                  </tbody>
-                </v-table>
+                <v-card
+                  class="card__border bg-transparent"
+                  color="#150D1950"
+                  elevation="12"
+                  rounded="xl"
+                  width="100%"
+                >
+                  <v-card-title class="mt-2">Available files</v-card-title>
+
+                  <v-card-text>
+                    <v-table class="bg-transparent">
+                      <thead>
+                      <tr>
+                        <th class="text-left">Name</th>
+                        <th class="text-left">Size</th>
+                        <th class="text-right"></th>
+                      </tr>
+                      </thead>
+
+                      <tbody>
+                      <tr
+                        v-for="file in filesWithoutChecksums(version.version)"
+                        :key="file.name"
+                      >
+                        <td>{{ file.name }}</td>
+                        <td>{{ formatSize(file.size) }}</td>
+                        <td class="text-right">
+                          <v-btn
+                            :href="file.url"
+                            color="primary"
+                            icon="mdi-download"
+                            size="small"
+                            target="_blank"
+                            variant="text"
+                          />
+                        </td>
+                      </tr>
+                      </tbody>
+                    </v-table>
+                  </v-card-text>
+                </v-card>
+
+                <v-card
+                  class="card__border bg-transparent flex-grow-1 ml-4"
+                  color="#19120D33"
+                  elevation="6"
+                  min-width="50%"
+                  rounded="xl"
+                >
+                  <v-card-title class="mt-2">How to use</v-card-title>
+
+                  <v-card-text>
+                    <v-tabs
+                      v-model="howToUseTab"
+                      background-color="#150D1950"
+                      class="mt-2"
+                      color="primary"
+                      grow
+                    >
+                      <v-tab value="build.gradle.kts">build.gradle.kts</v-tab>
+                      <v-tab value="build.gradle">build.gradle</v-tab>
+                      <v-tab value="pom.xml">pom.xml</v-tab>
+                    </v-tabs>
+
+                    <v-tabs-window v-model="howToUseTab" class="mt-4">
+                      <v-tabs-window-item value="build.gradle.kts">
+                <pre><code>repositories {
+    maven (url = "https://fancyspaces.net/maven/{{ space?.slug }}/{{ repo?.name }}")
+}
+
+dependencies {
+    compileOnly("{{ artifact?.group }}:{{ artifact?.id }}:{{ version.version }}")
+}</code></pre>
+                      </v-tabs-window-item>
+                      <v-tabs-window-item value="build.gradle">
+                <pre><code>repositories {
+    maven {
+        url "https://fancyspaces.net/maven/{{ space?.slug }}/{{ repo?.name }}"
+    }
+}
+
+dependencies {
+    compileOnly "{{ artifact?.group }}:{{ artifact?.id }}:{{ version.version }}"
+}</code></pre>
+                      </v-tabs-window-item>
+                      <v-tabs-window-item value="pom.xml">
+                <pre><code>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;fancyspaces-{{ space?.slug }}-{{ repo?.name }}&lt;/id&gt;
+        &lt;url&gt;https://fancyspaces.net/maven/{{ space?.slug }}/{{ repo?.name }}&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;{{ artifact?.group }}&lt;/groupId&gt;
+        &lt;artifactId&gt;{{ artifact?.id }}&lt;/artifactId&gt;
+        &lt;version&gt;{{ version.version }}&lt;/version&gt;
+        &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+                      </v-tabs-window-item>
+                    </v-tabs-window>
+                  </v-card-text>
+                </v-card>
               </v-card-text>
             </div>
           </v-expand-transition>
@@ -251,5 +333,9 @@ function formatSize(sizeInBytes: number): string {
 <style scoped>
 .grey-border-color {
   border-color: rgba(0, 0, 0, 0.8);
+}
+
+pre {
+  overflow-x: auto;
 }
 </style>
