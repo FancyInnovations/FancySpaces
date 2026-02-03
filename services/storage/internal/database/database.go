@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -27,9 +28,9 @@ type Configuration struct {
 	DB DB
 }
 
-func NewService(config Configuration) *Store {
+func NewService(cfg Configuration) *Store {
 	return &Store{
-		db: config.DB,
+		db: cfg.DB,
 	}
 }
 
@@ -53,6 +54,14 @@ func (s *Store) CreateDatabase(ctx context.Context, name string) error {
 	}
 
 	return s.db.CreateDatabase(ctx, db)
+}
+
+func (s *Store) CreateDatabaseIfNotExists(ctx context.Context, name string) error {
+	if err := s.CreateDatabase(ctx, name); err != nil && !errors.Is(err, ErrDatabaseAlreadyExists) {
+		return err
+	}
+
+	return nil
 }
 
 func (s *Store) DeleteDatabase(ctx context.Context, name string) error {
@@ -92,6 +101,14 @@ func (s *Store) CreateCollection(ctx context.Context, db *Database, name string,
 	}
 
 	return s.db.CreateCollection(ctx, coll)
+}
+
+func (s *Store) CreateCollectionIfNotExists(ctx context.Context, db *Database, name string, engine Engine) error {
+	if err := s.CreateCollection(ctx, db, name, engine); err != nil && !errors.Is(err, ErrCollectionAlreadyExists) {
+		return err
+	}
+
+	return nil
 }
 
 func (s *Store) ChangeCollectionName(ctx context.Context, coll *Collection, newName string) error {
