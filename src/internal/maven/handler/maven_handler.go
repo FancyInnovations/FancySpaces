@@ -120,14 +120,14 @@ func (h *Handler) handleMavenRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.Method {
-	case http.MethodGet:
+	case http.MethodGet, http.MethodHead:
 		h.handleFetchFile(w, r, space, repo)
 		return
 	case http.MethodPut:
 		h.handleStoreFile(w, r, space, repo)
 		return
 	default:
-		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodPut}).WriteToHTTP(w)
+		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodHead, http.MethodPut}).WriteToHTTP(w)
 		return
 	}
 }
@@ -335,5 +335,11 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.WriteHeader(http.StatusOK)
+
+	// HEAD request, no body
+	if r.Method == http.MethodHead {
+		return
+	}
+
 	w.Write(data)
 }
