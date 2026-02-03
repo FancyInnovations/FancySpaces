@@ -19,14 +19,6 @@ const space = ref<Space>();
 const repo = ref<SpaceMavenRepository>();
 const artifacts = ref<SpaceMavenRepositoryArtifact[]>([]);
 
-const latestVersion = computed(() => {
-  return artifacts.value
-    .flatMap(art => art.versions)
-    .sort((a, b) => {
-      return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
-    })[0];
-});
-
 const howToUseTab = ref("build.gradle.kts");
 
 const tableHeaders = [
