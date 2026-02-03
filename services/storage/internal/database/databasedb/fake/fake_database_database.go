@@ -15,7 +15,8 @@ type DB struct {
 
 func NewDatabaseDB() *DB {
 	return &DB{
-		dbs: make(map[string]database.Database),
+		dbs:   make(map[string]database.Database),
+		colls: make(map[string]map[string]database.Collection),
 	}
 }
 
