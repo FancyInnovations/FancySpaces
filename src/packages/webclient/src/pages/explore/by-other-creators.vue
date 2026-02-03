@@ -21,8 +21,6 @@ onMounted(async () => {
   spaces.value.push(await getSpace("orbisguard"));
   spaces.value.push(await getSpace("orbismines"));
   spaces.value.push(await getSpace("wiflowscoreboard"));
-
-  spaces.value.push(await getSpace("cpp"));
 });
 
 </script>
