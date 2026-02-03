@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/OliverSchlueter/goutils/containers"
@@ -63,30 +64,41 @@ func main() {
 	loadUsers()
 
 	// Setup HTTP server
-	mux := http.NewServeMux()
 	port := "8080"
+	mux := http.NewServeMux()
+	mavenMux := http.NewServeMux()
 
 	app.Start(app.Configuration{
 		Mux:        mux,
+		MavenMux:   mavenMux,
 		Mongo:      mc,
 		ClickHouse: ch,
 		MinIO:      mio,
 	})
 
+	hostRouter := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		host := r.Host
+		if strings.HasPrefix(host, "maven.") {
+			mavenMux.ServeHTTP(w, r)
+		} else {
+			mux.ServeHTTP(w, r)
+		}
+	})
+
+	//rl := ratelimit.NewService(ratelimit.Configuration{
+	//	TokensPerSecond: 3,
+	//	MaxTokens:       50,
+	//})
+
+	middleware.OnlyLogStatusAbove = 399 // log 4xx and 5xx status codes
+	chain := alice.New(
+		//rl.Middleware,
+		middleware.RequestLogging,
+		auth.Middleware,
+		middleware.Recovery,
+	).Then(hostRouter)
+
 	go func() {
-		//rl := ratelimit.NewService(ratelimit.Configuration{
-		//	TokensPerSecond: 3,
-		//	MaxTokens:       50,
-		//})
-
-		middleware.OnlyLogStatusAbove = 399 // log 4xx and 5xx status codes
-		chain := alice.New(
-			//rl.Middleware,
-			middleware.RequestLogging,
-			auth.Middleware,
-			middleware.Recovery,
-		).Then(mux)
-
 		err := http.ListenAndServe(":"+port, chain)
 		if err != nil {
 			slog.Error("Could not start server on port "+port, sloki.WrapError(err))
