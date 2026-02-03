@@ -33,8 +33,20 @@ const tableHeaders = [
   { title: 'Group ID', value: 'group' },
   { title: 'Artifact ID', value: 'id' },
   { title: 'Versions', key: 'versions', value: (art: SpaceMavenRepositoryArtifact) => art.versions.length || 'N/A' },
-  { title: 'Latest version', key: 'latest-version', value: () => latestVersion.value?.version || 'N/A' },
-  { title: 'Last update', key: 'last-update', value: () => latestVersion.value?.published_at.toLocaleDateString() || 'N/A' },
+  { title: 'Latest version', key: 'latest-version', value: (art: SpaceMavenRepositoryArtifact) => {
+      const latest = art.versions.sort((a, b) => {
+        return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
+      })[0];
+      return latest ? latest.version : 'N/A';
+    }
+  },
+  { title: 'Last update', key: 'last-update', value: (art: SpaceMavenRepositoryArtifact) => {
+      const latest = art.versions.sort((a, b) => {
+        return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
+      })[0];
+      return latest ? new Date(latest.published_at).toLocaleDateString() : 'N/A';
+    }
+  },
 ];
 
 onMounted(async () => {
