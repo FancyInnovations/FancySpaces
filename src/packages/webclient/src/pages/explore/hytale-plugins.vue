@@ -50,6 +50,9 @@ onMounted(async () => {
     },
     release_settings: {
       enabled: false
+    },
+    maven_repository_settings: {
+      enabled: false
     }
   });
   plannedPlugins.value.push({
@@ -68,6 +71,9 @@ onMounted(async () => {
       enabled: false
     },
     release_settings: {
+      enabled: false
+    },
+    maven_repository_settings: {
       enabled: false
     }
   });
@@ -88,6 +94,9 @@ onMounted(async () => {
     },
     release_settings: {
       enabled: false
+    },
+    maven_repository_settings: {
+      enabled: false
     }
   });
   plannedPlugins.value.push({
@@ -106,6 +115,9 @@ onMounted(async () => {
       enabled: false
     },
     release_settings: {
+      enabled: false
+    },
+    maven_repository_settings: {
       enabled: false
     }
   });
