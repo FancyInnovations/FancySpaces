@@ -9,18 +9,18 @@ func GroupFromURL(url string) (string, error) {
 	parts := strings.Split(url, "/")
 
 	if IsMetadataURL(url) {
-		if len(parts) < 5 {
+		if len(parts) < 4 {
 			return "", fmt.Errorf("invalid Maven metadata URL: %s", url)
 		}
-		groupParts := parts[4 : len(parts)-1]
+		groupParts := parts[3 : len(parts)-1]
 		return strings.Join(groupParts, "."), nil
 	}
 
-	if len(parts) < 7 {
+	if len(parts) < 6 {
 		return "", fmt.Errorf("invalid Maven URL: %s", url)
 	}
 
-	groupParts := parts[4 : len(parts)-3]
+	groupParts := parts[3 : len(parts)-3]
 
 	return strings.Join(groupParts, "."), nil
 }
@@ -29,13 +29,13 @@ func ArtifactFromURL(url string) (string, error) {
 	parts := strings.Split(url, "/")
 
 	if IsMetadataURL(url) {
-		if len(parts) < 5 {
+		if len(parts) < 4 {
 			return "", fmt.Errorf("invalid Maven metadata URL: %s", url)
 		}
 		return parts[len(parts)-2], nil
 	}
 
-	if len(parts) < 6 {
+	if len(parts) < 5 {
 		return "", fmt.Errorf("invalid Maven URL: %s", url)
 	}
 
@@ -57,7 +57,7 @@ func IsMetadataURL(url string) bool {
 
 func FilenameFromURL(url string) (string, error) {
 	parts := strings.Split(url, "/")
-	if len(parts) < 6 {
+	if len(parts) < 5 {
 		return "", fmt.Errorf("invalid Maven URL: %s", url)
 	}
 

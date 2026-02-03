@@ -49,18 +49,20 @@ func New(cfg Configuration) *Handler {
 	}
 }
 
-func (h *Handler) Register(prefix string, mux *http.ServeMux) {
-	// Endpoint for Maven clients
-	// https://fancyspaces.net/maven/{space_id}/{repository_name}/{group_path}/{artifact_id}/{version}/{filename}
-	mux.HandleFunc("/maven/{space_id}/{repository_name}/", h.handleMavenRequest)
-
-	// API endpoints
+func (h *Handler) RegisterAPIEndpoints(prefix string, mux *http.ServeMux) {
 	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories", h.handleRepositories)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}", h.handleRepository)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts", h.handleArtifacts)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts/{group_artifact_id}", h.handleArtifact)
 
 	mux.HandleFunc("/javadoc/{space_id}/{repository_name}/{group_artifact_id}/{version}/{file_path...}", h.handleJavadoc)
+}
+
+// RegisterMavenEndpoints registers the endpoints for Maven client requests
+// These endpoints will be registered on the maven.fancyspaces.net domain
+func (h *Handler) RegisterMavenEndpoints(mux *http.ServeMux) {
+	// https://maven.fancyspaces.net/{space_id}/{repository_name}/{group_path}/{artifact_id}/{version}/{filename}
+	mux.HandleFunc("/{space_id}/{repository_name}/", h.handleMavenRequest)
 }
 
 func (h *Handler) handleMavenRequest(w http.ResponseWriter, r *http.Request) {
@@ -223,7 +225,7 @@ func (h *Handler) handleStoreFile(w http.ResponseWriter, r *http.Request, space 
 		artifactVersionFile = &maven.ArtifactVersionFile{
 			Name: fileName,
 			Size: int64(len(body)),
-			URL:  "https://fancyspaces.net/maven/" + space.ID + "/" + repo.Name + "/" + groupPath + "/" + artifactID + "/" + version + "/" + fileName,
+			URL:  "https://maven.fancyspaces.net/" + space.ID + "/" + repo.Name + "/" + groupPath + "/" + artifactID + "/" + version + "/" + fileName,
 		}
 		artifactVersion.Files = append(artifactVersion.Files, artifactVersionFile)
 	} else {

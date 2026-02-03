@@ -41,6 +41,7 @@ const apiPrefix = "/api/v1"
 
 type Configuration struct {
 	Mux        *http.ServeMux
+	MavenMux   *http.ServeMux
 	Mongo      *mongo.Database
 	ClickHouse driver.Conn
 	MinIO      *minio.Client
@@ -119,7 +120,8 @@ func Start(cfg Configuration) {
 		Analytics:   as,
 		UserFromCtx: auth.UserFromContext,
 	})
-	mh.Register(apiPrefix, cfg.Mux)
+	mh.RegisterAPIEndpoints(apiPrefix, cfg.Mux)
+	mh.RegisterMavenEndpoints(cfg.MavenMux)
 
 	// Issues
 	issuesDB := mongoIssuesDB.NewDB(&mongoIssuesDB.Configuration{

@@ -27,7 +27,7 @@ tasks {
         repositories {
             maven {
                 name = "fancyspacesReleases"
-                url = uri("http://localhost:8080/maven/fancyinnovations/releases")
+                url = uri("http://maven.localhost:8080/fancyinnovations/releases")
                 isAllowInsecureProtocol = true
 
                 credentials(HttpHeaderCredentials::class) {

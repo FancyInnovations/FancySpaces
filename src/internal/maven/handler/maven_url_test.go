@@ -8,23 +8,23 @@ func TestGroupFromURL(t *testing.T) {
 		expected string
 	}{
 		{
-			url:      "/maven/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
+			url:      "/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
 			expected: "com.example",
 		},
 		{
-			url:      "/maven/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
+			url:      "/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
 			expected: "org.apache.commons",
 		},
 		{
-			url:      "/maven/space3/repo3/net/sf/jopt-simple/5.0/jopt-simple-5.0.pom",
+			url:      "/space3/repo3/net/sf/jopt-simple/5.0/jopt-simple-5.0.pom",
 			expected: "net.sf",
 		},
 		{
-			url:      "/maven/space4/repo4/io/github/user/project/maven-metadata.xml",
+			url:      "/space4/repo4/io/github/user/project/maven-metadata.xml",
 			expected: "io.github.user.project",
 		},
 		{
-			url:      "/maven/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
+			url:      "/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
 			expected: "com.example.lib",
 		},
 	}
@@ -47,23 +47,23 @@ func TestArtifactFromURL(t *testing.T) {
 		expected string
 	}{
 		{
-			url:      "/maven/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
+			url:      "/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
 			expected: "myapp",
 		},
 		{
-			url:      "/maven/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
+			url:      "/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
 			expected: "lang3",
 		},
 		{
-			url:      "/maven/space3/repo3/net/sf/jopt-simple/5.0/jopt-simple-5.0.pom",
+			url:      "/space3/repo3/net/sf/jopt-simple/5.0/jopt-simple-5.0.pom",
 			expected: "jopt-simple",
 		},
 		{
-			url:      "/maven/space4/repo4/io/github/user/project/maven-metadata.xml",
+			url:      "/space4/repo4/io/github/user/project/maven-metadata.xml",
 			expected: "project",
 		},
 		{
-			url:      "/maven/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
+			url:      "/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
 			expected: "lib",
 		},
 	}
@@ -86,11 +86,11 @@ func TestVersionFromURL(t *testing.T) {
 		expected string
 	}{
 		{
-			url:      "/maven/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
+			url:      "/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
 			expected: "1.0.0",
 		},
 		{
-			url:      "/maven/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
+			url:      "/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
 			expected: "3.12.0",
 		},
 	}
@@ -113,19 +113,19 @@ func TestIsMetadataURL(t *testing.T) {
 		expected bool
 	}{
 		{
-			url:      "/maven/space4/repo4/io/github/user/project/maven-metadata.xml",
+			url:      "/space4/repo4/io/github/user/project/maven-metadata.xml",
 			expected: true,
 		},
 		{
-			url:      "/maven/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
+			url:      "/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
 			expected: true,
 		},
 		{
-			url:      "/maven/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
+			url:      "/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
 			expected: false,
 		},
 		{
-			url:      "/maven/space1/repo1/com/example/lib/maven-metadata.xmlish",
+			url:      "/space1/repo1/com/example/lib/maven-metadata.xmlish",
 			expected: false,
 		},
 		{
@@ -141,7 +141,7 @@ func TestIsMetadataURL(t *testing.T) {
 			expected: false,
 		},
 		{
-			url:      "/maven/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
+			url:      "/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
 			expected: false,
 		},
 	}
@@ -160,11 +160,11 @@ func TestFilenameFromURL(t *testing.T) {
 		expected string
 	}{
 		{
-			url:      "/maven/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
+			url:      "/space1/repo1/com/example/myapp/1.0.0/myapp-1.0.0.jar",
 			expected: "myapp-1.0.0.jar",
 		},
 		{
-			url:      "/maven/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
+			url:      "/space2/repo2/org/apache/commons/lang3/3.12.0/lang3-3.12.0.jar",
 			expected: "lang3-3.12.0.jar",
 		},
 	}

@@ -264,7 +264,7 @@ function formatSize(sizeInBytes: number): string {
                     <v-tabs-window v-model="howToUseTab" class="mt-4">
                       <v-tabs-window-item value="build.gradle.kts">
                 <pre><code>repositories {
-    maven (url = "https://fancyspaces.net/maven/{{ space?.slug }}/{{ repo?.name }}")
+    maven (url = "https://maven.fancyspaces.net/{{ space?.slug }}/{{ repo?.name }}")
 }
 
 dependencies {
@@ -274,7 +274,7 @@ dependencies {
                       <v-tabs-window-item value="build.gradle">
                 <pre><code>repositories {
     maven {
-        url "https://fancyspaces.net/maven/{{ space?.slug }}/{{ repo?.name }}"
+        url "https://maven.fancyspaces.net/{{ space?.slug }}/{{ repo?.name }}"
     }
 }
 
@@ -286,7 +286,7 @@ dependencies {
                 <pre><code>&lt;repositories&gt;
     &lt;repository&gt;
         &lt;id&gt;fancyspaces-{{ space?.slug }}-{{ repo?.name }}&lt;/id&gt;
-        &lt;url&gt;https://fancyspaces.net/maven/{{ space?.slug }}/{{ repo?.name }}&lt;/url&gt;
+        &lt;url&gt;https://maven.fancyspaces.net/{{ space?.slug }}/{{ repo?.name }}&lt;/url&gt;
     &lt;/repository&gt;
 &lt;/repositories&gt;
 

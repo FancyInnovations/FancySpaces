@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -56,23 +57,34 @@ func main() {
 	}
 
 	// Setup HTTP server
-	mux := http.NewServeMux()
 	port := "8080"
+	mux := http.NewServeMux()
+	mavenMux := http.NewServeMux()
 
 	app.Start(app.Configuration{
 		Mux:        mux,
+		MavenMux:   mavenMux,
 		Mongo:      mc,
 		ClickHouse: ch,
 		MinIO:      mio,
 	})
 
-	go func() {
-		chain := alice.New(
-			middleware.RequestLogging,
-			auth.Middleware,
-			middleware.Recovery,
-		).Then(mux)
+	hostRouter := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		host := r.Host
+		if strings.HasPrefix(host, "maven.") {
+			mavenMux.ServeHTTP(w, r)
+		} else {
+			mux.ServeHTTP(w, r)
+		}
+	})
 
+	chain := alice.New(
+		middleware.RequestLogging,
+		auth.Middleware,
+		middleware.Recovery,
+	).Then(hostRouter)
+
+	go func() {
 		err := http.ListenAndServe(":"+port, chain)
 		if err != nil {
 			slog.Error("Could not start server on port "+port, sloki.WrapError(err))
