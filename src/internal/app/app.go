@@ -105,6 +105,7 @@ func Start(cfg Configuration) {
 	}
 	mavenFileCache := memoryMavenFileStorage.NewStorage()
 	mavenStore := maven.New(maven.Configuration{
+		Spaces:       spacesStore,
 		DB:           mavenDB,
 		FileStore:    mavenFileStorage,
 		FileCache:    mavenFileCache,

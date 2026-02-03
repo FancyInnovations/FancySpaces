@@ -29,6 +29,20 @@ const props = defineProps<{
         title="Information"
       />
 
+<!--      <v-list-item-->
+<!--        :to="`/spaces/${space?.slug}/docs`"-->
+<!--        link-->
+<!--        prepend-icon="mdi-book-open-variant-outline"-->
+<!--        title="Documentation"-->
+<!--      />-->
+
+<!--      <v-list-item-->
+<!--        :to="`/spaces/${space?.slug}/source`"-->
+<!--        link-->
+<!--        prepend-icon="mdi-source-branch"-->
+<!--        title="Source Code"-->
+<!--      />-->
+
       <v-list-item
         v-if="space?.release_settings.enabled"
         :to="`/spaces/${space?.slug}/versions`"
@@ -53,20 +67,6 @@ const props = defineProps<{
         title="JavaDoc"
       />
 
-<!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/docs`"-->
-<!--        link-->
-<!--        prepend-icon="mdi-book-open-variant-outline"-->
-<!--        title="Knowledge Base"-->
-<!--      />-->
-
-<!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/roadmap`"-->
-<!--        link-->
-<!--        prepend-icon="mdi-road-variant"-->
-<!--        title="Roadmap"-->
-<!--      />-->
-
       <v-list-item
         v-if="space?.issue_settings.enabled"
         :to="`/spaces/${space?.slug}/issues`"
@@ -76,17 +76,24 @@ const props = defineProps<{
       />
 
 <!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/bugs`"-->
+<!--        :to="`/spaces/${space?.slug}/support-tickets`"-->
 <!--        link-->
 <!--        prepend-icon="mdi-bug-outline"-->
-<!--        title="Report bug"-->
+<!--        title="Support Tickets"-->
 <!--      />-->
 
 <!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/stats`"-->
+<!--        :to="`/spaces/${space?.slug}/roadmap`"-->
+<!--        link-->
+<!--        prepend-icon="mdi-road-variant"-->
+<!--        title="Roadmap"-->
+<!--      />-->
+
+<!--      <v-list-item-->
+<!--        :to="`/spaces/${space?.slug}/analytics`"-->
 <!--        link-->
 <!--        prepend-icon="mdi-chart-box-outline"-->
-<!--        title="Statistics"-->
+<!--        title="Analyitics"-->
 <!--      />-->
 
       <v-divider />

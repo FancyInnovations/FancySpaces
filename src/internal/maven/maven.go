@@ -38,6 +38,7 @@ type JavadocCache interface {
 }
 
 type Store struct {
+	spaces       *spaces.Store
 	db           DB
 	fileStore    FileStorage
 	fileCache    FileStorage
@@ -46,6 +47,7 @@ type Store struct {
 }
 
 type Configuration struct {
+	Spaces       *spaces.Store
 	DB           DB
 	FileStore    FileStorage
 	FileCache    FileStorage
@@ -55,6 +57,7 @@ type Configuration struct {
 
 func New(cfg Configuration) *Store {
 	return &Store{
+		spaces:       cfg.Spaces,
 		db:           cfg.DB,
 		fileStore:    cfg.FileStore,
 		fileCache:    cfg.FileCache,
@@ -248,11 +251,22 @@ func (s *Store) DownloadArtifactFile(ctx context.Context, spaceID, repoName, gro
 func (s *Store) GetJavadocFile(ctx context.Context, space *spaces.Space, repo *Repository, artifact *Artifact, version string, filePath string) ([]byte, error) {
 	// If the repository is an internal mirror, redirect the request to the mirrored repository
 	if repo.InternalMirror != nil {
+		mirroredSpace, err := s.spaces.Get(repo.InternalMirror.SpaceID)
+		if err != nil {
+			return nil, err
+		}
+
 		mirroredRepo, err := s.GetRepository(ctx, repo.InternalMirror.SpaceID, repo.InternalMirror.Repository)
 		if err != nil {
 			return nil, err
 		}
-		return s.GetJavadocFile(ctx, space, mirroredRepo, artifact, version, filePath)
+
+		mirroredArtifact, err := s.GetArtifact(ctx, repo.InternalMirror.SpaceID, repo.InternalMirror.Repository, artifact.Group, artifact.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		return s.GetJavadocFile(ctx, mirroredSpace, mirroredRepo, mirroredArtifact, version, filePath)
 	}
 
 	key := fmt.Sprintf("%s/%s/%s/%s/%s", space.ID, repo.Name, artifact.Group, artifact.ID, version)
