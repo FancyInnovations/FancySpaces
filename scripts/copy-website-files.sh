@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp -r ../src/packages/webclient/dist/* ../src/internal/frontend/assets
+cp -r ../services/core/packages/webclient/dist/* ../services/core/internal/frontend/assets

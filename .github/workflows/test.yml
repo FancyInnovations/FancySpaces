@@ -26,15 +26,15 @@ jobs:
 
       - name: Install dependencies
         run: go mod tidy
-        working-directory: src/
+        working-directory: ./services/core/
 
       - name: Build
         run: go build cmd/local/main.go
-        working-directory: src/
+        working-directory: ./services/core/
 
       - name: Test
         run: go test ./... -v
-        working-directory: src/
+        working-directory: ./services/core/
 
   frontend:
     name: Frontend
@@ -62,11 +62,11 @@ jobs:
 
       - name: Install pnpm dependencies
         run: pnpm install
-        working-directory: src/packages/webclient/
+        working-directory: ./services/core/packages/webclient/
 
       - name: Build web app
         run: pnpm run build
-        working-directory: src/packages/webclient/
+        working-directory: ./services/core/packages/webclient/
 
   java-sdk:
     name: Java SDK
@@ -92,8 +92,8 @@ jobs:
 
       - name: Modify gradlew permissions
         run: chmod +x ./gradlew
-        working-directory: java-sdk/
+        working-directory: ./java-sdk/
 
       - name: Build java sdk
         run: ./gradlew jar
-        working-directory: java-sdk/
+        working-directory: ./java-sdk/
