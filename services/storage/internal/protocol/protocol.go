@@ -6,6 +6,8 @@ import (
 	"net"
 )
 
+const maxFrameSize = 16 * 1024 * 1024 // 16 MB
+
 var V1 = &ProtoV1{}
 
 type ProtoV1 struct {
@@ -21,7 +23,7 @@ func (p *ProtoV1) ReadFrameInto(conn net.Conn, target []byte) ([]byte, error) {
 	}
 
 	frameLength := int(binary.BigEndian.Uint32(lenBuf[:]))
-	if frameLength <= 0 {
+	if frameLength <= 0 || frameLength > maxFrameSize {
 		return nil, ErrFrameLengthInvalid
 	}
 
@@ -49,12 +51,7 @@ func (p *ProtoV1) WriteFrame(conn net.Conn, data []byte) error {
 	var lenBuf [4]byte
 	binary.BigEndian.PutUint32(lenBuf[:], uint32(len(data)))
 
-	_, err := conn.Write(lenBuf[:])
-	if err != nil {
-		return err
-	}
-
-	_, err = conn.Write(data)
+	_, err := conn.Write(append(lenBuf[:], data...))
 	return err
 }
 

@@ -6,6 +6,7 @@ import (
 	"io"
 	"log/slog"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/OliverSchlueter/goutils/idgen"
@@ -15,10 +16,11 @@ import (
 )
 
 type Server struct {
-	addr        string
-	listener    net.Listener
-	cmdService  *command.Service
-	connections map[string]*command.ConnCtx
+	addr          string
+	listener      net.Listener
+	cmdService    *command.Service
+	connections   map[string]*command.ConnCtx
+	connectionsMu sync.Mutex
 }
 
 type Configuration struct {
@@ -61,8 +63,15 @@ func (s *Server) handleConnection(conn net.Conn) {
 		Conn: conn,
 		Ctx:  context.Background(),
 	}
+	s.connectionsMu.Lock()
 	s.connections[ctx.ID] = ctx
-	defer delete(s.connections, ctx.ID)
+	s.connectionsMu.Unlock()
+
+	defer func() {
+		s.connectionsMu.Lock()
+		delete(s.connections, ctx.ID)
+		s.connectionsMu.Unlock()
+	}()
 
 	slog.Info("New connection established", slog.String("ConnID", ctx.ID), slog.String("RemoteAddr", conn.RemoteAddr().String()))
 
