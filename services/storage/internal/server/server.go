@@ -8,15 +8,17 @@ import (
 	"net"
 	"time"
 
+	"github.com/OliverSchlueter/goutils/idgen"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/protocol"
 )
 
 type Server struct {
-	addr       string
-	listener   net.Listener
-	cmdService *command.Service
+	addr        string
+	listener    net.Listener
+	cmdService  *command.Service
+	connections map[string]*command.ConnCtx
 }
 
 type Configuration struct {
@@ -26,8 +28,9 @@ type Configuration struct {
 
 func New(cfg Configuration) *Server {
 	return &Server{
-		addr:       cfg.Addr,
-		cmdService: cfg.CmdService,
+		addr:        cfg.Addr,
+		cmdService:  cfg.CmdService,
+		connections: make(map[string]*command.ConnCtx),
 	}
 }
 
@@ -51,22 +54,22 @@ func (s *Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	ctx := &command.ConnCtx{
+		ID:   idgen.GenerateID(16),
 		Conn: conn,
 		Ctx:  context.Background(),
 	}
+	s.connections[ctx.ID] = ctx
+	defer delete(s.connections, ctx.ID)
+
+	slog.Info("New connection established", slog.String("ConnID", ctx.ID), slog.String("RemoteAddr", conn.RemoteAddr().String()))
 
 	for {
 		startTime := time.Now()
 
 		frame, err := protocol.V1.ReadFrame(conn)
 		if err != nil {
-			if errors.Is(err, net.ErrClosed) {
-				slog.Info("Connection closed by client")
-				return
-			}
-
-			if errors.Is(err, io.EOF) {
-				slog.Info("Connection closed by client (EOF)")
+			if errors.Is(err, net.ErrClosed) || errors.Is(err, io.EOF) {
+				slog.Info("Connection closed by client", slog.String("ConnID", ctx.ID))
 				return
 			}
 
@@ -76,8 +79,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 					Payload: []byte(err.Error()),
 				})
 			} else {
-				// could because by connection closed by client
-				slog.Error("Failed to read frame", sloki.WrapError(err))
+				slog.Error("Failed to read frame", slog.String("ConnID", ctx.ID), sloki.WrapError(err))
 			}
 
 			continue
@@ -129,6 +131,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 
 		slog.Info(
 			"Processed command",
+			slog.String("ConnID", ctx.ID),
 			slog.Int("CommandID", int(cmd.ID)),
 			slog.String("Database", cmd.DatabaseName),
 			slog.String("Collection", cmd.CollectionName),
@@ -149,8 +152,17 @@ func (s *Server) writeResponse(conn net.Conn, resp *protocol.Response) {
 	}
 
 	data := protocol.V1.EncodeMessage(&msg)
-	if err := protocol.V1.WriteFrame(conn,
-		data); err != nil {
+	if err := protocol.V1.WriteFrame(conn, data); err != nil {
 		slog.Warn("Failed to write response", sloki.WrapError(err))
+	}
+}
+
+func (s *Server) broadcastMessage(msg *protocol.Message) {
+	data := protocol.V1.EncodeMessage(msg)
+
+	for _, ctx := range s.connections {
+		if err := protocol.V1.WriteFrame(ctx.Conn, data); err != nil {
+			slog.Warn("Failed to broadcast message to connection", slog.String("ConnID", ctx.ID), sloki.WrapError(err))
+		}
 	}
 }

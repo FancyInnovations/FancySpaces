@@ -6,6 +6,7 @@ import (
 )
 
 type ConnCtx struct {
+	ID   string
 	Conn net.Conn
 	Ctx  context.Context
 }
