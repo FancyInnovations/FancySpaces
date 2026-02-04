@@ -3,7 +3,7 @@ package command
 import (
 	"fmt"
 
-	"github.com/fancyinnovations/fancyspaces/storage/internal/protocol"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
 type Handler func(ctx *ConnCtx, msg *protocol.Message, cmd *protocol.Command) (*protocol.Response, error)

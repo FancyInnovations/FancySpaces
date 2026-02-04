@@ -12,7 +12,7 @@ import (
 	"github.com/OliverSchlueter/goutils/idgen"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
-	"github.com/fancyinnovations/fancyspaces/storage/internal/protocol"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
 type Server struct {
