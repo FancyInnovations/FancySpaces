@@ -7,12 +7,13 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/protocol"
 )
 
 func main() {
+	slog.SetLogLoggerLevel(slog.LevelDebug)
+
 	conn, err := net.Dial("tcp", "localhost:8091")
 	if err != nil {
 		slog.Error("Could not connect to server", slog.String("address", "localhost:8091"), slog.Any("error", err))
@@ -20,18 +21,24 @@ func main() {
 	}
 	defer conn.Close()
 
-	cmd := &protocol.Command{
-		ID:             command.CommandPing,
-		DatabaseName:   "fancyspaces",
-		CollectionName: "spaces",
-		Payload:        []byte("HELLO WOLRD!"),
-	}
-	if err := SendCmd(conn, cmd); err != nil {
-		slog.Error("Could not send command to server", slog.Any("error", err))
+	if err := Ping(conn); err != nil {
+		slog.Error("Ping failed", slog.Any("error", err))
 		return
 	}
+	slog.Info("Ping successful")
 
-	ReadResponse(conn)
+	if err := Login(conn, "oliver", "hello"); err != nil {
+		slog.Error("Login failed", slog.Any("error", err))
+		return
+	}
+	slog.Info("Login successful")
+
+	isAuth, err := IsAuthenticated(conn)
+	if err != nil {
+		slog.Error("Could not check authentication status", slog.Any("error", err))
+		return
+	}
+	slog.Info("Authentication status", slog.Bool("is_authenticated", isAuth))
 }
 
 func SendCmd(conn net.Conn, cmd *protocol.Command) error {
@@ -43,36 +50,125 @@ func SendCmd(conn net.Conn, cmd *protocol.Command) error {
 	}
 
 	data := protocol.V1.EncodeMessage(&msg)
-	if err := protocol.V1.WriteFrame(conn,
-		data); err != nil {
-		slog.Warn("Failed to write cmd", sloki.WrapError(err))
+	if err := protocol.V1.WriteFrame(conn, data); err != nil {
+		return err
 	}
+
+	slog.Debug(
+		"Sent command to server",
+		slog.String("command_id", strconv.Itoa(int(cmd.ID))),
+		slog.String("command_payload", string(cmd.Payload)),
+		slog.String("message_size", strconv.Itoa(len(data))),
+	)
+
 	return nil
 }
 
-func ReadResponse(conn net.Conn) {
+func ReadResponse(conn net.Conn) (*protocol.Response, error) {
 	frame, err := protocol.V1.ReadFrame(conn)
 	if err != nil {
-		slog.Error("Could not read frame from server", slog.Any("error", err))
-		return
+		return nil, err
 	}
 	msg, err := protocol.V1.DecodeMessage(frame)
 	if err != nil {
-		slog.Error("Could not read message from server", slog.Any("error", err))
-		return
+		return nil, err
 	}
 	resp, err := DecodeResponse(msg.Payload)
 	if err != nil {
-		slog.Error("Could not decode response from server", slog.Any("error", err))
-		return
+		return nil, err
 	}
 
-	slog.Info(
+	slog.Debug(
 		"Received response from server",
 		slog.String("message_type", strconv.Itoa(int(msg.Type))),
 		slog.String("response_code", strconv.Itoa(int(resp.Code))),
 		slog.String("response_payload", string(resp.Payload)),
 	)
+
+	return resp, nil
+}
+
+func Ping(conn net.Conn) error {
+	cmd := &protocol.Command{
+		ID:             command.CommandPing,
+		DatabaseName:   "",
+		CollectionName: "",
+		Payload:        []byte{},
+	}
+	if err := SendCmd(conn, cmd); err != nil {
+		return err
+	}
+	resp, err := ReadResponse(conn)
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return fmt.Errorf("unexpected response code: %d", resp.Code)
+	}
+
+	return nil
+}
+
+func Login(conn net.Conn, username, password string) error {
+	loginPayload := []byte{
+		0x01, // type: password
+	}
+	loginPayload = append(loginPayload, 0, byte(len(username))) // username length (2 bytes)
+	loginPayload = append(loginPayload, []byte(username)...)    // username
+	loginPayload = append(loginPayload, 0, byte(len(password))) // password length (2 bytes)
+	loginPayload = append(loginPayload, []byte(password)...)    // password
+
+	cmd := &protocol.Command{
+		ID:             command.CommandLogin,
+		DatabaseName:   "",
+		CollectionName: "",
+		Payload:        loginPayload,
+	}
+	if err := SendCmd(conn, cmd); err != nil {
+		return err
+	}
+
+	resp, err := ReadResponse(conn)
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		if resp.Code == protocol.StatusInvalidCredentials {
+			return fmt.Errorf("invalid credentials")
+		}
+
+		return fmt.Errorf("unexpected response code: %d", resp.Code)
+	}
+
+	return nil
+}
+
+func IsAuthenticated(conn net.Conn) (bool, error) {
+	cmd := &protocol.Command{
+		ID:             command.CommandAuthStatus,
+		DatabaseName:   "",
+		CollectionName: "",
+		Payload:        []byte{},
+	}
+	if err := SendCmd(conn, cmd); err != nil {
+		return false, err
+	}
+	resp, err := ReadResponse(conn)
+	if err != nil {
+		return false, err
+	}
+
+	if resp.Code == protocol.StatusOK {
+		return true, nil
+	}
+
+	if resp.Code == protocol.StatusUnauthorized {
+		return false, nil
+	}
+
+	return false, fmt.Errorf("unexpected response code: %d", resp.Code)
 }
 
 func EncodeCommand(cmd *protocol.Command) []byte {

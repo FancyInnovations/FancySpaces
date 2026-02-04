@@ -6,7 +6,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/protocol"
 )
 
-type Handler func(msg *protocol.Message, cmd *protocol.Command) (*protocol.Response, error)
+type Handler func(ctx *ConnCtx, msg *protocol.Message, cmd *protocol.Command) (*protocol.Response, error)
 
 type Service struct {
 	handlers map[uint16]Handler
@@ -18,6 +18,8 @@ func NewService() *Service {
 	// Register system command handlers
 	handlers[CommandPing] = handlePing
 	handlers[CommandSupportedProtocolVersions] = handleSupportedProtocolVersions
+	handlers[CommandLogin] = handleLogin
+	handlers[CommandAuthStatus] = handleAuthStatus
 
 	return &Service{
 		handlers: handlers,
@@ -33,9 +35,9 @@ func (s *Service) RegisterHandler(commandID uint16, handler Handler) error {
 	return nil
 }
 
-func (s *Service) Handle(msg *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
+func (s *Service) Handle(ctx *ConnCtx, msg *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	if handler, exists := s.handlers[cmd.ID]; exists {
-		return handler(msg, cmd)
+		return handler(ctx, msg, cmd)
 	}
 
 	return &protocol.Response{

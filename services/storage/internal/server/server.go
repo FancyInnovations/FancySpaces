@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"io"
 	"log/slog"
@@ -48,6 +49,11 @@ func (s *Server) Run() error {
 
 func (s *Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
+
+	ctx := &command.ConnCtx{
+		Conn: conn,
+		Ctx:  context.Background(),
+	}
 
 	for {
 		startTime := time.Now()
@@ -106,7 +112,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 			continue
 		}
 
-		resp, err := s.cmdService.Handle(msg, cmd)
+		resp, err := s.cmdService.Handle(ctx, msg, cmd)
 		if err != nil {
 			slog.Warn("Command handler returned error", sloki.WrapError(err))
 			s.writeResponse(conn, &protocol.Response{

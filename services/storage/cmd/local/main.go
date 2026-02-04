@@ -7,10 +7,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/OliverSchlueter/goutils/middleware"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/app"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/auth"
 	"github.com/justinas/alice"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -26,6 +28,22 @@ func main() {
 		Handlers:     []sloki.LogHandler{},
 	})
 	slog.SetDefault(slog.New(logService))
+
+	// Setup default admin user
+	auth.Users["oliver"] = &auth.User{
+		ID:        "oliver",
+		Provider:  auth.ProviderBasic,
+		Name:      "Oliver",
+		Email:     "oliver@fancyinnovations.com",
+		Verified:  true,
+		Password:  auth.Hash("hello"),
+		Roles:     []string{"admin", "user"},
+		CreatedAt: time.Date(2025, 12, 3, 19, 0, 0, 0, time.UTC),
+		IsActive:  true,
+		Metadata: map[string]string{
+			"api_key": "hello",
+		},
+	}
 
 	// Setup HTTP server
 	httpPort := "8090"
