@@ -1,0 +1,154 @@
+package client
+
+import (
+	"encoding/binary"
+
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
+)
+
+func (c *Client) Ping() error {
+	cmd := &protocol.Command{
+		ID:             protocol.CommandPing,
+		DatabaseName:   "",
+		CollectionName: "",
+		Payload:        make([]byte, 0),
+	}
+	if err := c.sendCmd(cmd); err != nil {
+		return err
+	}
+	resp, err := c.readResponse()
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
+func (c *Client) GetSupportedProtocolVersions() ([]byte, error) {
+	cmd := &protocol.Command{
+		ID:             protocol.CommandSupportedProtocolVersions,
+		DatabaseName:   "",
+		CollectionName: "",
+		Payload:        make([]byte, 0),
+	}
+	if err := c.sendCmd(cmd); err != nil {
+		return nil, err
+	}
+	resp, err := c.readResponse()
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return nil, ErrUnexpectedStatusCode
+	}
+
+	numVersions := resp.Payload[0]
+	versions := make([]byte, numVersions)
+	copy(versions, resp.Payload[1:1+numVersions])
+
+	return versions, nil
+}
+
+func (c *Client) LoginWithPassword(username, password string) error {
+	totalLen := 1 + 2 + len(username) + 2 + len(password)
+	payload := make([]byte, totalLen)
+
+	payload[0] = 0x01 // type: password
+
+	binary.BigEndian.PutUint16(payload[1:3], uint16(len(username))) // username length (2 bytes)
+	copy(payload[3:3+len(username)], []byte(username))              // username
+
+	binary.BigEndian.PutUint16(payload[3+len(username):5+len(username)], uint16(len(password))) // password length (2 bytes)
+	copy(payload[5+len(username):], []byte(password))                                           // password
+
+	cmd := &protocol.Command{
+		ID:             protocol.CommandLogin,
+		DatabaseName:   "",
+		CollectionName: "",
+		Payload:        payload,
+	}
+	if err := c.sendCmd(cmd); err != nil {
+		return err
+	}
+
+	resp, err := c.readResponse()
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		if resp.Code == protocol.StatusInvalidCredentials {
+			return ErrInvalidCredentials
+		}
+
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
+func (c *Client) LoginWithApiKey(apiKey string) error {
+	totalLen := 1 + 2 + len(apiKey)
+	payload := make([]byte, totalLen)
+
+	payload[0] = 0x02 // type: apiKey
+
+	binary.BigEndian.PutUint16(payload[1:3], uint16(len(apiKey))) // apiKey length (2 bytes)
+	copy(payload[3:], []byte(apiKey))                             // apiKey
+
+	cmd := &protocol.Command{
+		ID:             protocol.CommandLogin,
+		DatabaseName:   "",
+		CollectionName: "",
+		Payload:        payload,
+	}
+	if err := c.sendCmd(cmd); err != nil {
+		return err
+	}
+
+	resp, err := c.readResponse()
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		if resp.Code == protocol.StatusInvalidCredentials {
+			return ErrInvalidCredentials
+		}
+
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
+func (c *Client) IsAuthenticated() (bool, error) {
+	cmd := &protocol.Command{
+		ID:             protocol.CommandAuthStatus,
+		DatabaseName:   "",
+		CollectionName: "",
+		Payload:        make([]byte, 0),
+	}
+	if err := c.sendCmd(cmd); err != nil {
+		return false, err
+	}
+	resp, err := c.readResponse()
+	if err != nil {
+		return false, err
+	}
+
+	if resp.Code == protocol.StatusOK {
+		return true, nil
+	}
+
+	if resp.Code == protocol.StatusUnauthorized {
+		return false, nil
+	}
+
+	return false, ErrUnexpectedStatusCode
+}
