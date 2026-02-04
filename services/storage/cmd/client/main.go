@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/OliverSchlueter/goutils/sloki"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/protocol"
 )
 
@@ -20,7 +21,7 @@ func main() {
 	defer conn.Close()
 
 	cmd := &protocol.Command{
-		ID:             42,
+		ID:             command.CommandPing,
 		DatabaseName:   "fancyspaces",
 		CollectionName: "spaces",
 		Payload:        []byte("HELLO WOLRD!"),

@@ -44,6 +44,8 @@ Message Types:
 | Payload Length         | 4 B  | Length of the command payload |
 | Payload                | N B  | Command-specific data         |
 
+See [protocol-commands.md](protocol-commands.md) for a list of supported commands and their payload formats.
+
 ### Response Format
 
 | Field          | Size | Description            |
@@ -56,9 +58,11 @@ Status Codes:
 
 | Code | Description             |
 |------|-------------------------|
-| 0xx  | Success codes           |
-| 1xx  | Client-side error codes |
-| 2xx  | Server-side error codes |
+| 0xxx | Success codes           |
+| 1xxx | Client-side error codes |
+| 2xxx | Server-side error codes |
 
-If the status is 1xx or 2xx, the payload is an error message string.
+See `services/storage/internal/protocol/statuscodes-go` for a complete list of status codes.
+
+If the status is 1xxx or 2xxx, the payload is an error message string.
 Otherwise, the payload contains data relevant to the command executed (see command documentation for details).

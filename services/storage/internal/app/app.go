@@ -3,6 +3,7 @@ package app
 import (
 	"net/http"
 
+	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	fakeDatabaseDB "github.com/fancyinnovations/fancyspaces/storage/internal/database/databasedb/fake"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/server"
@@ -27,7 +28,14 @@ func Start(cfg Configuration) *server.Server {
 	}
 
 	// tcp server
-	srv := server.New(":" + cfg.ServerPort)
+	cmdService := command.NewService()
+
+	// TODO: register more command handlers here, e.g. commands for database operations or engine-specific commands
+
+	srv := server.New(server.Configuration{
+		Addr:       ":" + cfg.ServerPort,
+		CmdService: cmdService,
+	})
 
 	return srv
 }

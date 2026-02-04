@@ -5,19 +5,28 @@ import (
 	"io"
 	"log/slog"
 	"net"
+	"time"
 
 	"github.com/OliverSchlueter/goutils/sloki"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/protocol"
 )
 
 type Server struct {
-	addr     string
-	listener net.Listener
+	addr       string
+	listener   net.Listener
+	cmdService *command.Service
 }
 
-func New(addr string) *Server {
+type Configuration struct {
+	Addr       string
+	CmdService *command.Service
+}
+
+func New(cfg Configuration) *Server {
 	return &Server{
-		addr: addr,
+		addr:       cfg.Addr,
+		cmdService: cfg.CmdService,
 	}
 }
 
@@ -41,6 +50,8 @@ func (s *Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	for {
+		startTime := time.Now()
+
 		frame, err := protocol.V1.ReadFrame(conn)
 		if err != nil {
 			if errors.Is(err, net.ErrClosed) {
@@ -95,19 +106,29 @@ func (s *Server) handleConnection(conn net.Conn) {
 			continue
 		}
 
+		resp, err := s.cmdService.Handle(msg, cmd)
+		if err != nil {
+			slog.Warn("Command handler returned error", sloki.WrapError(err))
+			s.writeResponse(conn, &protocol.Response{
+				Code:    protocol.StatusInternalServerError,
+				Payload: []byte("Error while processing command"),
+			})
+
+			continue
+		}
+
+		s.writeResponse(conn, resp)
+
+		elapsedTime := time.Since(startTime)
+
 		slog.Info(
-			"Received command",
+			"Processed command",
 			slog.Int("CommandID", int(cmd.ID)),
 			slog.String("Database", cmd.DatabaseName),
 			slog.String("Collection", cmd.CollectionName),
 			slog.String("Payload", string(cmd.Payload)),
+			slog.Duration("Duration", elapsedTime),
 		)
-
-		// TODO: process command and send response / error back to client
-		s.writeResponse(conn, &protocol.Response{
-			Code:    protocol.StatusOK,
-			Payload: []byte("Command received successfully"),
-		})
 	}
 }
 
