@@ -7,7 +7,6 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/protocol"
 )
 
@@ -90,7 +89,7 @@ func ReadResponse(conn net.Conn) (*protocol.Response, error) {
 
 func Ping(conn net.Conn) error {
 	cmd := &protocol.Command{
-		ID:             command.CommandPing,
+		ID:             protocol.CommandPing,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        []byte{},
@@ -120,7 +119,7 @@ func Login(conn net.Conn, username, password string) error {
 	loginPayload = append(loginPayload, []byte(password)...)    // password
 
 	cmd := &protocol.Command{
-		ID:             command.CommandLogin,
+		ID:             protocol.CommandLogin,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        loginPayload,
@@ -147,7 +146,7 @@ func Login(conn net.Conn, username, password string) error {
 
 func IsAuthenticated(conn net.Conn) (bool, error) {
 	cmd := &protocol.Command{
-		ID:             command.CommandAuthStatus,
+		ID:             protocol.CommandAuthStatus,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        []byte{},

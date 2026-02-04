@@ -1,4 +1,4 @@
-package command
+package protocol
 
 // 0xxx: System commands
 // 1xxx: Database and collection commands

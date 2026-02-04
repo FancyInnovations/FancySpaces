@@ -16,10 +16,10 @@ func NewService() *Service {
 	handlers := make(map[uint16]Handler)
 
 	// Register system command handlers
-	handlers[CommandPing] = handlePing
-	handlers[CommandSupportedProtocolVersions] = handleSupportedProtocolVersions
-	handlers[CommandLogin] = handleLogin
-	handlers[CommandAuthStatus] = handleAuthStatus
+	handlers[protocol.CommandPing] = handlePing
+	handlers[protocol.CommandSupportedProtocolVersions] = handleSupportedProtocolVersions
+	handlers[protocol.CommandLogin] = handleLogin
+	handlers[protocol.CommandAuthStatus] = handleAuthStatus
 
 	return &Service{
 		handlers: handlers,
