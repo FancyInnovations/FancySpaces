@@ -56,6 +56,18 @@ func (dbdb *DB) CreateDatabase(_ context.Context, db database.Database) error {
 	return nil
 }
 
+func (dbdb *DB) UpdateDatabase(_ context.Context, db database.Database) error {
+	dbdb.mu.Lock()
+	defer dbdb.mu.Unlock()
+
+	if _, exists := dbdb.dbs[db.Name]; !exists {
+		return database.ErrDatabaseNotFound
+	}
+
+	dbdb.dbs[db.Name] = db
+	return nil
+}
+
 func (dbdb *DB) DeleteDatabase(_ context.Context, name string) error {
 	dbdb.mu.Lock()
 	defer dbdb.mu.Unlock()

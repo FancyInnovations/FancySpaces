@@ -11,6 +11,7 @@ type DB interface {
 	GetDatabase(ctx context.Context, name string) (*Database, error)
 	GetAllDatabases(ctx context.Context) ([]*Database, error)
 	CreateDatabase(ctx context.Context, db Database) error
+	UpdateDatabase(ctx context.Context, db Database) error
 	DeleteDatabase(ctx context.Context, name string) error
 
 	GetCollection(ctx context.Context, db string, name string) (*Collection, error)
@@ -62,6 +63,11 @@ func (s *Store) CreateDatabaseIfNotExists(ctx context.Context, name string) erro
 	}
 
 	return nil
+}
+
+func (s *Store) UpdateDatabaseUsers(ctx context.Context, db *Database, updatedUsers map[string]PermissionLevel) error {
+	db.Users = updatedUsers
+	return s.db.UpdateDatabase(ctx, *db)
 }
 
 func (s *Store) DeleteDatabase(ctx context.Context, name string) error {
