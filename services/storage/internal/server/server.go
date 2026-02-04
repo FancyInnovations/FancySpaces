@@ -133,6 +133,8 @@ func (s *Server) handleConnection(conn net.Conn) {
 }
 
 func (s *Server) writeResponse(conn net.Conn, resp *protocol.Response) {
+	// TODO: use message pool and just update the payload
+
 	msg := protocol.Message{
 		ProtocolVersion: byte(protocol.ProtocolVersion1),
 		Flags:           0x00,

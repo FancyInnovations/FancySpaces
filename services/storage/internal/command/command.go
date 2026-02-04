@@ -17,6 +17,7 @@ func NewService() *Service {
 
 	// Register system command handlers
 	handlers[CommandPing] = handlePing
+	handlers[CommandSupportedProtocolVersions] = handleSupportedProtocolVersions
 
 	return &Service{
 		handlers: handlers,

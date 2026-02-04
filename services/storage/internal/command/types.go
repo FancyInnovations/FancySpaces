@@ -5,5 +5,6 @@ package command
 // 2xxx: Key-value engine commands
 
 const (
-	CommandPing uint16 = 0001
+	CommandPing                      uint16 = 0001
+	CommandSupportedProtocolVersions uint16 = 0002
 )
