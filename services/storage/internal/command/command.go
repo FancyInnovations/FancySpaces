@@ -13,26 +13,23 @@ type Service struct {
 }
 
 func NewService() *Service {
-	handlers := make(map[uint16]Handler)
-
-	// Register system command handlers
-	handlers[protocol.CommandPing] = handlePing
-	handlers[protocol.CommandSupportedProtocolVersions] = handleSupportedProtocolVersions
-	handlers[protocol.CommandLogin] = handleLogin
-	handlers[protocol.CommandAuthStatus] = handleAuthStatus
-
 	return &Service{
-		handlers: handlers,
+		handlers: make(map[uint16]Handler),
 	}
 }
 
-func (s *Service) RegisterHandler(commandID uint16, handler Handler) error {
+func (s *Service) RegisterHandler(commandID uint16, handler Handler) {
 	if _, exists := s.handlers[commandID]; exists {
-		return ErrCommandAlreadyRegistered
+		return
 	}
 
 	s.handlers[commandID] = handler
-	return nil
+}
+
+func (s *Service) RegisterHandlers(handlers map[uint16]Handler) {
+	for commandID, handler := range handlers {
+		s.RegisterHandler(commandID, handler)
+	}
 }
 
 func (s *Service) Handle(ctx *ConnCtx, msg *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {

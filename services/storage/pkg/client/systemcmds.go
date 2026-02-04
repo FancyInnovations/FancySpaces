@@ -7,16 +7,12 @@ import (
 )
 
 func (c *Client) Ping() error {
-	cmd := &protocol.Command{
+	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.CommandPing,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        make([]byte, 0),
-	}
-	if err := c.sendCmd(cmd); err != nil {
-		return err
-	}
-	resp, err := c.readResponse()
+	})
 	if err != nil {
 		return err
 	}
@@ -29,16 +25,12 @@ func (c *Client) Ping() error {
 }
 
 func (c *Client) GetSupportedProtocolVersions() ([]byte, error) {
-	cmd := &protocol.Command{
+	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.CommandSupportedProtocolVersions,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        make([]byte, 0),
-	}
-	if err := c.sendCmd(cmd); err != nil {
-		return nil, err
-	}
-	resp, err := c.readResponse()
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -66,17 +58,12 @@ func (c *Client) LoginWithPassword(username, password string) error {
 	binary.BigEndian.PutUint16(payload[3+len(username):5+len(username)], uint16(len(password))) // password length (2 bytes)
 	copy(payload[5+len(username):], []byte(password))                                           // password
 
-	cmd := &protocol.Command{
+	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.CommandLogin,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        payload,
-	}
-	if err := c.sendCmd(cmd); err != nil {
-		return err
-	}
-
-	resp, err := c.readResponse()
+	})
 	if err != nil {
 		return err
 	}
@@ -101,17 +88,12 @@ func (c *Client) LoginWithApiKey(apiKey string) error {
 	binary.BigEndian.PutUint16(payload[1:3], uint16(len(apiKey))) // apiKey length (2 bytes)
 	copy(payload[3:], []byte(apiKey))                             // apiKey
 
-	cmd := &protocol.Command{
+	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.CommandLogin,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        payload,
-	}
-	if err := c.sendCmd(cmd); err != nil {
-		return err
-	}
-
-	resp, err := c.readResponse()
+	})
 	if err != nil {
 		return err
 	}
@@ -128,16 +110,12 @@ func (c *Client) LoginWithApiKey(apiKey string) error {
 }
 
 func (c *Client) IsAuthenticated() (bool, error) {
-	cmd := &protocol.Command{
+	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.CommandAuthStatus,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        make([]byte, 0),
-	}
-	if err := c.sendCmd(cmd); err != nil {
-		return false, err
-	}
-	resp, err := c.readResponse()
+	})
 	if err != nil {
 		return false, err
 	}

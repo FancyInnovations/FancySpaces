@@ -5,6 +5,7 @@ import (
 
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/client"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
 func main() {
@@ -31,4 +32,16 @@ func main() {
 	}
 
 	_ = c
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVGet,
+		DatabaseName:   "system",
+		CollectionName: "collections",
+		Payload:        make([]byte, 0),
+	})
+	if err != nil {
+		slog.Error("Command failed", sloki.WrapError(err))
+	}
+
+	slog.Info("Command response", slog.Int("code", int(resp.Code)), slog.Int("payload_length", len(resp.Payload)))
 }

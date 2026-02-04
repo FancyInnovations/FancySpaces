@@ -92,9 +92,9 @@ func (c *Client) checkProtocolVersionSupport() error {
 	return nil
 }
 
-func (c *Client) sendCmd(cmd *protocol.Command) error {
+func (c *Client) SendCmd(cmd *protocol.Command) (*protocol.Response, error) {
 	if !c.IsConnected() {
-		return ErrClientNotConnected
+		return nil, ErrClientNotConnected
 	}
 
 	msg := protocol.Message{
@@ -106,7 +106,7 @@ func (c *Client) sendCmd(cmd *protocol.Command) error {
 
 	data := protocol.V1.EncodeMessage(&msg)
 	if err := protocol.V1.WriteFrame(c.conn, data); err != nil {
-		return err
+		return nil, err
 	}
 
 	slog.Debug(
@@ -117,7 +117,7 @@ func (c *Client) sendCmd(cmd *protocol.Command) error {
 		slog.String("payload_size", strconv.Itoa(len(cmd.Payload))),
 	)
 
-	return nil
+	return c.readResponse()
 }
 
 func (c *Client) readResponse() (*protocol.Response, error) {
