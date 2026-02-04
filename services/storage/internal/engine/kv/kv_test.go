@@ -28,7 +28,7 @@ func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 	}
 
 	// Set and verify
-	e.Set("key1", v, 0)
+	e.Set("key1", v)
 	if !e.Exists("key1") {
 		t.Fatalf("expected key1 to exist")
 	}
@@ -57,8 +57,8 @@ func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 	}
 
 	// Clear
-	e.Set("a", v, 0)
-	e.Set("b", v, 0)
+	e.Set("a", v)
+	e.Set("b", v)
 	if e.Size() != 2 {
 		t.Fatalf("expected size 2, got %d", e.Size())
 	}
@@ -75,9 +75,9 @@ func TestGetMultipleAndDeleteMultiple(t *testing.T) {
 	e := NewEngine()
 	var v Value
 
-	e.Set("k1", v, 0)
-	e.Set("k2", v, 0)
-	e.Set("k3", v, 0)
+	e.Set("k1", v)
+	e.Set("k2", v)
+	e.Set("k3", v)
 
 	res := e.GetMultiple([]string{"k1", "k2", "missing"})
 	if res["k1"] == nil || res["k2"] == nil {
@@ -117,7 +117,7 @@ func TestSetIfExistsSetIfNotExistsWithExpiry(t *testing.T) {
 
 	// Expiry: set with past expiration
 	past := time.Now().Add(-1 * time.Second).UnixNano()
-	e.Set("exp", v, past)
+	e.SetWithTTL("exp", v, past)
 	if e.Exists("exp") {
 		t.Fatalf("expected exp to be treated as expired by Exists")
 	}

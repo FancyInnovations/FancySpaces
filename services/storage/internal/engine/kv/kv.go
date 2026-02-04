@@ -38,10 +38,10 @@ func (e *Engine) Keys() []string {
 	return keys
 }
 
-// Set stores a value for the given key with an optional expiration time (in unix nanoseconds).
+// SetWithTTL stores a value for the given key with an optional expiration time (in unix nanoseconds).
 // If expires is 0, the key will not expire.
 // If expires is a positive value, it should be a unix timestamp in nanoseconds indicating when the key should expire.
-func (e *Engine) Set(key string, value Value, expires int64) {
+func (e *Engine) SetWithTTL(key string, value Value, expires int64) {
 	s := e.shardFor(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -50,6 +50,10 @@ func (e *Engine) Set(key string, value Value, expires int64) {
 		value:   value,
 		expires: expires,
 	}
+}
+
+func (e *Engine) Set(key string, value Value) {
+	e.SetWithTTL(key, value, 0)
 }
 
 // SetMultiple allows setting multiple key-value pairs at once with the same expiration time.
