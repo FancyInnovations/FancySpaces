@@ -46,10 +46,13 @@ func (s *Server) Run() error {
 		if err != nil {
 			continue
 		}
+
 		go s.handleConnection(conn)
 	}
 }
 
+// handleConnection manages the lifecycle of a single client connection.
+// It reads messages in a loop until the connection is closed.
 func (s *Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
 
@@ -64,104 +67,128 @@ func (s *Server) handleConnection(conn net.Conn) {
 	slog.Info("New connection established", slog.String("ConnID", ctx.ID), slog.String("RemoteAddr", conn.RemoteAddr().String()))
 
 	for {
-		startTime := time.Now()
-
-		frame, err := protocol.V1.ReadFrame(conn)
-		if err != nil {
-			if errors.Is(err, net.ErrClosed) || errors.Is(err, io.EOF) {
-				slog.Info("Connection closed by client", slog.String("ConnID", ctx.ID))
-				return
-			}
-
-			if errors.Is(err, protocol.ErrFrameLengthInvalid) {
-				s.writeResponse(conn, &protocol.Response{
-					Code:    protocol.StatusInvalidMessage,
-					Payload: []byte(err.Error()),
-				})
-			} else {
-				slog.Error("Failed to read frame", slog.String("ConnID", ctx.ID), sloki.WrapError(err))
-			}
-
-			continue
+		if s.handleMessage(ctx) {
+			break
 		}
-
-		msg, err := protocol.V1.DecodeMessage(frame)
-		if err != nil {
-			s.writeResponse(conn, &protocol.Response{
-				Code:    protocol.StatusInvalidMessage,
-				Payload: []byte(err.Error()),
-			})
-
-			continue
-		}
-
-		if msg.Type != byte(protocol.MessageTypeCommand) {
-			s.writeResponse(conn, &protocol.Response{
-				Code:    protocol.StatusInvalidMessage,
-				Payload: []byte("Only command messages are allowed"),
-			})
-
-			continue
-		}
-
-		cmd, err := protocol.V1.DecodeCommand(msg)
-		if err != nil {
-			s.writeResponse(conn, &protocol.Response{
-				Code:    protocol.StatusInvalidMessage,
-				Payload: []byte(err.Error()),
-			})
-
-			continue
-		}
-
-		resp, err := s.cmdService.Handle(ctx, msg, cmd)
-		if err != nil {
-			slog.Warn("Command handler returned error", sloki.WrapError(err))
-			s.writeResponse(conn, &protocol.Response{
-				Code:    protocol.StatusInternalServerError,
-				Payload: []byte("Error while processing command"),
-			})
-
-			continue
-		}
-
-		s.writeResponse(conn, resp)
-
-		elapsedTime := time.Since(startTime)
-
-		slog.Info(
-			"Processed command",
-			slog.String("ConnID", ctx.ID),
-			slog.Int("CommandID", int(cmd.ID)),
-			slog.String("Database", cmd.DatabaseName),
-			slog.String("Collection", cmd.CollectionName),
-			slog.String("Payload", string(cmd.Payload)),
-			slog.Duration("Duration", elapsedTime),
-		)
 	}
 }
 
-func (s *Server) writeResponse(conn net.Conn, resp *protocol.Response) {
-	// TODO: use message pool and just update the payload
+// handleMessage reads and processes a single message from the connection.
+// It returns true if the connection should be closed.
+func (s *Server) handleMessage(ctx *command.ConnCtx) bool {
+	startTime := time.Now()
+	conn := ctx.Conn
 
-	msg := protocol.Message{
-		ProtocolVersion: byte(protocol.ProtocolVersion1),
-		Flags:           0x00,
-		Type:            byte(protocol.MessageTypeResponse),
-		Payload:         protocol.V1.EncodeResponse(resp),
+	frameBuf := protocol.GetRequestBufferFromPool()
+	defer protocol.PutRequestBufferToPool(frameBuf)
+
+	frame, err := protocol.V1.ReadFrameInto(conn, frameBuf)
+	if err != nil {
+		if errors.Is(err, net.ErrClosed) || errors.Is(err, io.EOF) {
+			slog.Info("Connection closed by client", slog.String("ConnID", ctx.ID))
+			return true
+		}
+
+		if errors.Is(err, protocol.ErrFrameLengthInvalid) {
+			s.writeResponse(conn, &protocol.Response{
+				Code:    protocol.StatusInvalidMessage,
+				Payload: []byte(err.Error()),
+			})
+		} else {
+			slog.Error("Failed to read frame", slog.String("ConnID", ctx.ID), sloki.WrapError(err))
+		}
+
+		return false
 	}
 
-	data := protocol.V1.EncodeMessage(&msg)
-	if err := protocol.V1.WriteFrame(conn, data); err != nil {
+	msg := protocol.GetMessageFromPool()
+	defer protocol.PutMessageToPool(msg)
+	if err := protocol.V1.DecodeMessageInto(frame, msg); err != nil {
+		s.writeResponse(conn, &protocol.Response{
+			Code:    protocol.StatusInvalidMessage,
+			Payload: []byte(err.Error()),
+		})
+
+		return false
+	}
+
+	if msg.Type != byte(protocol.MessageTypeCommand) {
+		s.writeResponse(conn, &protocol.Response{
+			Code:    protocol.StatusInvalidMessage,
+			Payload: []byte("Only command messages are allowed"),
+		})
+
+		return false
+	}
+
+	cmd := protocol.GetCommandFromPool()
+	defer protocol.PutCommandToPool(cmd)
+	if err := protocol.V1.DecodeCommandInto(msg, cmd); err != nil {
+		s.writeResponse(conn, &protocol.Response{
+			Code:    protocol.StatusInvalidMessage,
+			Payload: []byte(err.Error()),
+		})
+
+		return false
+	}
+
+	resp, err := s.cmdService.Handle(ctx, msg, cmd)
+	if err != nil {
+		slog.Warn("Command handler returned error", sloki.WrapError(err))
+		s.writeResponse(conn, &protocol.Response{
+			Code:    protocol.StatusInternalServerError,
+			Payload: []byte("Error while processing command"),
+		})
+
+		return false
+	}
+
+	s.writeResponse(conn, resp)
+
+	elapsedTime := time.Since(startTime)
+
+	slog.Info(
+		"Processed command",
+		slog.String("ConnID", ctx.ID),
+		slog.Int("CommandID", int(cmd.ID)),
+		slog.String("Database", cmd.DatabaseName),
+		slog.String("Collection", cmd.CollectionName),
+		slog.String("Payload", string(cmd.Payload)),
+		slog.Duration("Duration", elapsedTime),
+	)
+
+	return false
+}
+
+func (s *Server) writeResponse(conn net.Conn, resp *protocol.Response) {
+	msg := protocol.GetMessageFromPool()
+	defer protocol.PutMessageToPool(msg)
+
+	payloadBuf := protocol.GetResponseBufferFromPool()
+	defer protocol.PutResponseBufferToPool(payloadBuf)
+
+	msg.ProtocolVersion = byte(protocol.ProtocolVersion1)
+	msg.Flags = 0x00
+	msg.Type = byte(protocol.MessageTypeResponse)
+	msg.Payload = protocol.V1.EncodeResponseInto(resp, payloadBuf)
+
+	msgDataBuf := protocol.GetResponseBufferFromPool()
+	defer protocol.PutResponseBufferToPool(msgDataBuf)
+
+	msgDataBuf = protocol.V1.EncodeMessageInto(msg, msgDataBuf)
+	if err := protocol.V1.WriteFrame(conn, msgDataBuf); err != nil {
 		slog.Warn("Failed to write response", sloki.WrapError(err))
 	}
 }
 
 func (s *Server) broadcastMessage(msg *protocol.Message) {
-	data := protocol.V1.EncodeMessage(msg)
+	msgDataBuf := protocol.GetResponseBufferFromPool()
+	defer protocol.PutResponseBufferToPool(msgDataBuf)
+
+	protocol.V1.EncodeMessageInto(msg, msgDataBuf)
 
 	for _, ctx := range s.connections {
-		if err := protocol.V1.WriteFrame(ctx.Conn, data); err != nil {
+		if err := protocol.V1.WriteFrame(ctx.Conn, msgDataBuf); err != nil {
 			slog.Warn("Failed to broadcast message to connection", slog.String("ConnID", ctx.ID), sloki.WrapError(err))
 		}
 	}

@@ -2,6 +2,7 @@ package protocol
 
 import (
 	"encoding/binary"
+	"io"
 	"net"
 )
 
@@ -10,37 +11,45 @@ var V1 = &ProtoV1{}
 type ProtoV1 struct {
 }
 
-// ReadFrame reads a length-prefixed frame from the connection.
+// ReadFrameInto reads a length-prefixed frame from the connection into the provided target buffer.
 // | Payload length (4 bytes)  |
 // | Payload (variable length) |
-func (p *ProtoV1) ReadFrame(conn net.Conn) ([]byte, error) {
-	length := make([]byte, 4)
-	_, err := conn.Read(length)
-	if err != nil {
+func (p *ProtoV1) ReadFrameInto(conn net.Conn, target []byte) ([]byte, error) {
+	var lenBuf [4]byte
+	if _, err := io.ReadFull(conn, lenBuf[:]); err != nil {
 		return nil, err
 	}
 
-	frameLength := int(binary.BigEndian.Uint32(length))
+	frameLength := int(binary.BigEndian.Uint32(lenBuf[:]))
 	if frameLength <= 0 {
 		return nil, ErrFrameLengthInvalid
 	}
 
-	frame := make([]byte, frameLength)
-	_, err = conn.Read(frame)
-	if err != nil {
+	if cap(target) < frameLength {
+		target = make([]byte, frameLength)
+	} else {
+		target = target[:frameLength]
+	}
+
+	if _, err := io.ReadFull(conn, target); err != nil {
 		return nil, err
 	}
 
-	return frame, nil
+	return target, nil
+}
+
+// ReadFrame reads a length-prefixed frame from the connection and returns it as a new byte slice.
+func (p *ProtoV1) ReadFrame(conn net.Conn) ([]byte, error) {
+	return p.ReadFrameInto(conn, nil)
 }
 
 // WriteFrame writes a length-prefixed frame to the connection.
 // Uses the same format as ReadFrame.
 func (p *ProtoV1) WriteFrame(conn net.Conn, data []byte) error {
-	length := make([]byte, 4)
-	binary.BigEndian.PutUint32(length, uint32(len(data)))
+	var lenBuf [4]byte
+	binary.BigEndian.PutUint32(lenBuf[:], uint32(len(data)))
 
-	_, err := conn.Write(length)
+	_, err := conn.Write(lenBuf[:])
 	if err != nil {
 		return err
 	}
@@ -49,69 +58,90 @@ func (p *ProtoV1) WriteFrame(conn net.Conn, data []byte) error {
 	return err
 }
 
-// DecodeMessage decodes a Message from the given byte slice.
+// DecodeMessageInto decodes a Message from the given byte slice into the provided Message struct.
 // | Magic Number (1 byte)     |
 // | Protocol Version (1 byte) |
 // | Flags (1 byte)            |
 // | Type (1 byte)             |
 // | Payload length (4 bytes)  |
 // | Payload (variable length) |
-func (p *ProtoV1) DecodeMessage(data []byte) (*Message, error) {
+func (p *ProtoV1) DecodeMessageInto(data []byte, target *Message) error {
 	if len(data) == 0 {
-		return nil, ErrPayloadTooShort
+		return ErrPayloadTooShort
 	}
 
 	if data[0] != magicNumber {
-		return nil, ErrMagicNumberInvalid
+		return ErrMagicNumberInvalid
 	}
 
 	if len(data) < 8 {
-		return nil, ErrPayloadTooShort
+		return ErrPayloadTooShort
 	}
 
-	msg := &Message{
-		ProtocolVersion: data[1],
-		Flags:           data[2],
-		Type:            data[3],
+	target.ProtocolVersion = data[1]
+	target.Flags = data[2]
+	target.Type = data[3]
+
+	if target.ProtocolVersion != byte(ProtocolVersion1) {
+		return ErrInvalidProtocolVersion
 	}
-	if msg.ProtocolVersion != byte(ProtocolVersion1) {
-		return nil, ErrInvalidProtocolVersion
-	}
-	if msg.Type > byte(MessageTypeResponse) {
-		return nil, ErrUnknownMessageType
+	if target.Type > byte(MessageTypeResponse) {
+		return ErrUnknownMessageType
 	}
 
 	payloadLength := int(binary.BigEndian.Uint32(data[4:8]))
 	if payloadLength == 0 {
-		return nil, ErrEmptyPayload
+		return ErrEmptyPayload
 	}
 	if len(data) < 8+payloadLength {
-		return nil, ErrPayloadTooShort
+		return ErrPayloadTooShort
 	}
 
-	msg.Payload = data[8 : 8+payloadLength]
+	target.Payload = data[8 : 8+payloadLength]
+
+	return nil
+}
+
+// DecodeMessage decodes a Message from the given byte slice into a new Message struct.
+func (p *ProtoV1) DecodeMessage(data []byte) (*Message, error) {
+	msg := &Message{}
+	err := p.DecodeMessageInto(data, msg)
+	if err != nil {
+		return nil, err
+	}
 
 	return msg, nil
 }
 
-// EncodeMessage encodes a Message into a byte slice.
-// Uses the same format as DecodeMessage.
-func (p *ProtoV1) EncodeMessage(msg *Message) []byte {
+// EncodeMessageInto encodes a Message into the given byte slice buffer.
+// Uses the same format as DecodeMessageInto.
+func (p *ProtoV1) EncodeMessageInto(msg *Message, target []byte) []byte {
 	payloadLength := len(msg.Payload)
 	totalLength := 1 + 1 + 1 + 1 + 4 + payloadLength
-	data := make([]byte, totalLength)
 
-	data[0] = magicNumber
-	data[1] = msg.ProtocolVersion
-	data[2] = msg.Flags
-	data[3] = msg.Type
-	binary.BigEndian.PutUint32(data[4:8], uint32(payloadLength))
-	copy(data[8:], msg.Payload)
+	// ensure capacity
+	if cap(target) < totalLength {
+		target = make([]byte, totalLength)
+	} else {
+		target = target[:totalLength]
+	}
 
-	return data
+	target[0] = magicNumber
+	target[1] = msg.ProtocolVersion
+	target[2] = msg.Flags
+	target[3] = msg.Type
+	binary.BigEndian.PutUint32(target[4:8], uint32(payloadLength))
+	copy(target[8:], msg.Payload)
+
+	return target
 }
 
-// DecodeCommand decodes a Command from the given Message's payload.
+// EncodeMessage encodes a Message into a new byte slice.
+func (p *ProtoV1) EncodeMessage(msg *Message) []byte {
+	return p.EncodeMessageInto(msg, nil)
+}
+
+// DecodeCommandInto decodes a Command from the given Message's payload into the provided Command struct.
 // | CMD ID (2 bytes)                |
 // | DB name length (2 byte)         |
 // | DB name (variable)              |
@@ -119,51 +149,72 @@ func (p *ProtoV1) EncodeMessage(msg *Message) []byte {
 // | Collection name (variable)      |
 // | Payload length (4 byte)         |
 // | Payload (variable)              |
-func (p *ProtoV1) DecodeCommand(msg *Message) (*Command, error) {
+func (p *ProtoV1) DecodeCommandInto(msg *Message, target *Command) error {
 	data := msg.Payload
 
 	if len(data) < 10 {
-		return nil, ErrPayloadTooShort
+		return ErrPayloadTooShort
 	}
 
-	cmd := &Command{}
-	cmd.ID = binary.BigEndian.Uint16(data[0:2])
+	target.ID = binary.BigEndian.Uint16(data[0:2])
 
 	dbNameLen := int(binary.BigEndian.Uint16(data[2:4]))
 	if len(data) < 4+dbNameLen+2 {
-		return nil, ErrPayloadTooShort
+		return ErrPayloadTooShort
 	}
-	cmd.DatabaseName = string(data[4 : 4+dbNameLen])
+	target.DatabaseName = string(data[4 : 4+dbNameLen])
 
 	collectionNameStart := 4 + dbNameLen
 	collectionNameLen := int(binary.BigEndian.Uint16(data[collectionNameStart : collectionNameStart+2]))
 	if len(data) < collectionNameStart+2+collectionNameLen+4 {
-		return nil, ErrPayloadTooShort
+		return ErrPayloadTooShort
 	}
-	cmd.CollectionName = string(data[collectionNameStart+2 : collectionNameStart+2+collectionNameLen])
+	target.CollectionName = string(data[collectionNameStart+2 : collectionNameStart+2+collectionNameLen])
 
 	payloadStart := collectionNameStart + 2 + collectionNameLen
 	payloadLen := int(binary.BigEndian.Uint32(data[payloadStart : payloadStart+4]))
 	if len(data) < payloadStart+4+payloadLen {
-		return nil, ErrPayloadTooShort
+		return ErrPayloadTooShort
 	}
-	cmd.Payload = data[payloadStart+4 : payloadStart+4+payloadLen]
+	target.Payload = data[payloadStart+4 : payloadStart+4+payloadLen]
+
+	return nil
+}
+
+// DecodeCommand decodes a Command from the given Message's payload into a new Command struct.
+func (p *ProtoV1) DecodeCommand(msg *Message) (*Command, error) {
+	cmd := &Command{}
+	err := p.DecodeCommandInto(msg, cmd)
+	if err != nil {
+		return nil, err
+	}
 
 	return cmd, nil
 }
 
-// EncodeResponse encodes a Response into a byte slice.
+// EncodeResponseInto encodes a Response into a byte slice buffer.
 // | Status Code (2 bytes)     |
 // | Payload length (4 bytes)  |
 // | Payload (variable length) |
-func (p *ProtoV1) EncodeResponse(resp *Response) []byte {
+func (p *ProtoV1) EncodeResponseInto(resp *Response, target []byte) []byte {
 	payloadLength := len(resp.Payload)
 	totalLength := 2 + 4 + payloadLength
-	data := make([]byte, totalLength)
 
-	binary.BigEndian.PutUint16(data[0:2], resp.Code)
-	binary.BigEndian.PutUint32(data[2:6], uint32(payloadLength))
-	copy(data[6:], resp.Payload)
+	// ensure capacity
+	if cap(target) < totalLength {
+		target = make([]byte, totalLength)
+	} else {
+		target = target[:totalLength]
+	}
 
-	return data
+	binary.BigEndian.PutUint16(target[0:2], resp.Code)
+	binary.BigEndian.PutUint32(target[2:6], uint32(payloadLength))
+	copy(target[6:], resp.Payload)
+
+	return target
+}
+
+// EncodeResponse encodes a Response into a new byte slice.
+func (p *ProtoV1) EncodeResponse(resp *Response) []byte {
+	return p.EncodeResponseInto(resp, nil)
 }
