@@ -48,9 +48,11 @@ func main() {
 			slog.Error("Could not start http server on port "+httpPort, sloki.WrapError(err))
 			os.Exit(1)
 		}
+	}()
 
+	go func() {
 		if err := srv.Run(); err != nil {
-			slog.Error("Could not start TCP server on port "+serverPort, sloki.WrapError(err))
+			slog.Error("Could not start tcp server on port "+serverPort, sloki.WrapError(err))
 			os.Exit(1)
 		}
 	}()

@@ -12,9 +12,8 @@ type Message struct {
 type MessageType byte
 
 const (
-	MessageTypeRequest  MessageType = 0x01
+	MessageTypeCommand  MessageType = 0x01
 	MessageTypeResponse MessageType = 0x02
-	MessageTypeError    MessageType = 0x03
 )
 
 type ProtocolVersion byte
@@ -36,4 +35,9 @@ type Command struct {
 	DatabaseName   string
 	CollectionName string
 	Payload        []byte
+}
+
+type Response struct {
+	Code    uint16
+	Payload []byte
 }

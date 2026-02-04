@@ -106,8 +106,8 @@ func TestReadFrame_ZeroLength(t *testing.T) {
 	}
 }
 
-func TestReadMessage_Empty(t *testing.T) {
-	msg, err := V1.ReadMessage([]byte{})
+func TestDecodeMessagae_Empty(t *testing.T) {
+	msg, err := V1.DecodeMessage([]byte{})
 	if msg != nil {
 		t.Fatalf("expected nil message for empty input, got %+v", msg)
 	}
@@ -119,10 +119,10 @@ func TestReadMessage_Empty(t *testing.T) {
 	}
 }
 
-func TestReadMessage_WrongMagic(t *testing.T) {
+func TestDecodeMessagae_WrongMagic(t *testing.T) {
 	// wrong magic byte
 	data := []byte{magicNumber + 1, 1, 2, 3, 0, 0, 0, 0}
-	msg, err := V1.ReadMessage(data)
+	msg, err := V1.DecodeMessage(data)
 	if msg != nil {
 		t.Fatalf("expected nil message for wrong magic, got %+v", msg)
 	}
@@ -134,10 +134,10 @@ func TestReadMessage_WrongMagic(t *testing.T) {
 	}
 }
 
-func TestReadMessage_TooShort(t *testing.T) {
+func TestDecodeMessagae_TooShort(t *testing.T) {
 	// correct magic but less than 8 bytes
 	data := []byte{magicNumber, 1, 2, 3}
-	msg, err := V1.ReadMessage(data)
+	msg, err := V1.DecodeMessage(data)
 	if msg != nil {
 		t.Fatalf("expected nil message for too-short data, got %+v", msg)
 	}
@@ -149,7 +149,7 @@ func TestReadMessage_TooShort(t *testing.T) {
 	}
 }
 
-func TestReadMessage_InvalidProtocolVersion(t *testing.T) {
+func TestDecodeMessagae_InvalidProtocolVersion(t *testing.T) {
 	// protocol version is not 0x01
 	payload := []byte{0xAA}
 	payloadLen := len(payload)
@@ -157,12 +157,12 @@ func TestReadMessage_InvalidProtocolVersion(t *testing.T) {
 		magicNumber,
 		0x02, // invalid protocol version
 		0x00,
-		byte(MessageTypeRequest),
+		byte(MessageTypeCommand),
 		byte(payloadLen >> 24), byte(payloadLen >> 16), byte(payloadLen >> 8), byte(payloadLen),
 	}
 	data := append(header, payload...)
 
-	msg, err := V1.ReadMessage(data)
+	msg, err := V1.DecodeMessage(data)
 	if msg != nil {
 		t.Fatalf("expected nil message for invalid protocol version, got %+v", msg)
 	}
@@ -174,7 +174,7 @@ func TestReadMessage_InvalidProtocolVersion(t *testing.T) {
 	}
 }
 
-func TestReadMessage_UnknownMessageType(t *testing.T) {
+func TestDecodeMessagae_UnknownMessageType(t *testing.T) {
 	// type is outside allowed range (1-3)
 	payload := []byte{0xAA}
 	payloadLen := len(payload)
@@ -187,7 +187,7 @@ func TestReadMessage_UnknownMessageType(t *testing.T) {
 	}
 	data := append(header, payload...)
 
-	msg, err := V1.ReadMessage(data)
+	msg, err := V1.DecodeMessage(data)
 	if msg != nil {
 		t.Fatalf("expected nil message for unknown message type, got %+v", msg)
 	}
@@ -199,7 +199,7 @@ func TestReadMessage_UnknownMessageType(t *testing.T) {
 	}
 }
 
-func TestReadMessage_ZeroPayload(t *testing.T) {
+func TestDecodeMessagae_ZeroPayload(t *testing.T) {
 	// header with zero payload length
 	data := []byte{
 		magicNumber, // magic
@@ -208,7 +208,7 @@ func TestReadMessage_ZeroPayload(t *testing.T) {
 		0x01,        // type
 		0, 0, 0, 0,  // payload length = 0
 	}
-	msg, err := V1.ReadMessage(data)
+	msg, err := V1.DecodeMessage(data)
 	if msg != nil {
 		t.Fatalf("expected nil message for zero payload, got %+v", msg)
 	}
@@ -220,18 +220,18 @@ func TestReadMessage_ZeroPayload(t *testing.T) {
 	}
 }
 
-func TestReadMessage_InsufficientPayload(t *testing.T) {
+func TestDecodeMessagae_InsufficientPayload(t *testing.T) {
 	// header says 5 bytes payload but only provide 3
 	payloadLen := 5
 	data := []byte{
 		magicNumber,
 		0x01,
 		0x02,
-		0x03,
+		0x01,
 		byte(payloadLen >> 24), byte(payloadLen >> 16), byte(payloadLen >> 8), byte(payloadLen),
 		0xAA, 0xBB, 0xCC, // only 3 bytes instead of 5
 	}
-	msg, err := V1.ReadMessage(data)
+	msg, err := V1.DecodeMessage(data)
 	if msg != nil {
 		t.Fatalf("expected nil message for insufficient payload, got %+v", msg)
 	}
@@ -243,7 +243,7 @@ func TestReadMessage_InsufficientPayload(t *testing.T) {
 	}
 }
 
-func TestReadMessage_Success(t *testing.T) {
+func TestDecodeMessagae_Success(t *testing.T) {
 	payload := []byte("hello")
 	payloadLen := len(payload)
 	header := []byte{
@@ -255,7 +255,7 @@ func TestReadMessage_Success(t *testing.T) {
 	}
 	data := append(header, payload...)
 
-	msg, err := V1.ReadMessage(data)
+	msg, err := V1.DecodeMessage(data)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -270,7 +270,7 @@ func TestReadMessage_Success(t *testing.T) {
 	}
 }
 
-func TestReadCommand_TooShort(t *testing.T) {
+func TestDecodeCommand_TooShort(t *testing.T) {
 	// less than 10 bytes overall
 	data := make([]byte, 9)
 	msg := &Message{
@@ -279,7 +279,7 @@ func TestReadCommand_TooShort(t *testing.T) {
 		Type:            0x01,
 		Payload:         data,
 	}
-	cmd, err := V1.ReadCommand(msg)
+	cmd, err := V1.DecodeCommand(msg)
 	if cmd != nil {
 		t.Fatalf("expected nil cmd for too-short data, got %+v", cmd)
 	}
@@ -291,7 +291,7 @@ func TestReadCommand_TooShort(t *testing.T) {
 	}
 }
 
-func TestReadCommand_InsufficientDBName(t *testing.T) {
+func TestDecodeCommand_InsufficientDBName(t *testing.T) {
 	// declare dbNameLen = 5 but provide only 3 bytes for DB name
 	var b []byte
 	tmp := make([]byte, 2)
@@ -308,7 +308,7 @@ func TestReadCommand_InsufficientDBName(t *testing.T) {
 		Type:            0x01,
 		Payload:         b,
 	}
-	cmd, err := V1.ReadCommand(msg)
+	cmd, err := V1.DecodeCommand(msg)
 	if cmd != nil {
 		t.Fatalf("expected nil cmd for insufficient DB name, got %+v", cmd)
 	}
@@ -320,7 +320,7 @@ func TestReadCommand_InsufficientDBName(t *testing.T) {
 	}
 }
 
-func TestReadCommand_InsufficientCollectionName(t *testing.T) {
+func TestDecodeCommand_InsufficientCollectionName(t *testing.T) {
 	// provide DB name correctly, but collectionNameLen says 4 and only 2 bytes given
 	var b []byte
 	tmp2 := make([]byte, 2)
@@ -344,7 +344,7 @@ func TestReadCommand_InsufficientCollectionName(t *testing.T) {
 		Type:            0x01,
 		Payload:         b,
 	}
-	cmd, err := V1.ReadCommand(msg)
+	cmd, err := V1.DecodeCommand(msg)
 	if cmd != nil {
 		t.Fatalf("expected nil cmd for insufficient collection name, got %+v", cmd)
 	}
@@ -356,7 +356,7 @@ func TestReadCommand_InsufficientCollectionName(t *testing.T) {
 	}
 }
 
-func TestReadCommand_InsufficientPayload(t *testing.T) {
+func TestDecodeCommand_InsufficientPayload(t *testing.T) {
 	// provide headers correctly but payloadLen says 10 and only 3 payload bytes provided
 	var b []byte
 	tmp := make([]byte, 2)
@@ -384,7 +384,7 @@ func TestReadCommand_InsufficientPayload(t *testing.T) {
 		Type:            0x01,
 		Payload:         b,
 	}
-	cmd, err := V1.ReadCommand(msg)
+	cmd, err := V1.DecodeCommand(msg)
 	if cmd != nil {
 		t.Fatalf("expected nil cmd for insufficient payload, got %+v", cmd)
 	}
@@ -396,7 +396,7 @@ func TestReadCommand_InsufficientPayload(t *testing.T) {
 	}
 }
 
-func TestReadCommand_Success(t *testing.T) {
+func TestDecodeCommand_Success(t *testing.T) {
 	// valid command with DB name, collection name and payload
 	var b []byte
 	tmp2 := make([]byte, 2)
@@ -425,7 +425,7 @@ func TestReadCommand_Success(t *testing.T) {
 		Type:            0x01,
 		Payload:         b,
 	}
-	cmd, err := V1.ReadCommand(msg)
+	cmd, err := V1.DecodeCommand(msg)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
