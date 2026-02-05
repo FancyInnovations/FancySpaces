@@ -11,7 +11,7 @@ import (
 func EncodeValueInto(val *Value, target []byte) []byte {
 	switch val.Type {
 	case TypeEmpty:
-		return []byte{byte(TypeEmpty)}
+		return EncodeEmptyInto(target)
 	case TypeBoolean:
 		return EncodeBoolInto(val.AsBoolean(), target)
 	case TypeByte:
@@ -135,6 +135,29 @@ func DecodeValue(data []byte) (*Value, error) {
 	default:
 		return nil, ErrInvalidType
 	}
+}
+
+// EncodeEmptyInto encodes an empty value into a byte slice.
+// | Type (1 byte) |
+func EncodeEmptyInto(target []byte) []byte {
+	totalLength := 1
+
+	// ensure capacity
+	if cap(target) < totalLength {
+		target = make([]byte, totalLength)
+	} else {
+		target = target[:totalLength]
+	}
+
+	target[0] = byte(TypeEmpty)
+
+	return target
+}
+
+// EncodeEmpty encodes an empty value into a new byte slice.
+// | Type (1 byte) |
+func EncodeEmpty() []byte {
+	return EncodeEmptyInto(nil)
 }
 
 // EncodeBoolInto encodes a bool into a byte slice.
@@ -617,7 +640,7 @@ func DecodeString(data []byte) (string, error) {
 
 // EncodeListInto encodes a list of Values into a byte slice.
 // | Type (1 byte) | Item type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Items ... |
-func EncodeListInto(vals []Value, dst []byte) []byte {
+func EncodeListInto(vals []*Value, dst []byte) []byte {
 	count := len(vals)
 	itemType := TypeEmpty
 	if count > 0 {
@@ -627,10 +650,10 @@ func EncodeListInto(vals []Value, dst []byte) []byte {
 	totalLength := 1 + 1 + 2 + 4
 	var itemPayload []byte
 	for _, val := range vals {
-		if val.Type != itemType {
+		if val.Type != itemType && val.Type != TypeEmpty {
 			return nil
 		}
-		itemPayload = append(itemPayload, EncodeValue(&val)...)
+		itemPayload = append(itemPayload, EncodeValue(val)...)
 	}
 	totalLength += len(itemPayload)
 
@@ -653,13 +676,13 @@ func EncodeListInto(vals []Value, dst []byte) []byte {
 
 // EncodeList encodes a list of Values into a new byte slice.
 // | Type (1 byte) | Item type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Items ... |
-func EncodeList(val []Value) []byte {
+func EncodeList(val []*Value) []byte {
 	return EncodeListInto(val, nil)
 }
 
 // DecodeList decodes a list of Values from a byte slice.
 // | Type (1 byte) | Item type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Items ... |
-func DecodeList(data []byte) ([]Value, error) {
+func DecodeList(data []byte) ([]*Value, error) {
 	if len(data) < 8 {
 		return nil, ErrPayloadTooShort
 	}
@@ -677,7 +700,7 @@ func DecodeList(data []byte) ([]Value, error) {
 		return nil, ErrPayloadTooShort
 	}
 
-	items := make([]Value, 0, count)
+	items := make([]*Value, 0, count)
 	offset := 8
 	for i := 0; i < count; i++ {
 		itemData := data[offset:]
@@ -685,10 +708,10 @@ func DecodeList(data []byte) ([]Value, error) {
 		if err != nil {
 			return nil, err
 		}
-		if item.Type != ValueType(itemType) {
+		if item.Type != ValueType(itemType) && item.Type != TypeEmpty {
 			return nil, ErrInvalidType
 		}
-		items = append(items, *item)
+		items = append(items, item)
 		offset += len(EncodeValue(item)) // TODO: This is inefficient. We should track the length of the encoded item instead of re-encoding it to get the length.
 	}
 
@@ -697,7 +720,7 @@ func DecodeList(data []byte) ([]Value, error) {
 
 // EncodeMapInto encodes a map of string keys to Values into a byte slice.
 // | Type (1 byte) | Val type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Key length (2 bytes) | Key (N bytes) | Val (M bytes) | ... |
-func EncodeMapInto(vals map[string]Value, dst []byte) []byte {
+func EncodeMapInto(vals map[string]*Value, dst []byte) []byte {
 	count := len(vals)
 	valType := TypeEmpty
 	if count > 0 {
@@ -710,12 +733,12 @@ func EncodeMapInto(vals map[string]Value, dst []byte) []byte {
 	totalLength := 1 + 1 + 2 + 4
 	var itemPayload []byte
 	for key, val := range vals {
-		if val.Type != valType {
+		if val.Type != valType && val.Type != TypeEmpty {
 			return nil
 		}
 
 		itemPayload = append(itemPayload, EncodeString(key)...)
-		itemPayload = append(itemPayload, EncodeValue(&val)...)
+		itemPayload = append(itemPayload, EncodeValue(val)...)
 	}
 	totalLength += len(itemPayload)
 
@@ -737,11 +760,11 @@ func EncodeMapInto(vals map[string]Value, dst []byte) []byte {
 
 // EncodeMap encodes a map of string keys to Values into a new byte slice.
 // | Type (1 byte) | Val type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Key length (2 bytes) | Key (N bytes) | Val (M bytes) | ... |
-func EncodeMap(vals map[string]Value) []byte {
+func EncodeMap(vals map[string]*Value) []byte {
 	return EncodeMapInto(vals, nil)
 }
 
-func DecodeMap(data []byte) (map[string]Value, error) {
+func DecodeMap(data []byte) (map[string]*Value, error) {
 	if len(data) < 8 {
 		return nil, ErrPayloadTooShort
 	}
@@ -759,7 +782,7 @@ func DecodeMap(data []byte) (map[string]Value, error) {
 		return nil, ErrPayloadTooShort
 	}
 
-	vals := make(map[string]Value)
+	vals := make(map[string]*Value)
 	offset := 8
 	for i := 0; i < count; i++ {
 		keyData := data[offset:]
@@ -774,10 +797,10 @@ func DecodeMap(data []byte) (map[string]Value, error) {
 		if err != nil {
 			return nil, err
 		}
-		if val.Type != ValueType(valType) {
+		if val.Type != ValueType(valType) && val.Type != TypeEmpty {
 			return nil, ErrInvalidType
 		}
-		vals[key] = *val
+		vals[key] = val
 		offset += len(EncodeValue(val)) // TODO: This is inefficient. We should track the length of the encoded value instead of re-encoding it to get the length.
 	}
 

@@ -211,11 +211,36 @@ The response payload for a successful KV Get command contains the value associat
 
 ### KV Get multiple (2102)
 
-Not implemented yet.
+The KV Get multiple command retrieves the values associated with multiple keys.
+
+Payload format:
+
+| Field | Size | Description                                   |
+|-------|------|-----------------------------------------------|
+| Keys  | N B  | [List of strings](protocol-encoded-values.md) |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+The response payload for a successful KV Get multiple command contains a map of keys to their corresponding values, where each value is encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
+If a key does not exist, the value will be Empty.
 
 ### KV Get all (2103)
 
-Not implemented yet.
+The KV Get all command retrieves all key-value pairs in the store.
+
+Payload format: None
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+The response payload for a successful KV Get all command contains a map of all keys to their corresponding values, where each value is encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
 
 ### KV Keys (2104)
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
@@ -40,14 +41,16 @@ func main() {
 		slog.Error("Failed to set key", sloki.WrapError(err))
 	}
 
-	if err := c.KVSet("system", "collections", "mykey3", 123); err != nil {
+	if err := c.KVSet("system", "collections", "mykey3", 1233); err != nil {
 		slog.Error("Failed to set key", sloki.WrapError(err))
 	}
 
-	keys, err := c.KVKeys("system", "collections")
+	vals, err := c.KVGetAll("system", "collections")
 	if err != nil {
-		slog.Error("Failed to get keys", sloki.WrapError(err))
+		slog.Error("Failed to get multiple", sloki.WrapError(err))
 	} else {
-		slog.Info("Keys in collection", slog.Any("keys", keys))
+		for key, val := range vals {
+			fmt.Printf("Key: %s, Value: %v\n", key, val)
+		}
 	}
 }

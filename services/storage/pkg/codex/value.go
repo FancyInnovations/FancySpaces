@@ -140,18 +140,18 @@ func (v *Value) AsString() string {
 	return v.data.(string)
 }
 
-func (v *Value) AsList() []Value {
+func (v *Value) AsList() []*Value {
 	if v.Type != TypeList {
 		slog.Warn("Value is not a list", slog.Any("value_type", v.Type))
 	}
-	return v.data.([]Value)
+	return v.data.([]*Value)
 }
 
-func (v *Value) AsMap() map[string]Value {
+func (v *Value) AsMap() map[string]*Value {
 	if v.Type != TypeMap {
 		slog.Warn("Value is not a map", slog.Any("value_type", v.Type))
 	}
-	return v.data.(map[string]Value)
+	return v.data.(map[string]*Value)
 }
 
 func NewValue(data any) (*Value, error) {
@@ -232,9 +232,9 @@ func NewEmptyValue() *Value {
 }
 
 func NewStringListValue(items []string) *Value {
-	values := make([]Value, len(items))
+	values := make([]*Value, len(items))
 	for i, item := range items {
-		values[i] = Value{Type: TypeString, data: item}
+		values[i] = &Value{Type: TypeString, data: item}
 	}
 	return &Value{Type: TypeList, data: values}
 }

@@ -211,3 +211,65 @@ func (c *Client) KVKeys(db, coll string) ([]string, error) {
 
 	return keys, nil
 }
+
+// KVGetMultiple retrieves the values associated with the specified keys from the collection.
+// It returns a slice of codex.Value, where each value corresponds to the key at the same index in the input keys slice.
+// If a key does not exist, its corresponding value in the returned slice will be nil.
+func (c *Client) KVGetMultiple(db, coll string, keys []string) (map[string]*codex.Value, error) {
+	keyVals := codex.NewStringListValue(keys)
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVGetMultiple,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        codex.EncodeValue(keyVals),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return nil, ErrUnexpectedStatusCode
+	}
+
+	val, err := codex.DecodeValue(resp.Payload)
+	if err != nil {
+		return nil, err
+	}
+
+	if val.Type != codex.TypeMap {
+		return nil, ErrUnexpectedDataType
+	}
+
+	return val.AsMap(), nil
+}
+
+// KVGetAll retrieves all key-value pairs from the specified collection.
+// It returns a map where the keys are the keys from the collection and the values are the corresponding codex.Value.
+// This is a heavy operation and should be used with caution, as it will read all data in memory and may block other operations while it runs.
+func (c *Client) KVGetAll(db, coll string) (map[string]*codex.Value, error) {
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVGetAll,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        make([]byte, 0),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return nil, ErrUnexpectedStatusCode
+	}
+
+	val, err := codex.DecodeValue(resp.Payload)
+	if err != nil {
+		return nil, err
+	}
+
+	if val.Type != codex.TypeMap {
+		return nil, ErrUnexpectedDataType
+	}
+
+	return val.AsMap(), nil
+}

@@ -172,7 +172,7 @@ func (e *Engine) GetMultiple(keys []string) map[string]*codex.Value {
 			if exists && (entry.expires == 0 || now <= entry.expires) {
 				results[key] = entry.value
 			} else {
-				results[key] = nil
+				results[key] = &codex.Value{Type: codex.TypeEmpty} // indicate missing/expired keys with a null value
 			}
 		}
 		s.mu.RUnlock()
