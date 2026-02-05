@@ -17,7 +17,9 @@ func contains(slice []string, v string) bool {
 }
 
 func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
-	e := NewEngine()
+	e := NewEngine(Configuration{
+		DisableTTL: false,
+	})
 
 	var v codex.Value
 
@@ -30,7 +32,7 @@ func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 	}
 
 	// Set and verify
-	e.Set("key1", v)
+	e.Set("key1", &v)
 	if !e.Exists("key1") {
 		t.Fatalf("expected key1 to exist")
 	}
@@ -59,8 +61,8 @@ func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 	}
 
 	// Clear
-	e.Set("a", v)
-	e.Set("b", v)
+	e.Set("a", &v)
+	e.Set("b", &v)
 	if e.Size() != 2 {
 		t.Fatalf("expected size 2, got %d", e.Size())
 	}
@@ -74,12 +76,14 @@ func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 }
 
 func TestGetMultipleAndDeleteMultiple(t *testing.T) {
-	e := NewEngine()
+	e := NewEngine(Configuration{
+		DisableTTL: false,
+	})
 	var v codex.Value
 
-	e.Set("k1", v)
-	e.Set("k2", v)
-	e.Set("k3", v)
+	e.Set("k1", &v)
+	e.Set("k2", &v)
+	e.Set("k3", &v)
 
 	res := e.GetMultiple([]string{"k1", "k2", "missing"})
 	if res["k1"] == nil || res["k2"] == nil {
@@ -88,7 +92,7 @@ func TestGetMultipleAndDeleteMultiple(t *testing.T) {
 	if _, ok := res["missing"]; !ok {
 		t.Fatalf("expected result to contain key for missing entry")
 	}
-	if res["missing"] != nil {
+	if res["missing"].Type != codex.TypeEmpty {
 		t.Fatalf("expected missing entry to be nil")
 	}
 
@@ -103,7 +107,9 @@ func TestGetMultipleAndDeleteMultiple(t *testing.T) {
 }
 
 func TestSetIfExistsSetIfNotExistsWithExpiry(t *testing.T) {
-	e := NewEngine()
+	e := NewEngine(Configuration{
+		DisableTTL: false,
+	})
 	var v codex.Value
 
 	// Not exists -> SetIfExistsTTL should be false, SetIfNotExistsTTL true
@@ -119,7 +125,7 @@ func TestSetIfExistsSetIfNotExistsWithExpiry(t *testing.T) {
 
 	// Expiry: set with past expiration
 	past := time.Now().Add(-1 * time.Second).UnixNano()
-	e.SetWithTTL("exp", v, past)
+	e.SetWithTTL("exp", &v, past)
 	if e.Exists("exp") {
 		t.Fatalf("expected exp to be treated as expired by Exists")
 	}

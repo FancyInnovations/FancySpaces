@@ -180,13 +180,13 @@ func (e *Engine) Get(key string) *codex.Value {
 // GetMultiple retrieves values for multiple keys at once.
 // This is more efficient than calling Get multiple times, as it minimizes locking overhead by grouping reads by shard.
 func (e *Engine) GetMultiple(keys []string) map[string]*codex.Value {
-	shardKeys := make(map[int][]string)
+	var shardKeys [ShardCount][]string
 	for _, key := range keys {
 		s := e.shardFor(key)
 		shardKeys[s.index] = append(shardKeys[s.index], key)
 	}
 
-	results := make(map[string]*codex.Value)
+	results := make(map[string]*codex.Value, len(keys))
 	now := time.Now().UnixNano()
 	for shardIndex, keys := range shardKeys {
 		s := &e.shards[shardIndex]
@@ -196,7 +196,7 @@ func (e *Engine) GetMultiple(keys []string) map[string]*codex.Value {
 			if exists && (entry.expires == 0 || now <= entry.expires) {
 				results[key] = entry.value
 			} else {
-				results[key] = &codex.Value{Type: codex.TypeEmpty} // indicate missing/expired keys with a null value
+				results[key] = codex.EmptyValue // indicate missing/expired keys with a null value
 			}
 		}
 		s.mu.RUnlock()

@@ -30,6 +30,8 @@ const (
 	TypeMap
 )
 
+var EmptyValue = &Value{Type: TypeEmpty, data: nil}
+
 func (v *Value) IsEmpty() bool {
 	return v.Type == TypeEmpty
 }
