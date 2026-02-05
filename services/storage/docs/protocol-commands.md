@@ -166,3 +166,21 @@ Response:
 | Status code | Description   |
 |-------------|---------------|
 | 0000        | Success       |
+
+### KV Exists (2004)
+
+The KV Exists command checks if a key exists in the store.
+
+Payload format:
+
+| Field      | Size | Description         |
+|------------|------|---------------------|
+| Key length | 2 B  | Length of the key   |
+| Key        | N B  | The key to check    |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Key exists    |
+| 1008        | Key not found |

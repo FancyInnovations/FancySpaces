@@ -147,3 +147,33 @@ func (c *Client) KVDelete(db, coll string, key string) error {
 
 	return nil
 }
+
+// KVExists checks if a key exists in the specified collection.
+// It returns true if the key exists, false if it does not exist, and an error if there was an issue checking.
+func (c *Client) KVExists(db, coll string, key string) (bool, error) {
+	totalLen := 2 + len(key)
+	payload := make([]byte, totalLen)
+
+	// Key
+	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
+	copy(payload[2:2+len(key)], []byte(key))
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVExists,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payload,
+	})
+	if err != nil {
+		return false, err
+	}
+
+	switch resp.Code {
+	case protocol.StatusOK:
+		return true, nil
+	case protocol.StatusNotFound:
+		return false, nil
+	default:
+		return false, ErrUnexpectedStatusCode
+	}
+}

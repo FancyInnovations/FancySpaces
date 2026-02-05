@@ -43,4 +43,24 @@ func main() {
 	} else {
 		fmt.Printf("Got value: %v\n", val.AsInt())
 	}
+
+	exists, err := c.KVExists("system", "collections", "mykey")
+	if err != nil {
+		slog.Error("Failed to check if key exists", sloki.WrapError(err))
+	} else {
+		fmt.Printf("Key exists: %v\n", exists)
+	}
+
+	if err := c.KVDelete("system", "collections", "mykey"); err != nil {
+		slog.Error("Failed to delete key", sloki.WrapError(err))
+	} else {
+		fmt.Println("Key deleted successfully")
+	}
+
+	exists, err = c.KVExists("system", "collections", "mykey")
+	if err != nil {
+		slog.Error("Failed to check if key exists after deletion", sloki.WrapError(err))
+	} else {
+		fmt.Printf("Key exists after deletion: %v\n", exists)
+	}
 }
