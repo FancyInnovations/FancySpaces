@@ -106,15 +106,15 @@ func TestSetIfExistsSetIfNotExistsWithExpiry(t *testing.T) {
 	e := NewEngine()
 	var v codex.Value
 
-	// Not exists -> SetIfExists should be false, SetIfNotExists true
-	if e.SetIfExists("x", v, 0) {
-		t.Fatalf("SetIfExists should be false for non-existing key")
+	// Not exists -> SetIfExistsTTL should be false, SetIfNotExistsTTL true
+	if e.SetIfExistsTTL("x", v, 0) {
+		t.Fatalf("SetIfExistsTTL should be false for non-existing key")
 	}
-	if !e.SetIfNotExists("x", v, 0) {
-		t.Fatalf("SetIfNotExists should be true for non-existing key")
+	if !e.SetIfNotExistsTTL("x", v, 0) {
+		t.Fatalf("SetIfNotExistsTTL should be true for non-existing key")
 	}
-	if !e.SetIfExists("x", v, 0) {
-		t.Fatalf("SetIfExists should be true for existing key")
+	if !e.SetIfExistsTTL("x", v, 0) {
+		t.Fatalf("SetIfExistsTTL should be true for existing key")
 	}
 
 	// Expiry: set with past expiration
@@ -123,12 +123,12 @@ func TestSetIfExistsSetIfNotExistsWithExpiry(t *testing.T) {
 	if e.Exists("exp") {
 		t.Fatalf("expected exp to be treated as expired by Exists")
 	}
-	// expired -> SetIfNotExists should succeed (treat as not exists)
-	if !e.SetIfNotExists("exp", v, 0) {
-		t.Fatalf("expected SetIfNotExists to set expired key")
+	// expired -> SetIfNotExistsTTL should succeed (treat as not exists)
+	if !e.SetIfNotExistsTTL("exp", v, 0) {
+		t.Fatalf("expected SetIfNotExistsTTL to set expired key")
 	}
 	// now exists
-	if !e.SetIfExists("exp", v, 0) {
-		t.Fatalf("expected SetIfExists to succeed for unexpired key")
+	if !e.SetIfExistsTTL("exp", v, 0) {
+		t.Fatalf("expected SetIfExistsTTL to succeed for unexpired key")
 	}
 }

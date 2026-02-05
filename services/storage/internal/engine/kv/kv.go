@@ -59,9 +59,9 @@ func (e *Engine) Set(key string, value *codex.Value) {
 	e.SetWithTTL(key, value, 0)
 }
 
-// SetMultiple allows setting multiple key-value pairs at once with the same expiration time.
+// SetMultipleTTL allows setting multiple key-value pairs at once with the same expiration time.
 // This is more efficient than calling Set multiple times, as it minimizes locking overhead by grouping updates by shard.
-func (e *Engine) SetMultiple(entries map[string]codex.Value, expires int64) {
+func (e *Engine) SetMultipleTTL(entries map[string]codex.Value, expires int64) {
 	// find shards that need to be updated
 	shardEntries := make(map[int]map[string]codex.Value)
 	for key, value := range entries {
@@ -86,9 +86,14 @@ func (e *Engine) SetMultiple(entries map[string]codex.Value, expires int64) {
 	}
 }
 
-// SetIfExists updates the value for the given key only if it already exists and has not expired.
+// SetMultiple allows setting multiple key-value pairs at once without expiration.
+func (e *Engine) SetMultiple(entries map[string]codex.Value) {
+	e.SetMultipleTTL(entries, 0)
+}
+
+// SetIfExistsTTL updates the value for the given key only if it already exists and has not expired.
 // Returns true if the key was updated, false otherwise.
-func (e *Engine) SetIfExists(key string, value codex.Value, expires int64) bool {
+func (e *Engine) SetIfExistsTTL(key string, value codex.Value, expires int64) bool {
 	s := e.shardFor(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -105,9 +110,15 @@ func (e *Engine) SetIfExists(key string, value codex.Value, expires int64) bool 
 	return true
 }
 
-// SetIfNotExists sets the value for the given key only if it does not already exist or has expired.
+// SetIfExists updates the value for the given key only if it already exists and has not expired.
+// Returns true if the key was updated, false otherwise.
+func (e *Engine) SetIfExists(key string, value codex.Value) bool {
+	return e.SetIfExistsTTL(key, value, 0)
+}
+
+// SetIfNotExistsTTL sets the value for the given key only if it does not already exist or has expired.
 // Returns true if the key was set, false otherwise.
-func (e *Engine) SetIfNotExists(key string, value codex.Value, expires int64) bool {
+func (e *Engine) SetIfNotExistsTTL(key string, value codex.Value, expires int64) bool {
 	s := e.shardFor(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -122,6 +133,10 @@ func (e *Engine) SetIfNotExists(key string, value codex.Value, expires int64) bo
 		expires: expires,
 	}
 	return true
+}
+
+func (e *Engine) SetIfNotExists(key string, value codex.Value) bool {
+	return e.SetIfNotExistsTTL(key, value, 0)
 }
 
 // Get retrieves the value for the given key.
@@ -158,6 +173,25 @@ func (e *Engine) GetMultiple(keys []string) map[string]*codex.Value {
 				results[key] = entry.value
 			} else {
 				results[key] = nil
+			}
+		}
+		s.mu.RUnlock()
+	}
+
+	return results
+}
+
+// GetAll retrieves all key-value pairs currently stored in the engine.
+// This is a heavy operation and should be used with caution, as it will read all data in memory and may block other operations while it runs.
+func (e *Engine) GetAll() map[string]*codex.Value {
+	results := make(map[string]*codex.Value)
+	now := time.Now().UnixNano()
+	for i := 0; i < ShardCount; i++ {
+		s := &e.shards[i]
+		s.mu.RLock()
+		for key, entry := range s.data {
+			if entry.expires == 0 || now <= entry.expires {
+				results[key] = entry.value
 			}
 		}
 		s.mu.RUnlock()

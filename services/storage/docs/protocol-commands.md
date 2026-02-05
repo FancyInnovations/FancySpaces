@@ -92,27 +92,7 @@ Not implemented yet.
 
 ## Key-value engine commands
 
-### KV Get (2000)
-
-The KV Get command retrieves the value associated with a given key.
-
-Payload format:
-
-| Field      | Size | Description         |
-|------------|------|---------------------|
-| Key length | 2 B  | Length of the key   |
-| Key        | N B  | The key to retrieve |
-
-Response:
-
-| Status code | Description   |
-|-------------|---------------|
-| 0000        | Success       |
-| 1008        | Key not found |
-
-The response payload for a successful KV Get command contains the value associated with the key, encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
-
-### KV Set (2001)
+### KV Set (2000)
 
 The KV Set command sets the value for a given key.
 
@@ -130,7 +110,7 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### KV Set with TTL (2002)
+### KV Set with TTL (2001)
 
 The KV Set with TTL command sets the value for a given key with a specified time-to-live (TTL).
 
@@ -150,7 +130,31 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### KV Delete (2003)
+### KV Set multiple (2002)
+
+Not implemented yet.
+
+### KV Set multiple with TTL (2003)
+
+Not implemented yet.
+
+### KV Set if exists (2004)
+
+Not implemented yet.
+
+### KV Set if exists with TTL (2005)
+
+Not implemented yet.
+
+### KV Set if not exists (2006)
+
+Not implemented yet.
+
+### KV Set if not exists with TTL (2007)
+
+Not implemented yet.
+
+### KV Delete (2008)
 
 The KV Delete command deletes a key-value pair from the store.
 
@@ -167,7 +171,7 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### KV Exists (2004)
+### KV Exists (2100)
 
 The KV Exists command checks if a key exists in the store.
 
@@ -185,7 +189,35 @@ Response:
 | 0000        | Key exists    |
 | 1008        | Key not found |
 
-### KV Keys (2005)
+### KV Get (2101)
+
+The KV Get command retrieves the value associated with a given key.
+
+Payload format:
+
+| Field      | Size | Description         |
+|------------|------|---------------------|
+| Key length | 2 B  | Length of the key   |
+| Key        | N B  | The key to retrieve |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+| 1008        | Key not found |
+
+The response payload for a successful KV Get command contains the value associated with the key, encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
+
+### KV Get multiple (2102)
+
+Not implemented yet.
+
+### KV Get all (2103)
+
+Not implemented yet.
+
+### KV Keys (2104)
 
 The KV Keys command retrieves a list of all keys in the store.
 
