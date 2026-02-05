@@ -34,6 +34,17 @@ func (v *Value) IsEmpty() bool {
 	return v.Type == TypeEmpty
 }
 
+func (v *Value) IsNumeric() bool {
+	switch v.Type {
+	case TypeByte, TypeUint16, TypeUint32, TypeUint64,
+		TypeInt16, TypeInt32, TypeInt64,
+		TypeFloat32, TypeFloat64:
+		return true
+	default:
+		return false
+	}
+}
+
 func (v *Value) AsBoolean() bool {
 	if v.Type != TypeBoolean {
 		slog.Warn("Value is not a boolean", slog.Any("value_type", v.Type))
