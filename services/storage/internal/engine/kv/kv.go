@@ -2,10 +2,13 @@ package kv
 
 import (
 	"time"
+
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 )
 
 type Engine struct {
-	shards [ShardCount]shard
+	shards     [ShardCount]shard
+	disableTTL bool // TODO implement option to disable TTL
 }
 
 func NewEngine() *Engine {
@@ -41,7 +44,7 @@ func (e *Engine) Keys() []string {
 // SetWithTTL stores a value for the given key with an optional expiration time (in unix nanoseconds).
 // If expires is 0, the key will not expire.
 // If expires is a positive value, it should be a unix timestamp in nanoseconds indicating when the key should expire.
-func (e *Engine) SetWithTTL(key string, value Value, expires int64) {
+func (e *Engine) SetWithTTL(key string, value *codex.Value, expires int64) {
 	s := e.shardFor(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -52,19 +55,19 @@ func (e *Engine) SetWithTTL(key string, value Value, expires int64) {
 	}
 }
 
-func (e *Engine) Set(key string, value Value) {
+func (e *Engine) Set(key string, value *codex.Value) {
 	e.SetWithTTL(key, value, 0)
 }
 
 // SetMultiple allows setting multiple key-value pairs at once with the same expiration time.
 // This is more efficient than calling Set multiple times, as it minimizes locking overhead by grouping updates by shard.
-func (e *Engine) SetMultiple(entries map[string]Value, expires int64) {
+func (e *Engine) SetMultiple(entries map[string]codex.Value, expires int64) {
 	// find shards that need to be updated
-	shardEntries := make(map[int]map[string]Value)
+	shardEntries := make(map[int]map[string]codex.Value)
 	for key, value := range entries {
 		s := e.shardFor(key)
 		if shardEntries[s.index] == nil {
-			shardEntries[s.index] = make(map[string]Value)
+			shardEntries[s.index] = make(map[string]codex.Value)
 		}
 		shardEntries[s.index][key] = value
 	}
@@ -75,7 +78,7 @@ func (e *Engine) SetMultiple(entries map[string]Value, expires int64) {
 		s.mu.Lock()
 		for key, value := range entries {
 			s.data[key] = &entry{
-				value:   value,
+				value:   &value,
 				expires: expires,
 			}
 		}
@@ -85,7 +88,7 @@ func (e *Engine) SetMultiple(entries map[string]Value, expires int64) {
 
 // SetIfExists updates the value for the given key only if it already exists and has not expired.
 // Returns true if the key was updated, false otherwise.
-func (e *Engine) SetIfExists(key string, value Value, expires int64) bool {
+func (e *Engine) SetIfExists(key string, value codex.Value, expires int64) bool {
 	s := e.shardFor(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -96,7 +99,7 @@ func (e *Engine) SetIfExists(key string, value Value, expires int64) bool {
 	}
 
 	s.data[key] = &entry{
-		value:   value,
+		value:   &value,
 		expires: expires,
 	}
 	return true
@@ -104,7 +107,7 @@ func (e *Engine) SetIfExists(key string, value Value, expires int64) bool {
 
 // SetIfNotExists sets the value for the given key only if it does not already exist or has expired.
 // Returns true if the key was set, false otherwise.
-func (e *Engine) SetIfNotExists(key string, value Value, expires int64) bool {
+func (e *Engine) SetIfNotExists(key string, value codex.Value, expires int64) bool {
 	s := e.shardFor(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -115,14 +118,14 @@ func (e *Engine) SetIfNotExists(key string, value Value, expires int64) bool {
 	}
 
 	s.data[key] = &entry{
-		value:   value,
+		value:   &value,
 		expires: expires,
 	}
 	return true
 }
 
 // Get retrieves the value for the given key.
-func (e *Engine) Get(key string) *Value {
+func (e *Engine) Get(key string) *codex.Value {
 	s := e.shardFor(key)
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -132,19 +135,19 @@ func (e *Engine) Get(key string) *Value {
 		return nil
 	}
 
-	return &entry.value
+	return entry.value
 }
 
 // GetMultiple retrieves values for multiple keys at once.
 // This is more efficient than calling Get multiple times, as it minimizes locking overhead by grouping reads by shard.
-func (e *Engine) GetMultiple(keys []string) map[string]*Value {
+func (e *Engine) GetMultiple(keys []string) map[string]*codex.Value {
 	shardKeys := make(map[int][]string)
 	for _, key := range keys {
 		s := e.shardFor(key)
 		shardKeys[s.index] = append(shardKeys[s.index], key)
 	}
 
-	results := make(map[string]*Value)
+	results := make(map[string]*codex.Value)
 	now := time.Now().UnixNano()
 	for shardIndex, keys := range shardKeys {
 		s := &e.shards[shardIndex]
@@ -152,7 +155,7 @@ func (e *Engine) GetMultiple(keys []string) map[string]*Value {
 		for _, key := range keys {
 			entry, exists := s.data[key]
 			if exists && (entry.expires == 0 || now <= entry.expires) {
-				results[key] = &entry.value
+				results[key] = entry.value
 			} else {
 				results[key] = nil
 			}

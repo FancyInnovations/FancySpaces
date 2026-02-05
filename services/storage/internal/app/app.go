@@ -43,7 +43,12 @@ func Start(cfg Configuration) *server.Server {
 	// tcp server
 	cmdService := command.NewService()
 	cmdService.RegisterHandlers(command.SystemCommands())
-	cmdService.RegisterHandlers(kvcmds.Commands())
+
+	kvCommands := kvcmds.New(kvcmds.Configuration{
+		DatabaseStore: databaseStore,
+		EngineService: engineService,
+	})
+	cmdService.RegisterHandlers(kvCommands.Get())
 
 	// TODO: register more command handlers here, e.g. commands for database operations or engine-specific commands
 

@@ -11,4 +11,5 @@ const (
 	CommandAuthStatus                uint16 = 101
 
 	CommandKVGet uint16 = 2000
+	CommandKVSet uint16 = 2001
 )

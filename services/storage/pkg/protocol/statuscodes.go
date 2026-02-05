@@ -23,6 +23,18 @@ const (
 	// StatusUnauthorized indicates that authentication is required.
 	StatusUnauthorized uint16 = 1004
 
+	// StatusDatabaseNotFound indicates that the specified database was not found.
+	StatusDatabaseNotFound uint16 = 1005
+
+	// StatusCollectionNotFound indicates that the specified collection was not found.
+	StatusCollectionNotFound uint16 = 1006
+
+	// StatusCommandNotAllowed indicates that the command is not allowed in the current context.
+	StatusCommandNotAllowed uint16 = 1007
+
+	// StatusNotFound indicates that the requested resource was not found.
+	StatusNotFound uint16 = 1008
+
 	// StatusInternalServerError indicates that an internal server error occurred.
 	StatusInternalServerError uint16 = 2000
 )

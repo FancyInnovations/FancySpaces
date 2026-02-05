@@ -12,6 +12,7 @@ import (
 	"github.com/OliverSchlueter/goutils/idgen"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
@@ -144,10 +145,7 @@ func (s *Server) handleMessage(ctx *command.ConnCtx) bool {
 	resp, err := s.cmdService.Handle(ctx, msg, cmd)
 	if err != nil {
 		slog.Warn("Command handler returned error", sloki.WrapError(err))
-		s.writeResponse(conn, &protocol.Response{
-			Code:    protocol.StatusInternalServerError,
-			Payload: []byte("Error while processing command"),
-		})
+		s.writeResponse(conn, commonresponses.InternalServerError)
 
 		return false
 	}

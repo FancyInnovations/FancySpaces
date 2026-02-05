@@ -3,6 +3,8 @@ package kv
 import (
 	"testing"
 	"time"
+
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 )
 
 func contains(slice []string, v string) bool {
@@ -17,7 +19,7 @@ func contains(slice []string, v string) bool {
 func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 	e := NewEngine()
 
-	var v Value
+	var v codex.Value
 
 	// initially empty
 	if e.Size() != 0 {
@@ -73,7 +75,7 @@ func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 
 func TestGetMultipleAndDeleteMultiple(t *testing.T) {
 	e := NewEngine()
-	var v Value
+	var v codex.Value
 
 	e.Set("k1", v)
 	e.Set("k2", v)
@@ -102,7 +104,7 @@ func TestGetMultipleAndDeleteMultiple(t *testing.T) {
 
 func TestSetIfExistsSetIfNotExistsWithExpiry(t *testing.T) {
 	e := NewEngine()
-	var v Value
+	var v codex.Value
 
 	// Not exists -> SetIfExists should be false, SetIfNotExists true
 	if e.SetIfExists("x", v, 0) {

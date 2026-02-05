@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 
 	"github.com/fancyinnovations/fancyspaces/storage/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
@@ -23,22 +24,12 @@ var (
 
 	invalidCredentialsResponse = &protocol.Response{
 		Code:    protocol.StatusInvalidCredentials,
-		Payload: *emptyPayload,
-	}
-
-	emptyOK = &protocol.Response{
-		Code:    protocol.StatusOK,
-		Payload: *emptyPayload,
+		Payload: *commonresponses.EmptyPayload,
 	}
 
 	unsupportedAuthTypeResponse = &protocol.Response{
 		Code:    protocol.StatusBadRequest,
 		Payload: []byte("unsupported authentication type"),
-	}
-
-	unauthorizedResponse = &protocol.Response{
-		Code:    protocol.StatusUnauthorized,
-		Payload: *emptyPayload,
 	}
 )
 
@@ -50,8 +41,6 @@ func SystemCommands() map[uint16]Handler {
 		protocol.CommandAuthStatus:                handleAuthStatus,
 	}
 }
-
-var emptyPayload = &[]byte{}
 
 // handlePing processes a ping command.
 func handlePing(_ *ConnCtx, _ *protocol.Message, _ *protocol.Command) (*protocol.Response, error) {
@@ -119,7 +108,7 @@ func handleLoginWithPassword(ctx *ConnCtx, _ *protocol.Message, cmd *protocol.Co
 	}
 	ctx.Ctx = newCtx
 
-	return emptyOK, nil
+	return commonresponses.OK, nil
 }
 
 func handleLoginWithAPIKey(ctx *ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
@@ -147,15 +136,15 @@ func handleLoginWithAPIKey(ctx *ConnCtx, _ *protocol.Message, cmd *protocol.Comm
 	}
 	ctx.Ctx = newCtx
 
-	return emptyOK, nil
+	return commonresponses.OK, nil
 }
 
 // handleAuthStatus processes an auth status command.
 func handleAuthStatus(ctx *ConnCtx, _ *protocol.Message, _ *protocol.Command) (*protocol.Response, error) {
 	user := auth.UserFromContext(ctx.Ctx)
 	if user == nil {
-		return unauthorizedResponse, nil
+		return commonresponses.Unauthorized, nil
 	}
 
-	return emptyOK, nil
+	return commonresponses.OK, nil
 }

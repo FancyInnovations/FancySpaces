@@ -1,11 +1,15 @@
 package kv
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
+)
 
 const ShardCount = 256
 
 type entry struct {
-	value   Value
+	value   *codex.Value
 	expires int64 // unix nanos, 0 means no expiration
 }
 

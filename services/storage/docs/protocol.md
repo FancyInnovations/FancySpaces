@@ -1,7 +1,9 @@
 # Storage TCP Protocol
 
 Transport Layer: TCP
+
 Port: 8091
+
 Endianness: Big-Endian
 
 ## Message Structure
@@ -62,7 +64,7 @@ Status Codes:
 | 1xxx | Client-side error codes |
 | 2xxx | Server-side error codes |
 
-See `services/storage/internal/protocol/statuscodes-go` for a complete list of status codes.
+See `services/storage/internal/protocol/statuscodes.go` for a complete list of status codes.
 
 If the status is 1xxx or 2xxx, the payload is an error message string.
 Otherwise, the payload contains data relevant to the command executed (see command documentation for details).
