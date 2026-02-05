@@ -51,7 +51,9 @@ func (s *Service) LoadEngines() error {
 
 		switch coll.Engine {
 		case database.EngineKeyValue:
-			e = kv.NewEngine()
+			e = kv.NewEngine(kv.Configuration{
+				DisableTTL: coll.KVSettings != nil && coll.KVSettings.DisableTTL,
+			})
 		}
 
 		if e == nil {

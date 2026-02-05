@@ -100,10 +100,11 @@ func (s *Store) CreateCollection(ctx context.Context, db *Database, name string,
 	}
 
 	coll := Collection{
-		Database:  db.Name,
-		Name:      name,
-		CreatedAt: time.Now(),
-		Engine:    engine,
+		Database:   db.Name,
+		Name:       name,
+		CreatedAt:  time.Now(),
+		Engine:     engine,
+		KVSettings: nil,
 	}
 
 	return s.db.CreateCollection(ctx, coll)
@@ -117,8 +118,14 @@ func (s *Store) CreateCollectionIfNotExists(ctx context.Context, db *Database, n
 	return nil
 }
 
-func (s *Store) ChangeCollectionName(ctx context.Context, coll *Collection, newName string) error {
+func (s *Store) UpdateCollectionName(ctx context.Context, coll *Collection, newName string) error {
 	coll.Name = newName
+
+	return s.db.UpdateCollection(ctx, *coll)
+}
+
+func (s *Store) UpdateCollectionKVSettings(ctx context.Context, coll *Collection, newSettings KVSettings) error {
+	coll.KVSettings = &newSettings
 
 	return s.db.UpdateCollection(ctx, *coll)
 }

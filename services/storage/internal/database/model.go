@@ -35,10 +35,15 @@ func (db *Database) HasPermission(userID string, requiredLevel PermissionLevel) 
 }
 
 type Collection struct {
-	Database  string    `json:"database"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-	Engine    Engine    `json:"engine"`
+	Database   string      `json:"database"`
+	Name       string      `json:"name"`
+	CreatedAt  time.Time   `json:"created_at"`
+	Engine     Engine      `json:"engine"`
+	KVSettings *KVSettings `json:"kv_settings,omitempty"`
+}
+
+type KVSettings struct {
+	DisableTTL bool `json:"disable_ttl"`
 }
 
 type Engine string

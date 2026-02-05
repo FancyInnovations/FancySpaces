@@ -8,11 +8,17 @@ import (
 
 type Engine struct {
 	shards     [ShardCount]shard
-	disableTTL bool // TODO implement option to disable TTL
+	disableTTL bool
 }
 
-func NewEngine() *Engine {
-	e := &Engine{}
+type Configuration struct {
+	DisableTTL bool
+}
+
+func NewEngine(cfg Configuration) *Engine {
+	e := &Engine{
+		disableTTL: cfg.DisableTTL,
+	}
 
 	for i := 0; i < ShardCount; i++ {
 		e.shards[i] = shard{
@@ -21,7 +27,9 @@ func NewEngine() *Engine {
 		}
 	}
 
-	e.startCleanup(1 * time.Second)
+	if !e.disableTTL {
+		e.startCleanup(1 * time.Second)
+	}
 
 	return e
 }
@@ -45,6 +53,10 @@ func (e *Engine) Keys() []string {
 // If expires is 0, the key will not expire.
 // If expires is a positive value, it should be a unix timestamp in nanoseconds indicating when the key should expire.
 func (e *Engine) SetWithTTL(key string, value *codex.Value, expires int64) {
+	if e.disableTTL {
+		expires = 0
+	}
+
 	s := e.shardFor(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -62,6 +74,10 @@ func (e *Engine) Set(key string, value *codex.Value) {
 // SetMultipleTTL allows setting multiple key-value pairs at once with the same expiration time.
 // This is more efficient than calling Set multiple times, as it minimizes locking overhead by grouping updates by shard.
 func (e *Engine) SetMultipleTTL(entries map[string]codex.Value, expires int64) {
+	if e.disableTTL {
+		expires = 0
+	}
+
 	// find shards that need to be updated
 	shardEntries := make(map[int]map[string]codex.Value)
 	for key, value := range entries {
@@ -94,6 +110,10 @@ func (e *Engine) SetMultiple(entries map[string]codex.Value) {
 // SetIfExistsTTL updates the value for the given key only if it already exists and has not expired.
 // Returns true if the key was updated, false otherwise.
 func (e *Engine) SetIfExistsTTL(key string, value codex.Value, expires int64) bool {
+	if e.disableTTL {
+		expires = 0
+	}
+
 	s := e.shardFor(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -119,6 +139,10 @@ func (e *Engine) SetIfExists(key string, value codex.Value) bool {
 // SetIfNotExistsTTL sets the value for the given key only if it does not already exist or has expired.
 // Returns true if the key was set, false otherwise.
 func (e *Engine) SetIfNotExistsTTL(key string, value codex.Value, expires int64) bool {
+	if e.disableTTL {
+		expires = 0
+	}
+
 	s := e.shardFor(key)
 	s.mu.Lock()
 	defer s.mu.Unlock()
