@@ -149,3 +149,20 @@ Response:
 | Status code | Description   |
 |-------------|---------------|
 | 0000        | Success       |
+
+### KV Delete (2003)
+
+The KV Delete command deletes a key-value pair from the store.
+
+Payload format:
+
+| Field      | Size | Description         |
+|------------|------|---------------------|
+| Key length | 2 B  | Length of the key   |
+| Key        | N B  | The key to delete   |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |

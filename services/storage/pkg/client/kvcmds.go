@@ -121,3 +121,29 @@ func (c *Client) KVSetTTL(db, coll string, key string, value any, ttlMillis uint
 
 	return nil
 }
+
+// KVDelete deletes the key-value pair associated with the specified key from the collection.
+func (c *Client) KVDelete(db, coll string, key string) error {
+	totalLen := 2 + len(key)
+	payload := make([]byte, totalLen)
+
+	// Key
+	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
+	copy(payload[2:2+len(key)], []byte(key))
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVDelete,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payload,
+	})
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
