@@ -1,6 +1,9 @@
 package codex
 
-import "log/slog"
+import (
+	"fmt"
+	"log/slog"
+)
 
 type Value struct {
 	Type ValueType
@@ -220,6 +223,18 @@ func NewValue(data any) (*Value, error) {
 		}
 		return &Value{Type: TypeMap, data: values}, nil
 	default:
-		return nil, ErrInvalidType
+		return nil, fmt.Errorf("unsupported value type: %T", data)
 	}
+}
+
+func NewEmptyValue() *Value {
+	return &Value{Type: TypeEmpty, data: nil}
+}
+
+func NewStringListValue(items []string) *Value {
+	values := make([]Value, len(items))
+	for i, item := range items {
+		values[i] = Value{Type: TypeString, data: item}
+	}
+	return &Value{Type: TypeList, data: values}
 }

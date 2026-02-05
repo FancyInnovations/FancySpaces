@@ -184,3 +184,17 @@ Response:
 |-------------|---------------|
 | 0000        | Key exists    |
 | 1008        | Key not found |
+
+### KV Keys (2005)
+
+The KV Keys command retrieves a list of all keys in the store.
+
+Payload format: None
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+The response payload for a successful KV Keys command contains the list of keys (strings).

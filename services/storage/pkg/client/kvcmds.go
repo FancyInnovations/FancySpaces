@@ -177,3 +177,37 @@ func (c *Client) KVExists(db, coll string, key string) (bool, error) {
 		return false, ErrUnexpectedStatusCode
 	}
 }
+
+// KVKeys retrieves all keys in the specified collection.
+// It returns a slice of strings representing the keys, or an error if there was an issue retrieving the keys.
+func (c *Client) KVKeys(db, coll string) ([]string, error) {
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVKeys,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        []byte{},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return nil, ErrUnexpectedStatusCode
+	}
+
+	val, err := codex.DecodeValue(resp.Payload)
+	if err != nil {
+		return nil, err
+	}
+
+	if val.Type != codex.TypeList {
+		return nil, ErrUnexpectedDataType
+	}
+
+	keys := make([]string, len(val.AsList()))
+	for i, item := range val.AsList() {
+		keys[i] = item.AsString()
+	}
+
+	return keys, nil
+}

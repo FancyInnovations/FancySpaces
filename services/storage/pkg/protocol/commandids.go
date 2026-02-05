@@ -15,4 +15,5 @@ const (
 	CommandKVSetTTL uint16 = 2002
 	CommandKVDelete uint16 = 2003
 	CommandKVExists uint16 = 2004
+	CommandKVKeys   uint16 = 2005
 )

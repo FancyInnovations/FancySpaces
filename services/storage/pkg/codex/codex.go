@@ -573,7 +573,7 @@ func DecodeBinary(data []byte) ([]byte, error) {
 // | Type (1 byte) | Length (4 bytes) | String Data (N bytes) |
 func EncodeStringInto(val string, target []byte) []byte {
 	valLength := len(val)
-	totalLength := 1 + 2 + len(val)
+	totalLength := 1 + 4 + len(val)
 
 	// ensure capacity
 	if cap(target) < totalLength {
@@ -659,7 +659,7 @@ func EncodeList(val []Value) []byte {
 
 // DecodeList decodes a list of Values from a byte slice.
 // | Type (1 byte) | Item type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Items ... |
-func DecodeList(data []byte) ([]*Value, error) {
+func DecodeList(data []byte) ([]Value, error) {
 	if len(data) < 8 {
 		return nil, ErrPayloadTooShort
 	}
@@ -677,7 +677,7 @@ func DecodeList(data []byte) ([]*Value, error) {
 		return nil, ErrPayloadTooShort
 	}
 
-	items := make([]*Value, 0, count)
+	items := make([]Value, 0, count)
 	offset := 8
 	for i := 0; i < count; i++ {
 		itemData := data[offset:]
@@ -688,7 +688,7 @@ func DecodeList(data []byte) ([]*Value, error) {
 		if item.Type != ValueType(itemType) {
 			return nil, ErrInvalidType
 		}
-		items = append(items, item)
+		items = append(items, *item)
 		offset += len(EncodeValue(item)) // TODO: This is inefficient. We should track the length of the encoded item instead of re-encoding it to get the length.
 	}
 

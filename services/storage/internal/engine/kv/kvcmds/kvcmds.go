@@ -31,5 +31,6 @@ func (c *Commands) Get() map[uint16]command.Handler {
 		protocol.CommandKVSetTTL: c.handleSetTTL,
 		protocol.CommandKVDelete: c.handleDelete,
 		protocol.CommandKVExists: c.handleExists,
+		protocol.CommandKVKeys:   c.handleKeys,
 	}
 }

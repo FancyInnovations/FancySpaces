@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
@@ -37,30 +36,18 @@ func main() {
 		slog.Error("Failed to set key", sloki.WrapError(err))
 	}
 
-	val, err := c.KVGet("system", "collections", "mykey")
-	if err != nil {
-		slog.Error("Failed to get key", sloki.WrapError(err))
-	} else {
-		fmt.Printf("Got value: %v\n", val.AsInt())
+	if err := c.KVSet("system", "collections", "mykey2", 69); err != nil {
+		slog.Error("Failed to set key", sloki.WrapError(err))
 	}
 
-	exists, err := c.KVExists("system", "collections", "mykey")
-	if err != nil {
-		slog.Error("Failed to check if key exists", sloki.WrapError(err))
-	} else {
-		fmt.Printf("Key exists: %v\n", exists)
+	if err := c.KVSet("system", "collections", "mykey3", 123); err != nil {
+		slog.Error("Failed to set key", sloki.WrapError(err))
 	}
 
-	if err := c.KVDelete("system", "collections", "mykey"); err != nil {
-		slog.Error("Failed to delete key", sloki.WrapError(err))
-	} else {
-		fmt.Println("Key deleted successfully")
-	}
-
-	exists, err = c.KVExists("system", "collections", "mykey")
+	keys, err := c.KVKeys("system", "collections")
 	if err != nil {
-		slog.Error("Failed to check if key exists after deletion", sloki.WrapError(err))
+		slog.Error("Failed to get keys", sloki.WrapError(err))
 	} else {
-		fmt.Printf("Key exists after deletion: %v\n", exists)
+		slog.Info("Keys in collection", slog.Any("keys", keys))
 	}
 }
