@@ -44,6 +44,8 @@ func (s *Server) Run() error {
 	}
 	s.listener = ln
 
+	go s.cleanupInactiveConnections()
+
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
@@ -86,7 +88,6 @@ func (s *Server) handleConnection(conn net.Conn) {
 // handleMessage reads and processes a single message from the connection.
 // It returns true if the connection should be closed.
 func (s *Server) handleMessage(ctx *command.ConnCtx) bool {
-	startTime := time.Now()
 	conn := ctx.Conn
 
 	frameBuf := protocol.GetRequestBufferFromPool()
@@ -110,6 +111,8 @@ func (s *Server) handleMessage(ctx *command.ConnCtx) bool {
 
 		return false
 	}
+
+	startTime := time.Now()
 
 	msg := protocol.GetMessageFromPool()
 	defer protocol.PutMessageToPool(msg)
@@ -151,6 +154,9 @@ func (s *Server) handleMessage(ctx *command.ConnCtx) bool {
 	}
 
 	s.writeResponse(conn, resp)
+
+	// Update last activity timestamp for cleanup purposes
+	ctx.LastActivity = startTime.UnixMilli()
 
 	elapsedTime := time.Since(startTime)
 

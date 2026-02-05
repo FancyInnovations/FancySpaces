@@ -29,6 +29,7 @@ func main() {
 	})
 	if err != nil {
 		slog.Error("Failed to connect", sloki.WrapError(err))
+		return
 	}
 
 	_ = c
@@ -52,5 +53,8 @@ func main() {
 		for key, val := range vals {
 			fmt.Printf("Key: %s, Value: %v\n", key, val)
 		}
+	}
+
+	for {
 	}
 }
