@@ -39,6 +39,8 @@ func (c *Commands) Get() map[uint16]command.Handler {
 	}
 }
 
+// handleGet handles the CommandKVGet command, which retrieves the value for a given key from the key-value engine.
+// Payload format: | Key Length (2 bytes) | Key (variable) |
 func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)
 	if u == nil || !u.Verified || !u.IsActive {
@@ -97,7 +99,7 @@ func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 }
 
 // handleSet handles the CommandKVSet command, which sets a value for a given key in the key-value engine.
-// | Key Length (2 bytes) | Key (variable) | Value (codex-encoded) |
+// Payload format: | Key Length (2 bytes) | Key (variable) | Value (codex-encoded) |
 func (c *Commands) handleSet(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)
 	if u == nil || !u.Verified || !u.IsActive {

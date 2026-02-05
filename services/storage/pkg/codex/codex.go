@@ -524,7 +524,7 @@ func DecodeFloat64(data []byte) (float64, error) {
 }
 
 // EncodeBinaryInto encodes a byte slice into a byte slice.
-// | Type (1 byte) | Length (2 bytes) | Binary Data (N bytes) |
+// | Type (1 byte) | Length (4 bytes) | Binary Data (N bytes) |
 func EncodeBinaryInto(val []byte, target []byte) []byte {
 	valLength := len(val)
 	totalLength := 1 + 2 + len(val)
@@ -537,22 +537,22 @@ func EncodeBinaryInto(val []byte, target []byte) []byte {
 	}
 
 	target[0] = byte(TypeBinary)
-	binary.BigEndian.PutUint16(target[1:3], uint16(valLength))
-	copy(target[3:], val)
+	binary.BigEndian.PutUint16(target[1:5], uint16(valLength))
+	copy(target[5:], val)
 
 	return target
 }
 
 // EncodeBinary encodes a byte slice into a new byte slice.
-// | Type (1 byte) | Length (2 bytes) | Binary Data (N bytes) |
+// | Type (1 byte) | Length (4 bytes) | Binary Data (N bytes) |
 func EncodeBinary(val []byte) []byte {
 	return EncodeBinaryInto(val, nil)
 }
 
 // DecodeBinary decodes a byte slice from a byte slice.
-// | Type (1 byte) | Length (2 bytes) | Binary Data (N bytes) |
+// | Type (1 byte) | Length (4 bytes) | Binary Data (N bytes) |
 func DecodeBinary(data []byte) ([]byte, error) {
-	if len(data) < 3 {
+	if len(data) < 5 {
 		return nil, ErrPayloadTooShort
 	}
 
@@ -561,16 +561,16 @@ func DecodeBinary(data []byte) ([]byte, error) {
 		return nil, ErrInvalidType
 	}
 
-	binLen := int(binary.BigEndian.Uint16(data[1:3]))
+	binLen := int(binary.BigEndian.Uint16(data[1:5]))
 	if len(data) < 2+binLen {
 		return nil, ErrPayloadTooShort
 	}
 
-	return data[3 : 3+binLen], nil
+	return data[5 : 5+binLen], nil
 }
 
 // EncodeStringInto encodes a string into a byte slice.
-// | Type (1 byte) | Length (2 bytes) | String Data (N bytes) |
+// | Type (1 byte) | Length (4 bytes) | String Data (N bytes) |
 func EncodeStringInto(val string, target []byte) []byte {
 	valLength := len(val)
 	totalLength := 1 + 2 + len(val)
@@ -583,22 +583,22 @@ func EncodeStringInto(val string, target []byte) []byte {
 	}
 
 	target[0] = byte(TypeString)
-	binary.BigEndian.PutUint16(target[1:3], uint16(valLength))
-	copy(target[3:], val)
+	binary.BigEndian.PutUint16(target[1:5], uint16(valLength))
+	copy(target[5:], val)
 
 	return target
 }
 
 // EncodeString encodes a string into a new byte slice.
-// | Type (1 byte) | Length (2 bytes) | String Data (N bytes) |
+// | Type (1 byte) | Length (4 bytes) | String Data (N bytes) |
 func EncodeString(val string) []byte {
 	return EncodeStringInto(val, nil)
 }
 
 // DecodeString decodes a string from a byte slice.
-// | Type (1 byte) | Length (2 bytes) | String Data (N bytes) |
+// | Type (1 byte) | Length (4 bytes) | String Data (N bytes) |
 func DecodeString(data []byte) (string, error) {
-	if len(data) < 3 {
+	if len(data) < 5 {
 		return "", ErrPayloadTooShort
 	}
 
@@ -607,12 +607,12 @@ func DecodeString(data []byte) (string, error) {
 		return "", ErrInvalidType
 	}
 
-	strLen := int(binary.BigEndian.Uint16(data[1:3]))
+	strLen := int(binary.BigEndian.Uint16(data[1:5]))
 	if len(data) < 2+strLen {
 		return "", ErrPayloadTooShort
 	}
 
-	return string(data[3 : 3+strLen]), nil
+	return string(data[5 : 5+strLen]), nil
 }
 
 // EncodeListInto encodes a list of Values into a byte slice.

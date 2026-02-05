@@ -7,4 +7,6 @@ var (
 	ErrClientNotConnected          = errors.New("client not connected")
 	ErrUnexpectedStatusCode        = errors.New("unexpected status code")
 	ErrInvalidCredentials          = errors.New("invalid credentials")
+
+	ErrKeyNotFound = errors.New("key not found")
 )

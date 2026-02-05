@@ -7,6 +7,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
+// KVSet sets a key-value pair in the specified collection. The value can be of any type that codex (codex.ValueType) supports.
 func (c *Client) KVSet(db, coll string, key string, value any) error {
 	val, err := codex.NewValue(value)
 	if err != nil {
@@ -41,6 +42,8 @@ func (c *Client) KVSet(db, coll string, key string, value any) error {
 	return nil
 }
 
+// KVGet retrieves the value associated with the specified key from the collection.
+// It returns a codex.Value, which can be of any type supported by codex.
 func (c *Client) KVGet(db, coll string, key string) (*codex.Value, error) {
 	totalLen := 2 + len(key)
 	payload := make([]byte, totalLen)
@@ -60,6 +63,10 @@ func (c *Client) KVGet(db, coll string, key string) (*codex.Value, error) {
 	}
 
 	if resp.Code != protocol.StatusOK {
+		if resp.Code == protocol.StatusNotFound {
+			return nil, ErrKeyNotFound
+		}
+
 		return nil, ErrUnexpectedStatusCode
 	}
 
@@ -68,6 +75,5 @@ func (c *Client) KVGet(db, coll string, key string) (*codex.Value, error) {
 		return nil, err
 	}
 
-	// TODO convert val to expected type
 	return val, nil
 }

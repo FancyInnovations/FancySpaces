@@ -85,3 +85,49 @@ Response:
 |-------------|---------------|
 | 0000        | Authenticated |
 | 1004        | Unauthorized  |
+
+## Database and collection commands
+
+Not implemented yet.
+
+## Key-value engine commands
+
+### KV Get (2000)
+
+The KV Get command retrieves the value associated with a given key.
+
+Payload format:
+
+| Field      | Size | Description         |
+|------------|------|---------------------|
+| Key length | 2 B  | Length of the key   |
+| Key        | N B  | The key to retrieve |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+| 1008        | Key not found |
+
+The response payload for a successful KV Get command contains the value associated with the key, encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
+
+### KV Set (2001)
+
+The KV Set command sets the value for a given key.
+
+Payload format:
+
+| Field      | Size | Description         |
+|------------|------|---------------------|
+| Key length | 2 B  | Length of the key   |
+| Key        | N B  | The key to set      |
+| Value      | N B  | The value to set    |
+
+`Value` is encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |

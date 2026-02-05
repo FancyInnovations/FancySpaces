@@ -46,6 +46,13 @@ func (v *Value) AsByte() byte {
 	return v.data.(byte)
 }
 
+func (v *Value) AsUint8() uint8 {
+	if v.Type != TypeByte {
+		slog.Warn("Value is not a byte (required for AsUint8)", slog.Any("value_type", v.Type))
+	}
+	return uint8(v.data.(byte))
+}
+
 func (v *Value) AsUint16() uint16 {
 	if v.Type != TypeUint16 {
 		slog.Warn("Value is not a uint16", slog.Any("value_type", v.Type))
@@ -58,6 +65,13 @@ func (v *Value) AsUint32() uint32 {
 		slog.Warn("Value is not a uint32", slog.Any("value_type", v.Type))
 	}
 	return v.data.(uint32)
+}
+
+func (v *Value) AsUint() uint {
+	if v.Type != TypeUint32 {
+		slog.Warn("Value is not a uint32 (required for AsUint)", slog.Any("value_type", v.Type))
+	}
+	return uint(v.data.(uint32))
 }
 
 func (v *Value) AsUint64() uint64 {
