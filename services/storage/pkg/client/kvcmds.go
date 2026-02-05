@@ -2,45 +2,11 @@ package client
 
 import (
 	"encoding/binary"
+	"time"
 
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
-
-// KVSet sets a key-value pair in the specified collection. The value can be of any type that codex (codex.ValueType) supports.
-func (c *Client) KVSet(db, coll string, key string, value any) error {
-	val, err := codex.NewValue(value)
-	if err != nil {
-		return err
-	}
-	data := codex.EncodeValue(val)
-
-	totalLen := 2 + len(key) + len(data)
-	payload := make([]byte, totalLen)
-
-	// Key
-	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
-	copy(payload[2:2+len(key)], []byte(key))
-
-	// Value
-	copy(payload[2+len(key):], data)
-
-	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVSet,
-		DatabaseName:   db,
-		CollectionName: coll,
-		Payload:        payload,
-	})
-	if err != nil {
-		return err
-	}
-
-	if resp.Code != protocol.StatusOK {
-		return ErrUnexpectedStatusCode
-	}
-
-	return nil
-}
 
 // KVGet retrieves the value associated with the specified key from the collection.
 // It returns a codex.Value, which can be of any type supported by codex.
@@ -76,4 +42,82 @@ func (c *Client) KVGet(db, coll string, key string) (*codex.Value, error) {
 	}
 
 	return val, nil
+}
+
+// KVSet sets a key-value pair in the specified collection.
+// The value can be of any type that codex (codex.ValueType) supports.
+func (c *Client) KVSet(db, coll string, key string, value any) error {
+	val, err := codex.NewValue(value)
+	if err != nil {
+		return err
+	}
+	data := codex.EncodeValue(val)
+
+	totalLen := 2 + len(key) + len(data)
+	payload := make([]byte, totalLen)
+
+	// Key
+	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
+	copy(payload[2:2+len(key)], []byte(key))
+
+	// Value
+	copy(payload[2+len(key):], data)
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVSet,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payload,
+	})
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
+// KVSetTTL sets a key-value pair in the specified collection with a time-to-live (TTL).
+// The value can be of any type that codex (codex.ValueType) supports.
+// After the TTL expires, the key-value pair will be automatically deleted from the collection.
+func (c *Client) KVSetTTL(db, coll string, key string, value any, ttlMillis uint64) error {
+	val, err := codex.NewValue(value)
+	if err != nil {
+		return err
+	}
+	data := codex.EncodeValue(val)
+
+	totalLen := 2 + len(key) + len(data) + 8
+	payload := make([]byte, totalLen)
+
+	// Key
+	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
+	copy(payload[2:2+len(key)], []byte(key))
+
+	// Value
+	copy(payload[2+len(key):2+len(key)+len(data)], data)
+
+	// TTL
+	ttlNanos := ttlMillis * 1_000_000 // Convert milliseconds to nanoseconds
+	expiresAt := time.Now().UnixNano() + int64(ttlNanos)
+	binary.BigEndian.PutUint64(payload[2+len(key)+len(data):], uint64(expiresAt))
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVSetTTL,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payload,
+	})
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
 }

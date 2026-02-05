@@ -10,6 +10,9 @@ const (
 	CommandLogin                     uint16 = 100
 	CommandAuthStatus                uint16 = 101
 
-	CommandKVGet uint16 = 2000
-	CommandKVSet uint16 = 2001
+	CommandKVGet    uint16 = 2000
+	CommandKVSet    uint16 = 2001
+	CommandKVSetTTL uint16 = 2002
+	CommandKVDelete uint16 = 2003
+	CommandKVExists uint16 = 2004
 )

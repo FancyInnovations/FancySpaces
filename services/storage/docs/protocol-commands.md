@@ -118,13 +118,31 @@ The KV Set command sets the value for a given key.
 
 Payload format:
 
-| Field      | Size | Description         |
-|------------|------|---------------------|
-| Key length | 2 B  | Length of the key   |
-| Key        | N B  | The key to set      |
-| Value      | N B  | The value to set    |
+| Field                                       | Size | Description       |
+|---------------------------------------------|------|-------------------|
+| Key length                                  | 2 B  | Length of the key |
+| Key                                         | N B  | The key to set    |
+| [Encoded Value](protocol-encoded-values.md) | N B  | The value to set  |
 
-`Value` is encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+### KV Set with TTL (2002)
+
+The KV Set with TTL command sets the value for a given key with a specified time-to-live (TTL).
+
+Payload format:
+
+| Field                                       | Size | Description         |
+|---------------------------------------------|------|---------------------|
+| Key length                                  | 2 B  | Length of the key   |
+| Key                                         | N B  | The key to set      |
+| [Encoded Value](protocol-encoded-values.md) | N B  | The value to set    |
+| Expires At                                  | 8 B  | unix nano timestmap |
+
 
 Response:
 

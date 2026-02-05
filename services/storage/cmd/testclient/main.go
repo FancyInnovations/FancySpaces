@@ -33,7 +33,7 @@ func main() {
 
 	_ = c
 
-	if err := c.KVSet("system", "collections", "mykey", 42.2); err != nil {
+	if err := c.KVSet("system", "collections", "mykey", 42); err != nil {
 		slog.Error("Failed to set key", sloki.WrapError(err))
 	}
 
@@ -41,6 +41,6 @@ func main() {
 	if err != nil {
 		slog.Error("Failed to get key", sloki.WrapError(err))
 	} else {
-		fmt.Printf("Got value: %v\n", val.AsMap())
+		fmt.Printf("Got value: %v\n", val.AsInt())
 	}
 }
