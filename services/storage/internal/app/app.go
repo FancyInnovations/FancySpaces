@@ -32,8 +32,13 @@ func Start(cfg Configuration) *server.Server {
 		panic(err)
 	}
 
+	srv := server.New(server.Configuration{
+		Addr: ":" + cfg.ServerPort,
+	})
+
 	engineService := engine.NewService(engine.Configuration{
-		DatabaseStore: databaseStore,
+		DatabaseStore:     databaseStore,
+		SendBrokerMessage: srv.SendBrokerMessage,
 	})
 	if err := engineService.LoadEngines(); err != nil {
 		slog.Error("Could not load engines", sloki.WrapError(err))
@@ -50,12 +55,7 @@ func Start(cfg Configuration) *server.Server {
 	})
 	cmdService.RegisterHandlers(kvCommands.Get())
 
-	// TODO: register more command handlers here, e.g. commands for database operations or engine-specific commands
-
-	srv := server.New(server.Configuration{
-		Addr:       ":" + cfg.ServerPort,
-		CmdService: cmdService,
-	})
+	srv.SetCommandService(cmdService)
 
 	return srv
 }

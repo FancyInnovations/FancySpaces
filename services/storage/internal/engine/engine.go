@@ -6,24 +6,28 @@ import (
 	"sync"
 
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/broker"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kv"
 )
 
 type Service struct {
 	dbStore *database.Store
 
-	engines   map[string]*Entry
-	enginesMu sync.RWMutex
+	engines           map[string]*Entry
+	enginesMu         sync.RWMutex
+	sendBrokerMessage func(connID, subject string, msgs [][]byte)
 }
 
 type Configuration struct {
-	DatabaseStore *database.Store
+	DatabaseStore     *database.Store
+	SendBrokerMessage func(connID, subject string, msgs [][]byte)
 }
 
 func NewService(cfg Configuration) *Service {
 	return &Service{
-		dbStore: cfg.DatabaseStore,
-		engines: make(map[string]*Entry),
+		dbStore:           cfg.DatabaseStore,
+		engines:           make(map[string]*Entry),
+		sendBrokerMessage: cfg.SendBrokerMessage,
 	}
 }
 
@@ -53,6 +57,12 @@ func (s *Service) LoadEngines() error {
 		case database.EngineKeyValue:
 			e = kv.NewEngine(kv.Configuration{
 				DisableTTL: coll.KVSettings != nil && coll.KVSettings.DisableTTL,
+			})
+		case database.EngineBroker:
+			e = broker.NewBroker(broker.Configuration{
+				PublishCallback: func(sub *broker.Subscriber, subject string, msgs [][]byte) {
+					s.sendBrokerMessage(sub.ID, subject, msgs)
+				},
 			})
 		}
 

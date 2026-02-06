@@ -50,4 +50,5 @@ type Engine string
 
 const (
 	EngineKeyValue Engine = "kv"
+	EngineBroker   Engine = "broker"
 )

@@ -25,16 +25,22 @@ type Server struct {
 }
 
 type Configuration struct {
-	Addr       string
-	CmdService *command.Service
+	Addr string
 }
 
 func New(cfg Configuration) *Server {
 	return &Server{
 		addr:        cfg.Addr,
-		cmdService:  cfg.CmdService,
 		connections: make(map[string]*command.ConnCtx),
 	}
+}
+
+func (s *Server) SetCommandService(cmdService *command.Service) {
+	if s.cmdService != nil {
+		slog.Warn("Command service is already set, ignoring new service")
+		return
+	}
+	s.cmdService = cmdService
 }
 
 func (s *Server) Run() error {
@@ -205,4 +211,8 @@ func (s *Server) broadcastMessage(msg *protocol.Message) {
 			slog.Warn("Failed to broadcast message to connection", slog.String("ConnID", ctx.ID), sloki.WrapError(err))
 		}
 	}
+}
+
+func (s *Server) SendBrokerMessage(connID, subject string, msgs [][]byte) {
+
 }
