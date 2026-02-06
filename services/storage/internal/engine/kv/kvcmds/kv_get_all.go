@@ -13,7 +13,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleGetAll handles the protocol.CommandKVGetAll command, which retrieves all key-value pairs from a key-value collection.
+// handleGetAll handles the protocol.ServerCommandKVGetAll command, which retrieves all key-value pairs from a key-value collection.
 // Payload format: empty
 func (c *Commands) handleGetAll(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)

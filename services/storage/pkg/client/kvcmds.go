@@ -19,7 +19,7 @@ func (c *Client) KVGet(db, coll string, key string) (*codex.Value, error) {
 	copy(payload[2:2+len(key)], []byte(key))
 
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVGet,
+		ID:             protocol.ServerCommandKVGet,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        payload,
@@ -64,7 +64,7 @@ func (c *Client) KVSet(db, coll string, key string, value any) error {
 	copy(payload[2+len(key):], data)
 
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVSet,
+		ID:             protocol.ServerCommandKVSet,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        payload,
@@ -106,7 +106,7 @@ func (c *Client) KVSetTTL(db, coll string, key string, value any, ttlMillis uint
 	binary.BigEndian.PutUint64(payload[2+len(key)+len(data):], uint64(expiresAt))
 
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVSetTTL,
+		ID:             protocol.ServerCommandKVSetTTL,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        payload,
@@ -132,7 +132,7 @@ func (c *Client) KVDelete(db, coll string, key string) error {
 	copy(payload[2:2+len(key)], []byte(key))
 
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVDelete,
+		ID:             protocol.ServerCommandKVDelete,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        payload,
@@ -151,7 +151,7 @@ func (c *Client) KVDelete(db, coll string, key string) error {
 // KVDeleteAll deletes all key-value pairs from the specified collection. This is a destructive operation and should be used with caution.
 func (c *Client) KVDeleteAll(db, coll string) error {
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVDeleteAll,
+		ID:             protocol.ServerCommandKVDeleteAll,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        make([]byte, 0),
@@ -178,7 +178,7 @@ func (c *Client) KVExists(db, coll string, key string) (bool, error) {
 	copy(payload[2:2+len(key)], []byte(key))
 
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVExists,
+		ID:             protocol.ServerCommandKVExists,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        payload,
@@ -201,7 +201,7 @@ func (c *Client) KVExists(db, coll string, key string) (bool, error) {
 // It returns a slice of strings representing the keys, or an error if there was an issue retrieving the keys.
 func (c *Client) KVKeys(db, coll string) ([]string, error) {
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVKeys,
+		ID:             protocol.ServerCommandKVKeys,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        []byte{},
@@ -238,7 +238,7 @@ func (c *Client) KVGetMultiple(db, coll string, keys []string) (map[string]*code
 	keyVals := codex.NewStringListValue(keys)
 
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVGetMultiple,
+		ID:             protocol.ServerCommandKVGetMultiple,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        codex.EncodeValue(keyVals),
@@ -268,7 +268,7 @@ func (c *Client) KVGetMultiple(db, coll string, keys []string) (map[string]*code
 // This is a heavy operation and should be used with caution, as it will read all data in memory and may block other operations while it runs.
 func (c *Client) KVGetAll(db, coll string) (map[string]*codex.Value, error) {
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVGetAll,
+		ID:             protocol.ServerCommandKVGetAll,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        make([]byte, 0),

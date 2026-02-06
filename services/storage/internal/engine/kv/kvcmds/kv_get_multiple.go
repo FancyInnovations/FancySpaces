@@ -13,7 +13,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleGetMultiple handles the protocol.CommandKVGetMultiple command, which retrieves the values for a given keys from a key-value collection.
+// handleGetMultiple handles the protocol.ServerCommandKVGetMultiple command, which retrieves the values for a given keys from a key-value collection.
 // Payload format: encoded list of strings (keys), see codex.EncodeListInto
 func (c *Commands) handleGetMultiple(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)

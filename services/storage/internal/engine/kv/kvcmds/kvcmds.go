@@ -26,15 +26,15 @@ func New(cfg Configuration) *Commands {
 
 func (c *Commands) Get() map[uint16]command.Handler {
 	return map[uint16]command.Handler{
-		protocol.CommandKVSet:         c.handleSet,
-		protocol.CommandKVSetTTL:      c.handleSetTTL,
-		protocol.CommandKVDelete:      c.handleDelete,
-		protocol.CommandKVDeleteAll:   c.handleDeleteAll,
-		protocol.CommandKVExists:      c.handleExists,
-		protocol.CommandKVGet:         c.handleGet,
-		protocol.CommandKVGetMultiple: c.handleGetMultiple,
-		protocol.CommandKVGetAll:      c.handleGetAll,
-		protocol.CommandKVKeys:        c.handleKeys,
-		protocol.CommandKVCount:       c.handleCount,
+		protocol.ServerCommandKVSet:         c.handleSet,
+		protocol.ServerCommandKVSetTTL:      c.handleSetTTL,
+		protocol.ServerCommandKVDelete:      c.handleDelete,
+		protocol.ServerCommandKVDeleteAll:   c.handleDeleteAll,
+		protocol.ServerCommandKVExists:      c.handleExists,
+		protocol.ServerCommandKVGet:         c.handleGet,
+		protocol.ServerCommandKVGetMultiple: c.handleGetMultiple,
+		protocol.ServerCommandKVGetAll:      c.handleGetAll,
+		protocol.ServerCommandKVKeys:        c.handleKeys,
+		protocol.CommandKVCount:             c.handleCount,
 	}
 }

@@ -8,7 +8,7 @@ import (
 
 func (c *Client) Ping() error {
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandPing,
+		ID:             protocol.ServerCommandPing,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        make([]byte, 0),
@@ -26,7 +26,7 @@ func (c *Client) Ping() error {
 
 func (c *Client) GetSupportedProtocolVersions() ([]byte, error) {
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandSupportedProtocolVersions,
+		ID:             protocol.ServerCommandSupportedProtocolVersions,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        make([]byte, 0),
@@ -59,7 +59,7 @@ func (c *Client) LoginWithPassword(username, password string) error {
 	copy(payload[5+len(username):], []byte(password))                                           // password
 
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandLogin,
+		ID:             protocol.ServerCommandLogin,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        payload,
@@ -89,7 +89,7 @@ func (c *Client) LoginWithApiKey(apiKey string) error {
 	copy(payload[3:], []byte(apiKey))                             // apiKey
 
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandLogin,
+		ID:             protocol.ServerCommandLogin,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        payload,
@@ -111,7 +111,7 @@ func (c *Client) LoginWithApiKey(apiKey string) error {
 
 func (c *Client) IsAuthenticated() (bool, error) {
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandAuthStatus,
+		ID:             protocol.ServerCommandAuthStatus,
 		DatabaseName:   "",
 		CollectionName: "",
 		Payload:        make([]byte, 0),

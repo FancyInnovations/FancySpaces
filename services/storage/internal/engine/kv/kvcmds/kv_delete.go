@@ -13,7 +13,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleDelete handles the protocol.CommandKVDelete command, which deletes a key-value pair for a given key in the key-value engine.
+// handleDelete handles the protocol.ServerCommandKVDelete command, which deletes a key-value pair for a given key in the key-value engine.
 // Payload format: | Key Length (2 bytes) | Key (variable) |
 func (c *Commands) handleDelete(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)

@@ -3,64 +3,72 @@ package protocol
 // 0xxx: System commands
 // 1xxx: Database and collection commands
 // 2xxx: Key-value engine commands
+// 6xxx: Broker engine commands
 
 const (
-	CommandPing                      uint16 = 1
-	CommandSupportedProtocolVersions uint16 = 2
-	CommandLogin                     uint16 = 100
-	CommandAuthStatus                uint16 = 101
+	ServerCommandPing                      uint16 = 1
+	ServerCommandSupportedProtocolVersions uint16 = 2
+	ServerCommandLogin                     uint16 = 100
+	ServerCommandAuthStatus                uint16 = 101
 
-	CommandKVSet               uint16 = 2000
-	CommandKVSetTTL            uint16 = 2001
-	CommandKVSetMultiple       uint16 = 2002
-	CommandKVSetMultipleTTL    uint16 = 2003
-	CommandKVSetIfExists       uint16 = 2004
-	CommandKVSetIfExistsTTL    uint16 = 2005
-	CommandKVSetIfNotExists    uint16 = 2006
-	CommandKVSetIfNotExistsTTL uint16 = 2007
+	ServerCommandKVSet               uint16 = 2000
+	ServerCommandKVSetTTL            uint16 = 2001
+	ServerCommandKVSetMultiple       uint16 = 2002
+	ServerCommandKVSetMultipleTTL    uint16 = 2003
+	ServerCommandKVSetIfExists       uint16 = 2004
+	ServerCommandKVSetIfExistsTTL    uint16 = 2005
+	ServerCommandKVSetIfNotExists    uint16 = 2006
+	ServerCommandKVSetIfNotExistsTTL uint16 = 2007
 
-	CommandKVDelete         uint16 = 2020
-	CommandKVDeleteMultiple uint16 = 2021
-	CommandKVDeleteAll      uint16 = 2022
+	ServerCommandKVDelete         uint16 = 2020
+	ServerCommandKVDeleteMultiple uint16 = 2021
+	ServerCommandKVDeleteAll      uint16 = 2022
 
-	CommandKVExists      uint16 = 2030
-	CommandKVGet         uint16 = 2031
-	CommandKVGetMultiple uint16 = 2032
-	CommandKVGetAll      uint16 = 2033
-	CommandKVKeys        uint16 = 2034
-	CommandKVCount       uint16 = 2035
+	ServerCommandKVExists      uint16 = 2030
+	ServerCommandKVGet         uint16 = 2031
+	ServerCommandKVGetMultiple uint16 = 2032
+	ServerCommandKVGetAll      uint16 = 2033
+	ServerCommandKVKeys        uint16 = 2034
+	ServerCommandKVCount       uint16 = 2035
 
-	CommandKVNumIncrement  uint16 = 2520
-	CommandKVNumDecrement  uint16 = 2521
-	CommandKVNumMultiply   uint16 = 2522
-	CommandKVNumDivide     uint16 = 2523
-	CommandKVNumModulo     uint16 = 2524
-	CommandKVNumLeftShift  uint16 = 2525
-	CommandKVNumRightShift uint16 = 2526
-	CommandKVNumBitwiseAnd uint16 = 2527
-	CommandKVNumBitwiseOr  uint16 = 2528
-	CommandKVNumBitwiseXor uint16 = 2529
-	CommandKVNumBitwiseNot uint16 = 2530
+	ServerCommandKVNumIncrement  uint16 = 2520
+	ServerCommandKVNumDecrement  uint16 = 2521
+	ServerCommandKVNumMultiply   uint16 = 2522
+	ServerCommandKVNumDivide     uint16 = 2523
+	ServerCommandKVNumModulo     uint16 = 2524
+	ServerCommandKVNumLeftShift  uint16 = 2525
+	ServerCommandKVNumRightShift uint16 = 2526
+	ServerCommandKVNumBitwiseAnd uint16 = 2527
+	ServerCommandKVNumBitwiseOr  uint16 = 2528
+	ServerCommandKVNumBitwiseXor uint16 = 2529
+	ServerCommandKVNumBitwiseNot uint16 = 2530
 
-	CommandStringAppend    uint16 = 2540
-	CommandStringPrepend   uint16 = 2541
-	CommandStringLength    uint16 = 2542
-	CommandStringSubstring uint16 = 2543
+	ServerCommandStringAppend    uint16 = 2540
+	ServerCommandStringPrepend   uint16 = 2541
+	ServerCommandStringLength    uint16 = 2542
+	ServerCommandStringSubstring uint16 = 2543
 
-	CommandKVListLength    uint16 = 2550
-	CommandKVListGet       uint16 = 2551
-	CommandKVListSet       uint16 = 2552
-	CommandKVListRemove    uint16 = 2553
-	CommandKVListLeftPush  uint16 = 2554
-	CommandKVListRightPush uint16 = 2555
-	CommandKVListLeftPop   uint16 = 2556
-	CommandKVListRightPop  uint16 = 2557
+	ServerCommandKVListLength    uint16 = 2550
+	ServerCommandKVListGet       uint16 = 2551
+	ServerCommandKVListSet       uint16 = 2552
+	ServerCommandKVListRemove    uint16 = 2553
+	ServerCommandKVListLeftPush  uint16 = 2554
+	ServerCommandKVListRightPush uint16 = 2555
+	ServerCommandKVListLeftPop   uint16 = 2556
+	ServerCommandKVListRightPop  uint16 = 2557
 
-	CommandKVMapLength uint16 = 2560
-	CommandKVMapSet    uint16 = 2561
-	CommandKVMapGet    uint16 = 2562
-	CommandKVMapDelete uint16 = 2563
-	CommandKVMapExists uint16 = 2564
-	CommandKVMapKeys   uint16 = 2565
-	CommandKVMapValues uint16 = 2566
+	ServerCommandKVMapLength uint16 = 2560
+	ServerCommandKVMapSet    uint16 = 2561
+	ServerCommandKVMapGet    uint16 = 2562
+	ServerCommandKVMapDelete uint16 = 2563
+	ServerCommandKVMapExists uint16 = 2564
+	ServerCommandKVMapKeys   uint16 = 2565
+	ServerCommandKVMapValues uint16 = 2566
+
+	ServerCommandBrokerSubscribe      uint16 = 6000
+	ServerCommandBrokerSubscribeQueue uint16 = 6001
+	ServerCommandBrokerUnsubscribe    uint16 = 6002
+	ServerCommandBrokerPublish        uint16 = 6003
+	ClientCommandBrokerMessage        uint16 = 6004
+	ServerCommandBrokerAck            uint16 = 6005
 )

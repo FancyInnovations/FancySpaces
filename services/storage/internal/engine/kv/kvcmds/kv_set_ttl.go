@@ -15,7 +15,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleSetTTL handles the protocol.CommandKVSetTTL command, which sets a value with a TTL for a given key in the key-value engine.
+// handleSetTTL handles the protocol.ServerCommandKVSetTTL command, which sets a value with a TTL for a given key in the key-value engine.
 // Payload format: | Key Length (2 bytes) | Key (variable) | Value (codex-encoded) | Expired At (8 bytes, unix nanos) |
 func (c *Commands) handleSetTTL(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)

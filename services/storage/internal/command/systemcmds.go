@@ -35,10 +35,10 @@ var (
 
 func SystemCommands() map[uint16]Handler {
 	return map[uint16]Handler{
-		protocol.CommandPing:                      handlePing,
-		protocol.CommandSupportedProtocolVersions: handleSupportedProtocolVersions,
-		protocol.CommandLogin:                     handleLogin,
-		protocol.CommandAuthStatus:                handleAuthStatus,
+		protocol.ServerCommandPing:                      handlePing,
+		protocol.ServerCommandSupportedProtocolVersions: handleSupportedProtocolVersions,
+		protocol.ServerCommandLogin:                     handleLogin,
+		protocol.ServerCommandAuthStatus:                handleAuthStatus,
 	}
 }
 

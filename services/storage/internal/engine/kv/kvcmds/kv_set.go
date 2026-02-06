@@ -14,7 +14,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleSet handles the protocol.CommandKVSet command, which sets a value for a given key in the key-value engine.
+// handleSet handles the protocol.ServerCommandKVSet command, which sets a value for a given key in the key-value engine.
 // Payload format: | Key Length (2 bytes) | Key (variable) | Value (codex-encoded) |
 func (c *Commands) handleSet(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)

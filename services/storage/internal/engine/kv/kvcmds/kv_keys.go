@@ -13,7 +13,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleKeys handles the protocol.CommandKVKeys command, which retrieves all keys in the key-value engine.
+// handleKeys handles the protocol.ServerCommandKVKeys command, which retrieves all keys in the key-value engine.
 // Payload format: empty
 func (c *Commands) handleKeys(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)

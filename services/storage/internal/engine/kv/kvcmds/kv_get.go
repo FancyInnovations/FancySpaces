@@ -14,7 +14,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleGet handles the protocol.CommandKVGet command, which retrieves the value for a given key from the key-value engine.
+// handleGet handles the protocol.ServerCommandKVGet command, which retrieves the value for a given key from the key-value engine.
 // Payload format: | Key Length (2 bytes) | Key (variable) |
 func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)

@@ -13,7 +13,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleExists handles the protocol.CommandKVExists command, which checks if a key exists in the key-value engine.
+// handleExists handles the protocol.ServerCommandKVExists command, which checks if a key exists in the key-value engine.
 // Payload format: | Key Length (2 bytes) | Key (variable) |
 func (c *Commands) handleExists(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)

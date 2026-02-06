@@ -31,8 +31,7 @@ func main() {
 		slog.Error("Failed to connect", sloki.WrapError(err))
 		return
 	}
-
-	_ = c
+	defer c.Close()
 
 	if err := c.KVSet("system", "collections", "mykey", 42); err != nil {
 		slog.Error("Failed to set key", sloki.WrapError(err))
