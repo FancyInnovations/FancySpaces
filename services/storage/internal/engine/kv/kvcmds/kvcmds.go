@@ -35,6 +35,6 @@ func (c *Commands) Get() map[uint16]command.Handler {
 		protocol.ServerCommandKVGetMultiple: c.handleGetMultiple,
 		protocol.ServerCommandKVGetAll:      c.handleGetAll,
 		protocol.ServerCommandKVKeys:        c.handleKeys,
-		protocol.CommandKVCount:             c.handleCount,
+		protocol.ServerCommandKVCount:       c.handleCount,
 	}
 }

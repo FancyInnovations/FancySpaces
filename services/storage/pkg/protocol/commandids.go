@@ -28,8 +28,8 @@ const (
 	ServerCommandKVGet         uint16 = 2031
 	ServerCommandKVGetMultiple uint16 = 2032
 	ServerCommandKVGetAll      uint16 = 2033
-	ServerCommandKVKeys        uint16 = 2034
-	ServerCommandKVCount       uint16 = 2035
+	ServerCommandKVKeys  uint16 = 2034
+	ServerCommandKVCount uint16 = 2035
 
 	ServerCommandKVNumIncrement  uint16 = 2520
 	ServerCommandKVNumDecrement  uint16 = 2521

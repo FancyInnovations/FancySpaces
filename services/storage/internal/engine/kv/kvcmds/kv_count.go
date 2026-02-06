@@ -13,7 +13,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleCount handles the CommandKVCount command, which counts the number of key-value pairs in the collection.
+// handleCount handles the ServerCommandKVCount command, which counts the number of key-value pairs in the collection.
 // Payload format: empty
 func (c *Commands) handleCount(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)

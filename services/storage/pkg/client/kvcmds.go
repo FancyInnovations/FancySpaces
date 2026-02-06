@@ -296,7 +296,7 @@ func (c *Client) KVGetAll(db, coll string) (map[string]*codex.Value, error) {
 // KVCount returns the number of key-value pairs in the specified collection.
 func (c *Client) KVCount(db, coll string) (uint32, error) {
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.CommandKVCount,
+		ID:             protocol.ServerCommandKVCount,
 		DatabaseName:   db,
 		CollectionName: coll,
 		Payload:        make([]byte, 0),
