@@ -461,3 +461,29 @@ Not implemented yet.
 ### KV Map Values
 
 Not implemented yet.
+
+## Broker engine commands
+
+### Broker Subscribe
+
+Not implemented yet.
+
+### Broker Subscribe queue
+
+Not implemented yet.
+
+### Broker Unsubscribe
+
+Not implemented yet.
+
+### Broker Publish
+
+Not implemented yet.
+
+### Broker Message (client bound)
+
+Not implemented yet.
+
+### Broker Ack
+
+Not implemented yet.
