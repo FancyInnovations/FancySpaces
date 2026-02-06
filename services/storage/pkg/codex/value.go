@@ -13,21 +13,21 @@ type Value struct {
 type ValueType uint8
 
 const (
-	TypeEmpty ValueType = iota
-	TypeBoolean
-	TypeByte
-	TypeUint16
-	TypeUint32
-	TypeUint64
-	TypeInt16
-	TypeInt32
-	TypeInt64
-	TypeFloat32
-	TypeFloat64
-	TypeBinary
-	TypeString
-	TypeList
-	TypeMap
+	TypeEmpty   ValueType = 0
+	TypeBoolean ValueType = 1
+	TypeByte    ValueType = 2
+	TypeUint16  ValueType = 3
+	TypeUint32  ValueType = 4
+	TypeUint64  ValueType = 5
+	TypeInt16   ValueType = 6
+	TypeInt32   ValueType = 7
+	TypeInt64   ValueType = 8
+	TypeFloat32 ValueType = 9
+	TypeFloat64 ValueType = 10
+	TypeBinary  ValueType = 11
+	TypeString  ValueType = 12
+	TypeList    ValueType = 13
+	TypeMap     ValueType = 14
 )
 
 var EmptyValue = &Value{Type: TypeEmpty, data: nil}
