@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const DisconnectAfterInactivity = 5 * 60 * 1000 // 5 minutes
+const DisconnectAfterInactivity = 60 * 1000 // 1 minute
 
 func (s *Server) cleanupInactiveConnections() {
 	ticker := time.NewTicker(1 * time.Minute)

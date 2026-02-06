@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
@@ -33,35 +32,20 @@ func main() {
 	}
 	defer c.Close()
 
-	if err := c.KVSet("system", "collections", "mykey", 42); err != nil {
-		slog.Error("Failed to set key", sloki.WrapError(err))
+	//fn := func(msg []byte) {
+	//	fmt.Printf("Received message: %s\n", string(msg))
+	//}
+	//
+	//if err := c.BrokerSubscribe("system", "brokertest", "user.created", fn); err != nil {
+	//	slog.Error("Failed to subscribe", sloki.WrapError(err))
+	//	return
+	//}
+	//
+	//time.Sleep(5 * time.Second)
+	if err := c.BrokerPublish("system", "brokertest", "user.created", []byte("Hello, World!")); err != nil {
+		slog.Error("Failed to publish", sloki.WrapError(err))
+		return
 	}
 
-	if err := c.KVSet("system", "collections", "mykey2", 69); err != nil {
-		slog.Error("Failed to set key", sloki.WrapError(err))
-	}
-
-	if err := c.KVSet("system", "collections", "mykey3", 1233); err != nil {
-		slog.Error("Failed to set key", sloki.WrapError(err))
-	}
-
-	count, err := c.KVCount("system", "collections")
-	if err != nil {
-		slog.Error("Failed to count keys", sloki.WrapError(err))
-	} else {
-		fmt.Printf("Key count: %d\n", count)
-	}
-
-	if err := c.KVDeleteAll("system", "collections"); err != nil {
-		slog.Error("Failed to delete all keys", sloki.WrapError(err))
-	} else {
-		fmt.Println("All keys deleted successfully")
-	}
-
-	count, err = c.KVCount("system", "collections")
-	if err != nil {
-		slog.Error("Failed to count keys after deletion", sloki.WrapError(err))
-	} else {
-		fmt.Printf("Key count after deletion: %d\n", count)
-	}
+	select {}
 }

@@ -70,5 +70,4 @@ const (
 	ServerCommandBrokerUnsubscribe    uint16 = 6002
 	ServerCommandBrokerPublish        uint16 = 6003
 	ClientCommandBrokerMessage        uint16 = 6004
-	ServerCommandBrokerAck            uint16 = 6005
 )

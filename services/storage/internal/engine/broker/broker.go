@@ -9,14 +9,16 @@ import (
 type PublishCallback func(sub *Subscriber, subject string, msgs [][]byte)
 
 type Broker struct {
-	root         *Node
-	pubCallback  PublishCallback
-	batchSize    int
-	batchTimeout time.Duration
+	root            *Node
+	pubCallback     PublishCallback
+	isClientHealthy func(id string) bool
+	batchSize       int
+	batchTimeout    time.Duration
 }
 
 type Configuration struct {
 	PublishCallback PublishCallback
+	IsClientHealthy func(id string) bool
 	BatchSize       int
 	BatchTimeout    time.Duration
 }
@@ -29,15 +31,23 @@ func NewBroker(cfg Configuration) *Broker {
 	if cfg.BatchTimeout <= 0 {
 		cfg.BatchTimeout = 100 * time.Millisecond
 	}
+	if cfg.IsClientHealthy == nil {
+		cfg.IsClientHealthy = func(id string) bool { return true }
+	}
 
-	return &Broker{
+	b := &Broker{
 		root: &Node{
 			children: make(map[string]*Node),
 		},
-		pubCallback:  cfg.PublishCallback,
-		batchSize:    cfg.BatchSize,
-		batchTimeout: cfg.BatchTimeout,
+		pubCallback:     cfg.PublishCallback,
+		isClientHealthy: cfg.IsClientHealthy,
+		batchSize:       cfg.BatchSize,
+		batchTimeout:    cfg.BatchTimeout,
 	}
+
+	b.startCleanupUnhealthyClients()
+
+	return b
 }
 
 // Subscribe adds a subscriber to a subject and starts delivery goroutine
@@ -190,16 +200,33 @@ func (b *Broker) publish(node *Node, tokens []string, subject string, msg []byte
 
 	// Deliver one message per queue group
 	for _, group := range groupMap {
-		idx := atomic.AddUint32(&queueGroupCounter, 1)
-		sub := group[idx%uint32(len(group))]
-		select {
-		case sub.msgCh <- msg:
-		default: // drop if full
+
+		// try to find a healthy subscriber in the group
+		for {
+			idx := atomic.AddUint32(&queueGroupCounter, 1)
+			sub := group[idx%uint32(len(group))]
+
+			if b.isClientHealthy(sub.ID) {
+				select {
+				case sub.msgCh <- msg:
+				default: // drop if full
+				}
+				break
+			}
+
+			// if no healthy subscriber found after one full loop, break to avoid infinite loop
+			if idx%uint32(len(group)) == 0 {
+				break
+			}
 		}
 	}
 
 	// Deliver to normal subscribers
 	for _, sub := range normalSubs {
+		if !b.isClientHealthy(sub.ID) {
+			continue
+		}
+
 		select {
 		case sub.msgCh <- msg:
 		default:
@@ -227,5 +254,40 @@ func (b *Broker) publish(node *Node, tokens []string, subject string, msg []byte
 	// tail wildcard >
 	if node.greater != nil {
 		b.publish(node.greater, nil, subject, msg)
+	}
+}
+
+func (b *Broker) startCleanupUnhealthyClients() {
+	ticker := time.NewTicker(1 * time.Minute)
+	go func() {
+		for range ticker.C {
+			b.cleanupNode(b.root)
+		}
+	}()
+}
+
+func (b *Broker) cleanupNode(node *Node) {
+	if node == nil {
+		return
+	}
+
+	filtered := node.subs[:0]
+	for _, sub := range node.subs {
+		if b.isClientHealthy(sub.ID) {
+			filtered = append(filtered, sub)
+		} else {
+			close(sub.msgCh)
+		}
+	}
+	node.subs = filtered
+
+	for _, child := range node.children {
+		b.cleanupNode(child)
+	}
+	if node.star != nil {
+		b.cleanupNode(node.star)
+	}
+	if node.greater != nil {
+		b.cleanupNode(node.greater)
 	}
 }

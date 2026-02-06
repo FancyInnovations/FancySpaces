@@ -9,6 +9,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	fakeDatabaseDB "github.com/fancyinnovations/fancyspaces/storage/internal/database/databasedb/fake"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/broker/brokercmds"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kv/kvcmds"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/server"
 )
@@ -37,8 +38,9 @@ func Start(cfg Configuration) *server.Server {
 	})
 
 	engineService := engine.NewService(engine.Configuration{
-		DatabaseStore:     databaseStore,
-		SendBrokerMessage: srv.SendBrokerMessage,
+		DatabaseStore:       databaseStore,
+		SendBrokerMessage:   srv.SendBrokerMessage,
+		IsConnectionHealthy: srv.IsConnectionHealthy,
 	})
 	if err := engineService.LoadEngines(); err != nil {
 		slog.Error("Could not load engines", sloki.WrapError(err))
@@ -54,6 +56,12 @@ func Start(cfg Configuration) *server.Server {
 		EngineService: engineService,
 	})
 	cmdService.RegisterHandlers(kvCommands.Get())
+
+	brokerCommands := brokercmds.New(brokercmds.Configuration{
+		DatabaseStore: databaseStore,
+		EngineService: engineService,
+	})
+	cmdService.RegisterHandlers(brokerCommands.Get())
 
 	srv.SetCommandService(cmdService)
 

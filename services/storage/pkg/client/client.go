@@ -11,11 +11,15 @@ import (
 )
 
 type Client struct {
-	cfg              Configuration
-	conn             net.Conn
+	cfg  Configuration
+	conn net.Conn
+
 	requestIDCounter uint32
 	pendingCmds      map[uint32]chan *protocol.Response
 	pendingCmdsMu    sync.Mutex
+
+	brokerSubjectListeners   map[string][]func([]byte)
+	brokerSubjectListenersMu sync.Mutex
 }
 
 type Configuration struct {
@@ -40,10 +44,13 @@ func NewClient(cfg Configuration) (*Client, error) {
 	}
 
 	c := &Client{
-		cfg:              cfg,
-		conn:             conn,
-		pendingCmds:      make(map[uint32]chan *protocol.Response),
+		cfg:  cfg,
+		conn: conn,
+
 		requestIDCounter: 0,
+		pendingCmds:      make(map[uint32]chan *protocol.Response),
+
+		brokerSubjectListeners: make(map[string][]func([]byte)),
 	}
 
 	go c.startResponseListener()

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/binary"
 	"errors"
 	"io"
 	"log/slog"
@@ -238,8 +239,20 @@ func (s *Server) broadcastMessage(msg *protocol.Message) {
 	}
 }
 
+func (s *Server) IsConnectionHealthy(connID string) bool {
+	s.connectionsMu.Lock()
+	_, exists := s.connections[connID]
+	s.connectionsMu.Unlock()
+
+	if !exists {
+		return false
+	}
+
+	return true
+}
+
 // SendBrokerMessage is called by the engine to send messages to subscribed clients.
-// Payload: | subject (codex.TypeString) | message count (codex.TypeUint16) | messages (list of codex.TypeBinary) |
+// Payload: | subject length (2 bytes) | subject (N bytes) | messages (list of codex.TypeBinary) |
 func (s *Server) SendBrokerMessage(db, coll, connID, subject string, msgs [][]byte) {
 	s.connectionsMu.Lock()
 	ctx, exists := s.connections[connID]
@@ -250,19 +263,27 @@ func (s *Server) SendBrokerMessage(db, coll, connID, subject string, msgs [][]by
 		return
 	}
 
+	totalLength := 2 + len(subject)
 	subjectBuf := protocol.GetResponseBufferFromPool()
 	defer protocol.PutResponseBufferToPool(subjectBuf)
-	subjectBuf = codex.EncodeStringInto(subject, subjectBuf)
 
-	countBuf := protocol.GetResponseBufferFromPool()
-	defer protocol.PutResponseBufferToPool(countBuf)
-	countBuf = codex.EncodeUint16Into(uint16(len(msgs)), countBuf)
+	// ensure capacity
+	if cap(subjectBuf) < totalLength {
+		subjectBuf = make([]byte, totalLength)
+	} else {
+		subjectBuf = subjectBuf[:totalLength]
+	}
 
+	// Subject
+	binary.BigEndian.PutUint16(subjectBuf[0:2], uint16(len(subject)))
+	copy(subjectBuf[2:2+len(subject)], []byte(subject))
+
+	// Messages (encoded as a codex list of binary values)
 	binListBuf := protocol.GetResponseBufferFromPool()
 	defer protocol.PutResponseBufferToPool(binListBuf)
 	binListBuf = codex.EncodeValueInto(codex.NewBinaryListValue(msgs), binListBuf)
 
-	totalLength := len(subjectBuf) + len(countBuf) + len(binListBuf)
+	totalLength += len(binListBuf)
 
 	payloadBuf := protocol.GetResponseBufferFromPool()
 	defer protocol.PutResponseBufferToPool(payloadBuf)
@@ -274,9 +295,9 @@ func (s *Server) SendBrokerMessage(db, coll, connID, subject string, msgs [][]by
 		payloadBuf = payloadBuf[:totalLength]
 	}
 
-	copy(payloadBuf[0:], subjectBuf)
-	copy(payloadBuf[len(subjectBuf):], countBuf)
-	copy(payloadBuf[len(subjectBuf)+len(countBuf):], binListBuf)
+	// Copy header and message list into final payload buffer
+	copy(payloadBuf[0:len(subjectBuf)], subjectBuf)
+	copy(payloadBuf[len(subjectBuf):], binListBuf)
 
 	s.writeCommand(ctx.Conn, &protocol.Command{
 		ReqID:          0x4242, // dummy ReqID since this is a server-initiated message and not a response to a client command

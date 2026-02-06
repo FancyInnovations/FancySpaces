@@ -64,6 +64,12 @@ ID Ranges:
     * [KV Map Exists](#kv-map-exists)
     * [KV Map Keys](#kv-map-keys)
     * [KV Map Values](#kv-map-values)
+  * [Broker engine commands](#broker-engine-commands)
+    * [Broker Subscribe (6000)](#broker-subscribe-6000)
+    * [Broker Subscribe queue (6001)](#broker-subscribe-queue-6001)
+    * [Broker Unsubscribe (6002)](#broker-unsubscribe-6002)
+    * [Broker Publish (6003)](#broker-publish-6003)
+    * [Broker Message (client bound) (6004)](#broker-message-client-bound-6004)
 <!-- TOC -->
 
 ## System Commands
@@ -464,26 +470,79 @@ Not implemented yet.
 
 ## Broker engine commands
 
-### Broker Subscribe
+### Broker Subscribe (6000)
 
-Not implemented yet.
+The Broker Subscribe command subscribes the client to a specific subject.
 
-### Broker Subscribe queue
+Payload format:
 
-Not implemented yet.
+| Field          | Size | Description                 |
+|----------------|------|-----------------------------|
+| Subject length | 2 B  | Length of the subject       |
+| Subject        | N B  | The subject to subscribe to |
 
-### Broker Unsubscribe
+Response:
 
-Not implemented yet.
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
 
-### Broker Publish
+### Broker Subscribe queue (6001)
 
-Not implemented yet.
+The Broker Subscribe command subscribes the client to a specific subject.
 
-### Broker Message (client bound)
+Payload format:
 
-Not implemented yet.
+| Field          | Size | Description                     |
+|----------------|------|---------------------------------|
+| Subject length | 2 B  | Length of the subject           |
+| Subject        | N B  | The subject to subscribe to     |
+| Queue length   | 2 B  | Length of the queue group       |
+| Queue          | N B  | The queue group to subscribe to |
 
-### Broker Ack
+Response:
 
-Not implemented yet.
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+### Broker Unsubscribe (6002)
+
+The Broker Unsubscribe command unsubscribes the client from a specific subject.
+
+Payload format:
+
+| Field          | Size | Description                     |
+|----------------|------|---------------------------------|
+| Subject length | 2 B  | Length of the subject           |
+| Subject        | N B  | The subject to unsubscribe from |
+
+### Broker Publish (6003)
+
+The Broker Publish command publishes a message to a specific subject.
+
+Payload format:
+
+| Field                                | Size | Description               |
+|--------------------------------------|------|---------------------------|
+| Subject length                       | 2 B  | Length of the subject     |
+| Subject                              | N B  | The subject to publish to |
+| [Binary](protocol-encoded-values.md) | N B  | The message to publish    |
+
+### Broker Message (client bound) (6004)
+
+The Broker Message command is sent by the server to deliver a message to the client.
+
+Payload format:
+
+| Field                                        | Size | Description                |
+|----------------------------------------------|------|----------------------------|
+| Subject length                               | 2 B  | Length of the subject      |
+| Subject                                      | N B  | The subject of the message |
+| [List of Binary](protocol-encoded-values.md) | N B  | The messages to deliver    |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |

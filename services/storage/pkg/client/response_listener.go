@@ -1,11 +1,13 @@
 package client
 
 import (
+	"encoding/binary"
 	"errors"
 	"log/slog"
 	"net"
 	"strconv"
 
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
@@ -73,6 +75,42 @@ func (c *Client) startResponseListener() {
 				slog.String("collection", cmd.CollectionName),
 				slog.String("payload_size", strconv.Itoa(len(cmd.Payload))),
 			)
+
+			// Handle broker messages
+			if cmd.ID == protocol.ClientCommandBrokerMessage {
+				payload := cmd.Payload
+				if len(payload) < 2+8 { // subject length (2 bytes) + at least 8 bytes for list
+					slog.Warn("Received broker message with invalid payload", slog.String("payload_size", strconv.Itoa(len(payload))))
+					continue
+				}
+
+				subjectLen := int(binary.BigEndian.Uint16(payload[0:2]))
+				if len(payload) < 2+subjectLen+8 {
+					slog.Warn(
+						"Received broker message with invalid payload (subject length mismatch)",
+						slog.String("payload_size", strconv.Itoa(len(payload))),
+						slog.String("subject_length", strconv.Itoa(subjectLen)),
+					)
+					continue
+				}
+				subject := string(payload[2 : 2+subjectLen])
+
+				msgs, err := codex.DecodeList(payload[2+subjectLen:])
+				if err != nil {
+					slog.Warn("Failed to decode broker message list", slog.Any("error", err))
+					continue
+				}
+
+				c.brokerSubjectListenersMu.Lock()
+				listeners := c.brokerSubjectListeners[cmd.DatabaseName+"."+cmd.CollectionName+"."+subject]
+				c.brokerSubjectListenersMu.Unlock()
+
+				for _, msg := range msgs {
+					for _, listener := range listeners {
+						go listener(msg.AsBinary())
+					}
+				}
+			}
 		} else {
 			slog.Warn("Received message with unknown type", slog.String("message_type", strconv.Itoa(int(respMsg.Type))))
 		}

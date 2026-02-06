@@ -13,21 +13,24 @@ import (
 type Service struct {
 	dbStore *database.Store
 
-	engines           map[string]*Entry
-	enginesMu         sync.RWMutex
-	sendBrokerMessage func(db, coll, connID, subject string, msgs [][]byte)
+	engines             map[string]*Entry
+	enginesMu           sync.RWMutex
+	sendBrokerMessage   func(db, coll, connID, subject string, msgs [][]byte)
+	isConnectionHealthy func(connID string) bool
 }
 
 type Configuration struct {
-	DatabaseStore     *database.Store
-	SendBrokerMessage func(db, coll, connID, subject string, msgs [][]byte)
+	DatabaseStore       *database.Store
+	SendBrokerMessage   func(db, coll, connID, subject string, msgs [][]byte)
+	IsConnectionHealthy func(connID string) bool
 }
 
 func NewService(cfg Configuration) *Service {
 	return &Service{
-		dbStore:           cfg.DatabaseStore,
-		engines:           make(map[string]*Entry),
-		sendBrokerMessage: cfg.SendBrokerMessage,
+		dbStore:             cfg.DatabaseStore,
+		engines:             make(map[string]*Entry),
+		sendBrokerMessage:   cfg.SendBrokerMessage,
+		isConnectionHealthy: cfg.IsConnectionHealthy,
 	}
 }
 
@@ -63,6 +66,7 @@ func (s *Service) LoadEngines() error {
 				PublishCallback: func(sub *broker.Subscriber, subject string, msgs [][]byte) {
 					s.sendBrokerMessage(coll.Database, coll.Name, sub.ID, subject, msgs)
 				},
+				IsClientHealthy: s.isConnectionHealthy,
 			})
 		}
 
