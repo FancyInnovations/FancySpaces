@@ -46,15 +46,23 @@ func main() {
 		slog.Error("Failed to set key", sloki.WrapError(err))
 	}
 
-	vals, err := c.KVGetAll("system", "collections")
+	count, err := c.KVCount("system", "collections")
 	if err != nil {
-		slog.Error("Failed to get multiple", sloki.WrapError(err))
+		slog.Error("Failed to count keys", sloki.WrapError(err))
 	} else {
-		for key, val := range vals {
-			fmt.Printf("Key: %s, Value: %v\n", key, val)
-		}
+		fmt.Printf("Key count: %d\n", count)
 	}
 
-	for {
+	if err := c.KVDeleteAll("system", "collections"); err != nil {
+		slog.Error("Failed to delete all keys", sloki.WrapError(err))
+	} else {
+		fmt.Println("All keys deleted successfully")
+	}
+
+	count, err = c.KVCount("system", "collections")
+	if err != nil {
+		slog.Error("Failed to count keys after deletion", sloki.WrapError(err))
+	} else {
+		fmt.Printf("Key count after deletion: %d\n", count)
 	}
 }

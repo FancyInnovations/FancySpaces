@@ -148,6 +148,25 @@ func (c *Client) KVDelete(db, coll string, key string) error {
 	return nil
 }
 
+// KVDeleteAll deletes all key-value pairs from the specified collection. This is a destructive operation and should be used with caution.
+func (c *Client) KVDeleteAll(db, coll string) error {
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVDeleteAll,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        make([]byte, 0),
+	})
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
 // KVExists checks if a key exists in the specified collection.
 // It returns true if the key exists, false if it does not exist, and an error if there was an issue checking.
 func (c *Client) KVExists(db, coll string, key string) (bool, error) {
@@ -272,4 +291,28 @@ func (c *Client) KVGetAll(db, coll string) (map[string]*codex.Value, error) {
 	}
 
 	return val.AsMap(), nil
+}
+
+// KVCount returns the number of key-value pairs in the specified collection.
+func (c *Client) KVCount(db, coll string) (uint32, error) {
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.CommandKVCount,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        make([]byte, 0),
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return 0, ErrUnexpectedStatusCode
+	}
+
+	count, err := codex.DecodeUint32(resp.Payload)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }

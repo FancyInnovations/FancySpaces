@@ -274,12 +274,12 @@ func (e *Engine) Clear() {
 }
 
 // Size returns the total number of keys currently stored in the engine across all shards.
-func (e *Engine) Size() int {
-	total := 0
+func (e *Engine) Size() uint32 {
+	var total uint32 = 0
 	for i := 0; i < ShardCount; i++ {
 		s := &e.shards[i]
 		s.mu.RLock()
-		total += len(s.data)
+		total += uint32(len(s.data))
 		s.mu.RUnlock()
 	}
 	return total

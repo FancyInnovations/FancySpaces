@@ -29,10 +29,12 @@ func (c *Commands) Get() map[uint16]command.Handler {
 		protocol.CommandKVSet:         c.handleSet,
 		protocol.CommandKVSetTTL:      c.handleSetTTL,
 		protocol.CommandKVDelete:      c.handleDelete,
+		protocol.CommandKVDeleteAll:   c.handleDeleteAll,
 		protocol.CommandKVExists:      c.handleExists,
 		protocol.CommandKVGet:         c.handleGet,
 		protocol.CommandKVGetMultiple: c.handleGetMultiple,
 		protocol.CommandKVGetAll:      c.handleGetAll,
 		protocol.CommandKVKeys:        c.handleKeys,
+		protocol.CommandKVCount:       c.handleCount,
 	}
 }

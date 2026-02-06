@@ -28,6 +28,7 @@ const (
 	CommandKVGetMultiple uint16 = 2032
 	CommandKVGetAll      uint16 = 2033
 	CommandKVKeys        uint16 = 2034
+	CommandKVCount       uint16 = 2035
 
 	CommandKVNumIncrement  uint16 = 2520
 	CommandKVNumDecrement  uint16 = 2521

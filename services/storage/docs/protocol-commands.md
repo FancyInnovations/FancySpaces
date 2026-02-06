@@ -232,9 +232,17 @@ Response:
 
 Not implemented yet.
 
-### KV Delete all
+### KV Delete all (2022)
 
-Not implemented yet.
+The KV Delete all command deletes all key-value pairs from the store.
+
+Payload format: None
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
 
 ### KV Exists (2030)
 
@@ -320,6 +328,18 @@ Response:
 | 0000        | Success       |
 
 The response payload for a successful KV Keys command contains the list of keys (strings).
+
+### KV Count (2035)
+
+The KV Count command retrieves the total number of key-value pairs in the store.
+
+Payload format: None
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
 
 ### KV Number Increment
 
