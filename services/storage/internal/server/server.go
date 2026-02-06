@@ -12,6 +12,7 @@ import (
 	"github.com/OliverSchlueter/goutils/idgen"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
@@ -200,6 +201,27 @@ func (s *Server) writeResponse(conn net.Conn, resp *protocol.Response) {
 	}
 }
 
+func (s *Server) writeCommand(conn net.Conn, cmd *protocol.Command) {
+	msg := protocol.GetMessageFromPool()
+	defer protocol.PutMessageToPool(msg)
+
+	payloadBuf := protocol.GetResponseBufferFromPool()
+	defer protocol.PutResponseBufferToPool(payloadBuf)
+
+	msg.ProtocolVersion = byte(protocol.ProtocolVersion1)
+	msg.Flags = 0x00
+	msg.Type = byte(protocol.MessageTypeCommand)
+	msg.Payload = protocol.V1.EncodeCommandInto(cmd, payloadBuf)
+
+	msgDataBuf := protocol.GetResponseBufferFromPool()
+	defer protocol.PutResponseBufferToPool(msgDataBuf)
+
+	msgDataBuf = protocol.V1.EncodeMessageInto(msg, msgDataBuf)
+	if err := protocol.V1.WriteFrame(conn, msgDataBuf); err != nil {
+		slog.Warn("Failed to write command", sloki.WrapError(err))
+	}
+}
+
 func (s *Server) broadcastMessage(msg *protocol.Message) {
 	msgDataBuf := protocol.GetResponseBufferFromPool()
 	defer protocol.PutResponseBufferToPool(msgDataBuf)
@@ -213,6 +235,50 @@ func (s *Server) broadcastMessage(msg *protocol.Message) {
 	}
 }
 
-func (s *Server) SendBrokerMessage(connID, subject string, msgs [][]byte) {
+// SendBrokerMessage is called by the engine to send messages to subscribed clients.
+// Payload: | subject (codex.TypeString) | message count (codex.TypeUint16) | messages (list of codex.TypeBinary) |
+func (s *Server) SendBrokerMessage(db, coll, connID, subject string, msgs [][]byte) {
+	s.connectionsMu.Lock()
+	ctx, exists := s.connections[connID]
+	s.connectionsMu.Unlock()
 
+	if !exists {
+		slog.Warn("Attempted to send broker message to non-existent connection", slog.String("ConnID", connID))
+		return
+	}
+
+	subjectBuf := protocol.GetResponseBufferFromPool()
+	defer protocol.PutResponseBufferToPool(subjectBuf)
+	subjectBuf = codex.EncodeStringInto(subject, subjectBuf)
+
+	countBuf := protocol.GetResponseBufferFromPool()
+	defer protocol.PutResponseBufferToPool(countBuf)
+	countBuf = codex.EncodeUint16Into(uint16(len(msgs)), countBuf)
+
+	binListBuf := protocol.GetResponseBufferFromPool()
+	defer protocol.PutResponseBufferToPool(binListBuf)
+	binListBuf = codex.EncodeValueInto(codex.NewBinaryListValue(msgs), binListBuf)
+
+	totalLength := len(subjectBuf) + len(countBuf) + len(binListBuf)
+
+	payloadBuf := protocol.GetResponseBufferFromPool()
+	defer protocol.PutResponseBufferToPool(payloadBuf)
+
+	// ensure capacity
+	if cap(payloadBuf) < totalLength {
+		payloadBuf = make([]byte, totalLength)
+	} else {
+		payloadBuf = payloadBuf[:totalLength]
+	}
+
+	copy(payloadBuf[0:], subjectBuf)
+	copy(payloadBuf[len(subjectBuf):], countBuf)
+	copy(payloadBuf[len(subjectBuf)+len(countBuf):], binListBuf)
+
+	s.writeCommand(ctx.Conn, &protocol.Command{
+		ID:             protocol.ClientCommandBrokerMessage,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payloadBuf,
+	})
 }

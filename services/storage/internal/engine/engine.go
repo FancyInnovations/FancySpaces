@@ -15,12 +15,12 @@ type Service struct {
 
 	engines           map[string]*Entry
 	enginesMu         sync.RWMutex
-	sendBrokerMessage func(connID, subject string, msgs [][]byte)
+	sendBrokerMessage func(db, coll, connID, subject string, msgs [][]byte)
 }
 
 type Configuration struct {
 	DatabaseStore     *database.Store
-	SendBrokerMessage func(connID, subject string, msgs [][]byte)
+	SendBrokerMessage func(db, coll, connID, subject string, msgs [][]byte)
 }
 
 func NewService(cfg Configuration) *Service {
@@ -61,7 +61,7 @@ func (s *Service) LoadEngines() error {
 		case database.EngineBroker:
 			e = broker.NewBroker(broker.Configuration{
 				PublishCallback: func(sub *broker.Subscriber, subject string, msgs [][]byte) {
-					s.sendBrokerMessage(sub.ID, subject, msgs)
+					s.sendBrokerMessage(coll.Database, coll.Name, sub.ID, subject, msgs)
 				},
 			})
 		}

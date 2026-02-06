@@ -251,3 +251,11 @@ func NewStringListValue(items []string) *Value {
 	}
 	return &Value{Type: TypeList, data: values}
 }
+
+func NewBinaryListValue(items [][]byte) *Value {
+	values := make([]*Value, len(items))
+	for i, item := range items {
+		values[i] = &Value{Type: TypeBinary, data: item}
+	}
+	return &Value{Type: TypeList, data: values}
+}
