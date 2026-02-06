@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  backend:
-    name: Backend
+  core-service:
+    name: core-service
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -35,6 +35,33 @@ jobs:
       - name: Test
         run: go test ./... -v
         working-directory: ./services/core/
+
+  storage-service:
+    name: storage-service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.25.5
+          check-latest: true
+          cache-dependency-path: "**/*.sum"
+
+      - name: Install dependencies
+        run: go mod tidy
+        working-directory: ./services/storage/
+
+      - name: Build
+        run: go build cmd/local/main.go
+        working-directory: ./services/storage/
+
+      - name: Test
+        run: go test ./... -v
+        working-directory: ./services/storage/
+
 
   frontend:
     name: Frontend

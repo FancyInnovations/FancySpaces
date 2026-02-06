@@ -15,13 +15,12 @@ func DecodeBinary(data []byte) ([]byte, error) {
 		return nil, ErrPayloadTooShort
 	}
 
-	typeByte := data[0]
-	if typeByte != byte(TypeBinary) {
+	if data[0] != byte(TypeBinary) {
 		return nil, ErrInvalidType
 	}
 
-	binLen := int(binary.BigEndian.Uint16(data[1:5]))
-	if len(data) < 2+binLen {
+	binLen := int(binary.BigEndian.Uint32(data[1:5]))
+	if len(data) < 5+binLen {
 		return nil, ErrPayloadTooShort
 	}
 
@@ -32,7 +31,7 @@ func DecodeBinary(data []byte) ([]byte, error) {
 // | Type (1 byte) | Length (4 bytes) | Binary Data (N bytes) |
 func EncodeBinaryInto(val []byte, target []byte) []byte {
 	valLength := len(val)
-	totalLength := 1 + 2 + len(val)
+	totalLength := 1 + 4 + valLength
 
 	// ensure capacity
 	if cap(target) < totalLength {
@@ -42,7 +41,7 @@ func EncodeBinaryInto(val []byte, target []byte) []byte {
 	}
 
 	target[0] = byte(TypeBinary)
-	binary.BigEndian.PutUint16(target[1:5], uint16(valLength))
+	binary.BigEndian.PutUint32(target[1:5], uint32(valLength))
 	copy(target[5:], val)
 
 	return target
