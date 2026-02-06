@@ -12,15 +12,42 @@ func TestEncodeFloat32(t *testing.T) {
 		name string
 		val  float32
 	}{
-		{"zero", 0},
-		{"negative zero", float32(math.Copysign(0, -1))},
-		{"one", 1},
-		{"negative", -123.456},
-		{"max", math.MaxFloat32},
-		{"min", math.SmallestNonzeroFloat32},
-		{"positive infinity", float32(math.Inf(1))},
-		{"negative infinity", float32(math.Inf(-1))},
-		{"nan", float32(math.NaN())},
+		{
+			name: "zero",
+			val:  0,
+		},
+		{
+			name: "negative zero",
+			val:  float32(math.Copysign(0, -1)),
+		},
+		{
+			name: "one",
+			val:  1,
+		},
+		{
+			name: "negative",
+			val:  -123.456,
+		},
+		{
+			name: "max",
+			val:  math.MaxFloat32,
+		},
+		{
+			name: "min",
+			val:  math.SmallestNonzeroFloat32,
+		},
+		{
+			name: "positive infinity",
+			val:  float32(math.Inf(1)),
+		},
+		{
+			name: "negative infinity",
+			val:  float32(math.Inf(-1)),
+		},
+		{
+			name: "nan",
+			val:  float32(math.NaN()),
+		},
 	}
 
 	for _, tt := range tests {
