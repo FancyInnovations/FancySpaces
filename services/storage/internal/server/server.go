@@ -160,6 +160,9 @@ func (s *Server) handleMessage(ctx *command.ConnCtx) bool {
 		return false
 	}
 
+	// Ensure the response has the same ReqID as the command for proper correlation on the client side
+	resp.ReqID = cmd.ReqID
+
 	s.writeResponse(conn, resp)
 
 	// Update last activity timestamp for cleanup purposes
@@ -276,6 +279,7 @@ func (s *Server) SendBrokerMessage(db, coll, connID, subject string, msgs [][]by
 	copy(payloadBuf[len(subjectBuf)+len(countBuf):], binListBuf)
 
 	s.writeCommand(ctx.Conn, &protocol.Command{
+		ReqID:          0x4242, // dummy ReqID since this is a server-initiated message and not a response to a client command
 		ID:             protocol.ClientCommandBrokerMessage,
 		DatabaseName:   db,
 		CollectionName: coll,

@@ -31,6 +31,7 @@ const (
 //)
 
 type Command struct {
+	ReqID          uint32
 	ID             uint16
 	DatabaseName   string
 	CollectionName string
@@ -38,6 +39,7 @@ type Command struct {
 }
 
 type Response struct {
+	ReqID   uint32
 	Code    uint16
 	Payload []byte
 }

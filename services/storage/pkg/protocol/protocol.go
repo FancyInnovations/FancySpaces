@@ -146,36 +146,48 @@ func (p *ProtoV1) EncodeMessage(msg *Message) []byte {
 }
 
 // EncodeCommandInto encodes a Command into the given byte slice buffer.
-// | CMD ID (2 bytes)                |
-// | DB name length (2 byte)         |
-// | DB name (variable)              |
-// | Collection name length (2 byte) |
-// | Collection name (variable)      |
-// | Payload length (4 byte)         |
-// | Payload (variable)              |
+// | Req ID (4 bytes)                 |
+// | CMD ID (2 bytes)                 |
+// | DB name length (2 bytes)         |
+// | DB name (variable)               |
+// | Collection name length (2 bytes) |
+// | Collection name (variable)       |
+// | Payload length (4 bytes)         |
+// | Payload (variable)               |
 func (p *ProtoV1) EncodeCommandInto(cmd *Command, target []byte) []byte {
 	dbNameLen := len(cmd.DatabaseName)
 	collectionNameLen := len(cmd.CollectionName)
 	payloadLen := len(cmd.Payload)
 
-	totalLength := 2 + 2 + dbNameLen + 2 + collectionNameLen + 4 + payloadLen
+	totalLength := 4 + 2 + 2 + dbNameLen + 2 + collectionNameLen + 4 + payloadLen
 
-	// ensure capacity
 	if cap(target) < totalLength {
 		target = make([]byte, totalLength)
 	} else {
 		target = target[:totalLength]
 	}
 
-	binary.BigEndian.PutUint16(target[0:2], cmd.ID)
-	binary.BigEndian.PutUint16(target[2:4], uint16(dbNameLen))
-	copy(target[4:4+dbNameLen], []byte(cmd.DatabaseName))
-	collectionNameStart := 4 + dbNameLen
-	binary.BigEndian.PutUint16(target[collectionNameStart:collectionNameStart+2], uint16(collectionNameLen))
-	copy(target[collectionNameStart+2:collectionNameStart+2+collectionNameLen], []byte(cmd.CollectionName))
-	payloadStart := collectionNameStart + 2 + collectionNameLen
-	binary.BigEndian.PutUint32(target[payloadStart:payloadStart+4], uint32(payloadLen))
-	copy(target[payloadStart+4:payloadStart+4+payloadLen], cmd.Payload)
+	offset := 0
+
+	binary.BigEndian.PutUint32(target[offset:], cmd.ReqID)
+	offset += 4
+
+	binary.BigEndian.PutUint16(target[offset:], cmd.ID)
+	offset += 2
+
+	binary.BigEndian.PutUint16(target[offset:], uint16(dbNameLen))
+	offset += 2
+	copy(target[offset:], cmd.DatabaseName)
+	offset += dbNameLen
+
+	binary.BigEndian.PutUint16(target[offset:], uint16(collectionNameLen))
+	offset += 2
+	copy(target[offset:], cmd.CollectionName)
+	offset += collectionNameLen
+
+	binary.BigEndian.PutUint32(target[offset:], uint32(payloadLen))
+	offset += 4
+	copy(target[offset:], cmd.Payload)
 
 	return target
 }
@@ -188,32 +200,40 @@ func (p *ProtoV1) EncodeCommand(cmd *Command) []byte {
 // DecodeCommandInto decodes a Command from the given Message's payload into the provided Command struct.
 func (p *ProtoV1) DecodeCommandInto(msg *Message, target *Command) error {
 	data := msg.Payload
-
-	if len(data) < 10 {
+	if len(data) < 4+2+4 {
 		return ErrPayloadTooShort
 	}
 
-	target.ID = binary.BigEndian.Uint16(data[0:2])
+	offset := 0
 
-	dbNameLen := int(binary.BigEndian.Uint16(data[2:4]))
-	if len(data) < 4+dbNameLen+2 {
+	target.ReqID = binary.BigEndian.Uint32(data[offset:])
+	offset += 4
+
+	target.ID = binary.BigEndian.Uint16(data[offset:])
+	offset += 2
+
+	dbNameLen := int(binary.BigEndian.Uint16(data[offset:]))
+	offset += 2
+	if len(data) < offset+dbNameLen+2 {
 		return ErrPayloadTooShort
 	}
-	target.DatabaseName = string(data[4 : 4+dbNameLen])
+	target.DatabaseName = string(data[offset : offset+dbNameLen])
+	offset += dbNameLen
 
-	collectionNameStart := 4 + dbNameLen
-	collectionNameLen := int(binary.BigEndian.Uint16(data[collectionNameStart : collectionNameStart+2]))
-	if len(data) < collectionNameStart+2+collectionNameLen+4 {
+	collectionNameLen := int(binary.BigEndian.Uint16(data[offset:]))
+	offset += 2
+	if len(data) < offset+collectionNameLen+4 {
 		return ErrPayloadTooShort
 	}
-	target.CollectionName = string(data[collectionNameStart+2 : collectionNameStart+2+collectionNameLen])
+	target.CollectionName = string(data[offset : offset+collectionNameLen])
+	offset += collectionNameLen
 
-	payloadStart := collectionNameStart + 2 + collectionNameLen
-	payloadLen := int(binary.BigEndian.Uint32(data[payloadStart : payloadStart+4]))
-	if len(data) < payloadStart+4+payloadLen {
+	payloadLen := int(binary.BigEndian.Uint32(data[offset:]))
+	offset += 4
+	if len(data) < offset+payloadLen {
 		return ErrPayloadTooShort
 	}
-	target.Payload = data[payloadStart+4 : payloadStart+4+payloadLen]
+	target.Payload = data[offset : offset+payloadLen]
 
 	return nil
 }
@@ -221,32 +241,39 @@ func (p *ProtoV1) DecodeCommandInto(msg *Message, target *Command) error {
 // DecodeCommand decodes a Command from the given Message's payload into a new Command struct.
 func (p *ProtoV1) DecodeCommand(msg *Message) (*Command, error) {
 	cmd := &Command{}
-	err := p.DecodeCommandInto(msg, cmd)
-	if err != nil {
+	if err := p.DecodeCommandInto(msg, cmd); err != nil {
 		return nil, err
 	}
-
 	return cmd, nil
 }
 
 // EncodeResponseInto encodes a Response into a byte slice buffer.
-// | Status Code (2 bytes)     |
-// | Payload length (4 bytes)  |
-// | Payload (variable length) |
+// | Req ID (4 bytes)         |
+// | Status Code (2 bytes)    |
+// | Payload length (4 bytes) |
+// | Payload (variable)       |
 func (p *ProtoV1) EncodeResponseInto(resp *Response, target []byte) []byte {
-	payloadLength := len(resp.Payload)
-	totalLength := 2 + 4 + payloadLength
+	payloadLen := len(resp.Payload)
+	totalLength := 4 + 2 + 4 + payloadLen
 
-	// ensure capacity
 	if cap(target) < totalLength {
 		target = make([]byte, totalLength)
 	} else {
 		target = target[:totalLength]
 	}
 
-	binary.BigEndian.PutUint16(target[0:2], resp.Code)
-	binary.BigEndian.PutUint32(target[2:6], uint32(payloadLength))
-	copy(target[6:], resp.Payload)
+	offset := 0
+
+	binary.BigEndian.PutUint32(target[offset:], resp.ReqID)
+	offset += 4
+
+	binary.BigEndian.PutUint16(target[offset:], resp.Code)
+	offset += 2
+
+	binary.BigEndian.PutUint32(target[offset:], uint32(payloadLen))
+	offset += 4
+
+	copy(target[offset:], resp.Payload)
 
 	return target
 }
@@ -259,19 +286,25 @@ func (p *ProtoV1) EncodeResponse(resp *Response) []byte {
 // DecodeResponseInto decodes a Response from the given Message's payload into the provided Response struct.
 func (p *ProtoV1) DecodeResponseInto(msg *Message, target *Response) error {
 	data := msg.Payload
-
-	if len(data) < 6 {
+	if len(data) < 4+2+4 {
 		return ErrPayloadTooShort
 	}
 
-	target.Code = binary.BigEndian.Uint16(data[0:2])
+	offset := 0
 
-	payloadLength := int(binary.BigEndian.Uint32(data[2:6]))
-	if len(data) < 6+payloadLength {
+	target.ReqID = binary.BigEndian.Uint32(data[offset:])
+	offset += 4
+
+	target.Code = binary.BigEndian.Uint16(data[offset:])
+	offset += 2
+
+	payloadLen := int(binary.BigEndian.Uint32(data[offset:]))
+	offset += 4
+	if len(data) < offset+payloadLen {
 		return ErrPayloadTooShort
 	}
 
-	target.Payload = data[6 : 6+payloadLength]
+	target.Payload = data[offset : offset+payloadLen]
 
 	return nil
 }
@@ -279,10 +312,8 @@ func (p *ProtoV1) DecodeResponseInto(msg *Message, target *Response) error {
 // DecodeResponse decodes a Response from the given Message's payload into a new Response struct.
 func (p *ProtoV1) DecodeResponse(msg *Message) (*Response, error) {
 	resp := &Response{}
-	err := p.DecodeResponseInto(msg, resp)
-	if err != nil {
+	if err := p.DecodeResponseInto(msg, resp); err != nil {
 		return nil, err
 	}
-
 	return resp, nil
 }

@@ -106,7 +106,7 @@ func TestReadFrame_ZeroLength(t *testing.T) {
 	}
 }
 
-func TestDecodeMessagae_Empty(t *testing.T) {
+func TestDecodeMessage_Empty(t *testing.T) {
 	msg, err := V1.DecodeMessage([]byte{})
 	if msg != nil {
 		t.Fatalf("expected nil message for empty input, got %+v", msg)
@@ -119,7 +119,7 @@ func TestDecodeMessagae_Empty(t *testing.T) {
 	}
 }
 
-func TestDecodeMessagae_WrongMagic(t *testing.T) {
+func TestDecodeMessage_WrongMagic(t *testing.T) {
 	// wrong magic byte
 	data := []byte{magicNumber + 1, 1, 2, 3, 0, 0, 0, 0}
 	msg, err := V1.DecodeMessage(data)
@@ -134,7 +134,7 @@ func TestDecodeMessagae_WrongMagic(t *testing.T) {
 	}
 }
 
-func TestDecodeMessagae_TooShort(t *testing.T) {
+func TestDecodeMessage_TooShort(t *testing.T) {
 	// correct magic but less than 8 bytes
 	data := []byte{magicNumber, 1, 2, 3}
 	msg, err := V1.DecodeMessage(data)
@@ -149,7 +149,7 @@ func TestDecodeMessagae_TooShort(t *testing.T) {
 	}
 }
 
-func TestDecodeMessagae_InvalidProtocolVersion(t *testing.T) {
+func TestDecodeMessage_InvalidProtocolVersion(t *testing.T) {
 	// protocol version is not 0x01
 	payload := []byte{0xAA}
 	payloadLen := len(payload)
@@ -174,7 +174,7 @@ func TestDecodeMessagae_InvalidProtocolVersion(t *testing.T) {
 	}
 }
 
-func TestDecodeMessagae_UnknownMessageType(t *testing.T) {
+func TestDecodeMessage_UnknownMessageType(t *testing.T) {
 	// type is outside allowed range (1-3)
 	payload := []byte{0xAA}
 	payloadLen := len(payload)
@@ -199,7 +199,7 @@ func TestDecodeMessagae_UnknownMessageType(t *testing.T) {
 	}
 }
 
-func TestDecodeMessagae_ZeroPayload(t *testing.T) {
+func TestDecodeMessage_ZeroPayload(t *testing.T) {
 	// header with zero payload length
 	data := []byte{
 		magicNumber, // magic
@@ -220,7 +220,7 @@ func TestDecodeMessagae_ZeroPayload(t *testing.T) {
 	}
 }
 
-func TestDecodeMessagae_InsufficientPayload(t *testing.T) {
+func TestDecodeMessage_InsufficientPayload(t *testing.T) {
 	// header says 5 bytes payload but only provide 3
 	payloadLen := 5
 	data := []byte{
@@ -243,7 +243,7 @@ func TestDecodeMessagae_InsufficientPayload(t *testing.T) {
 	}
 }
 
-func TestDecodeMessagae_Success(t *testing.T) {
+func TestDecodeMessage_Success(t *testing.T) {
 	payload := []byte("hello")
 	payloadLen := len(payload)
 	header := []byte{
@@ -271,8 +271,8 @@ func TestDecodeMessagae_Success(t *testing.T) {
 }
 
 func TestDecodeCommand_TooShort(t *testing.T) {
-	// less than 10 bytes overall
-	data := make([]byte, 9)
+	// less than 10 bytes overall (now less than 14 with ReqID)
+	data := make([]byte, 13)
 	msg := &Message{
 		ProtocolVersion: 0x01,
 		Flags:           0x00,
@@ -292,15 +292,23 @@ func TestDecodeCommand_TooShort(t *testing.T) {
 }
 
 func TestDecodeCommand_InsufficientDBName(t *testing.T) {
-	// declare dbNameLen = 5 but provide only 3 bytes for DB name
 	var b []byte
-	tmp := make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp, 0x1234) // cmd ID
-	b = append(b, tmp...)
-	tmp = make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp, 5) // dbNameLen = 5
-	b = append(b, tmp...)
-	b = append(b, []byte("abc")...) // only 3 bytes provided
+
+	// ReqID
+	tmp4 := make([]byte, 4)
+	binary.BigEndian.PutUint32(tmp4, 0x01020304)
+	b = append(b, tmp4...)
+
+	// CMD ID
+	tmp2 := make([]byte, 2)
+	binary.BigEndian.PutUint16(tmp2, 0x1234)
+	b = append(b, tmp2...)
+
+	// dbNameLen = 5, provide only 3 bytes
+	tmp2 = make([]byte, 2)
+	binary.BigEndian.PutUint16(tmp2, 5)
+	b = append(b, tmp2...)
+	b = append(b, []byte("abc")...)
 
 	msg := &Message{
 		ProtocolVersion: 0x01,
@@ -321,23 +329,30 @@ func TestDecodeCommand_InsufficientDBName(t *testing.T) {
 }
 
 func TestDecodeCommand_InsufficientCollectionName(t *testing.T) {
-	// provide DB name correctly, but collectionNameLen says 4 and only 2 bytes given
 	var b []byte
+
+	// ReqID
+	tmp4 := make([]byte, 4)
+	binary.BigEndian.PutUint32(tmp4, 0x01020304)
+	b = append(b, tmp4...)
+
+	// CMD ID
 	tmp2 := make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp2, 0x0102) // cmd ID
+	binary.BigEndian.PutUint16(tmp2, 0x0102)
 	b = append(b, tmp2...)
 
+	// DB name
 	tmp2 = make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp2, 2) // dbNameLen = 2
+	binary.BigEndian.PutUint16(tmp2, 2)
 	b = append(b, tmp2...)
 	b = append(b, []byte("db")...)
 
+	// Collection name len = 4, only 2 bytes provided
 	tmp2 = make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp2, 4) // collectionNameLen = 4
+	binary.BigEndian.PutUint16(tmp2, 4)
 	b = append(b, tmp2...)
-	b = append(b, []byte("co")...) // only 2 bytes provided
+	b = append(b, []byte("co")...) // insufficient
 
-	// do not provide payload header to keep it short for the collection check
 	msg := &Message{
 		ProtocolVersion: 0x01,
 		Flags:           0x00,
@@ -357,26 +372,35 @@ func TestDecodeCommand_InsufficientCollectionName(t *testing.T) {
 }
 
 func TestDecodeCommand_InsufficientPayload(t *testing.T) {
-	// provide headers correctly but payloadLen says 10 and only 3 payload bytes provided
 	var b []byte
-	tmp := make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp, 0x0A0B) // cmd ID
-	b = append(b, tmp...)
 
-	tmp = make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp, 2) // dbNameLen
-	b = append(b, tmp...)
+	// ReqID
+	tmp4 := make([]byte, 4)
+	binary.BigEndian.PutUint32(tmp4, 0x01020304)
+	b = append(b, tmp4...)
+
+	// CMD ID
+	tmp2 := make([]byte, 2)
+	binary.BigEndian.PutUint16(tmp2, 0x0A0B)
+	b = append(b, tmp2...)
+
+	// DB name
+	tmp2 = make([]byte, 2)
+	binary.BigEndian.PutUint16(tmp2, 2)
+	b = append(b, tmp2...)
 	b = append(b, []byte("db")...)
 
-	tmp = make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp, 3) // collectionNameLen
-	b = append(b, tmp...)
+	// Collection name
+	tmp2 = make([]byte, 2)
+	binary.BigEndian.PutUint16(tmp2, 3)
+	b = append(b, tmp2...)
 	b = append(b, []byte("col")...)
 
-	tmp4 := make([]byte, 4)
-	binary.BigEndian.PutUint32(tmp4, 10) // payloadLen = 10
+	// Payload length = 10, provide only 3 bytes
+	tmp4 = make([]byte, 4)
+	binary.BigEndian.PutUint32(tmp4, 10)
 	b = append(b, tmp4...)
-	b = append(b, []byte{0xAA, 0xBB, 0xCC}...) // only 3 bytes provided
+	b = append(b, []byte{0xAA, 0xBB, 0xCC}...)
 
 	msg := &Message{
 		ProtocolVersion: 0x01,
@@ -397,24 +421,35 @@ func TestDecodeCommand_InsufficientPayload(t *testing.T) {
 }
 
 func TestDecodeCommand_Success(t *testing.T) {
-	// valid command with DB name, collection name and payload
 	var b []byte
+
+	reqID := uint32(0x01020304)
+
+	// ReqID
+	tmp4 := make([]byte, 4)
+	binary.BigEndian.PutUint32(tmp4, reqID)
+	b = append(b, tmp4...)
+
+	// CMD ID
 	tmp2 := make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp2, 0xDEAD) // cmd ID
+	binary.BigEndian.PutUint16(tmp2, 0xDEAD)
 	b = append(b, tmp2...)
 
+	// DB name
 	tmp2 = make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp2, 2) // dbNameLen
+	binary.BigEndian.PutUint16(tmp2, 2)
 	b = append(b, tmp2...)
 	b = append(b, []byte("db")...)
 
+	// Collection name
 	tmp2 = make([]byte, 2)
-	binary.BigEndian.PutUint16(tmp2, 3) // collectionNameLen
+	binary.BigEndian.PutUint16(tmp2, 3)
 	b = append(b, tmp2...)
 	b = append(b, []byte("col")...)
 
+	// Payload
 	payload := []byte("payload-data")
-	tmp4 := make([]byte, 4)
+	tmp4 = make([]byte, 4)
 	binary.BigEndian.PutUint32(tmp4, uint32(len(payload)))
 	b = append(b, tmp4...)
 	b = append(b, payload...)
@@ -425,12 +460,16 @@ func TestDecodeCommand_Success(t *testing.T) {
 		Type:            0x01,
 		Payload:         b,
 	}
+
 	cmd, err := V1.DecodeCommand(msg)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if cmd == nil {
 		t.Fatal("expected non-nil cmd, got nil")
+	}
+	if cmd.ReqID != reqID {
+		t.Fatalf("unexpected ReqID: got 0x%X, want 0x%X", cmd.ReqID, reqID)
 	}
 	if cmd.ID != 0xDEAD {
 		t.Fatalf("unexpected cmd ID: got 0x%X", cmd.ID)
