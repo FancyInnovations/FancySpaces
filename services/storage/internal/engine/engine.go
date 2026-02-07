@@ -8,6 +8,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/broker"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kv"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine"
 )
 
 type Service struct {
@@ -61,6 +62,20 @@ func (s *Service) LoadEngines() error {
 			e = kv.NewEngine(kv.Configuration{
 				DisableTTL: coll.KVSettings != nil && coll.KVSettings.DisableTTL,
 			})
+		case database.EngineObject:
+			e, err = objectengine.NewBucket(objectengine.Configuration{
+				Database:   coll.Database,
+				Collection: coll.Name,
+			})
+			if err != nil {
+				slog.Error(
+					"Failed to initialize object engine for collection",
+					slog.String("database", coll.Database),
+					slog.String("collection", coll.Name),
+					slog.Any("error", err),
+				)
+				continue
+			}
 		case database.EngineBroker:
 			e = broker.NewBroker(broker.Configuration{
 				PublishCallback: func(sub *broker.Subscriber, subject string, msgs [][]byte) {
