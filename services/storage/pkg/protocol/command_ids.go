@@ -3,6 +3,9 @@ package protocol
 // 0xxx: System commands
 // 1xxx: Database and collection commands
 // 2xxx: Key-value engine commands
+// 3xxx: Document engine commands
+// 4xxx: Object engine commands
+// 5xxx: Analytical engine commands
 // 6xxx: Broker engine commands
 
 const (
@@ -64,6 +67,16 @@ const (
 	ServerCommandKVMapExists uint16 = 2564
 	ServerCommandKVMapKeys   uint16 = 2565
 	ServerCommandKVMapValues uint16 = 2566
+
+	ServerCommandObjectPut         uint16 = 4000
+	ServerCommandObjectGet         uint16 = 4001
+	ServerCommandObjectGetMetadata uint16 = 4002
+	ServerCommandObjectDelete      uint16 = 4003
+	ServerCommandObjectExists      uint16 = 4004
+	ServerCommandObjectList        uint16 = 4005
+	ServerCommandObjectCopy        uint16 = 4006
+	ServerCommandObjectMove        uint16 = 4007
+	ServerCommandObjectRename      uint16 = 4008
 
 	ServerCommandBrokerSubscribe      uint16 = 6000
 	ServerCommandBrokerSubscribeQueue uint16 = 6001

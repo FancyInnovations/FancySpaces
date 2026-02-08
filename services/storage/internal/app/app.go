@@ -11,6 +11,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/broker/brokercmds"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kv/kvcmds"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine/objectcmds"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/server"
 )
 
@@ -56,6 +57,12 @@ func Start(cfg Configuration) *server.Server {
 		EngineService: engineService,
 	})
 	cmdService.RegisterHandlers(kvCommands.Get())
+
+	objectCommands := objectcmds.New(objectcmds.Configuration{
+		DatabaseStore: databaseStore,
+		EngineService: engineService,
+	})
+	cmdService.RegisterHandlers(objectCommands.Get())
 
 	brokerCommands := brokercmds.New(brokercmds.Configuration{
 		DatabaseStore: databaseStore,
