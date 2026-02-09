@@ -3,7 +3,7 @@ package engine
 import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/broker"
-	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kv"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine"
 )
 
 type Entry struct {
@@ -13,12 +13,12 @@ type Entry struct {
 	engine     any
 }
 
-func (e *Entry) AsKeyValueEngine() *kv.Engine {
+func (e *Entry) AsKeyValueEngine() *kvengine.Engine {
 	if e.Type != database.EngineKeyValue {
 		return nil
 	}
 
-	return e.engine.(*kv.Engine)
+	return e.engine.(*kvengine.Engine)
 }
 
 func (e *Entry) AsBrokerEngine() *broker.Broker {

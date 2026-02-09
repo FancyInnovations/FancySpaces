@@ -10,7 +10,7 @@ import (
 	fakeDatabaseDB "github.com/fancyinnovations/fancyspaces/storage/internal/database/databasedb/fake"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/broker/brokercmds"
-	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kv/kvcmds"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine/kvcmds"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine/objectcmds"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/server"
 )

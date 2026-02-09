@@ -7,7 +7,7 @@ import (
 
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/broker"
-	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kv"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine"
 )
 
@@ -59,7 +59,7 @@ func (s *Service) LoadEngines() error {
 
 		switch coll.Engine {
 		case database.EngineKeyValue:
-			e = kv.NewEngine(kv.Configuration{
+			e = kvengine.NewEngine(kvengine.Configuration{
 				DisableTTL: coll.KVSettings != nil && coll.KVSettings.DisableTTL,
 			})
 		case database.EngineObject:

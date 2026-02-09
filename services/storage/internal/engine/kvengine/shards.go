@@ -1,4 +1,4 @@
-package kv
+package kvengine
 
 import "github.com/fancyinnovations/fancyspaces/storage/internal/hashing"
 
