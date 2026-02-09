@@ -2,6 +2,7 @@ package objectengine
 
 import (
 	"encoding/binary"
+	"fmt"
 	"hash/crc32"
 	"io"
 	"os"
@@ -31,7 +32,7 @@ func (b *Bucket) shardForKey(key string) *shard {
 // newShard creates or opens a shard file and loads its index
 // Shard files are named shard_0.bin, shard_1.bin, ..., shard_15.bin
 func (b *Bucket) newShard(idx int, basePath string) (*shard, error) {
-	shardFilename := "shard_" + string(rune('0'+idx)) + ".bin"
+	shardFilename := fmt.Sprintf("shard_%d.bin", idx)
 	shardPath := filepath.Join(basePath, shardFilename)
 
 	f, err := os.OpenFile(shardPath, os.O_CREATE|os.O_RDWR, 0644)
