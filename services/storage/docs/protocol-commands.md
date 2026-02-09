@@ -7,16 +7,21 @@ ID Ranges:
 | 0xxx     | System commands                  |
 | 1xxx     | Database and collection commands |
 | 2xxx     | Key-value engine commands        |
+| 3xxx     | Document engine commands         |
+| 4xxx     | Object engine commands           |
+| 5xxx     | Analytical engine commands       |
+| 6xxx     | Broker engine commands           |
 
 <!-- TOC -->
 * [Protocol commands](#protocol-commands)
-  * [System Commands](#system-commands)
+  * [System Commands (0xxx)](#system-commands-0xxx)
     * [Ping (1)](#ping-1)
     * [Supported protocol versions (2)](#supported-protocol-versions-2)
     * [Login (100)](#login-100)
     * [Auth status (101)](#auth-status-101)
   * [Database and collection commands](#database-and-collection-commands)
-  * [Key-value engine commands](#key-value-engine-commands)
+  * [Database and collection commands (1xxx)](#database-and-collection-commands-1xxx)
+  * [Key-value engine commands (2xxx)](#key-value-engine-commands-2xxx)
     * [KV Set (2000)](#kv-set-2000)
     * [KV Set with TTL (2001)](#kv-set-with-ttl-2001)
     * [KV Set multiple](#kv-set-multiple)
@@ -64,7 +69,8 @@ ID Ranges:
     * [KV Map Exists](#kv-map-exists)
     * [KV Map Keys](#kv-map-keys)
     * [KV Map Values](#kv-map-values)
-  * [Object engine commands](#object-engine-commands)
+  * [Document engine commands (3xxx)](#document-engine-commands-3xxx)
+  * [Object engine commands (4xxx)](#object-engine-commands-4xxx)
     * [Obj Put (4000)](#obj-put-4000)
     * [Obj Get (4001)](#obj-get-4001)
     * [Obj Get metadata (4002)](#obj-get-metadata-4002)
@@ -74,7 +80,8 @@ ID Ranges:
     * [Obj Copy](#obj-copy)
     * [Obj Move](#obj-move)
     * [Obj Rename](#obj-rename)
-  * [Broker engine commands](#broker-engine-commands)
+  * [Analytical engine commands (5xxx)](#analytical-engine-commands-5xxx)
+  * [Broker engine commands (6xxx)](#broker-engine-commands-6xxx)
     * [Broker Subscribe (6000)](#broker-subscribe-6000)
     * [Broker Subscribe queue (6001)](#broker-subscribe-queue-6001)
     * [Broker Unsubscribe (6002)](#broker-unsubscribe-6002)
@@ -82,7 +89,7 @@ ID Ranges:
     * [Broker Message (client bound) (6004)](#broker-message-client-bound-6004)
 <!-- TOC -->
 
-## System Commands
+## System Commands (0xxx)
 
 ### Ping (1)
 
@@ -164,7 +171,9 @@ Response:
 
 Not implemented yet.
 
-## Key-value engine commands
+## Database and collection commands (1xxx)
+
+## Key-value engine commands (2xxx)
 
 ### KV Set (2000)
 
@@ -478,7 +487,9 @@ Not implemented yet.
 
 Not implemented yet.
 
-## Object engine commands
+## Document engine commands (3xxx)
+
+## Object engine commands (4xxx)
 
 ### Obj Put (4000)
 
@@ -541,7 +552,7 @@ Response payload:
 | Field       | Size | Description                  |
 |-------------|------|------------------------------|
 | Size        | 8 B  | Size of the object in bytes  |
-| Checksum    | 8 B  | CRC32 checksum of the object |
+| Checksum    | 4 B  | CRC32 checksum of the object |
 | Created at  | 8 B  | Unix millisecond timestamp   |
 | Modified at | 8 B  | Unix millisecond timestamp   |
 
@@ -583,7 +594,9 @@ Not implemented yet.
 
 Not implemented yet.
 
-## Broker engine commands
+## Analytical engine commands (5xxx)
+
+## Broker engine commands (6xxx)
 
 ### Broker Subscribe (6000)
 
