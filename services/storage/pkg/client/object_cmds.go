@@ -91,14 +91,17 @@ func (c *Client) ObjGetMetadata(db, coll string, key string) (*ObjectMetadata, e
 	}
 
 	data := resp.Payload
-	if len(data) != 8+4 {
+	if len(data) != 8+4+8+8 {
 		fmt.Printf("invalid metadata payload length: expected 12, got %d\n", len(data))
 		return nil, ErrInvalidPayloadLength
 	}
 
 	return &ObjectMetadata{
-		Size:     int64(binary.BigEndian.Uint64(data[0:8])),
-		Checksum: binary.BigEndian.Uint32(data[8:12]),
+		Key:        key,
+		Size:       uint32(binary.BigEndian.Uint64(data[0:8])),
+		Checksum:   binary.BigEndian.Uint32(data[8:12]),
+		CreatedAt:  int64(binary.BigEndian.Uint64(data[12:20])),
+		ModifiedAt: int64(binary.BigEndian.Uint64(data[20:28])),
 	}, nil
 }
 

@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 // Bucket represents a persistent bucket with sharded storage
@@ -60,19 +61,31 @@ func (b *Bucket) Put(key string, data []byte) error {
 		return err
 	}
 
-	// Write length-prefixed key + value
-	if err := writeEntry(s.file, key, data); err != nil {
-		return err
-	}
-
 	// Compute checksum
 	checksum := crc32.ChecksumIEEE(data)
 
+	var createdAt int64
+	if meta, ok := s.index[key]; ok {
+		createdAt = meta.CreatedAt
+	} else {
+		createdAt = time.Now().UnixMilli()
+	}
+
+	modifiedAt := time.Now().UnixMilli()
+
+	// Write length-prefixed key + value
+	if err := writeEntry(s.file, key, checksum, createdAt, modifiedAt, data); err != nil {
+		return err
+	}
+
 	// Update in-memory index
 	s.index[key] = ObjectMeta{
-		Offset:   offset,
-		Size:     int64(len(data)),
-		Checksum: checksum,
+		Key:        key,
+		Offset:     offset,
+		Size:       uint32(len(data)),
+		Checksum:   checksum,
+		CreatedAt:  createdAt,
+		ModifiedAt: modifiedAt,
 	}
 
 	return nil
@@ -95,11 +108,11 @@ func (b *Bucket) Get(key string) ([]byte, error) {
 	}
 
 	// Read the entry and verify the key matches
-	readKey, data, err := readEntry(s.file)
+	readMeta, data, err := readEntry(s.file, false)
 	if err != nil {
 		return nil, err
 	}
-	if readKey != key {
+	if readMeta.Key != key {
 		return nil, errors.New("key mismatch")
 	}
 
@@ -117,11 +130,17 @@ func (b *Bucket) Delete(key string) error {
 	s.Lock()
 	defer s.Unlock()
 
-	if _, ok := s.index[key]; !ok {
+	meta, ok := s.index[key]
+	if !ok {
 		return ErrKeyNotFound
 	}
 
 	delete(s.index, key)
+
+	// Write a tombstone entry with zero size
+	if err := writeEntry(s.file, key, meta.Checksum, meta.CreatedAt, time.Now().UnixMilli(), []byte{}); err != nil {
+		return err
+	}
 
 	s.dirty = true // Mark shard as dirty for compaction
 

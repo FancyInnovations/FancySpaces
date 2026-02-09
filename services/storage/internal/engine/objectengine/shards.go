@@ -1,10 +1,7 @@
 package objectengine
 
 import (
-	"encoding/binary"
 	"fmt"
-	"hash/crc32"
-	"io"
 	"os"
 	"path/filepath"
 	"sync"
@@ -53,50 +50,35 @@ func (b *Bucket) newShard(idx int, basePath string) (*shard, error) {
 	return s, nil
 }
 
-// loadIndex rebuilds the in-memory index by scanning the file
+// loadIndex reads all entries from the shard file and builds the in-memory index.
+// It also marks the shard as dirty if it encounters any deleted entries (size == 0).
 func (s *shard) loadIndex() error {
-	s.index = make(map[string]ObjectMeta)
+	idx := make(map[string]ObjectMeta)
 
-	var offset int64 = 0
-	for {
-		startOffset := offset
-
-		// Read key length and key
-		var keyLen uint32
-		if err := binary.Read(s.file, binary.LittleEndian, &keyLen); err != nil {
-			if err == io.EOF {
-				break
-			}
-			return err
-		}
-
-		keyBuf := make([]byte, keyLen)
-		if _, err := io.ReadFull(s.file, keyBuf); err != nil {
-			return err
-		}
-		key := string(keyBuf)
-
-		// Read data length and data
-		var dataLen uint32
-		if err := binary.Read(s.file, binary.LittleEndian, &dataLen); err != nil {
-			return err
-		}
-
-		dataBuf := make([]byte, dataLen)
-		if _, err := io.ReadFull(s.file, dataBuf); err != nil {
-			return err
-		}
-
-		// Compute checksum
-		checksum := crc32.ChecksumIEEE(dataBuf)
-
-		s.index[key] = ObjectMeta{
-			Offset:   startOffset,
-			Size:     int64(dataLen),
-			Checksum: checksum,
-		}
-
-		offset, _ = s.file.Seek(0, io.SeekCurrent)
+	entries, err := readAllEntries(s)
+	if err != nil {
+		return err
 	}
+
+	for _, e := range entries {
+		if e.Size == 0 { // Deleted entry, skip but mark shard as dirty
+			s.dirty = true
+			continue
+		}
+
+		existing, exists := idx[e.Key]
+		if exists {
+			// If we encounter multiple entries for the same key, we keep the one with the highest offset (most recent)
+			if existing.Offset > e.Offset {
+				continue
+			}
+		}
+
+		idx[e.Key] = *e
+	}
+
+	// Swap in the rebuilt index
+	s.index = idx
+
 	return nil
 }

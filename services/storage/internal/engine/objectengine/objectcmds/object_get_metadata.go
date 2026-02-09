@@ -16,7 +16,7 @@ import (
 
 // handleGetMetadata processes a get metadata command for an object engine.
 // Payload format: | Key Length (2 bytes) | Key (variable) |
-// Response payload format: | Size (8 bytes) | CRC32 (4 bytes)
+// Response payload format: | Size (8 bytes) | CRC32 (4 bytes) | CreatedAt (8 bytes) | ModifiedAt (8 bytes) |
 func (c *Commands) handleGetMetadata(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)
 	if u == nil || !u.Verified || !u.IsActive {
@@ -78,7 +78,7 @@ func (c *Commands) handleGetMetadata(ctx *command.ConnCtx, _ *protocol.Message, 
 		return commonresponses.InternalServerError, nil
 	}
 
-	totalLen := 8 + 4
+	totalLen := 8 + 4 + 8 + 8
 	payload := make([]byte, totalLen)
 
 	// Size
@@ -86,6 +86,12 @@ func (c *Commands) handleGetMetadata(ctx *command.ConnCtx, _ *protocol.Message, 
 
 	// CRC32
 	binary.BigEndian.PutUint32(payload[8:12], omd.Checksum)
+
+	// CreatedAt
+	binary.BigEndian.PutUint64(payload[12:20], uint64(omd.CreatedAt))
+
+	// ModifiedAt
+	binary.BigEndian.PutUint64(payload[20:28], uint64(omd.ModifiedAt))
 
 	return &protocol.Response{
 		Code:    protocol.StatusOK,

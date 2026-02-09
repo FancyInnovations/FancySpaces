@@ -54,7 +54,7 @@ func TestPutGetGetMetaDelete_TableDriven(t *testing.T) {
 			if err != nil {
 				t.Fatalf("GetMeta(%s) error: %v", tc.key, err)
 			}
-			if meta.Size != int64(len(tc.value)) {
+			if meta.Size != uint32(len(tc.value)) {
 				t.Fatalf("GetMeta(%s) size mismatch: got=%d want=%d", tc.key, meta.Size, len(tc.value))
 			}
 			if meta.Checksum != crc32.ChecksumIEEE(tc.value) {
