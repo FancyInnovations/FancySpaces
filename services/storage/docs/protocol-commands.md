@@ -64,6 +64,16 @@ ID Ranges:
     * [KV Map Exists](#kv-map-exists)
     * [KV Map Keys](#kv-map-keys)
     * [KV Map Values](#kv-map-values)
+  * [Object engine commands](#object-engine-commands)
+    * [Obj Put (4000)](#obj-put-4000)
+    * [Obj Get (4001)](#obj-get-4001)
+    * [Obj Get metadata (4002)](#obj-get-metadata-4002)
+    * [Obj Delete (4003)](#obj-delete-4003)
+    * [Obj Exists](#obj-exists)
+    * [Obj List](#obj-list)
+    * [Obj Copy](#obj-copy)
+    * [Obj Move](#obj-move)
+    * [Obj Rename](#obj-rename)
   * [Broker engine commands](#broker-engine-commands)
     * [Broker Subscribe (6000)](#broker-subscribe-6000)
     * [Broker Subscribe queue (6001)](#broker-subscribe-queue-6001)
@@ -465,6 +475,111 @@ Not implemented yet.
 Not implemented yet.
 
 ### KV Map Values
+
+Not implemented yet.
+
+## Object engine commands
+
+### Obj Put (4000)
+
+The Obj Put command stores an object in the engine.
+
+Payload format:
+
+| Field                                              | Size | Description         |
+|----------------------------------------------------|------|---------------------|
+| Key length                                         | 2 B  | Length of the key   |
+| Key                                                | N B  | The key to set      |
+| [Encoded binary value](protocol-encoded-values.md) | N B  | The object to store |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+### Obj Get (4001)
+
+The Obj Get command retrieves an object from the engine.
+
+Payload format:
+
+| Field      | Size | Description         |
+|------------|------|---------------------|
+| Key length | 2 B  | Length of the key   |
+| Key        | N B  | The key to retrieve |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+| 1008        | Key not found |
+
+The response payload for a successful Obj Get command contains the object associated with the key, encoded as an encoded binary value (see [Encoded Values](protocol-encoded-values.md)).
+
+### Obj Get metadata (4002)
+
+The Obj Get metadata command retrieves the metadata of an object from the engine.
+
+Payload format:
+
+| Field      | Size | Description         |
+|------------|------|---------------------|
+| Key length | 2 B  | Length of the key   |
+| Key        | N B  | The key to retrieve |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+| 1008        | Key not found |
+
+Response payload:
+
+| Field       | Size | Description                  |
+|-------------|------|------------------------------|
+| Size        | 8 B  | Size of the object in bytes  |
+| Checksum    | 8 B  | CRC32 checksum of the object |
+| Created at  | 8 B  | Unix millisecond timestamp   |
+| Modified at | 8 B  | Unix millisecond timestamp   |
+
+### Obj Delete (4003)
+
+The Obj Delete command deletes an object from the engine.
+
+Payload format:
+
+| Field      | Size | Description         |
+|------------|------|---------------------|
+| Key length | 2 B  | Length of the key   |
+| Key        | N B  | The key to delete   |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+| 1008        | Key not found |
+
+### Obj Exists
+
+Not implemented yet.
+
+### Obj List
+
+Not implemented yet.
+
+### Obj Copy
+
+Not implemented yet.
+
+### Obj Move
+
+Not implemented yet.
+
+### Obj Rename
 
 Not implemented yet.
 
