@@ -4,6 +4,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/brokerengine"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine"
 )
 
 type Entry struct {
@@ -19,6 +20,14 @@ func (e *Entry) AsKeyValueEngine() *kvengine.Engine {
 	}
 
 	return e.engine.(*kvengine.Engine)
+}
+
+func (e *Entry) AsObjectEngine() *objectengine.Bucket {
+	if e.Type != database.EngineObject {
+		return nil
+	}
+
+	return e.engine.(*objectengine.Bucket)
 }
 
 func (e *Entry) AsBrokerEngine() *brokerengine.Broker {

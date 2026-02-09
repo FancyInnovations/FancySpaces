@@ -32,20 +32,16 @@ func main() {
 	}
 	defer c.Close()
 
-	//fn := func(msg []byte) {
-	//	fmt.Printf("Received message: %s\n", string(msg))
-	//}
-	//
-	//if err := c.BrokerSubscribe("system", "brokertest", "user.created", fn); err != nil {
-	//	slog.Error("Failed to subscribe", sloki.WrapError(err))
+	//if err := c.ObjPut("system", "objtest", "something.md", []byte("Hello world!lolol")); err != nil {
+	//	slog.Error("Failed to put object", sloki.WrapError(err))
 	//	return
 	//}
-	//
-	//time.Sleep(5 * time.Second)
-	if err := c.BrokerPublish("system", "brokertest", "user.created", []byte("Hello, World!")); err != nil {
-		slog.Error("Failed to publish", sloki.WrapError(err))
+	//slog.Info("Object put successfully")
+
+	data, err := c.ObjGet("system", "objtest", "something.md")
+	if err != nil {
+		slog.Error("Failed to get object", sloki.WrapError(err))
 		return
 	}
-
-	select {}
+	slog.Info("Object retrieved successfully", slog.String("data", string(data)))
 }

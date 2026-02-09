@@ -4,6 +4,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
 type Commands struct {
@@ -25,14 +26,14 @@ func New(cfg Configuration) *Commands {
 
 func (c *Commands) Get() map[uint16]command.Handler {
 	return map[uint16]command.Handler{
-		//protocol.ServerCommandObjectPut:         c.handleObjectPut,
-		//protocol.ServerCommandObjectGet:         c.handleObjectGet,
-		//protocol.ServerCommandObjectGetMetadata: c.handleObjectGetMetadata,
-		//protocol.ServerCommandObjectDelete:      c.handleObjectDelete,
-		//protocol.ServerCommandObjectExists:      c.handleObjectExists,
-		//protocol.ServerCommandObjectList:        c.handleObjectList,
-		//protocol.ServerCommandObjectCopy:        c.handleObjectCopy,
-		//protocol.ServerCommandObjectMove:        c.handleObjectMove,
-		//protocol.ServerCommandObjectRename:      c.handleObjectRename,
+		protocol.ServerCommandObjectPut: c.handlePut,
+		protocol.ServerCommandObjectGet: c.handleGet,
+		//protocol.ServerCommandObjectGetMetadata: c.handleGetMetadata,
+		//protocol.ServerCommandObjectDelete:      c.handleDelete,
+		//protocol.ServerCommandObjectExists:      c.handleExists,
+		//protocol.ServerCommandObjectList:        c.handleList,
+		//protocol.ServerCommandObjectCopy:        c.handleCopy,
+		//protocol.ServerCommandObjectMove:        c.handleMove,
+		//protocol.ServerCommandObjectRename:      c.handleRename,
 	}
 }

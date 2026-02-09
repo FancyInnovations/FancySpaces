@@ -86,7 +86,7 @@ func (b *Bucket) Get(key string) ([]byte, error) {
 
 	meta, ok := s.index[key]
 	if !ok {
-		return nil, errors.New("key not found")
+		return nil, ErrKeyNotFound
 	}
 
 	// Seek to the offset and read the entry

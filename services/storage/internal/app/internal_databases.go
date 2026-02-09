@@ -41,5 +41,10 @@ func seedInternalDatabases(dbStore *database.Store) error {
 		return fmt.Errorf("failed to create internal collection 'brokertest' in database 'system': %w", err)
 	}
 
+	// object test collection
+	if err := dbStore.CreateCollectionIfNotExists(ctx, systemDB, "objtest", database.EngineObject); err != nil {
+		return fmt.Errorf("failed to create internal collection 'objtest' in database 'system': %w", err)
+	}
+
 	return nil
 }
