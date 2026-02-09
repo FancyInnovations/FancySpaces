@@ -10,16 +10,14 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleGet processes a get command for an object engine. The payload is expected to be in the format:
+// handleGetMetadata processes a get metadata command for an object engine.
 // Payload format: | Key Length (2 bytes) | Key (variable) |
-// Response payload will be the binary data associated with the key, encoded using codex.TypeBinary.
-// If the key is not found, a protocol.StatusNotFound response will be returned with an empty payload.
-func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
+// Response payload format: | Size (8 bytes) | CRC32 (4 bytes)
+func (c *Commands) handleGetMetadata(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)
 	if u == nil || !u.Verified || !u.IsActive {
 		return commonresponses.Unauthorized, nil
@@ -62,7 +60,7 @@ func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 
 	key := string(data[2 : 2+keyLen])
 
-	binData, err := obje.Get(key)
+	omd, err := obje.GetMeta(key)
 	if err != nil {
 		if errors.Is(err, objectengine.ErrKeyNotFound) {
 			return &protocol.Response{
@@ -71,7 +69,7 @@ func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 			}, nil
 		}
 
-		slog.Error("Failed to get object",
+		slog.Error("Failed to get object metadata",
 			slog.String("database", cmd.DatabaseName),
 			slog.String("collection", cmd.CollectionName),
 			slog.String("key", key),
@@ -80,8 +78,17 @@ func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 		return commonresponses.InternalServerError, nil
 	}
 
+	totalLen := 8 + 4
+	payload := make([]byte, totalLen)
+
+	// Size
+	binary.BigEndian.PutUint64(payload[0:8], uint64(omd.Size))
+
+	// CRC32
+	binary.BigEndian.PutUint32(payload[8:12], omd.Checksum)
+
 	return &protocol.Response{
 		Code:    protocol.StatusOK,
-		Payload: codex.EncodeBinary(binData),
+		Payload: payload,
 	}, nil
 }

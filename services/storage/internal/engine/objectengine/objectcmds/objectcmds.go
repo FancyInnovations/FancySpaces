@@ -26,10 +26,10 @@ func New(cfg Configuration) *Commands {
 
 func (c *Commands) Get() map[uint16]command.Handler {
 	return map[uint16]command.Handler{
-		protocol.ServerCommandObjectPut: c.handlePut,
-		protocol.ServerCommandObjectGet: c.handleGet,
-		//protocol.ServerCommandObjectGetMetadata: c.handleGetMetadata,
-		//protocol.ServerCommandObjectDelete:      c.handleDelete,
+		protocol.ServerCommandObjectPut:         c.handlePut,
+		protocol.ServerCommandObjectGet:         c.handleGet,
+		protocol.ServerCommandObjectGetMetadata: c.handleGetMetadata,
+		protocol.ServerCommandObjectDelete:      c.handleDelete,
 		//protocol.ServerCommandObjectExists:      c.handleExists,
 		//protocol.ServerCommandObjectList:        c.handleList,
 		//protocol.ServerCommandObjectCopy:        c.handleCopy,

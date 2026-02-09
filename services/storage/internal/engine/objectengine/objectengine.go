@@ -117,6 +117,10 @@ func (b *Bucket) Delete(key string) error {
 	s.Lock()
 	defer s.Unlock()
 
+	if _, ok := s.index[key]; !ok {
+		return ErrKeyNotFound
+	}
+
 	delete(s.index, key)
 
 	s.dirty = true // Mark shard as dirty for compaction
@@ -132,7 +136,7 @@ func (b *Bucket) GetMeta(key string) (*ObjectMeta, error) {
 
 	meta, ok := s.index[key]
 	if !ok {
-		return nil, errors.New("key not found")
+		return nil, ErrKeyNotFound
 	}
 
 	return &meta, nil

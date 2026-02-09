@@ -10,16 +10,13 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleGet processes a get command for an object engine. The payload is expected to be in the format:
+// handlePut processes a delete command for an object engine.
 // Payload format: | Key Length (2 bytes) | Key (variable) |
-// Response payload will be the binary data associated with the key, encoded using codex.TypeBinary.
-// If the key is not found, a protocol.StatusNotFound response will be returned with an empty payload.
-func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
+func (c *Commands) handleDelete(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)
 	if u == nil || !u.Verified || !u.IsActive {
 		return commonresponses.Unauthorized, nil
@@ -62,8 +59,7 @@ func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 
 	key := string(data[2 : 2+keyLen])
 
-	binData, err := obje.Get(key)
-	if err != nil {
+	if err := obje.Delete(key); err != nil {
 		if errors.Is(err, objectengine.ErrKeyNotFound) {
 			return &protocol.Response{
 				Code:    protocol.StatusNotFound,
@@ -71,7 +67,7 @@ func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 			}, nil
 		}
 
-		slog.Error("Failed to get object",
+		slog.Error("Failed to delete object",
 			slog.String("database", cmd.DatabaseName),
 			slog.String("collection", cmd.CollectionName),
 			slog.String("key", key),
@@ -80,8 +76,5 @@ func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 		return commonresponses.InternalServerError, nil
 	}
 
-	return &protocol.Response{
-		Code:    protocol.StatusOK,
-		Payload: codex.EncodeBinary(binData),
-	}, nil
+	return commonresponses.OK, nil
 }

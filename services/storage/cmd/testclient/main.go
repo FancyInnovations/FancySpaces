@@ -38,10 +38,23 @@ func main() {
 	//}
 	//slog.Info("Object put successfully")
 
-	data, err := c.ObjGet("system", "objtest", "something.md")
-	if err != nil {
-		slog.Error("Failed to get object", sloki.WrapError(err))
+	//data, err := c.ObjGet("system", "objtest", "something.md")
+	//if err != nil {
+	//	slog.Error("Failed to get object", sloki.WrapError(err))
+	//	return
+	//}
+	//slog.Info("Object retrieved successfully", slog.String("data", string(data)))
+
+	if err := c.ObjDelete("system", "objtest", "something.md"); err != nil {
+		slog.Error("Failed to delete object", sloki.WrapError(err))
 		return
 	}
-	slog.Info("Object retrieved successfully", slog.String("data", string(data)))
+	slog.Info("Object deleted successfully")
+
+	md, err := c.ObjGetMetadata("system", "objtest", "something.md")
+	if err != nil {
+		slog.Error("Failed to get object metadata", sloki.WrapError(err))
+		return
+	}
+	slog.Info("Object metadata retrieved successfully", slog.Uint64("size", uint64(md.Size)), slog.Uint64("crc32", uint64(md.Checksum)))
 }
