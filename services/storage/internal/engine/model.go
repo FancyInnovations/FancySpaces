@@ -2,7 +2,7 @@ package engine
 
 import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
-	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/broker"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/brokerengine"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine"
 )
 
@@ -21,10 +21,10 @@ func (e *Entry) AsKeyValueEngine() *kvengine.Engine {
 	return e.engine.(*kvengine.Engine)
 }
 
-func (e *Entry) AsBrokerEngine() *broker.Broker {
+func (e *Entry) AsBrokerEngine() *brokerengine.Broker {
 	if e.Type != database.EngineBroker {
 		return nil
 	}
 
-	return e.engine.(*broker.Broker)
+	return e.engine.(*brokerengine.Broker)
 }

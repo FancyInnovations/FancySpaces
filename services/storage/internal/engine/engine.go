@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
-	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/broker"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/brokerengine"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine"
 )
@@ -77,8 +77,8 @@ func (s *Service) LoadEngines() error {
 				continue
 			}
 		case database.EngineBroker:
-			e = broker.NewBroker(broker.Configuration{
-				PublishCallback: func(sub *broker.Subscriber, subject string, msgs [][]byte) {
+			e = brokerengine.NewBroker(brokerengine.Configuration{
+				PublishCallback: func(sub *brokerengine.Subscriber, subject string, msgs [][]byte) {
 					s.sendBrokerMessage(coll.Database, coll.Name, sub.ID, subject, msgs)
 				},
 				IsClientHealthy: s.isConnectionHealthy,
