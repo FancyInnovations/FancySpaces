@@ -38,6 +38,19 @@ func main() {
 	}
 	defer c.Close()
 
-	coll := collection.NewMessageBrokerCollection(c, "system", "kv_test")
-	_ = coll
+	coll := collection.NewKeyValueCollection(c, "system", "kv_test")
+
+	err = coll.Set("hello", "world")
+	if err != nil {
+		slog.Error("Failed to set value", sloki.WrapError(err))
+		return
+	}
+	slog.Info("Value set successfully")
+
+	value, err := coll.Get("hello")
+	if err != nil {
+		slog.Error("Failed to get value", sloki.WrapError(err))
+		return
+	}
+	slog.Info("Value retrieved successfully", slog.String("value", value.AsString()))
 }

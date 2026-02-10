@@ -15,6 +15,11 @@ var (
 		Payload: *EmptyPayload,
 	}
 
+	Forbidden = &protocol.Response{
+		Code:    protocol.StatusForbidden,
+		Payload: *EmptyPayload,
+	}
+
 	DatabaseNotFound = &protocol.Response{
 		Code:    protocol.StatusDatabaseNotFound,
 		Payload: *EmptyPayload,

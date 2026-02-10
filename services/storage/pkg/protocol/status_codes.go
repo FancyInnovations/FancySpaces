@@ -35,6 +35,9 @@ const (
 	// StatusNotFound indicates that the requested resource was not found.
 	StatusNotFound uint16 = 1008
 
+	// StatusForbidden indicates that the client does not have permission to access the requested resource.
+	StatusForbidden uint16 = 1009
+
 	// StatusInternalServerError indicates that an internal server error occurred.
 	StatusInternalServerError uint16 = 2000
 )

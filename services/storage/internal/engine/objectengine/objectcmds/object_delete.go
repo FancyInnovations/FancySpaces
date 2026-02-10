@@ -22,6 +22,23 @@ func (c *Commands) handleDelete(ctx *command.ConnCtx, _ *protocol.Message, cmd *
 		return commonresponses.Unauthorized, nil
 	}
 
+	db, err := c.dbStore.GetDatabase(ctx.Ctx, cmd.DatabaseName)
+	if err != nil {
+		if errors.Is(err, database.ErrDatabaseNotFound) {
+			return commonresponses.DatabaseNotFound, nil
+		}
+
+		slog.Error("Failed to get database",
+			slog.String("database", cmd.DatabaseName),
+			sloki.WrapError(err),
+		)
+		return commonresponses.InternalServerError, nil
+	}
+
+	if !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
+		return commonresponses.Forbidden, nil
+	}
+
 	e, err := c.engineService.GetEngine(cmd.DatabaseName, cmd.CollectionName)
 	if err != nil {
 		if errors.Is(err, database.ErrCollectionNotFound) {
