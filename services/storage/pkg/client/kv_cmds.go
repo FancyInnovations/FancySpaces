@@ -2,14 +2,152 @@ package client
 
 import (
 	"encoding/binary"
-	"time"
 
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// KVGet retrieves the value associated with the specified key from the collection.
-// It returns a codex.Value, which can be of any type supported by codex.
+// KVSet implements the client side of the protocol.ServerCommandKVSet command.
+func (c *Client) KVSet(db, coll string, key string, value *codex.Value) error {
+	data := codex.EncodeValue(value)
+
+	totalLen := 2 + len(key) + len(data)
+	payload := make([]byte, totalLen)
+
+	// Key
+	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
+	copy(payload[2:2+len(key)], []byte(key))
+
+	// Value
+	copy(payload[2+len(key):], data)
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVSet,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payload,
+	})
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
+// KVSetTTL implements the client side of the protocol.ServerCommandKVSetTTL command.
+func (c *Client) KVSetTTL(db, coll string, key string, value *codex.Value, expiresAt uint64) error {
+	data := codex.EncodeValue(value)
+
+	totalLen := 2 + len(key) + len(data) + 8
+	payload := make([]byte, totalLen)
+
+	// Key
+	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
+	copy(payload[2:2+len(key)], []byte(key))
+
+	// Value
+	copy(payload[2+len(key):2+len(key)+len(data)], data)
+
+	// TTL
+	binary.BigEndian.PutUint64(payload[2+len(key)+len(data):], expiresAt)
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVSetTTL,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payload,
+	})
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
+// KVDelete implements the client side of the protocol.ServerCommandKVDelete command.
+func (c *Client) KVDelete(db, coll string, key string) error {
+	totalLen := 2 + len(key)
+	payload := make([]byte, totalLen)
+
+	// Key
+	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
+	copy(payload[2:2+len(key)], []byte(key))
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVDelete,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payload,
+	})
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
+// KVDeleteAll implements the client side of the protocol.ServerCommandKVDeleteAll command.
+func (c *Client) KVDeleteAll(db, coll string) error {
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVDeleteAll,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        *commonresponses.EmptyPayload,
+	})
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
+// KVExists implements the client side of the protocol.ServerCommandKVExists command.
+func (c *Client) KVExists(db, coll string, key string) (bool, error) {
+	totalLen := 2 + len(key)
+	payload := make([]byte, totalLen)
+
+	// Key
+	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
+	copy(payload[2:2+len(key)], []byte(key))
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVExists,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payload,
+	})
+	if err != nil {
+		return false, err
+	}
+
+	switch resp.Code {
+	case protocol.StatusOK:
+		return true, nil
+	case protocol.StatusNotFound:
+		return false, nil
+	default:
+		return false, ErrUnexpectedStatusCode
+	}
+}
+
+// KVGet implements the client side of the protocol.ServerCommandKVGet command.
 func (c *Client) KVGet(db, coll string, key string) (*codex.Value, error) {
 	totalLen := 2 + len(key)
 	payload := make([]byte, totalLen)
@@ -44,161 +182,65 @@ func (c *Client) KVGet(db, coll string, key string) (*codex.Value, error) {
 	return val, nil
 }
 
-// KVSet sets a key-value pair in the specified collection.
-// The value can be of any type that codex (codex.ValueType) supports.
-func (c *Client) KVSet(db, coll string, key string, value any) error {
-	val, err := codex.NewValue(value)
-	if err != nil {
-		return err
-	}
-	data := codex.EncodeValue(val)
-
-	totalLen := 2 + len(key) + len(data)
-	payload := make([]byte, totalLen)
-
-	// Key
-	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
-	copy(payload[2:2+len(key)], []byte(key))
-
-	// Value
-	copy(payload[2+len(key):], data)
+// KVGetMultiple implements the client side of the protocol.ServerCommandKVGetMultiple command.
+func (c *Client) KVGetMultiple(db, coll string, keys []string) (map[string]*codex.Value, error) {
+	keyVals := codex.NewStringListValue(keys)
 
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.ServerCommandKVSet,
+		ID:             protocol.ServerCommandKVGetMultiple,
 		DatabaseName:   db,
 		CollectionName: coll,
-		Payload:        payload,
+		Payload:        codex.EncodeValue(keyVals),
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if resp.Code != protocol.StatusOK {
-		return ErrUnexpectedStatusCode
+		return nil, ErrUnexpectedStatusCode
 	}
 
-	return nil
+	val, err := codex.DecodeValue(resp.Payload)
+	if err != nil {
+		return nil, err
+	}
+
+	if val.Type != codex.TypeMap {
+		return nil, ErrUnexpectedDataType
+	}
+
+	return val.AsMap(), nil
 }
 
-// KVSetTTL sets a key-value pair in the specified collection with a time-to-live (TTL).
-// The value can be of any type that codex (codex.ValueType) supports.
-// After the TTL expires, the key-value pair will be automatically deleted from the collection.
-func (c *Client) KVSetTTL(db, coll string, key string, value any, ttlMillis uint64) error {
-	val, err := codex.NewValue(value)
-	if err != nil {
-		return err
-	}
-	data := codex.EncodeValue(val)
-
-	totalLen := 2 + len(key) + len(data) + 8
-	payload := make([]byte, totalLen)
-
-	// Key
-	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
-	copy(payload[2:2+len(key)], []byte(key))
-
-	// Value
-	copy(payload[2+len(key):2+len(key)+len(data)], data)
-
-	// TTL
-	ttlNanos := ttlMillis * 1_000_000 // Convert milliseconds to nanoseconds
-	expiresAt := time.Now().UnixNano() + int64(ttlNanos)
-	binary.BigEndian.PutUint64(payload[2+len(key)+len(data):], uint64(expiresAt))
-
+// KVGetAll implements the client side of the protocol.ServerCommandKVGetAll command.
+func (c *Client) KVGetAll(db, coll string) (map[string]*codex.Value, error) {
 	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.ServerCommandKVSetTTL,
+		ID:             protocol.ServerCommandKVGetAll,
 		DatabaseName:   db,
 		CollectionName: coll,
-		Payload:        payload,
+		Payload:        *commonresponses.EmptyPayload,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if resp.Code != protocol.StatusOK {
-		return ErrUnexpectedStatusCode
+		return nil, ErrUnexpectedStatusCode
 	}
 
-	return nil
-}
-
-// KVDelete deletes the key-value pair associated with the specified key from the collection.
-func (c *Client) KVDelete(db, coll string, key string) error {
-	totalLen := 2 + len(key)
-	payload := make([]byte, totalLen)
-
-	// Key
-	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
-	copy(payload[2:2+len(key)], []byte(key))
-
-	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.ServerCommandKVDelete,
-		DatabaseName:   db,
-		CollectionName: coll,
-		Payload:        payload,
-	})
+	val, err := codex.DecodeValue(resp.Payload)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if resp.Code != protocol.StatusOK {
-		return ErrUnexpectedStatusCode
+	if val.Type != codex.TypeMap {
+		return nil, ErrUnexpectedDataType
 	}
 
-	return nil
+	return val.AsMap(), nil
 }
 
-// KVDeleteAll deletes all key-value pairs from the specified collection. This is a destructive operation and should be used with caution.
-func (c *Client) KVDeleteAll(db, coll string) error {
-	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.ServerCommandKVDeleteAll,
-		DatabaseName:   db,
-		CollectionName: coll,
-		Payload:        make([]byte, 0),
-	})
-	if err != nil {
-		return err
-	}
-
-	if resp.Code != protocol.StatusOK {
-		return ErrUnexpectedStatusCode
-	}
-
-	return nil
-}
-
-// KVExists checks if a key exists in the specified collection.
-// It returns true if the key exists, false if it does not exist, and an error if there was an issue checking.
-func (c *Client) KVExists(db, coll string, key string) (bool, error) {
-	totalLen := 2 + len(key)
-	payload := make([]byte, totalLen)
-
-	// Key
-	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
-	copy(payload[2:2+len(key)], []byte(key))
-
-	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.ServerCommandKVExists,
-		DatabaseName:   db,
-		CollectionName: coll,
-		Payload:        payload,
-	})
-	if err != nil {
-		return false, err
-	}
-
-	switch resp.Code {
-	case protocol.StatusOK:
-		return true, nil
-	case protocol.StatusNotFound:
-		return false, nil
-	default:
-		return false, ErrUnexpectedStatusCode
-	}
-}
-
-// KVKeys retrieves all keys in the specified collection.
-// It returns a slice of strings representing the keys, or an error if there was an issue retrieving the keys.
+// KVKeys implements the client side of the protocol.ServerCommandKVKeys command.
 func (c *Client) KVKeys(db, coll string) ([]string, error) {
 	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.ServerCommandKVKeys,
@@ -231,75 +273,13 @@ func (c *Client) KVKeys(db, coll string) ([]string, error) {
 	return keys, nil
 }
 
-// KVGetMultiple retrieves the values associated with the specified keys from the collection.
-// It returns a slice of codex.Value, where each value corresponds to the key at the same index in the input keys slice.
-// If a key does not exist, its corresponding value in the returned slice will be nil.
-func (c *Client) KVGetMultiple(db, coll string, keys []string) (map[string]*codex.Value, error) {
-	keyVals := codex.NewStringListValue(keys)
-
-	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.ServerCommandKVGetMultiple,
-		DatabaseName:   db,
-		CollectionName: coll,
-		Payload:        codex.EncodeValue(keyVals),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.Code != protocol.StatusOK {
-		return nil, ErrUnexpectedStatusCode
-	}
-
-	val, err := codex.DecodeValue(resp.Payload)
-	if err != nil {
-		return nil, err
-	}
-
-	if val.Type != codex.TypeMap {
-		return nil, ErrUnexpectedDataType
-	}
-
-	return val.AsMap(), nil
-}
-
-// KVGetAll retrieves all key-value pairs from the specified collection.
-// It returns a map where the keys are the keys from the collection and the values are the corresponding codex.Value.
-// This is a heavy operation and should be used with caution, as it will read all data in memory and may block other operations while it runs.
-func (c *Client) KVGetAll(db, coll string) (map[string]*codex.Value, error) {
-	resp, err := c.SendCmd(&protocol.Command{
-		ID:             protocol.ServerCommandKVGetAll,
-		DatabaseName:   db,
-		CollectionName: coll,
-		Payload:        make([]byte, 0),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.Code != protocol.StatusOK {
-		return nil, ErrUnexpectedStatusCode
-	}
-
-	val, err := codex.DecodeValue(resp.Payload)
-	if err != nil {
-		return nil, err
-	}
-
-	if val.Type != codex.TypeMap {
-		return nil, ErrUnexpectedDataType
-	}
-
-	return val.AsMap(), nil
-}
-
-// KVCount returns the number of key-value pairs in the specified collection.
+// KVCount implements the client side of the protocol.ServerCommandKVCount command.
 func (c *Client) KVCount(db, coll string) (uint32, error) {
 	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.ServerCommandKVCount,
 		DatabaseName:   db,
 		CollectionName: coll,
-		Payload:        make([]byte, 0),
+		Payload:        *commonresponses.EmptyPayload,
 	})
 	if err != nil {
 		return 0, err

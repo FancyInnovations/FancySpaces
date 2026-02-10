@@ -26,24 +26,19 @@ func seedInternalDatabases(dbStore *database.Store) error {
 		return fmt.Errorf("failed to create internal database 'system': %w", err)
 	}
 
-	// databases collection
-	if err := dbStore.CreateCollectionIfNotExists(ctx, systemDB, "databases", database.EngineKeyValue); err != nil {
-		return fmt.Errorf("failed to create internal collection 'databases' in database 'system': %w", err)
-	}
-
-	// collections collection
-	if err := dbStore.CreateCollectionIfNotExists(ctx, systemDB, "collections", database.EngineKeyValue); err != nil {
-		return fmt.Errorf("failed to create internal collection 'collections' in database 'system': %w", err)
-	}
-
-	// broker test collection
-	if err := dbStore.CreateCollectionIfNotExists(ctx, systemDB, "brokertest", database.EngineBroker); err != nil {
-		return fmt.Errorf("failed to create internal collection 'brokertest' in database 'system': %w", err)
+	// key-value test collection
+	if err := dbStore.CreateCollectionIfNotExists(ctx, systemDB, "kv_test", database.EngineKeyValue); err != nil {
+		return fmt.Errorf("failed to create internal collection 'kv_test' in database 'system': %w", err)
 	}
 
 	// object test collection
-	if err := dbStore.CreateCollectionIfNotExists(ctx, systemDB, "objtest", database.EngineObject); err != nil {
-		return fmt.Errorf("failed to create internal collection 'objtest' in database 'system': %w", err)
+	if err := dbStore.CreateCollectionIfNotExists(ctx, systemDB, "obj_test", database.EngineObject); err != nil {
+		return fmt.Errorf("failed to create internal collection 'obj_test' in database 'system': %w", err)
+	}
+
+	// broker test collection
+	if err := dbStore.CreateCollectionIfNotExists(ctx, systemDB, "broker_test", database.EngineBroker); err != nil {
+		return fmt.Errorf("failed to create internal collection 'broker_test' in database 'system': %w", err)
 	}
 
 	return nil

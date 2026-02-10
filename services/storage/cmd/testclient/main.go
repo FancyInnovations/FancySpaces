@@ -1,19 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/client"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/client/collection"
 )
 
-type Sample struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-	Something int       `json:"something"`
+type Person struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
 }
 
 func main() {
@@ -41,35 +39,19 @@ func main() {
 	}
 	defer c.Close()
 
-	s := Sample{
-		ID:        "sample1",
-		Name:      "Test Sample",
-		CreatedAt: time.Now(),
-		Something: 42,
-	}
+	coll := collection.NewKV(c, "system", "kv_test")
 
-	data, err := codex.Marshal(s)
-	if err != nil {
-		slog.Error("Failed to marshal sample", sloki.WrapError(err))
+	p := &Person{Name: "Alice", Age: 30}
+	if err := coll.SetStruct("test_key", p); err != nil {
+		slog.Error("Failed to set value", sloki.WrapError(err))
 		return
 	}
+	slog.Info("Value set successfully")
 
-	if err := c.KVSet("system", "collections", s.ID, data); err != nil {
-		slog.Error("Failed to set key", sloki.WrapError(err))
+	var out Person
+	if err := coll.GetStruct("test_key", &out); err != nil {
+		slog.Error("Failed to get value", sloki.WrapError(err))
 		return
 	}
-	slog.Info("Successfully set key")
-
-	retrievedData, err := c.KVGet("system", "collections", s.ID)
-	if err != nil {
-		slog.Error("Failed to get key", sloki.WrapError(err))
-		return
-	}
-	out := &Sample{}
-	if err := codex.Unmarshal(retrievedData.AsBinary(), out); err != nil {
-		slog.Error("Failed to unmarshal data", sloki.WrapError(err))
-		return
-	}
-	slog.Info("Successfully retrieved and unmarshaled key", slog.Any("data", out))
-
+	fmt.Printf("Retrieved value: %#v\n", out)
 }
