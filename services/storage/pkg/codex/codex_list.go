@@ -3,21 +3,22 @@ package codex
 import "encoding/binary"
 
 // EncodeListInto encodes a list of Values into a byte slice.
-// | Type (1 byte) | Item type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Items ... |
+// | Type (1 byte) | Count (4 bytes) | | Item length (4 bytes) | Item data ... | ...
 func EncodeListInto(vals []*Value, dst []byte) []byte {
 	count := len(vals)
-	itemType := TypeEmpty
-	if count > 0 {
-		itemType = vals[0].Type
-	}
 
-	totalLength := 1 + 1 + 2 + 4
+	totalLength := 1 + 4
 	var itemPayload []byte
 	for _, val := range vals {
-		if val.Type != itemType && val.Type != TypeEmpty {
-			return nil
-		}
-		itemPayload = append(itemPayload, EncodeValue(val)...)
+		encodeValue := EncodeValue(val)
+
+		// Item length (4 bytes)
+		tmp4 := make([]byte, 4)
+		binary.BigEndian.PutUint32(tmp4, uint32(len(encodeValue)))
+		itemPayload = append(itemPayload, tmp4...)
+
+		// Item data
+		itemPayload = append(itemPayload, encodeValue...)
 	}
 	totalLength += len(itemPayload)
 
@@ -29,25 +30,23 @@ func EncodeListInto(vals []*Value, dst []byte) []byte {
 	}
 
 	dst[0] = byte(TypeList)
-	dst[1] = byte(itemType)
-	binary.BigEndian.PutUint16(dst[2:4], uint16(count))
-	binary.BigEndian.PutUint32(dst[4:8], uint32(len(itemPayload)))
-	copy(dst[8:], itemPayload)
+	binary.BigEndian.PutUint32(dst[1:5], uint32(count))
+	copy(dst[5:], itemPayload)
 
 	return dst
 
 }
 
 // EncodeList encodes a list of Values into a new byte slice.
-// | Type (1 byte) | Item type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Items ... |
+// | Type (1 byte) | Count (4 bytes) | | Item length (4 bytes) | Item data ... | ...
 func EncodeList(val []*Value) []byte {
 	return EncodeListInto(val, nil)
 }
 
 // DecodeList decodes a list of Values from a byte slice.
-// | Type (1 byte) | Item type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Items ... |
+// | Type (1 byte) | Count (4 bytes) | | Item length (4 bytes) | Item data ... | ...
 func DecodeList(data []byte) ([]*Value, error) {
-	if len(data) < 8 {
+	if len(data) < 1 {
 		return nil, ErrPayloadTooShort
 	}
 
@@ -56,27 +55,36 @@ func DecodeList(data []byte) ([]*Value, error) {
 		return nil, ErrInvalidType
 	}
 
-	itemType := data[1]
-	count := int(binary.BigEndian.Uint16(data[2:4]))
-	payloadLen := int(binary.BigEndian.Uint32(data[4:8]))
+	if len(data) < 5 {
+		return nil, ErrPayloadTooShort
+	}
 
-	if len(data) < 8+payloadLen {
+	count := int(binary.BigEndian.Uint32(data[1:5]))
+	if len(data) < 5+count*4 { // Header (5 bytes) + count * item length (4 bytes)
 		return nil, ErrPayloadTooShort
 	}
 
 	items := make([]*Value, 0, count)
-	offset := 8
+	offset := 5
 	for i := 0; i < count; i++ {
-		itemData := data[offset:]
-		item, err := DecodeValue(itemData)
+		if len(data) < offset+4 { // Need at least 4 bytes for item length
+			return nil, ErrPayloadTooShort
+		}
+
+		itemLength := int(binary.BigEndian.Uint32(data[offset : offset+4]))
+		if len(data) < offset+itemLength {
+			return nil, ErrPayloadTooShort
+		}
+		offset += 4 // Move past the item length
+
+		itemData := data[offset : offset+itemLength]
+		val, err := DecodeValue(itemData)
 		if err != nil {
 			return nil, err
 		}
-		if item.Type != ValueType(itemType) && item.Type != TypeEmpty {
-			return nil, ErrInvalidType
-		}
-		items = append(items, item)
-		offset += len(EncodeValue(item)) // TODO: This is inefficient. We should track the length of the encoded item instead of re-encoding it to get the length.
+		items = append(items, val)
+
+		offset += itemLength // Move to the next item
 	}
 
 	return items, nil

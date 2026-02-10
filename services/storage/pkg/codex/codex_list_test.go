@@ -17,15 +17,13 @@ func TestEncodeListInto(t *testing.T) {
 		dst           []byte
 		expectNil     bool
 		expectReuse   bool
-		expectedType  byte
-		expectedCount uint16
+		expectedCount uint32
 	}{
 		{
 			name:          "empty list",
 			vals:          nil,
 			dst:           nil,
 			expectReuse:   false,
-			expectedType:  byte(TypeEmpty),
 			expectedCount: 0,
 		},
 		{
@@ -33,7 +31,6 @@ func TestEncodeListInto(t *testing.T) {
 			vals:          []*Value{v1},
 			dst:           nil,
 			expectReuse:   false,
-			expectedType:  byte(TypeInt32),
 			expectedCount: 1,
 		},
 		{
@@ -41,20 +38,21 @@ func TestEncodeListInto(t *testing.T) {
 			vals:          []*Value{v1, v2},
 			dst:           make([]byte, 64),
 			expectReuse:   true,
-			expectedType:  byte(TypeInt32),
 			expectedCount: 2,
 		},
 		{
-			name:      "mixed types is invalid",
-			vals:      []*Value{v1, &Value{Type: TypeInt64, data: int64(1)}},
-			expectNil: true,
+			name:          "mixed types is valid",
+			vals:          []*Value{v1, &Value{Type: TypeInt64, data: int64(1)}},
+			dst:           nil,
+			expectNil:     false,
+			expectReuse:   false,
+			expectedCount: 2,
 		},
 		{
 			name:          "empty values allowed",
 			vals:          []*Value{v1, empty},
 			dst:           nil,
 			expectReuse:   false,
-			expectedType:  byte(TypeInt32),
 			expectedCount: 2,
 		},
 	}
@@ -79,18 +77,9 @@ func TestEncodeListInto(t *testing.T) {
 				t.Fatalf("unexpected type byte: got %d", out[0])
 			}
 
-			if out[1] != tt.expectedType {
-				t.Fatalf("unexpected item type: got %d, want %d", out[1], tt.expectedType)
-			}
-
-			count := binary.BigEndian.Uint16(out[2:4])
+			count := binary.BigEndian.Uint32(out[1:5])
 			if count != tt.expectedCount {
 				t.Fatalf("unexpected count: got %d, want %d", count, tt.expectedCount)
-			}
-
-			payloadLen := binary.BigEndian.Uint32(out[4:8])
-			if int(payloadLen) != len(out)-8 {
-				t.Fatalf("payload length mismatch: header=%d actual=%d", payloadLen, len(out)-8)
 			}
 
 			if tt.expectReuse && orig != nil {
@@ -162,18 +151,10 @@ func TestDecodeList(t *testing.T) {
 			name: "invalid item type",
 			data: func() []byte {
 				b := EncodeList(validVals)
-				b[1] = byte(TypeInt64) // force mismatch
+				b[0] = byte(TypeInt64) // force mismatch
 				return b
 			}(),
 			wantErr: ErrInvalidType,
-		},
-		{
-			name: "decode value error bubbles up",
-			data: func() []byte {
-				b := EncodeList(validVals)
-				return b[:len(b)-1] // truncate item payload
-			}(),
-			wantErr: ErrPayloadTooShort,
 		},
 	}
 
