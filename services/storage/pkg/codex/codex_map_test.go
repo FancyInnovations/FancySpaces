@@ -17,14 +17,12 @@ func TestEncodeMapInto(t *testing.T) {
 		dst           []byte
 		expectNil     bool
 		expectReuse   bool
-		expectedType  byte
-		expectedCount uint16
+		expectedCount uint32
 	}{
 		{
 			name:          "empty map",
 			vals:          map[string]*Value{},
 			dst:           nil,
-			expectedType:  byte(TypeEmpty),
 			expectedCount: 0,
 		},
 		{
@@ -33,7 +31,6 @@ func TestEncodeMapInto(t *testing.T) {
 				"a": v1,
 			},
 			dst:           nil,
-			expectedType:  byte(TypeInt32),
 			expectedCount: 1,
 		},
 		{
@@ -44,16 +41,16 @@ func TestEncodeMapInto(t *testing.T) {
 			},
 			dst:           make([]byte, 128),
 			expectReuse:   true,
-			expectedType:  byte(TypeInt32),
 			expectedCount: 2,
 		},
 		{
-			name: "mixed value types is invalid",
+			name: "mixed value types is valid",
 			vals: map[string]*Value{
 				"a": v1,
 				"b": {Type: TypeInt64, data: int64(1)},
 			},
-			expectNil: true,
+			expectNil:     false,
+			expectedCount: 2,
 		},
 		{
 			name: "empty value allowed",
@@ -62,7 +59,6 @@ func TestEncodeMapInto(t *testing.T) {
 				"b": empty,
 			},
 			dst:           nil,
-			expectedType:  byte(TypeInt32),
 			expectedCount: 2,
 		},
 	}
@@ -87,18 +83,9 @@ func TestEncodeMapInto(t *testing.T) {
 				t.Fatalf("unexpected type byte: got %d", out[0])
 			}
 
-			if out[1] != tt.expectedType {
-				t.Fatalf("unexpected value type: got %d want %d", out[1], tt.expectedType)
-			}
-
-			count := binary.BigEndian.Uint16(out[2:4])
+			count := binary.BigEndian.Uint32(out[1:5])
 			if count != tt.expectedCount {
 				t.Fatalf("unexpected count: got %d want %d", count, tt.expectedCount)
-			}
-
-			payloadLen := binary.BigEndian.Uint32(out[4:8])
-			if int(payloadLen) != len(out)-8 {
-				t.Fatalf("payload length mismatch: header=%d actual=%d", payloadLen, len(out)-8)
 			}
 
 			if tt.expectReuse && orig != nil {
@@ -170,7 +157,7 @@ func TestDecodeMap(t *testing.T) {
 			name: "invalid value type",
 			data: func() []byte {
 				b := EncodeMap(validVals)
-				b[1] = byte(TypeInt64) // force mismatch
+				b[0] = byte(TypeInt64) // force mismatch
 				return b
 			}(),
 			wantErr: ErrInvalidType,

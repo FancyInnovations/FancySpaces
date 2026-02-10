@@ -3,26 +3,27 @@ package codex
 import "encoding/binary"
 
 // EncodeMapInto encodes a map of string keys to Values into a byte slice.
-// | Type (1 byte) | Val type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Key length (2 bytes) | Key (N bytes) | Val (M bytes) | ... |
+// | Type (1 byte) | Count (4 bytes) | Key length (2 bytes) | Key (N bytes) | Val length (4 bytes) | Val (M bytes) | ... |
 func EncodeMapInto(vals map[string]*Value, dst []byte) []byte {
 	count := len(vals)
-	valType := TypeEmpty
-	if count > 0 {
-		for _, val := range vals {
-			valType = val.Type
-			break
-		}
-	}
 
-	totalLength := 1 + 1 + 2 + 4
+	totalLength := 1 + 4
+
 	var itemPayload []byte
 	for key, val := range vals {
-		if val.Type != valType && val.Type != TypeEmpty {
-			return nil
-		}
+		// Key
+		keyBytes := []byte(key)
+		tmp2 := make([]byte, 2)
+		binary.BigEndian.PutUint16(tmp2, uint16(len(keyBytes)))
+		itemPayload = append(itemPayload, tmp2...)
+		itemPayload = append(itemPayload, keyBytes...)
 
-		itemPayload = append(itemPayload, EncodeString(key)...)
-		itemPayload = append(itemPayload, EncodeValue(val)...)
+		// Value
+		valBytes := EncodeValue(val)
+		tmp4 := make([]byte, 4)
+		binary.BigEndian.PutUint32(tmp4, uint32(len(valBytes)))
+		itemPayload = append(itemPayload, tmp4...)
+		itemPayload = append(itemPayload, valBytes...)
 	}
 	totalLength += len(itemPayload)
 
@@ -34,22 +35,24 @@ func EncodeMapInto(vals map[string]*Value, dst []byte) []byte {
 	}
 
 	dst[0] = byte(TypeMap)
-	dst[1] = byte(valType)
-	binary.BigEndian.PutUint16(dst[2:4], uint16(count))
-	binary.BigEndian.PutUint32(dst[4:8], uint32(len(itemPayload)))
-	copy(dst[8:], itemPayload)
+	binary.BigEndian.PutUint32(dst[1:5], uint32(count))
+
+	if len(itemPayload) > 0 {
+		copy(dst[5:], itemPayload)
+	}
 
 	return dst
 }
 
 // EncodeMap encodes a map of string keys to Values into a new byte slice.
-// | Type (1 byte) | Val type (1 byte) | Count (2 bytes) | Payload length (4 bytes) | Key length (2 bytes) | Key (N bytes) | Val (M bytes) | ... |
+// | Type (1 byte) | Count (4 bytes) | Key length (2 bytes) | Key (N bytes) | Val length (4 bytes) | Val (M bytes) | ... |
 func EncodeMap(vals map[string]*Value) []byte {
 	return EncodeMapInto(vals, nil)
 }
 
+// DecodeMap decodes a byte slice into a map of string keys to Values.
 func DecodeMap(data []byte) (map[string]*Value, error) {
-	if len(data) < 8 {
+	if len(data) < 1 {
 		return nil, ErrPayloadTooShort
 	}
 
@@ -58,34 +61,54 @@ func DecodeMap(data []byte) (map[string]*Value, error) {
 		return nil, ErrInvalidType
 	}
 
-	valType := data[1]
-	count := int(binary.BigEndian.Uint16(data[2:4]))
-	payloadLen := int(binary.BigEndian.Uint32(data[4:8]))
+	if len(data) < 5 { // header (1 byte) + count (4 bytes)
+		return nil, ErrPayloadTooShort
+	}
 
-	if len(data) < 8+payloadLen {
+	count := int(binary.BigEndian.Uint32(data[1:5]))
+	if len(data) < 5+count*(2+4) { // header (5 bytes) + min key (2 bytes) + min value (4 bytes)
 		return nil, ErrPayloadTooShort
 	}
 
 	vals := make(map[string]*Value)
-	offset := 8
-	for i := 0; i < count; i++ {
-		keyData := data[offset:]
-		key, err := DecodeString(keyData)
-		if err != nil {
-			return nil, err
-		}
-		offset += len(EncodeString(key))
+	if count == 0 {
+		return vals, nil
+	}
 
-		valData := data[offset:]
-		val, err := DecodeValue(valData)
+	offset := 5
+	for i := 0; i < count; i++ {
+		if len(data[offset:]) < 2 {
+			return nil, ErrPayloadTooShort
+		}
+
+		// Key
+		keyLen := int(binary.BigEndian.Uint16(data[offset : offset+2]))
+		offset += 2
+
+		if len(data[offset:]) < keyLen {
+			return nil, ErrPayloadTooShort
+		}
+		key := string(data[offset : offset+keyLen])
+		offset += keyLen
+
+		// Value
+		if len(data[offset:]) < 4 {
+			return nil, ErrPayloadTooShort
+		}
+		valLen := int(binary.BigEndian.Uint32(data[offset : offset+4]))
+		offset += 4
+
+		if len(data[offset:]) < valLen {
+			return nil, ErrPayloadTooShort
+		}
+
+		val, err := DecodeValue(data[offset : offset+valLen])
 		if err != nil {
 			return nil, err
 		}
-		if val.Type != ValueType(valType) && val.Type != TypeEmpty {
-			return nil, ErrInvalidType
-		}
+		offset += valLen
+
 		vals[key] = val
-		offset += len(EncodeValue(val)) // TODO: This is inefficient. We should track the length of the encoded value instead of re-encoding it to get the length.
 	}
 
 	return vals, nil
