@@ -1,13 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/client"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 )
+
+type Sample struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	Something int       `json:"something"`
+}
 
 func main() {
 	// Setup logging
@@ -34,28 +41,35 @@ func main() {
 	}
 	defer c.Close()
 
-	metadata, err := c.ObjGetMetadata("system", "objtest", "something.md")
+	s := Sample{
+		ID:        "sample1",
+		Name:      "Test Sample",
+		CreatedAt: time.Now(),
+		Something: 42,
+	}
+
+	data, err := codex.Marshal(s)
 	if err != nil {
-		slog.Error("Failed to get metadata", sloki.WrapError(err))
+		slog.Error("Failed to marshal sample", sloki.WrapError(err))
 		return
 	}
 
-	fmt.Printf("Metadata: %+v\n", metadata)
-
-	time.Sleep(1 * time.Second)
-
-	if err := c.ObjPut("system", "objtest", "something.md", []byte("Hello, World!!1!!!!!!!")); err != nil {
-		slog.Error("Failed to put object", sloki.WrapError(err))
+	if err := c.KVSet("system", "collections", s.ID, data); err != nil {
+		slog.Error("Failed to set key", sloki.WrapError(err))
 		return
 	}
-	slog.Info("Object put successfully")
+	slog.Info("Successfully set key")
 
-	metadata, err = c.ObjGetMetadata("system", "objtest", "something.md")
+	retrievedData, err := c.KVGet("system", "collections", s.ID)
 	if err != nil {
-		slog.Error("Failed to get metadata after put", sloki.WrapError(err))
+		slog.Error("Failed to get key", sloki.WrapError(err))
 		return
 	}
-
-	fmt.Printf("Metadata after put: %+v\n", metadata)
+	out := &Sample{}
+	if err := codex.Unmarshal(retrievedData.AsBinary(), out); err != nil {
+		slog.Error("Failed to unmarshal data", sloki.WrapError(err))
+		return
+	}
+	slog.Info("Successfully retrieved and unmarshaled key", slog.Any("data", out))
 
 }

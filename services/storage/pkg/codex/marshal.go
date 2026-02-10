@@ -24,18 +24,22 @@ func MarshalToMap(s any) (map[string]*Value, error) {
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)
 		fieldType := typ.Field(i)
-		fieldName := fieldType.Name
+
+		// Only exportable fields can be marshaled
+		if !fieldType.IsExported() {
+			continue
+		}
 
 		if tag := fieldType.Tag.Get("json"); tag != "" && tag != "-" {
-			fieldName = tag
+			fieldType.Name = tag
 		}
 
 		value, err := toValue(field)
 		if err != nil {
-			return nil, fmt.Errorf("field %s: %w", fieldName, err)
+			return nil, fmt.Errorf("field %s: %w", fieldType.Name, err)
 		}
 
-		out[fieldName] = value
+		out[fieldType.Name] = value
 	}
 
 	return out, nil
@@ -123,11 +127,11 @@ func toValue(v reflect.Value) (*Value, error) {
 	}
 }
 
-// UnmarshalToMap populates a struct from a map[string]*Value.
+// UnmarshalFromMap populates a struct from a map[string]*Value.
 // The struct fields can be tagged with `json:"fieldName"` to specify the corresponding key in the map.
 // If a field is not tagged, it will match the map key with the same name as the field.
 // Nested structs and maps/lists are supported.
-func UnmarshalToMap(m map[string]*Value, target any) error {
+func UnmarshalFromMap(m map[string]*Value, target any) error {
 	val := reflect.ValueOf(target)
 	if val.Kind() != reflect.Ptr || val.Elem().Kind() != reflect.Struct {
 		return fmt.Errorf("target must be a pointer to a struct")
@@ -168,7 +172,7 @@ func Unmarshal(data []byte, target any) error {
 		return err
 	}
 
-	return UnmarshalToMap(m, target)
+	return UnmarshalFromMap(m, target)
 }
 
 func setFieldValue(field reflect.Value, v *Value) error {
@@ -268,7 +272,7 @@ func setFieldValue(field reflect.Value, v *Value) error {
 			return nil
 		case reflect.Struct:
 			// Nested struct
-			return UnmarshalToMap(m, field.Addr().Interface())
+			return UnmarshalFromMap(m, field.Addr().Interface())
 		default:
 			return fmt.Errorf("unsupported field type for map: %s", field.Kind())
 		}

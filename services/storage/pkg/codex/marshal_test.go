@@ -98,7 +98,7 @@ func TestMarshalToMap(t *testing.T) {
 	}
 }
 
-func TestUnmarshalToMap(t *testing.T) {
+func TestUnmarshalFromMap(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   map[string]*Value
@@ -162,7 +162,7 @@ func TestUnmarshalToMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := UnmarshalToMap(tt.input, tt.target)
+			err := UnmarshalFromMap(tt.input, tt.target)
 			if tt.wantErr {
 				if err == nil {
 					t.Fatalf("expected error, got nil")
@@ -181,7 +181,7 @@ func TestUnmarshalToMap(t *testing.T) {
 	}
 }
 
-func TestMarshalToMapUnmarshalToMap_RoundTrip(t *testing.T) {
+func TestMarshalToMapUnmarshalFromMap_RoundTrip(t *testing.T) {
 	orig := Sample{
 		Bool:   true,
 		Int:    99,
@@ -200,7 +200,7 @@ func TestMarshalToMapUnmarshalToMap_RoundTrip(t *testing.T) {
 	}
 
 	var out Sample
-	if err := UnmarshalToMap(m, &out); err != nil {
+	if err := UnmarshalFromMap(m, &out); err != nil {
 		t.Fatalf("unmarshal failed: %v", err)
 	}
 
@@ -209,14 +209,14 @@ func TestMarshalToMapUnmarshalToMap_RoundTrip(t *testing.T) {
 	}
 }
 
-func TestUnmarshalToMap_MissingFields(t *testing.T) {
+func TestUnmarshalFromMap_MissingFields(t *testing.T) {
 	input := map[string]*Value{
 		"bool": mustValue(true),
 		"int":  mustValue(int32(5)),
 	}
 
 	var target Sample
-	if err := UnmarshalToMap(input, &target); err != nil {
+	if err := UnmarshalFromMap(input, &target); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 

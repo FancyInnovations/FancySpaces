@@ -217,14 +217,14 @@ func NewValue(data any) (*Value, error) {
 		}
 		return &Value{Type: TypeList, data: values}, nil
 	case map[string]any:
-		values := make(map[string]Value)
+		values := make(map[string]*Value)
 		for key, item := range v {
 			value, err := NewValue(item)
 			if err != nil {
 				return nil, err
 			}
 
-			values[key] = *value
+			values[key] = value
 		}
 		return &Value{Type: TypeMap, data: values}, nil
 	default:
