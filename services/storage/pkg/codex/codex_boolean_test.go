@@ -23,8 +23,8 @@ func TestEncodeBool(t *testing.T) {
 				t.Fatalf("expected length 2, got %d", len(out))
 			}
 
-			if out[0] != byte(TypeByte) {
-				t.Fatalf("expected type %d, got %d", TypeByte, out[0])
+			if out[0] != byte(TypeBoolean) {
+				t.Fatalf("expected type %d, got %d", TypeBoolean, out[0])
 			}
 
 			if out[1] != tt.wantByte {
@@ -70,8 +70,8 @@ func TestEncodeBoolInto(t *testing.T) {
 				t.Fatalf("expected length 2, got %d", len(out))
 			}
 
-			if out[0] != byte(TypeByte) {
-				t.Fatalf("expected type %d, got %d", TypeByte, out[0])
+			if out[0] != byte(TypeBoolean) {
+				t.Fatalf("expected type %d, got %d", TypeBoolean, out[0])
 			}
 
 			expectedByte := byte(0)
@@ -110,14 +110,14 @@ func TestDecodeBool(t *testing.T) {
 		{
 			name: "non-1 byte is false",
 			data: []byte{
-				byte(TypeByte),
+				byte(TypeBoolean),
 				0xFF,
 			},
 			want: false,
 		},
 		{
 			name:    "payload too short",
-			data:    []byte{byte(TypeByte)},
+			data:    []byte{byte(TypeBoolean)},
 			wantErr: ErrPayloadTooShort,
 		},
 		{

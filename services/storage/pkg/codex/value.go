@@ -217,19 +217,11 @@ func NewValue(data any) (*Value, error) {
 		}
 		return &Value{Type: TypeList, data: values}, nil
 	case map[string]any:
-		itemType := TypeEmpty
 		values := make(map[string]Value)
 		for key, item := range v {
 			value, err := NewValue(item)
 			if err != nil {
 				return nil, err
-			}
-
-			// validate that all values in the map have the same type
-			if itemType == TypeEmpty {
-				itemType = value.Type
-			} else if value.Type != itemType {
-				return nil, ErrInvalidType
 			}
 
 			values[key] = *value

@@ -3,13 +3,23 @@ package codex
 // EncodeBoolInto encodes a bool into a byte slice.
 // | Type (1 byte) | Bool Data (1 byte, 0x01=true) |
 func EncodeBoolInto(val bool, target []byte) []byte {
-	var byteVal byte
-	if val {
-		byteVal = 1
+	totalLength := 2
+
+	// ensure capacity
+	if cap(target) < totalLength {
+		target = make([]byte, totalLength)
 	} else {
-		byteVal = 0
+		target = target[:totalLength]
 	}
-	return EncodeByteInto(byteVal, target)
+
+	target[0] = byte(TypeBoolean)
+	if val {
+		target[1] = 1
+	} else {
+		target[1] = 0
+	}
+
+	return target
 }
 
 // EncodeBool encodes a bool into a new byte slice.
@@ -21,10 +31,14 @@ func EncodeBool(val bool) []byte {
 // DecodeBool decodes a bool from a byte slice.
 // | Type (1 byte) | Bool Data (1 byte, 0x01=true) |
 func DecodeBool(data []byte) (bool, error) {
-	byteVal, err := DecodeByte(data)
-	if err != nil {
-		return false, err
+	if len(data) < 2 {
+		return false, ErrPayloadTooShort
 	}
 
-	return byteVal == 1, nil
+	typeByte := data[0]
+	if typeByte != byte(TypeBoolean) {
+		return false, ErrInvalidType
+	}
+
+	return data[1] == 1, nil
 }
