@@ -36,7 +36,7 @@ func (c *Commands) handleGetMetadata(ctx *command.ConnCtx, _ *protocol.Message, 
 		return commonresponses.InternalServerError, nil
 	}
 
-	if !db.HasPermission(u.ID, database.PermissionLevelReadOnly) {
+	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadOnly) {
 		return commonresponses.Forbidden, nil
 	}
 

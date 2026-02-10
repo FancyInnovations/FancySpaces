@@ -19,9 +19,8 @@ func seedInternalDatabases(dbStore *database.Store) error {
 		return fmt.Errorf("failed to get internal database 'system': %w", err)
 	}
 
-	users := map[string]database.PermissionLevel{
-		"oliver": database.PermissionLevelAdmin,
-	}
+	users := map[string]database.PermissionLevel{}
+
 	if err := dbStore.UpdateDatabaseUsers(ctx, systemDB, users); err != nil {
 		return fmt.Errorf("failed to create internal database 'system': %w", err)
 	}

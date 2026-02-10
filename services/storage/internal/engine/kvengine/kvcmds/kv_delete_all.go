@@ -33,7 +33,7 @@ func (c *Commands) handleDeleteAll(ctx *command.ConnCtx, _ *protocol.Message, cm
 		return commonresponses.InternalServerError, nil
 	}
 
-	if !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
+	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
 		return commonresponses.Forbidden, nil
 	}
 

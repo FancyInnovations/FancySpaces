@@ -36,10 +36,10 @@ func (c *Commands) handleSetTTL(ctx *command.ConnCtx, _ *protocol.Message, cmd *
 		return commonresponses.InternalServerError, nil
 	}
 
-	if !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
+	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
 		return commonresponses.Forbidden, nil
 	}
-	
+
 	e, err := c.engineService.GetEngine(cmd.DatabaseName, cmd.CollectionName)
 	if err != nil {
 		if errors.Is(err, database.ErrCollectionNotFound) {

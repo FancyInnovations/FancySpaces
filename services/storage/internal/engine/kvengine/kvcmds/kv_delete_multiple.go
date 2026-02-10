@@ -34,7 +34,7 @@ func (c *Commands) handleDeleteMultiple(ctx *command.ConnCtx, _ *protocol.Messag
 		return commonresponses.InternalServerError, nil
 	}
 
-	if !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
+	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
 		return commonresponses.Forbidden, nil
 	}
 

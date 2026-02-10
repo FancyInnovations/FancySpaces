@@ -35,7 +35,7 @@ func (c *Commands) handlePut(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 		return commonresponses.InternalServerError, nil
 	}
 
-	if !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
+	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
 		return commonresponses.Forbidden, nil
 	}
 

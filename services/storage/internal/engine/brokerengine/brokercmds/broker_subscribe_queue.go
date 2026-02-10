@@ -35,7 +35,7 @@ func (c *Commands) handleSubscribeQueue(ctx *command.ConnCtx, _ *protocol.Messag
 		return commonresponses.InternalServerError, nil
 	}
 
-	if !db.HasPermission(u.ID, database.PermissionLevelReadOnly) {
+	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadOnly) {
 		return commonresponses.Forbidden, nil
 	}
 

@@ -35,7 +35,7 @@ func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 		return commonresponses.InternalServerError, nil
 	}
 
-	if !db.HasPermission(u.ID, database.PermissionLevelReadOnly) {
+	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadOnly) {
 		return commonresponses.Forbidden, nil
 	}
 
