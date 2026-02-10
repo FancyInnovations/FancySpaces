@@ -2,98 +2,95 @@
 
 Here you can see how values of common types are encoded in the protocol.
 
-## Value types
+<!-- TOC -->
+* [Encoded Values](#encoded-values)
+  * [Bool (1)](#bool-1)
+  * [Uint8 / Byte (2)](#uint8--byte-2)
+  * [Uint16 (3)](#uint16-3)
+  * [Uint32 (4)](#uint32-4)
+  * [Uint64 (5)](#uint64-5)
+  * [Int16 (6)](#int16-6)
+  * [Int32 (7)](#int32-7)
+  * [Int64 (8)](#int64-8)
+  * [Float32 (9)](#float32-9)
+  * [Float64 (10)](#float64-10)
+  * [Binary (11)](#binary-11)
+  * [String (12)](#string-12)
+  * [List (13)](#list-13)
+  * [Map (14)](#map-14)
+<!-- TOC -->
 
-| Type ID | Type Name | Description              |
-|---------|-----------|--------------------------|
-| 0       | empty     | Empty / null / nil value |
-| 1       | bool      | Boolean value            |
-| 2       | byte      | Unsigned 8-bit integer   |
-| 3       | uint16    | Unsigned 16-bit integer  |
-| 4       | uint32    | Unsigned 32-bit integer  |
-| 5       | uint64    | Unsigned 64-bit integer  |
-| 6       | int16     | Signed 16-bit integer    |
-| 7       | int32     | Signed 32-bit integer    |
-| 8       | int64     | Signed 64-bit integer    |
-| 9       | float32   | 32-bit floating point    |
-| 10      | float64   | 64-bit floating point    |
-| 11      | binary    | Binary data              |
-| 12      | string    | String data              |
-| 13      | array     | Array / list             |
-| 14      | map       | Map / dictionary         |
-
-
-## bool (1)
+## Bool (1)
 
 | Field | Size | Description                      |
 |-------|------|----------------------------------|
 | Type  | 1 B  | Type of the value                |
 | Value | 1 B  | Value of the boolean (0x01=true) |
 
-## uint8 / byte (2)
+## Uint8 / Byte (2)
 
 | Field | Size | Description               |
 |-------|------|---------------------------|
 | Type  | 1 B  | Type of the value         |
 | Value | 1 B  | Value of the uint8 / byte |
 
-## uint16 (3)
+## Uint16 (3)
 
 | Field | Size | Description                      |
 |-------|------|----------------------------------|
 | Type  | 1 B  | Type of the value                |
 | Value | 2 B  | Value of the uint16              |
 
-## uint32 (4)
+## Uint32 (4)
 
 | Field | Size | Description         |
 |-------|------|---------------------|
 | Type  | 1 B  | Type of the value   |
 | Value | 4 B  | Value of the uint32 |
 
-## uint64 (5)
+## Uint64 (5)
 
 | Field | Size | Description                      |
 |-------|------|----------------------------------|
 | Type  | 1 B  | Type of the value                |
 | Value | 8 B  | Value of the uint64              |
 
-## int16 (6)
+## Int16 (6)
 
 | Field | Size | Description                      |
 |-------|------|----------------------------------|
 | Type  | 1 B  | Type of the value                |
 | Value | 2 B  | Value of the int16               |
 
-## int32 (7)
+## Int32 (7)
 
 | Field | Size | Description        |
 |-------|------|--------------------|
 | Type  | 1 B  | Type of the value  |
 | Value | 4 B  | Value of the int32 |
 
-## int64 (8)
+## Int64 (8)
 
 | Field | Size | Description                      |
 |-------|------|----------------------------------|
 | Type  | 1 B  | Type of the value                |
 | Value | 8 B  | Value of the int64               |
 
-## float32 (9)
+## Float32 (9)
 
 | Field | Size | Description                      |
 |-------|------|----------------------------------|
 | Type  | 1 B  | Type of the value                |
 | Value | 4 B  | Value of the float32             |
 
-## float64 (10)
+## Float64 (10)
 
 | Field | Size | Description                      |
 |-------|------|----------------------------------|
 | Type  | 1 B  | Type of the value                |
 | Value | 8 B  | Value of the float64             |
 
-## binary (11)
+## Binary (11)
 
 | Field  | Size | Description               |
 |--------|------|---------------------------|
@@ -102,7 +99,7 @@ Here you can see how values of common types are encoded in the protocol.
 | Value  | N B  | Binary data               |
 
 
-## string (12)
+## String (12)
 
 | Field  | Size | Description               |
 |--------|------|---------------------------|
@@ -110,43 +107,43 @@ Here you can see how values of common types are encoded in the protocol.
 | Length | 4 B  | Length of the string data |
 | Value  | N B  | String data               |
 
-## array / list (13)
+## List (13)
+
+List is encoded as an array of items, where each item can be of any type (including another list or map). 
+The "Count" field specifies how many items are in the list, and the "Items" field contains the encoded items.
 
 | Field          | Size | Description                    |
 |----------------|------|--------------------------------|
 | Type           | 1 B  | Type of the value              |
-| Item Type      | 1 B  | Type of the items in the array |
-| Count          | 2 B  | Number of items in the array   |
-| Payload length | 4 B  | Length of the payload          |
+| Count          | 4 B  | Number of items in the array   |
 | Items          | N B  | Encoded items in the array     |
 
-(Note: every item in the array has the same type)
+Encoded item:
 
-Example layout list of strings:
+| Field       | Size | Description                                    |
+|-------------|------|------------------------------------------------|
+| Item length | 4 B  | Length of the encoded item                     |
+| Item value  | N B  | Encoded value of the item (can be of any type) |
 
-```
-| 13 (type) | 12 (item type) | 0x0003 (count) | 0x0000000F (payload length) |
-| 12 (type) | 0x00000005 (length) | 'H' 'e' 'l' 'l' 'o' (string 1)          |
-| 12 (type) | 0x00000005 (length) | 'W' 'o' 'r' 'l' 'd' (string 2)          |
-| 12 (type) | 0x00000006 (length) | 'F' 'o' 'o' 'B' 'a' 'r' (string 3)      |
-```
 
-## map (14)
+## Map (14)
+
+Map is encoded as a collection of key-value pairs, where each key is a string and each value can be of any type (including another list or map). 
+The "Count" field specifies how many key-value pairs are in the map, and the "Key Value Pairs" field contains the encoded key-value pairs.
+
+This data type is used to represent JSON like objects in the client SDKs.
 
 | Field           | Size | Description                          |
 |-----------------|------|--------------------------------------|
 | Type            | 1 B  | Type of the value                    |
-| Value Type      | 1 B  | Type of the values in the map        |
 | Count           | 2 B  | Number of key-value pairs in the map |
-| Payload length  | 4 B  | Length of the payload                |
 | Key-Value Pairs | N B  | Encoded key-value pairs in the map   |
 
-Note: Keys in the map are always strings, so there is no need to specify their type. All values are of the same type, which is specified in the "Value Type" field.
+Encoded key-value pair:
 
-Example layout of a map of string to int32:
-
-```
-| 14 (type) | 7 (value type) | 0x0002 (count) | 0x0000001A (payload length) |
-| 12 (type) | 0x00000003 (length) | 'a' 'g' 'e' (key 1) | 7 (type) | 0x0000001E (value 1) |
-| 12 (type) | 0x00000004 (length) | 'n' 'a' 'm' 'e' (key 2) | 7 (type) | 0x00000004 (value 2) |
-```
+| Field        | Size | Description                                                  |
+|--------------|------|--------------------------------------------------------------|
+| Key length   | 2 B  | Length of the encoded key                                    |
+| Key value    | N B  | Key as string (just the raw string bytes, not encoded again) |
+| Value length | 4 B  | Length of the encoded value                                  |
+| Value value  | N B  | Encoded value of the value (can be of any type)              |

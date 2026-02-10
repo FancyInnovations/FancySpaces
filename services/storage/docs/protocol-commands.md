@@ -22,71 +22,29 @@ ID Ranges:
   * [Database and collection commands](#database-and-collection-commands)
   * [Database and collection commands (1xxx)](#database-and-collection-commands-1xxx)
   * [Key-value engine commands (2xxx)](#key-value-engine-commands-2xxx)
-    * [KV Set (2000)](#kv-set-2000)
-    * [KV Set with TTL (2001)](#kv-set-with-ttl-2001)
-    * [KV Set multiple](#kv-set-multiple)
-    * [KV Set multiple with TTL](#kv-set-multiple-with-ttl)
-    * [KV Set if exists](#kv-set-if-exists)
-    * [KV Set if exists with TTL](#kv-set-if-exists-with-ttl)
-    * [KV Set if not exists](#kv-set-if-not-exists)
-    * [KV Set if not exists with TTL](#kv-set-if-not-exists-with-ttl)
-    * [KV Delete (2020)](#kv-delete-2020)
-    * [KV Delete multiple](#kv-delete-multiple)
-    * [KV Delete all (2022)](#kv-delete-all-2022)
-    * [KV Exists (2030)](#kv-exists-2030)
-    * [KV Get (2031)](#kv-get-2031)
-    * [KV Get multiple (2032)](#kv-get-multiple-2032)
-    * [KV Get all (2033)](#kv-get-all-2033)
-    * [KV Keys (2034)](#kv-keys-2034)
-    * [KV Count (2035)](#kv-count-2035)
-    * [KV Number Increment](#kv-number-increment)
-    * [KV Number Decrement](#kv-number-decrement)
-    * [KV Number Multiply](#kv-number-multiply)
-    * [KV Number Divide](#kv-number-divide)
-    * [KV Number Modulo](#kv-number-modulo)
-    * [KV Number Left shift](#kv-number-left-shift)
-    * [KV Number Right shift](#kv-number-right-shift)
-    * [KV Number Bitwise AND](#kv-number-bitwise-and)
-    * [KV Number Bitwise OR](#kv-number-bitwise-or)
-    * [KV Number Bitwise XOR](#kv-number-bitwise-xor)
-    * [KV Number Bitwise NOT](#kv-number-bitwise-not)
-    * [KV String Append](#kv-string-append)
-    * [KV String Prepend](#kv-string-prepend)
-    * [KV String Length](#kv-string-length)
-    * [KV String Substring](#kv-string-substring)
-    * [KV List length](#kv-list-length)
-    * [KV List Get](#kv-list-get)
-    * [KV List Set](#kv-list-set)
-    * [KV List Remove](#kv-list-remove)
-    * [KV List Push left](#kv-list-push-left)
-    * [KV List Push right](#kv-list-push-right)
-    * [KV List Pop left](#kv-list-pop-left)
-    * [KV List Pop right](#kv-list-pop-right)
-    * [KV Map length](#kv-map-length)
-    * [KV Map Get](#kv-map-get)
-    * [KV Map Set](#kv-map-set)
-    * [KV Map Delete](#kv-map-delete)
-    * [KV Map Exists](#kv-map-exists)
-    * [KV Map Keys](#kv-map-keys)
-    * [KV Map Values](#kv-map-values)
+    * [Set (2000)](#set-2000)
+    * [Set with TTL (2001)](#set-with-ttl-2001)
+    * [Delete (2020)](#delete-2020)
+    * [Delete all (2022)](#delete-all-2022)
+    * [Exists (2030)](#exists-2030)
+    * [Get (2031)](#get-2031)
+    * [Get multiple (2032)](#get-multiple-2032)
+    * [Get all (2033)](#get-all-2033)
+    * [Keys (2034)](#keys-2034)
+    * [Count (2035)](#count-2035)
   * [Document engine commands (3xxx)](#document-engine-commands-3xxx)
   * [Object engine commands (4xxx)](#object-engine-commands-4xxx)
-    * [Obj Put (4000)](#obj-put-4000)
-    * [Obj Get (4001)](#obj-get-4001)
-    * [Obj Get metadata (4002)](#obj-get-metadata-4002)
-    * [Obj Delete (4003)](#obj-delete-4003)
-    * [Obj Exists](#obj-exists)
-    * [Obj List](#obj-list)
-    * [Obj Copy](#obj-copy)
-    * [Obj Move](#obj-move)
-    * [Obj Rename](#obj-rename)
+    * [Put (4000)](#put-4000)
+    * [Get (4001)](#get-4001)
+    * [Get metadata (4002)](#get-metadata-4002)
+    * [Delete (4003)](#delete-4003)
   * [Analytical engine commands (5xxx)](#analytical-engine-commands-5xxx)
   * [Broker engine commands (6xxx)](#broker-engine-commands-6xxx)
-    * [Broker Subscribe (6000)](#broker-subscribe-6000)
-    * [Broker Subscribe queue (6001)](#broker-subscribe-queue-6001)
-    * [Broker Unsubscribe (6002)](#broker-unsubscribe-6002)
-    * [Broker Publish (6003)](#broker-publish-6003)
-    * [Broker Message (client bound) (6004)](#broker-message-client-bound-6004)
+    * [Subscribe (6000)](#subscribe-6000)
+    * [Subscribe queue (6001)](#subscribe-queue-6001)
+    * [Unsubscribe (6002)](#unsubscribe-6002)
+    * [Publish (6003)](#publish-6003)
+    * [Message (client bound) (6004)](#message-client-bound-6004)
 <!-- TOC -->
 
 ## System Commands (0xxx)
@@ -175,7 +133,7 @@ Not implemented yet.
 
 ## Key-value engine commands (2xxx)
 
-### KV Set (2000)
+### Set (2000)
 
 The KV Set command sets the value for a given key.
 
@@ -193,7 +151,7 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### KV Set with TTL (2001)
+### Set with TTL (2001)
 
 The KV Set with TTL command sets the value for a given key with a specified time-to-live (TTL).
 
@@ -213,31 +171,7 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### KV Set multiple
-
-Not implemented yet.
-
-### KV Set multiple with TTL
-
-Not implemented yet.
-
-### KV Set if exists
-
-Not implemented yet.
-
-### KV Set if exists with TTL
-
-Not implemented yet.
-
-### KV Set if not exists
-
-Not implemented yet.
-
-### KV Set if not exists with TTL
-
-Not implemented yet.
-
-### KV Delete (2020)
+### Delete (2020)
 
 The KV Delete command deletes a key-value pair from the store.
 
@@ -254,11 +188,8 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### KV Delete multiple
 
-Not implemented yet.
-
-### KV Delete all (2022)
+### Delete all (2022)
 
 The KV Delete all command deletes all key-value pairs from the store.
 
@@ -270,7 +201,7 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### KV Exists (2030)
+### Exists (2030)
 
 The KV Exists command checks if a key exists in the store.
 
@@ -288,7 +219,7 @@ Response:
 | 0000        | Key exists    |
 | 1008        | Key not found |
 
-### KV Get (2031)
+### Get (2031)
 
 The KV Get command retrieves the value associated with a given key.
 
@@ -308,7 +239,7 @@ Response:
 
 The response payload for a successful KV Get command contains the value associated with the key, encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
 
-### KV Get multiple (2032)
+### Get multiple (2032)
 
 The KV Get multiple command retrieves the values associated with multiple keys.
 
@@ -327,7 +258,7 @@ Response:
 The response payload for a successful KV Get multiple command contains a map of keys to their corresponding values, where each value is encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
 If a key does not exist, the value will be Empty.
 
-### KV Get all (2033)
+### Get all (2033)
 
 The KV Get all command retrieves all key-value pairs in the store.
 
@@ -341,7 +272,7 @@ Response:
 
 The response payload for a successful KV Get all command contains a map of all keys to their corresponding values, where each value is encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
 
-### KV Keys (2034)
+### Keys (2034)
 
 The KV Keys command retrieves a list of all keys in the store.
 
@@ -355,7 +286,7 @@ Response:
 
 The response payload for a successful KV Keys command contains the list of keys (strings).
 
-### KV Count (2035)
+### Count (2035)
 
 The KV Count command retrieves the total number of key-value pairs in the store.
 
@@ -367,131 +298,11 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### KV Number Increment
-
-Not implemented yet.
-
-### KV Number Decrement
-
-Not implemented yet.
-
-### KV Number Multiply
-
-Not implemented yet.
-
-### KV Number Divide
-
-Not implemented yet.
-
-### KV Number Modulo
-
-Not implemented yet.
-
-### KV Number Left shift
-
-Not implemented yet.
-
-### KV Number Right shift
-
-Not implemented yet.
-
-### KV Number Bitwise AND
-
-Not implemented yet.
-
-### KV Number Bitwise OR
-
-Not implemented yet.
-
-### KV Number Bitwise XOR
-
-Not implemented yet.
-
-### KV Number Bitwise NOT
-
-Not implemented yet.
-
-### KV String Append
-
-Not implemented yet.
-
-### KV String Prepend
-
-Not implemented yet.
-
-### KV String Length
-
-Not implemented yet.
-
-### KV String Substring
-
-Not implemented yet.
-
-### KV List length
-
-Not implemented yet.
-
-### KV List Get
-
-Not implemented yet.
-
-### KV List Set
-
-Not implemented yet.
-
-### KV List Remove
-
-Not implemented yet.
-
-### KV List Push left
-
-Not implemented yet.
-
-### KV List Push right
-
-Not implemented yet.
-
-### KV List Pop left
-
-Not implemented yet.
-
-### KV List Pop right
-
-Not implemented yet.
-
-### KV Map length
-
-Not implemented yet.
-
-### KV Map Get
-
-Not implemented yet.
-
-### KV Map Set
-
-Not implemented yet.
-
-### KV Map Delete
-
-Not implemented yet.
-
-### KV Map Exists
-
-Not implemented yet.
-
-### KV Map Keys
-
-Not implemented yet.
-
-### KV Map Values
-
-Not implemented yet.
-
 ## Document engine commands (3xxx)
 
 ## Object engine commands (4xxx)
 
-### Obj Put (4000)
+### Put (4000)
 
 The Obj Put command stores an object in the engine.
 
@@ -509,7 +320,7 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### Obj Get (4001)
+### Get (4001)
 
 The Obj Get command retrieves an object from the engine.
 
@@ -529,7 +340,7 @@ Response:
 
 The response payload for a successful Obj Get command contains the object associated with the key, encoded as an encoded binary value (see [Encoded Values](protocol-encoded-values.md)).
 
-### Obj Get metadata (4002)
+### Get metadata (4002)
 
 The Obj Get metadata command retrieves the metadata of an object from the engine.
 
@@ -556,7 +367,7 @@ Response payload:
 | Created at  | 8 B  | Unix millisecond timestamp   |
 | Modified at | 8 B  | Unix millisecond timestamp   |
 
-### Obj Delete (4003)
+### Delete (4003)
 
 The Obj Delete command deletes an object from the engine.
 
@@ -574,31 +385,11 @@ Response:
 | 0000        | Success       |
 | 1008        | Key not found |
 
-### Obj Exists
-
-Not implemented yet.
-
-### Obj List
-
-Not implemented yet.
-
-### Obj Copy
-
-Not implemented yet.
-
-### Obj Move
-
-Not implemented yet.
-
-### Obj Rename
-
-Not implemented yet.
-
 ## Analytical engine commands (5xxx)
 
 ## Broker engine commands (6xxx)
 
-### Broker Subscribe (6000)
+### Subscribe (6000)
 
 The Broker Subscribe command subscribes the client to a specific subject.
 
@@ -615,7 +406,7 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### Broker Subscribe queue (6001)
+### Subscribe queue (6001)
 
 The Broker Subscribe command subscribes the client to a specific subject.
 
@@ -634,7 +425,7 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
-### Broker Unsubscribe (6002)
+### Unsubscribe (6002)
 
 The Broker Unsubscribe command unsubscribes the client from a specific subject.
 
@@ -645,7 +436,7 @@ Payload format:
 | Subject length | 2 B  | Length of the subject           |
 | Subject        | N B  | The subject to unsubscribe from |
 
-### Broker Publish (6003)
+### Publish (6003)
 
 The Broker Publish command publishes a message to a specific subject.
 
@@ -657,7 +448,7 @@ Payload format:
 | Subject                              | N B  | The subject to publish to |
 | [Binary](protocol-encoded-values.md) | N B  | The message to publish    |
 
-### Broker Message (client bound) (6004)
+### Message (client bound) (6004)
 
 The Broker Message command is sent by the server to deliver a message to the client.
 

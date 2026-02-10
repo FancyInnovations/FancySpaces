@@ -1,10 +1,22 @@
 # Storage TCP Protocol
 
-Transport Layer: TCP
+This document describes the TCP protocol used for communication between clients and the storage service. 
+It defines the message structure, command formats, and response formats used in the protocol.
 
-Port: 8091
+Important notes:
+- The protocol uses TCP as the transport layer, ensuring reliable communication between clients and the server
+- The default TCP port for the storage service is 8091
+- All multi-byte fields are in big-endian format
+- The protocol is designed to be extensible, allowing for future additions of commands and response types without breaking compatibility
 
-Endianness: Big-Endian
+<!-- TOC -->
+* [Storage TCP Protocol](#storage-tcp-protocol)
+  * [Message Structure](#message-structure)
+    * [Frame Format](#frame-format)
+    * [Message Format](#message-format)
+    * [Command Format](#command-format)
+    * [Response Format](#response-format)
+<!-- TOC -->
 
 ## Message Structure
 
@@ -66,7 +78,7 @@ Status Codes:
 | 1xxx | Client-side error codes |
 | 2xxx | Server-side error codes |
 
-See `services/storage/internal/protocol/statuscodes.go` for a complete list of status codes.
+See `services/storage/internal/protocol/status_codes.go` for a complete list of status codes.
 
 If the status is 1xxx or 2xxx, the payload is an error message string.
 Otherwise, the payload contains data relevant to the command executed (see command documentation for details).
