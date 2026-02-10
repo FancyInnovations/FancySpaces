@@ -188,6 +188,21 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
+### Delete multiple (2021)
+
+The KV Delete multiple command deletes multiple key-value pairs from the store.
+
+Payload format:
+
+| Field | Size | Description                                   |
+|-------|------|-----------------------------------------------|
+| Keys  | N B  | [List of strings](protocol-encoded-values.md) |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
 
 ### Delete all (2022)
 

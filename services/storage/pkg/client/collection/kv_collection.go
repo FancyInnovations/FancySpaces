@@ -160,6 +160,11 @@ func (coll *KeyValueCollection) Delete(key string) error {
 	return coll.client.KVDelete(coll.database, coll.name, key)
 }
 
+// DeleteMultiple removes the key-value pairs associated with the specified keys from the collection.
+func (coll *KeyValueCollection) DeleteMultiple(keys []string) error {
+	return coll.client.KVDeleteMultiple(coll.database, coll.name, keys)
+}
+
 // DeleteAll removes all key-value pairs from the collection.
 func (coll *KeyValueCollection) DeleteAll() error {
 	return coll.client.KVDeleteAll(coll.database, coll.name)

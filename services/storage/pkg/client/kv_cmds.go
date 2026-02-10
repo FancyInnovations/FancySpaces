@@ -99,6 +99,27 @@ func (c *Client) KVDelete(db, coll string, key string) error {
 	return nil
 }
 
+// KVDeleteMultiple implements the client side of the protocol.ServerCommandKVDeleteMultiple command.
+func (c *Client) KVDeleteMultiple(db, coll string, keys []string) error {
+	keyVals := codex.NewStringListValue(keys)
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVDeleteMultiple,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        codex.EncodeValue(keyVals),
+	})
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return ErrUnexpectedStatusCode
+	}
+
+	return nil
+}
+
 // KVDeleteAll implements the client side of the protocol.ServerCommandKVDeleteAll command.
 func (c *Client) KVDeleteAll(db, coll string) error {
 	resp, err := c.SendCmd(&protocol.Command{
