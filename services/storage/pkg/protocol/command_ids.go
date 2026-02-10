@@ -27,12 +27,15 @@ const (
 	ServerCommandKVDeleteMultiple uint16 = 2021
 	ServerCommandKVDeleteAll      uint16 = 2022
 
-	ServerCommandKVExists      uint16 = 2030
-	ServerCommandKVGet         uint16 = 2031
-	ServerCommandKVGetMultiple uint16 = 2032
-	ServerCommandKVGetAll      uint16 = 2033
-	ServerCommandKVKeys        uint16 = 2034
-	ServerCommandKVCount       uint16 = 2035
+	ServerCommandKVExists         uint16 = 2030
+	ServerCommandKVGet            uint16 = 2031
+	ServerCommandKVGetMultiple    uint16 = 2032
+	ServerCommandKVGetAll         uint16 = 2033
+	ServerCommandKVGetTTL         uint16 = 2033
+	ServerCommandKVGetMultipleTTL uint16 = 2034
+	ServerCommandKVGetAllTTL      uint16 = 2035
+	ServerCommandKVKeys           uint16 = 2036
+	ServerCommandKVCount          uint16 = 2037
 
 	ServerCommandKVNumIncrement  uint16 = 2520
 	ServerCommandKVNumDecrement  uint16 = 2521

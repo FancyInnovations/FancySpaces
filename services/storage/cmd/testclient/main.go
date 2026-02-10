@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
@@ -39,19 +38,6 @@ func main() {
 	}
 	defer c.Close()
 
-	coll := collection.NewKV(c, "system", "kv_test")
-
-	p := &Person{Name: "Alice", Age: 30}
-	if err := coll.SetStruct("test_key", p); err != nil {
-		slog.Error("Failed to set value", sloki.WrapError(err))
-		return
-	}
-	slog.Info("Value set successfully")
-
-	var out Person
-	if err := coll.GetStruct("test_key", &out); err != nil {
-		slog.Error("Failed to get value", sloki.WrapError(err))
-		return
-	}
-	fmt.Printf("Retrieved value: %#v\n", out)
+	coll := collection.NewMessageBrokerCollection(c, "system", "kv_test")
+	_ = coll
 }

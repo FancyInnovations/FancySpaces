@@ -10,6 +10,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
+// Client is the main entry point for interacting with the FancySpaces storage system from Go code.
 type Client struct {
 	cfg  Configuration
 	conn net.Conn
@@ -22,6 +23,11 @@ type Client struct {
 	brokerSubjectListenersMu sync.Mutex
 }
 
+// Configuration holds the necessary parameters for connecting to the storage server and authenticating.
+//
+// Host and Port specify the address of the storage server. If not provided, they default to "localhost" and "8091" respectively.
+//
+// Authentication can be done either using a username and password or an API key. If both are provided, the client will attempt to authenticate using the API key first.
 type Configuration struct {
 	Host string
 	Port string
@@ -30,6 +36,7 @@ type Configuration struct {
 	ApiKey             string
 }
 
+// NewClient creates a new Client instance and establishes a connection to the storage server using the provided configuration.
 func NewClient(cfg Configuration) (*Client, error) {
 	if cfg.Host == "" {
 		cfg.Host = "localhost"
@@ -82,6 +89,9 @@ func NewClient(cfg Configuration) (*Client, error) {
 	return c, nil
 }
 
+// Reconnect attempts to re-establish the connection to the storage server.
+// It first closes any existing connection, then tries to connect again and re-authenticate if necessary.
+// If the reconnection is successful, it also resets the pending commands map to avoid any stale state.
 func (c *Client) Reconnect() {
 	c.Close()
 
@@ -108,6 +118,7 @@ func (c *Client) Reconnect() {
 	slog.Info("FancySpaces storage client reconnected", slog.String("host", c.cfg.Host), slog.String("port", c.cfg.Port))
 }
 
+// Close terminates the connection to the storage server and cleans up any resources used by the client.
 func (c *Client) Close() {
 	if c.conn == nil {
 		return
@@ -120,6 +131,7 @@ func (c *Client) Close() {
 	return
 }
 
+// IsConnected checks if the client currently has an active connection to the storage server.
 func (c *Client) IsConnected() bool {
 	return c.conn != nil
 }
@@ -161,6 +173,10 @@ func (c *Client) startHeartbeat() {
 	}
 }
 
+// SendCmd sends a command to the storage server and waits for the response.
+//
+// It's not recommended to call this method directly from application code.
+// Instead, use the higher-level methods provided by the client for specific operations (e. g. collection.KeyValueCollection, etc.), which internally call SendCmd with the appropriate command structure and payload.
 func (c *Client) SendCmd(cmd *protocol.Command) (*protocol.Response, error) {
 	if !c.IsConnected() {
 		return nil, ErrClientNotConnected

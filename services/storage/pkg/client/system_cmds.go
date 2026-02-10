@@ -6,6 +6,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
+// Ping implements the client side of the protocol.ServerCommandPing command.
 func (c *Client) Ping() error {
 	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.ServerCommandPing,
@@ -24,6 +25,7 @@ func (c *Client) Ping() error {
 	return nil
 }
 
+// GetSupportedProtocolVersions implements the client side of the protocol.ServerCommandSupportedProtocolVersions command.
 func (c *Client) GetSupportedProtocolVersions() ([]byte, error) {
 	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.ServerCommandSupportedProtocolVersions,
@@ -46,6 +48,7 @@ func (c *Client) GetSupportedProtocolVersions() ([]byte, error) {
 	return versions, nil
 }
 
+// LoginWithPassword implements the client side of the protocol.ServerCommandLogin command for password-based authentication.
 func (c *Client) LoginWithPassword(username, password string) error {
 	totalLen := 1 + 2 + len(username) + 2 + len(password)
 	payload := make([]byte, totalLen)
@@ -79,6 +82,7 @@ func (c *Client) LoginWithPassword(username, password string) error {
 	return nil
 }
 
+// LoginWithApiKey implements the client side of the protocol.ServerCommandLogin command for API key-based authentication.
 func (c *Client) LoginWithApiKey(apiKey string) error {
 	totalLen := 1 + 2 + len(apiKey)
 	payload := make([]byte, totalLen)
@@ -109,6 +113,7 @@ func (c *Client) LoginWithApiKey(apiKey string) error {
 	return nil
 }
 
+// IsAuthenticated implements the client side of the protocol.ServerCommandAuthStatus command.
 func (c *Client) IsAuthenticated() (bool, error) {
 	resp, err := c.SendCmd(&protocol.Command{
 		ID:             protocol.ServerCommandAuthStatus,

@@ -8,7 +8,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// ObjPut stores an object in the specified database and collection with the given key and binary data.
+// ObjPut implements the client side of the protocol.ServerCommandObjectPut command.
 func (c *Client) ObjPut(db, coll string, key string, data []byte) error {
 	encodedData := codex.EncodeBinary(data)
 
@@ -39,7 +39,7 @@ func (c *Client) ObjPut(db, coll string, key string, data []byte) error {
 	return nil
 }
 
-// ObjGet retrieves the binary data associated with the given key from the specified database and collection.
+// ObjGet implements the client side of the protocol.ServerCommandObjectGet command.
 func (c *Client) ObjGet(db, coll string, key string) ([]byte, error) {
 	payload := make([]byte, 2+len(key))
 	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
@@ -66,7 +66,7 @@ func (c *Client) ObjGet(db, coll string, key string) ([]byte, error) {
 	return codex.DecodeBinary(resp.Payload)
 }
 
-// ObjGetMetadata retrieves the metadata (size and checksum) for the object associated with the given key from the specified database and collection.
+// ObjGetMetadata implements the client side of the protocol.ServerCommandObjectGetMetadata command.
 func (c *Client) ObjGetMetadata(db, coll string, key string) (*ObjectMetadata, error) {
 	payload := make([]byte, 2+len(key))
 	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
@@ -105,7 +105,7 @@ func (c *Client) ObjGetMetadata(db, coll string, key string) (*ObjectMetadata, e
 	}, nil
 }
 
-// ObjDelete removes the object associated with the given key from the specified database and collection.
+// ObjDelete implements the client side of the protocol.ServerCommandObjectDelete command.
 func (c *Client) ObjDelete(db, coll string, key string) error {
 	payload := make([]byte, 2+len(key))
 	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
