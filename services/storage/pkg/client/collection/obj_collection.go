@@ -9,18 +9,23 @@ type ObjectCollection struct {
 
 // NewObjectCollection creates a new ObjectCollection instance for the specified database and collection name.
 // It uses the provided client to interact with the storage system.
-func NewObjectCollection(client *client.Client, database, name string) *ObjectCollection {
-	// TODO: check if database and collection exist, return error if not
+func NewObjectCollection(c *client.Client, database, name string) (*ObjectCollection, error) {
+	coll, err := c.DBCollectionGet(database, name)
+	if err != nil {
+		return nil, err
+	}
 
-	// TODO check if collection is of type Object, return error if not
+	if coll.Engine != "object" {
+		return nil, client.ErrInvalidEngine
+	}
 
 	return &ObjectCollection{
 		collection: collection{
 			database: database,
 			name:     name,
-			client:   client,
+			client:   c,
 		},
-	}
+	}, nil
 }
 
 // Put stores the given binary data in the collection under the specified key.

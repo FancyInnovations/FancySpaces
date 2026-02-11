@@ -9,18 +9,23 @@ type MessageBrokerCollection struct {
 
 // NewMessageBrokerCollection creates a new MessageBrokerCollection instance for the specified database and collection name.
 // It uses the provided client to interact with the storage system.
-func NewMessageBrokerCollection(client *client.Client, database, name string) *MessageBrokerCollection {
-	// TODO: check if database and collection exist, return error if not
+func NewMessageBrokerCollection(c *client.Client, database, name string) (*MessageBrokerCollection, error) {
+	coll, err := c.DBCollectionGet(database, name)
+	if err != nil {
+		return nil, err
+	}
 
-	// TODO check if collection is of type Broker, return error if not
+	if coll.Engine != "broker" {
+		return nil, client.ErrInvalidEngine
+	}
 
 	return &MessageBrokerCollection{
 		collection: collection{
 			database: database,
 			name:     name,
-			client:   client,
+			client:   c,
 		},
-	}
+	}, nil
 }
 
 // Subscribe subscribes the client to a subject in the collection.

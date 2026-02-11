@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/client"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/client/collection"
 )
 
 func main() {
@@ -33,21 +33,16 @@ func main() {
 	}
 	defer c.Close()
 
-	//coll := collection.NewObjectCollection(c, "system", "obj_test")
-
-	db, err := c.DBDatabaseGet("system")
+	coll, err := collection.NewObjectCollection(c, "system", "obj_test")
 	if err != nil {
-		slog.Error("Failed to get database", sloki.WrapError(err))
+		slog.Error("Failed to create collection", sloki.WrapError(err))
 		return
 	}
 
-	fmt.Printf("Database: %#v\n", db)
-
-	coll, err := c.DBCollectionGet("system", "obj_test")
+	count, err := coll.Count()
 	if err != nil {
-		slog.Error("Failed to get collection", sloki.WrapError(err))
+		slog.Error("Failed to count documents", sloki.WrapError(err))
 		return
 	}
-
-	fmt.Printf("Collection: %#v\n", coll)
+	slog.Info("Document count", slog.Int64("count", int64(count)))
 }

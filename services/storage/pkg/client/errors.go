@@ -13,4 +13,5 @@ var (
 	ErrDatabaseNotFound            = errors.New("database not found")
 	ErrCollectionNotFound          = errors.New("collection not found")
 	ErrKeyNotFound                 = errors.New("key not found")
+	ErrInvalidEngine               = errors.New("invalid engine")
 )

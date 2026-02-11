@@ -14,18 +14,23 @@ type KeyValueCollection struct {
 
 // NewKeyValueCollection creates a new KeyValueCollection instance for the specified database and collection name.
 // It uses the provided client to interact with the storage system.
-func NewKeyValueCollection(client *client.Client, database, name string) *KeyValueCollection {
-	// TODO: check if database and collection exist, return error if not
+func NewKeyValueCollection(c *client.Client, database, name string) (*KeyValueCollection, error) {
+	coll, err := c.DBCollectionGet(database, name)
+	if err != nil {
+		return nil, err
+	}
 
-	// TODO check if collection is of type KV, return error if not
+	if coll.Engine != "kv" {
+		return nil, client.ErrInvalidEngine
+	}
 
 	return &KeyValueCollection{
 		collection: collection{
 			database: database,
 			name:     name,
-			client:   client,
+			client:   c,
 		},
-	}
+	}, nil
 }
 
 // Get retrieves the value associated with the specified key from the collection.
