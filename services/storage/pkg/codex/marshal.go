@@ -3,6 +3,7 @@ package codex
 import (
 	"fmt"
 	"reflect"
+	"time"
 )
 
 // MarshalToMap converts a struct into a map[string]*Value.
@@ -10,6 +11,12 @@ import (
 // If a field is not tagged, it will use the field name as the key.
 // Nested structs and maps/lists are supported.
 func MarshalToMap(s any) (map[string]*Value, error) {
+	switch s.(type) {
+	case time.Time, *time.Time:
+		// Special handling for time.Time values
+		return timeToValue(reflect.ValueOf(s).Interface().(time.Time)), nil
+	}
+
 	val := reflect.ValueOf(s)
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
@@ -143,6 +150,10 @@ func UnmarshalFromMap(m map[string]*Value, target any) error {
 	for i := 0; i < structVal.NumField(); i++ {
 		field := structVal.Field(i)
 		fieldType := structType.Field(i)
+		if !fieldType.IsExported() {
+			continue
+		}
+
 		fieldName := fieldType.Name
 
 		if tag := fieldType.Tag.Get("json"); tag != "" && tag != "-" {
@@ -151,6 +162,20 @@ func UnmarshalFromMap(m map[string]*Value, target any) error {
 
 		value, ok := m[fieldName]
 		if !ok || value.IsEmpty() {
+			continue
+		}
+
+		// Special handling for time.Time fields
+		if field.Type() == reflect.TypeOf(time.Time{}) || (field.Type().Kind() == reflect.Ptr && field.Type().Elem() == reflect.TypeOf(time.Time{})) {
+			t, err := valueToTime(value)
+			if err != nil {
+				return fmt.Errorf("field %s: %w", fieldName, err)
+			}
+			if field.Type().Kind() == reflect.Ptr {
+				field.Set(reflect.ValueOf(&t))
+			} else {
+				field.Set(reflect.ValueOf(t))
+			}
 			continue
 		}
 
@@ -279,4 +304,27 @@ func setFieldValue(field reflect.Value, v *Value) error {
 	}
 
 	return fmt.Errorf("unsupported conversion: ValueType=%d FieldType=%s", v.Type, field.Kind())
+}
+
+// time helpers
+
+func timeToValue(t time.Time) map[string]*Value {
+	return map[string]*Value{
+		"millis": {Type: TypeInt64, data: t.UnixMilli()},
+	}
+}
+
+func valueToTime(v *Value) (time.Time, error) {
+	if v.Type != TypeMap {
+		return time.Time{}, fmt.Errorf("expected map for time value, got %d", v.Type)
+	}
+
+	m := v.AsMap()
+	millisVal, ok := m["millis"]
+	if !ok || millisVal.Type != TypeInt64 {
+		return time.Time{}, fmt.Errorf("time value must have 'millis' field of type int64")
+	}
+
+	millis := millisVal.AsInt64()
+	return time.UnixMilli(millis), nil
 }
