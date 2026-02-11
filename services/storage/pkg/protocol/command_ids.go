@@ -36,6 +36,7 @@ const (
 	ServerCommandKVGetAllTTL      uint16 = 2036
 	ServerCommandKVKeys           uint16 = 2037
 	ServerCommandKVCount          uint16 = 2038
+	ServerCommandKVSize           uint16 = 2039
 
 	ServerCommandKVNumIncrement  uint16 = 2520
 	ServerCommandKVNumDecrement  uint16 = 2521

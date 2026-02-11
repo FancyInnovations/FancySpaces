@@ -23,6 +23,8 @@ func EncodeValueInto(val *Value, target []byte) []byte {
 		return EncodeInt32Into(val.AsInt32(), target)
 	case TypeInt64:
 		return EncodeInt64Into(val.AsInt64(), target)
+	case TypeFloat32:
+		return EncodeFloat32Into(val.AsFloat32(), target)
 	case TypeFloat64:
 		return EncodeFloat64Into(val.AsFloat64(), target)
 	case TypeBinary:
@@ -105,6 +107,12 @@ func DecodeValue(data []byte) (*Value, error) {
 			return nil, err
 		}
 		return &Value{Type: TypeInt64, data: val}, nil
+	case TypeFloat32:
+		val, err := DecodeFloat32(data)
+		if err != nil {
+			return nil, err
+		}
+		return &Value{Type: TypeFloat32, data: val}, nil
 	case TypeFloat64:
 		val, err := DecodeFloat64(data)
 		if err != nil {
@@ -137,5 +145,42 @@ func DecodeValue(data []byte) (*Value, error) {
 		return &Value{Type: TypeMap, data: val}, nil
 	default:
 		return nil, ErrInvalidType
+	}
+}
+
+func SizeOfValue(val *Value) uint64 {
+	switch val.Type {
+	case TypeEmpty:
+		return SizeOfEmpty()
+	case TypeBoolean:
+		return SizeOfBool()
+	case TypeByte:
+		return SizeOfByte()
+	case TypeUint16:
+		return SizeOfUint16()
+	case TypeUint32:
+		return SizeOfUint32()
+	case TypeUint64:
+		return SizeOfUint64()
+	case TypeInt16:
+		return SizeOfInt16()
+	case TypeInt32:
+		return SizeOfInt32()
+	case TypeInt64:
+		return SizeOfInt64()
+	case TypeFloat32:
+		return SizeOfFloat32()
+	case TypeFloat64:
+		return SizeOfFloat64()
+	case TypeBinary:
+		return SizeOfBinary(val.AsBinary())
+	case TypeString:
+		return SizeOfString(val.AsString())
+	case TypeList:
+		return SizeOfList(val.AsList())
+	case TypeMap:
+		return SizeOfMap(val.AsMap())
+	default:
+		return 0
 	}
 }

@@ -22,3 +22,7 @@ func EncodeEmptyInto(target []byte) []byte {
 func EncodeEmpty() []byte {
 	return EncodeEmptyInto(nil)
 }
+
+func SizeOfEmpty() uint64 {
+	return 1
+}

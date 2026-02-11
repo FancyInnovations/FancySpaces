@@ -113,3 +113,16 @@ func DecodeMap(data []byte) (map[string]*Value, error) {
 
 	return vals, nil
 }
+
+func SizeOfMap(vals map[string]*Value) uint64 {
+	size := uint64(1 + 4) // Type (1 byte) + Count (4 bytes)
+
+	for key, val := range vals {
+		size += 2                // Key length (2 bytes)
+		size += uint64(len(key)) // Key (N bytes)
+		size += 4                // Val length (4 bytes)
+		size += SizeOfValue(val) // Val (M bytes)
+	}
+
+	return size
+}

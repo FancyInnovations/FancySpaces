@@ -247,6 +247,12 @@ func (coll *KeyValueCollection) Keys() ([]string, error) {
 	return coll.client.KVKeys(coll.database, coll.name)
 }
 
+// Count returns the total number of key-value pairs present in the collection.
 func (coll *KeyValueCollection) Count() (uint32, error) {
 	return coll.client.KVCount(coll.database, coll.name)
+}
+
+// Size returns the total size in bytes of all key-value pairs present in the collection.
+func (coll *KeyValueCollection) Size() (uint64, error) {
+	return coll.client.KVSize(coll.database, coll.name)
 }

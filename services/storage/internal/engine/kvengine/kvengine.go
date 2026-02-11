@@ -322,9 +322,9 @@ func (e *Engine) DeleteMultiple(keys []string) {
 	}
 }
 
-// Clear removes all keys from the engine.
+// DeleteAll removes all keys from the engine.
 // This is a heavy operation and should be used with caution, as it will block all operations while it runs.
-func (e *Engine) Clear() {
+func (e *Engine) DeleteAll() {
 	for i := 0; i < ShardCount; i++ {
 		s := &e.shards[i]
 		s.mu.Lock()
@@ -333,8 +333,8 @@ func (e *Engine) Clear() {
 	}
 }
 
-// Size returns the total number of keys currently stored in the engine across all shards.
-func (e *Engine) Size() uint32 {
+// Count returns the total number of keys currently stored in the engine across all shards.
+func (e *Engine) Count() uint32 {
 	var total uint32 = 0
 	for i := 0; i < ShardCount; i++ {
 		s := &e.shards[i]
@@ -342,5 +342,23 @@ func (e *Engine) Size() uint32 {
 		total += uint32(len(s.data))
 		s.mu.RUnlock()
 	}
+	return total
+}
+
+// Size returns the total size in bytes of all values currently stored in the engine across all shards.
+func (e *Engine) Size() uint64 {
+	var total uint64 = 0
+	for i := 0; i < ShardCount; i++ {
+		s := &e.shards[i]
+		s.mu.RLock()
+		for key, entry := range s.data {
+			if entry.value != nil {
+				total += uint64(len(key))               // key size
+				total += codex.SizeOfValue(entry.value) // value size
+			}
+		}
+		s.mu.RUnlock()
+	}
+
 	return total
 }

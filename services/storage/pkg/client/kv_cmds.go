@@ -425,3 +425,27 @@ func (c *Client) KVCount(db, coll string) (uint32, error) {
 
 	return count, nil
 }
+
+// KVSize implements the client side of the protocol.ServerCommandKVSize command.
+func (c *Client) KVSize(db, coll string) (uint64, error) {
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVSize,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        *commonresponses.EmptyPayload,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return 0, ErrUnexpectedStatusCode
+	}
+
+	size, err := codex.DecodeUint64(resp.Payload)
+	if err != nil {
+		return 0, err
+	}
+
+	return size, nil
+}

@@ -57,7 +57,7 @@ func (c *Commands) handleCount(ctx *command.ConnCtx, _ *protocol.Message, cmd *p
 	}
 	kve := e.AsKeyValueEngine()
 
-	count := kve.Size()
+	count := kve.Count()
 
 	return &protocol.Response{
 		Code:    protocol.StatusOK,

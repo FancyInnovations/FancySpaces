@@ -24,8 +24,8 @@ func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 	var v codex.Value
 
 	// initially empty
-	if e.Size() != 0 {
-		t.Fatalf("expected size 0, got %d", e.Size())
+	if e.Count() != 0 {
+		t.Fatalf("expected size 0, got %d", e.Count())
 	}
 	if len(e.Keys()) != 0 {
 		t.Fatalf("expected no keys, got %v", e.Keys())
@@ -40,8 +40,8 @@ func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 		t.Fatalf("expected Get(key1) to be non-nil")
 	}
 
-	if e.Size() != 1 {
-		t.Fatalf("expected size 1, got %d", e.Size())
+	if e.Count() != 1 {
+		t.Fatalf("expected size 1, got %d", e.Count())
 	}
 	keys := e.Keys()
 	if !contains(keys, "key1") {
@@ -56,19 +56,19 @@ func TestSetGetExistsDeleteClearSizeKeys(t *testing.T) {
 	if e.Get("key1") != nil {
 		t.Fatalf("expected Get(key1) == nil after delete")
 	}
-	if e.Size() != 0 {
-		t.Fatalf("expected size 0 after delete, got %d", e.Size())
+	if e.Count() != 0 {
+		t.Fatalf("expected size 0 after delete, got %d", e.Count())
 	}
 
-	// Clear
+	// Delete All
 	e.Set("a", &v)
 	e.Set("b", &v)
-	if e.Size() != 2 {
-		t.Fatalf("expected size 2, got %d", e.Size())
+	if e.Count() != 2 {
+		t.Fatalf("expected size 2, got %d", e.Count())
 	}
-	e.Clear()
-	if e.Size() != 0 {
-		t.Fatalf("expected size 0 after clear, got %d", e.Size())
+	e.DeleteAll()
+	if e.Count() != 0 {
+		t.Fatalf("expected size 0 after clear, got %d", e.Count())
 	}
 	if len(e.Keys()) != 0 {
 		t.Fatalf("expected no keys after clear, got %v", e.Keys())

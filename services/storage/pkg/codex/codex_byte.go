@@ -38,3 +38,7 @@ func DecodeByte(data []byte) (byte, error) {
 
 	return data[1], nil
 }
+
+func SizeOfByte() uint64 {
+	return 2
+}

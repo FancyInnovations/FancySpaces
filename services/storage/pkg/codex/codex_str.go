@@ -45,3 +45,7 @@ func DecodeString(data []byte) (string, error) {
 
 	return string(data[5 : 5+strLen]), nil
 }
+
+func SizeOfString(val string) uint64 {
+	return uint64(1 + 4 + len(val))
+}

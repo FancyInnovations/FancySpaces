@@ -369,6 +369,24 @@ Response:
 |-------------|---------------|
 | 0000        | Success       |
 
+### Size (2039)
+
+The KV Size command retrieves the total size of all key-value pairs in the store in bytes.
+
+Payload format: None
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+The response payload for a successful KV Size command contains:
+
+| Field | Size | Description                                         | 
+|-------|------|-----------------------------------------------------|
+| Size  | 8 B  | Total size of all key-value pairs in bytes (uint64) |
+
 ## Document engine commands (3xxx)
 
 ## Object engine commands (4xxx)

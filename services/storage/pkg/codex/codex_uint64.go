@@ -40,3 +40,7 @@ func DecodeUint64(data []byte) (uint64, error) {
 
 	return binary.BigEndian.Uint64(data[1:9]), nil
 }
+
+func SizeOfUint64() uint64 {
+	return 9
+}

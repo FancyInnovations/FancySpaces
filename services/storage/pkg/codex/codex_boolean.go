@@ -42,3 +42,7 @@ func DecodeBool(data []byte) (bool, error) {
 
 	return data[1] == 1, nil
 }
+
+func SizeOfBool() uint64 {
+	return 2
+}

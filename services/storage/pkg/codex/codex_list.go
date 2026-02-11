@@ -89,3 +89,13 @@ func DecodeList(data []byte) ([]*Value, error) {
 
 	return items, nil
 }
+
+func SizeOfList(vals []*Value) uint64 {
+	size := uint64(1 + 4) // Type (1 byte) + Count (4 bytes)
+
+	for _, val := range vals {
+		size += 4                // Item length (4 bytes)
+		size += SizeOfValue(val) // Item data
+	}
+	return size
+}

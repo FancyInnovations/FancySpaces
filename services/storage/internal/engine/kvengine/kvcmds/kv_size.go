@@ -8,13 +8,14 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
-// handleDeleteAll deletes all key-value pairs in the specified collection. This is a destructive operation and should be used with caution.
+// handleSize processes a size command, which returns the size in bytes of the key-value collection.
 // Payload format: empty
-func (c *Commands) handleDeleteAll(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
+func (c *Commands) handleSize(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	u := auth.UserFromContext(ctx.Ctx)
 	if u == nil || !u.Verified || !u.IsActive {
 		return commonresponses.Unauthorized, nil
@@ -33,7 +34,7 @@ func (c *Commands) handleDeleteAll(ctx *command.ConnCtx, _ *protocol.Message, cm
 		return commonresponses.InternalServerError, nil
 	}
 
-	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadWrite) {
+	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadOnly) {
 		return commonresponses.Forbidden, nil
 	}
 
@@ -56,7 +57,10 @@ func (c *Commands) handleDeleteAll(ctx *command.ConnCtx, _ *protocol.Message, cm
 	}
 	kve := e.AsKeyValueEngine()
 
-	kve.DeleteAll()
+	size := kve.Size()
 
-	return commonresponses.OK, nil
+	return &protocol.Response{
+		Code:    protocol.StatusOK,
+		Payload: codex.EncodeUint64(size),
+	}, nil
 }

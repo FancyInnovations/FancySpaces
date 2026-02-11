@@ -2,10 +2,12 @@ package main
 
 import (
 	"log/slog"
+	"strconv"
 
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/client"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/client/collection"
+	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 )
 
 type Person struct {
@@ -40,17 +42,28 @@ func main() {
 
 	coll := collection.NewKeyValueCollection(c, "system", "kv_test")
 
-	//err = coll.SetWithTTL("hello", "world", 60*time.Second)
-	//if err != nil {
-	//	slog.Error("Failed to set value", sloki.WrapError(err))
-	//	return
-	//}
-	//slog.Info("Value set successfully")
+	for i := 0; i < 200; i++ {
+		p := Person{
+			Name: "Person " + strconv.Itoa(i),
+			Age:  i,
+		}
+		data, err := codex.Marshal(&p)
+		if err != nil {
+			slog.Error("Failed to marshal person", sloki.WrapError(err))
+			return
+		}
 
-	ttl, err := coll.GetTTL("hello")
+		err = coll.Set("person"+strconv.Itoa(i), data)
+		if err != nil {
+			slog.Error("Failed to set value", sloki.WrapError(err))
+			return
+		}
+	}
+
+	size, err := coll.Size()
 	if err != nil {
-		slog.Error("Failed to get TTL", sloki.WrapError(err))
+		slog.Error("Failed to get size", sloki.WrapError(err))
 		return
 	}
-	slog.Info("TTL retrieved successfully", slog.Duration("ttl", ttl))
+	slog.Info("Size retrieved successfully", slog.Uint64("size", size))
 }

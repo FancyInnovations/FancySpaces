@@ -46,3 +46,7 @@ func EncodeBinaryInto(val []byte, target []byte) []byte {
 
 	return target
 }
+
+func SizeOfBinary(val []byte) uint64 {
+	return uint64(1 + 4 + len(val))
+}

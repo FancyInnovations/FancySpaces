@@ -46,3 +46,7 @@ func DecodeFloat64(data []byte) (float64, error) {
 
 	return math.Float64frombits(bits), nil
 }
+
+func SizeOfFloat64() uint64 {
+	return 9
+}
