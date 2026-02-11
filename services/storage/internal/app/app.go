@@ -8,6 +8,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	fakeDatabaseDB "github.com/fancyinnovations/fancyspaces/storage/internal/database/databasedb/fake"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/database/dbcmds"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/brokerengine/brokercmds"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine/kvcmds"
@@ -51,6 +52,12 @@ func Start(cfg Configuration) *server.Server {
 	// tcp server
 	cmdService := command.NewService()
 	cmdService.RegisterHandlers(command.SystemCommands())
+
+	dbCommands := dbcmds.New(dbcmds.Configuration{
+		DatabaseStore: databaseStore,
+		EngineService: engineService,
+	})
+	cmdService.RegisterHandlers(dbCommands.Get())
 
 	kvCommands := kvcmds.New(kvcmds.Configuration{
 		DatabaseStore: databaseStore,

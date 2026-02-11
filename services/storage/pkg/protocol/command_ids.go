@@ -8,12 +8,28 @@ package protocol
 // 5xxx: Analytical engine commands
 // 6xxx: Broker engine commands
 
+// System command IDs
 const (
 	ServerCommandPing                      uint16 = 1
 	ServerCommandSupportedProtocolVersions uint16 = 2
 	ServerCommandLogin                     uint16 = 100
 	ServerCommandAuthStatus                uint16 = 101
+)
 
+// Database and collection command IDs
+const (
+	ServerCommandDBDatabaseGet           uint16 = 1000
+	ServerCommandDBDatabaseGetMultiple   uint16 = 1001
+	ServerCommandDBDatabaseGetAll        uint16 = 1002
+	ServerCommandDBDatabaseGetAllForUser uint16 = 1003
+
+	ServerCommandDBCollectionGet         uint16 = 1100
+	ServerCommandDBCollectionGetMultiple uint16 = 1101
+	ServerCommandDBCollectionGetAll      uint16 = 1102
+)
+
+// Key-value engine command IDs
+const (
 	ServerCommandKVSet               uint16 = 2000
 	ServerCommandKVSetTTL            uint16 = 2001
 	ServerCommandKVSetMultiple       uint16 = 2002
@@ -71,7 +87,10 @@ const (
 	ServerCommandKVMapExists uint16 = 2564
 	ServerCommandKVMapKeys   uint16 = 2565
 	ServerCommandKVMapValues uint16 = 2566
+)
 
+// Object engine command IDs
+const (
 	ServerCommandObjectPut         uint16 = 4000
 	ServerCommandObjectGet         uint16 = 4001
 	ServerCommandObjectGetMetadata uint16 = 4002
@@ -83,7 +102,10 @@ const (
 	ServerCommandObjectRename      uint16 = 4008
 	ServerCommandObjectCount       uint16 = 4009
 	ServerCommandObjectSize        uint16 = 4010
+)
 
+// Broker engine command IDs
+const (
 	ServerCommandBrokerSubscribe      uint16 = 6000
 	ServerCommandBrokerSubscribeQueue uint16 = 6001
 	ServerCommandBrokerUnsubscribe    uint16 = 6002

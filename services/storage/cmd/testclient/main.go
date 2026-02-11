@@ -1,19 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
-	"strconv"
 
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/client"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/client/collection"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 )
-
-type Person struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
-}
 
 func main() {
 	// Setup logging
@@ -40,37 +33,21 @@ func main() {
 	}
 	defer c.Close()
 
-	coll := collection.NewObjectCollection(c, "system", "obj_test")
+	//coll := collection.NewObjectCollection(c, "system", "obj_test")
 
-	for i := 0; i < 100; i++ {
-		p := Person{
-			Name: "Person " + strconv.Itoa(200+i),
-			Age:  i,
-		}
-		data, err := codex.Marshal(&p)
-		if err != nil {
-			slog.Error("Failed to marshal person", sloki.WrapError(err))
-			return
-		}
-
-		err = coll.Put("person"+strconv.Itoa(200+i), data)
-		if err != nil {
-			slog.Error("Failed to set value", sloki.WrapError(err))
-			return
-		}
-	}
-
-	count, err := coll.Count()
+	db, err := c.DBDatabaseGet("system")
 	if err != nil {
-		slog.Error("Failed to get count", sloki.WrapError(err))
+		slog.Error("Failed to get database", sloki.WrapError(err))
 		return
 	}
-	slog.Info("Count retrieved successfully", slog.Uint64("count", uint64(count)))
 
-	size, err := coll.Size()
+	fmt.Printf("Database: %#v\n", db)
+
+	coll, err := c.DBCollectionGet("system", "obj_test")
 	if err != nil {
-		slog.Error("Failed to get size", sloki.WrapError(err))
+		slog.Error("Failed to get collection", sloki.WrapError(err))
 		return
 	}
-	slog.Info("Size retrieved successfully", slog.Uint64("size", size))
+
+	fmt.Printf("Collection: %#v\n", coll)
 }

@@ -10,6 +10,7 @@ var (
 	ErrUnexpectedDataType          = errors.New("unexpected data type")
 	ErrInvalidPayloadLength        = errors.New("invalid payload length")
 	ErrCommandTimeout              = errors.New("command timed out")
-
-	ErrKeyNotFound = errors.New("key not found")
+	ErrDatabaseNotFound            = errors.New("database not found")
+	ErrCollectionNotFound          = errors.New("collection not found")
+	ErrKeyNotFound                 = errors.New("key not found")
 )

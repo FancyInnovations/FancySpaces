@@ -19,25 +19,33 @@ ID Ranges:
     * [Supported protocol versions (2)](#supported-protocol-versions-2)
     * [Login (100)](#login-100)
     * [Auth status (101)](#auth-status-101)
-  * [Database and collection commands](#database-and-collection-commands)
   * [Database and collection commands (1xxx)](#database-and-collection-commands-1xxx)
+    * [Database get (1000)](#database-get-1000)
+    * [Collection get (1100)](#collection-get-1100)
   * [Key-value engine commands (2xxx)](#key-value-engine-commands-2xxx)
     * [Set (2000)](#set-2000)
     * [Set with TTL (2001)](#set-with-ttl-2001)
     * [Delete (2020)](#delete-2020)
+    * [Delete multiple (2021)](#delete-multiple-2021)
     * [Delete all (2022)](#delete-all-2022)
     * [Exists (2030)](#exists-2030)
     * [Get (2031)](#get-2031)
     * [Get multiple (2032)](#get-multiple-2032)
     * [Get all (2033)](#get-all-2033)
-    * [Keys (2034)](#keys-2034)
-    * [Count (2035)](#count-2035)
+    * [Get TTL (2034)](#get-ttl-2034)
+    * [Get multiple TTL (2035)](#get-multiple-ttl-2035)
+    * [Get all TTL (2036)](#get-all-ttl-2036)
+    * [Keys (2037)](#keys-2037)
+    * [Count (2038)](#count-2038)
+    * [Size (2039)](#size-2039)
   * [Document engine commands (3xxx)](#document-engine-commands-3xxx)
   * [Object engine commands (4xxx)](#object-engine-commands-4xxx)
     * [Put (4000)](#put-4000)
     * [Get (4001)](#get-4001)
     * [Get metadata (4002)](#get-metadata-4002)
     * [Delete (4003)](#delete-4003)
+    * [Count (4009)](#count-4009)
+    * [Size (4010)](#size-4010)
   * [Analytical engine commands (5xxx)](#analytical-engine-commands-5xxx)
   * [Broker engine commands (6xxx)](#broker-engine-commands-6xxx)
     * [Subscribe (6000)](#subscribe-6000)
@@ -125,11 +133,46 @@ Response:
 | 0000        | Authenticated |
 | 1004        | Unauthorized  |
 
-## Database and collection commands
-
-Not implemented yet.
-
 ## Database and collection commands (1xxx)
+
+### Database get (1000)
+
+The Database get command retrieves information about a specific database.
+
+Payload format:
+
+| Field                | Size | Description                          |
+|----------------------|------|--------------------------------------|
+| Database name length | 2 B  | Length of the database name          |
+| Database name        | N B  | The name of the database to retrieve |
+
+Response:
+
+| Status code | Description        |
+|-------------|--------------------|
+| 0000        | Success            |
+| 1005        | Database not found |
+
+### Collection get (1100)
+
+The Collection get command retrieves information about a specific collection in a database.
+
+Payload format:
+
+| Field                  | Size | Description                            |
+|------------------------|------|----------------------------------------|
+| Database name length   | 2 B  | Length of the database name            |
+| Database name          | N B  | The name of the database               |
+| Collection name length | 2 B  | Length of the collection name          |
+| Collection name        | N B  | The name of the collection to retrieve |
+
+Response:
+
+| Status code | Description          |
+|-------------|----------------------|
+| 0000        | Success              |
+| 1005        | Database not found   |
+| 1006        | Collection not found |
 
 ## Key-value engine commands (2xxx)
 
