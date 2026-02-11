@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/storage/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine"
@@ -20,28 +19,6 @@ import (
 // Response payload will be the binary data associated with the key, encoded using codex.TypeBinary.
 // If the key is not found, a protocol.StatusNotFound response will be returned with an empty payload.
 func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
-	u := auth.UserFromContext(ctx.Ctx)
-	if u == nil || !u.Verified || !u.IsActive {
-		return commonresponses.Unauthorized, nil
-	}
-
-	db, err := c.dbStore.GetDatabase(ctx.Ctx, cmd.DatabaseName)
-	if err != nil {
-		if errors.Is(err, database.ErrDatabaseNotFound) {
-			return commonresponses.DatabaseNotFound, nil
-		}
-
-		slog.Error("Failed to get database",
-			slog.String("database", cmd.DatabaseName),
-			sloki.WrapError(err),
-		)
-		return commonresponses.InternalServerError, nil
-	}
-
-	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadOnly) {
-		return commonresponses.Forbidden, nil
-	}
-
 	e, err := c.engineService.GetEngine(cmd.DatabaseName, cmd.CollectionName)
 	if err != nil {
 		if errors.Is(err, database.ErrCollectionNotFound) {

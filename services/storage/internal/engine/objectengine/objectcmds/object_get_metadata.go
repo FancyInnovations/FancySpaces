@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/storage/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine"
@@ -18,28 +17,6 @@ import (
 // Payload format: | Key Length (2 bytes) | Key (variable) |
 // Response payload format: | Size (8 bytes) | CRC32 (4 bytes) | CreatedAt (8 bytes) | ModifiedAt (8 bytes) |
 func (c *Commands) handleGetMetadata(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
-	u := auth.UserFromContext(ctx.Ctx)
-	if u == nil || !u.Verified || !u.IsActive {
-		return commonresponses.Unauthorized, nil
-	}
-
-	db, err := c.dbStore.GetDatabase(ctx.Ctx, cmd.DatabaseName)
-	if err != nil {
-		if errors.Is(err, database.ErrDatabaseNotFound) {
-			return commonresponses.DatabaseNotFound, nil
-		}
-
-		slog.Error("Failed to get database",
-			slog.String("database", cmd.DatabaseName),
-			sloki.WrapError(err),
-		)
-		return commonresponses.InternalServerError, nil
-	}
-
-	if !u.IsAdmin() && !db.HasPermission(u.ID, database.PermissionLevelReadOnly) {
-		return commonresponses.Forbidden, nil
-	}
-
 	e, err := c.engineService.GetEngine(cmd.DatabaseName, cmd.CollectionName)
 	if err != nil {
 		if errors.Is(err, database.ErrCollectionNotFound) {
