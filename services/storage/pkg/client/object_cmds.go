@@ -131,3 +131,49 @@ func (c *Client) ObjDelete(db, coll string, key string) error {
 
 	return nil
 }
+
+// ObjCount implements the client side of the protocol.ServerCommandObjectCount command.
+func (c *Client) ObjCount(db, coll string) (uint32, error) {
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandObjectCount,
+		DatabaseName:   db,
+		CollectionName: coll,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return 0, ErrUnexpectedStatusCode
+	}
+
+	if len(resp.Payload) != 4 {
+		return 0, ErrInvalidPayloadLength
+	}
+
+	count := binary.BigEndian.Uint32(resp.Payload[0:4])
+	return count, nil
+}
+
+// ObjSize implements the client side of the protocol.ServerCommandObjectSize command.
+func (c *Client) ObjSize(db, coll string) (uint64, error) {
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandObjectSize,
+		DatabaseName:   db,
+		CollectionName: coll,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return 0, ErrUnexpectedStatusCode
+	}
+
+	if len(resp.Payload) != 8 {
+		return 0, ErrInvalidPayloadLength
+	}
+
+	size := binary.BigEndian.Uint64(resp.Payload[0:8])
+	return size, nil
+}

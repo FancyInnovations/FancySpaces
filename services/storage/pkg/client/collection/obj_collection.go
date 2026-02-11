@@ -12,7 +12,7 @@ type ObjectCollection struct {
 func NewObjectCollection(client *client.Client, database, name string) *ObjectCollection {
 	// TODO: check if database and collection exist, return error if not
 
-	// TODO check if collection is of type KV, return error if not
+	// TODO check if collection is of type Object, return error if not
 
 	return &ObjectCollection{
 		collection: collection{
@@ -41,4 +41,14 @@ func (coll *ObjectCollection) GetMetadata(key string) (*client.ObjectMetadata, e
 // Delete removes the object associated with the specified key from the collection.
 func (coll *ObjectCollection) Delete(key string) error {
 	return coll.client.ObjDelete(coll.database, coll.name, key)
+}
+
+// Count returns the total number of objects stored in the collection.
+func (coll *ObjectCollection) Count() (uint32, error) {
+	return coll.client.ObjCount(coll.database, coll.name)
+}
+
+// Size returns the total size of all objects stored in the collection in bytes.
+func (coll *ObjectCollection) Size() (uint64, error) {
+	return coll.client.ObjSize(coll.database, coll.name)
 }

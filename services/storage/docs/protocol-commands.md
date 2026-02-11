@@ -474,6 +474,42 @@ Response:
 | 0000        | Success       |
 | 1008        | Key not found |
 
+### Count (4009)
+
+The Obj Count command retrieves the total number of objects in the engine.
+
+Payload format: None
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+The response payload for a successful Obj Count command contains:
+
+| Field | Size | Description                      |
+|-------|------|----------------------------------|
+| Count | 4 B  | Total number of objects (uint32) |
+
+### Size (4010)
+
+The Obj Size command retrieves the total size of all objects in the engine in bytes.
+
+Payload format: None
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+The response payload for a successful Obj Size command contains:
+
+| Field | Size | Description                                 |
+|-------|------|---------------------------------------------|
+| Size  | 8 B  | Total size of all objects in bytes (uint64) |
+
 ## Analytical engine commands (5xxx)
 
 ## Broker engine commands (6xxx)

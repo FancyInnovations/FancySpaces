@@ -12,7 +12,7 @@ type MessageBrokerCollection struct {
 func NewMessageBrokerCollection(client *client.Client, database, name string) *MessageBrokerCollection {
 	// TODO: check if database and collection exist, return error if not
 
-	// TODO check if collection is of type MessageBroker, return error if not
+	// TODO check if collection is of type Broker, return error if not
 
 	return &MessageBrokerCollection{
 		collection: collection{

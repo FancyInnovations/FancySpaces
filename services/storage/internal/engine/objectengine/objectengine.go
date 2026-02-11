@@ -160,3 +160,28 @@ func (b *Bucket) GetMeta(key string) (*ObjectMeta, error) {
 
 	return &meta, nil
 }
+
+// Count returns the total number of objects in the bucket
+func (b *Bucket) Count() uint32 {
+	total := 0
+	for _, s := range b.shards {
+		s.RLock()
+		total += len(s.index)
+		s.RUnlock()
+	}
+	return uint32(total)
+}
+
+// Size returns the total size in bytes of all objects in the bucket
+func (b *Bucket) Size() uint64 {
+	var total uint64
+	for _, s := range b.shards {
+		s.RLock()
+		for _, meta := range s.index {
+			total += uint64(len(meta.Key) + 8 + 4 + 4 + 8 + 8) // metadata size
+			total += uint64(meta.Size)                         // data size
+		}
+		s.RUnlock()
+	}
+	return total
+}

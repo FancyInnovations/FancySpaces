@@ -40,11 +40,11 @@ func main() {
 	}
 	defer c.Close()
 
-	coll := collection.NewKeyValueCollection(c, "system", "kv_test")
+	coll := collection.NewObjectCollection(c, "system", "obj_test")
 
-	for i := 0; i < 200; i++ {
+	for i := 0; i < 100; i++ {
 		p := Person{
-			Name: "Person " + strconv.Itoa(i),
+			Name: "Person " + strconv.Itoa(200+i),
 			Age:  i,
 		}
 		data, err := codex.Marshal(&p)
@@ -53,12 +53,19 @@ func main() {
 			return
 		}
 
-		err = coll.Set("person"+strconv.Itoa(i), data)
+		err = coll.Put("person"+strconv.Itoa(200+i), data)
 		if err != nil {
 			slog.Error("Failed to set value", sloki.WrapError(err))
 			return
 		}
 	}
+
+	count, err := coll.Count()
+	if err != nil {
+		slog.Error("Failed to get count", sloki.WrapError(err))
+		return
+	}
+	slog.Info("Count retrieved successfully", slog.Uint64("count", uint64(count)))
 
 	size, err := coll.Size()
 	if err != nil {

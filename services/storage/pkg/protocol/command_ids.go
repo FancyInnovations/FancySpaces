@@ -81,6 +81,8 @@ const (
 	ServerCommandObjectCopy        uint16 = 4006
 	ServerCommandObjectMove        uint16 = 4007
 	ServerCommandObjectRename      uint16 = 4008
+	ServerCommandObjectCount       uint16 = 4009
+	ServerCommandObjectSize        uint16 = 4010
 
 	ServerCommandBrokerSubscribe      uint16 = 6000
 	ServerCommandBrokerSubscribeQueue uint16 = 6001

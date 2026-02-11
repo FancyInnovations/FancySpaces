@@ -30,10 +30,7 @@ func (c *Commands) Get() map[uint16]command.Handler {
 		protocol.ServerCommandObjectGet:         c.handleGet,
 		protocol.ServerCommandObjectGetMetadata: c.handleGetMetadata,
 		protocol.ServerCommandObjectDelete:      c.handleDelete,
-		//protocol.ServerCommandObjectExists:      c.handleExists,
-		//protocol.ServerCommandObjectList:        c.handleList,
-		//protocol.ServerCommandObjectCopy:        c.handleCopy,
-		//protocol.ServerCommandObjectMove:        c.handleMove,
-		//protocol.ServerCommandObjectRename:      c.handleRename,
+		protocol.ServerCommandObjectCount:       c.handleCount,
+		protocol.ServerCommandObjectSize:        c.handleSize,
 	}
 }
