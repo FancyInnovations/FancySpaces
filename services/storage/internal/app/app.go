@@ -58,6 +58,7 @@ func Start(cfg Configuration) *server.Server {
 		EngineService: engineService,
 	})
 	cmdService.RegisterHandlers(dbCommands.Get())
+	cmdService.RegisterMiddleware(dbCommands.PermissionMiddleware)
 
 	kvCommands := kvcmds.New(kvcmds.Configuration{
 		DatabaseStore: databaseStore,

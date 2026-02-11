@@ -7,14 +7,17 @@ import (
 )
 
 type Handler func(ctx *ConnCtx, msg *protocol.Message, cmd *protocol.Command) (*protocol.Response, error)
+type Middleware func(Handler) Handler
 
 type Service struct {
-	handlers map[uint16]Handler
+	handlers    map[uint16]Handler
+	middlewares []Middleware
 }
 
 func NewService() *Service {
 	return &Service{
-		handlers: make(map[uint16]Handler),
+		handlers:    make(map[uint16]Handler),
+		middlewares: []Middleware{},
 	}
 }
 
@@ -32,13 +35,28 @@ func (s *Service) RegisterHandlers(handlers map[uint16]Handler) {
 	}
 }
 
+func (s *Service) RegisterMiddleware(mw Middleware) {
+	s.middlewares = append(s.middlewares, mw)
+}
+
+func (s *Service) RegisterMiddlewares(mws []Middleware) {
+	for _, mw := range mws {
+		s.RegisterMiddleware(mw)
+	}
+}
+
 func (s *Service) Handle(ctx *ConnCtx, msg *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
-	if handler, exists := s.handlers[cmd.ID]; exists {
-		return handler(ctx, msg, cmd)
+	handler, exists := s.handlers[cmd.ID]
+	if !exists {
+		return &protocol.Response{
+			Code:    protocol.StatusCommandNotFound,
+			Payload: []byte(fmt.Sprintf("command with ID %d not found", cmd.ID)),
+		}, nil
 	}
 
-	return &protocol.Response{
-		Code:    protocol.StatusCommandNotFound,
-		Payload: []byte(fmt.Sprintf("command with ID %d not found", cmd.ID)),
-	}, nil
+	for i := len(s.middlewares) - 1; i >= 0; i-- {
+		handler = s.middlewares[i](handler)
+	}
+
+	return handler(ctx, msg, cmd)
 }
