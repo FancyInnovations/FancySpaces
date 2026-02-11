@@ -31,11 +31,11 @@ const (
 	ServerCommandKVGet            uint16 = 2031
 	ServerCommandKVGetMultiple    uint16 = 2032
 	ServerCommandKVGetAll         uint16 = 2033
-	ServerCommandKVGetTTL         uint16 = 2033
-	ServerCommandKVGetMultipleTTL uint16 = 2034
-	ServerCommandKVGetAllTTL      uint16 = 2035
-	ServerCommandKVKeys           uint16 = 2036
-	ServerCommandKVCount          uint16 = 2037
+	ServerCommandKVGetTTL         uint16 = 2034
+	ServerCommandKVGetMultipleTTL uint16 = 2035
+	ServerCommandKVGetAllTTL      uint16 = 2036
+	ServerCommandKVKeys           uint16 = 2037
+	ServerCommandKVCount          uint16 = 2038
 
 	ServerCommandKVNumIncrement  uint16 = 2520
 	ServerCommandKVNumDecrement  uint16 = 2521

@@ -40,17 +40,17 @@ func main() {
 
 	coll := collection.NewKeyValueCollection(c, "system", "kv_test")
 
-	err = coll.Set("hello", "world")
-	if err != nil {
-		slog.Error("Failed to set value", sloki.WrapError(err))
-		return
-	}
-	slog.Info("Value set successfully")
+	//err = coll.SetWithTTL("hello", "world", 60*time.Second)
+	//if err != nil {
+	//	slog.Error("Failed to set value", sloki.WrapError(err))
+	//	return
+	//}
+	//slog.Info("Value set successfully")
 
-	value, err := coll.Get("hello")
+	ttl, err := coll.GetTTL("hello")
 	if err != nil {
-		slog.Error("Failed to get value", sloki.WrapError(err))
+		slog.Error("Failed to get TTL", sloki.WrapError(err))
 		return
 	}
-	slog.Info("Value retrieved successfully", slog.String("value", value.AsString()))
+	slog.Info("TTL retrieved successfully", slog.Duration("ttl", ttl))
 }

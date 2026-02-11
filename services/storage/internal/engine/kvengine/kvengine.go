@@ -224,6 +224,66 @@ func (e *Engine) GetAll() map[string]*codex.Value {
 	return results
 }
 
+// GetTTL retrieves the expiration time for the given key.
+// Returns the expiration time in unix nanoseconds, or -1 if the key does not exist or has expired.
+func (e *Engine) GetTTL(key string) int64 {
+	s := e.shardFor(key)
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	entry, exists := s.data[key]
+	if !exists || (entry.expires > 0 && time.Now().UnixNano() > entry.expires) {
+		return -1 // indicate missing/expired keys with a special value
+	}
+
+	return entry.expires
+}
+
+// GetMultipleTTL retrieves the expiration times for multiple keys at once.
+func (e *Engine) GetMultipleTTL(keys []string) map[string]int64 {
+	var shardKeys [ShardCount][]string
+	for _, key := range keys {
+		s := e.shardFor(key)
+		shardKeys[s.index] = append(shardKeys[s.index], key)
+	}
+
+	results := make(map[string]int64, len(keys))
+	now := time.Now().UnixNano()
+	for shardIndex, keys := range shardKeys {
+		s := &e.shards[shardIndex]
+		s.mu.RLock()
+		for _, key := range keys {
+			entry, exists := s.data[key]
+			if exists && (entry.expires == 0 || now <= entry.expires) {
+				results[key] = entry.expires
+			} else {
+				results[key] = -1 // indicate missing/expired keys with a special value
+			}
+		}
+		s.mu.RUnlock()
+	}
+
+	return results
+}
+
+// GetAllTTL retrieves the expiration times for all keys currently stored in the engine.
+func (e *Engine) GetAllTTL() map[string]int64 {
+	results := make(map[string]int64)
+	now := time.Now().UnixNano()
+	for i := 0; i < ShardCount; i++ {
+		s := &e.shards[i]
+		s.mu.RLock()
+		for key, entry := range s.data {
+			if entry.expires == 0 || now <= entry.expires {
+				results[key] = entry.expires
+			}
+		}
+		s.mu.RUnlock()
+	}
+
+	return results
+}
+
 // Exists checks if a key exists and has not expired.
 func (e *Engine) Exists(key string) bool {
 	s := e.shardFor(key)

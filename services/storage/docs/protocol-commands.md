@@ -287,7 +287,63 @@ Response:
 
 The response payload for a successful KV Get all command contains a map of all keys to their corresponding values, where each value is encoded as an encoded value (see [Encoded Values](protocol-encoded-values.md)).
 
-### Keys (2034)
+### Get TTL (2034)
+
+The KV Get TTL command retrieves the uinx nano timestamp of when a key will expire.
+
+Payload format:
+
+| Field      | Size | Description         |
+|------------|------|---------------------|
+| Key length | 2 B  | Length of the key   |
+| Key        | N B  | The key to check    |
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+| 1008        | Key not found |
+
+Response payload for a successful KV Get TTL command contains:
+
+| Field      | Size | Description                                                                          |
+|------------|------|--------------------------------------------------------------------------------------|
+| Expires At | 8 B  | unix nano timestamp of when the key will expire, or 0 if the key does not have a TTL |
+
+### Get multiple TTL (2035)
+
+The KV Get multiple TTL command retrieves the uinx nano timestamp of when multiple keys will expire.
+
+Payload format:
+
+| Field | Size | Description                                   |
+|-------|------|-----------------------------------------------|
+| Keys  | N B  | [List of strings](protocol-encoded-values.md) | 
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+Response payload for a successful KV Get multiple TTL command contains a map of keys to their corresponding expiration timestamps, where each timestamp is an 8-byte unix nano timestamp of when the key will expire, or 0 if the key does not have a TTL. If a key does not exist or is expired, the timestamp will be -1.
+
+### Get all TTL (2036)
+
+The KV Get all TTL command retrieves the uinx nano timestamp of when all keys will expire.
+
+Payload format: None
+
+Response:
+
+| Status code | Description   |
+|-------------|---------------|
+| 0000        | Success       |
+
+Response payload for a successful KV Get all TTL command contains a map of all keys to their corresponding expiration timestamps, where each timestamp is an 8-byte unix nano timestamp of when the key will expire, or 0 if the key does not have a TTL. If a key does not exist or is expired, the timestamp will be -1.
+
+### Keys (2037)
 
 The KV Keys command retrieves a list of all keys in the store.
 
@@ -301,7 +357,7 @@ Response:
 
 The response payload for a successful KV Keys command contains the list of keys (strings).
 
-### Count (2035)
+### Count (2038)
 
 The KV Count command retrieves the total number of key-value pairs in the store.
 

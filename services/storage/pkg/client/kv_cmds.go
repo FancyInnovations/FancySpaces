@@ -261,6 +261,114 @@ func (c *Client) KVGetAll(db, coll string) (map[string]*codex.Value, error) {
 	return val.AsMap(), nil
 }
 
+// KVGetTTL implements the client side of the protocol.ServerCommandKVGetTTL command.
+func (c *Client) KVGetTTL(db, coll string, key string) (int64, error) {
+	totalLen := 2 + len(key)
+	payload := make([]byte, totalLen)
+
+	// Key
+	binary.BigEndian.PutUint16(payload[0:2], uint16(len(key)))
+	copy(payload[2:2+len(key)], []byte(key))
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVGetTTL,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        payload,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		if resp.Code == protocol.StatusNotFound {
+			return 0, ErrKeyNotFound
+		}
+
+		return 0, ErrUnexpectedStatusCode
+	}
+
+	if len(resp.Payload) != 8 {
+		return 0, ErrUnexpectedDataType
+	}
+
+	ttl := binary.BigEndian.Uint64(resp.Payload)
+	return int64(ttl), nil
+}
+
+// KVGetMultipleTTL implements the client side of the protocol.ServerCommandKVGetMultipleTTL command.
+func (c *Client) KVGetMultipleTTL(db, coll string, keys []string) (map[string]int64, error) {
+	keyVals := codex.NewStringListValue(keys)
+
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVGetMultipleTTL,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        codex.EncodeValue(keyVals),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return nil, ErrUnexpectedStatusCode
+	}
+
+	val, err := codex.DecodeValue(resp.Payload)
+	if err != nil {
+		return nil, err
+	}
+
+	if val.Type != codex.TypeMap {
+		return nil, ErrUnexpectedDataType
+	}
+
+	result := make(map[string]int64)
+	for key, ttlVal := range val.AsMap() {
+		if ttlVal.Type != codex.TypeInt64 {
+			return nil, ErrUnexpectedDataType
+		}
+		result[key] = ttlVal.AsInt64()
+	}
+
+	return result, nil
+}
+
+func (c *Client) KVGetAllTTL(db, coll string) (map[string]int64, error) {
+	resp, err := c.SendCmd(&protocol.Command{
+		ID:             protocol.ServerCommandKVGetAllTTL,
+		DatabaseName:   db,
+		CollectionName: coll,
+		Payload:        *commonresponses.EmptyPayload,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Code != protocol.StatusOK {
+		return nil, ErrUnexpectedStatusCode
+	}
+
+	val, err := codex.DecodeValue(resp.Payload)
+	if err != nil {
+		return nil, err
+	}
+
+	if val.Type != codex.TypeMap {
+		return nil, ErrUnexpectedDataType
+	}
+
+	result := make(map[string]int64)
+	for key, ttlVal := range val.AsMap() {
+		if ttlVal.Type != codex.TypeInt64 {
+			return nil, ErrUnexpectedDataType
+		}
+		result[key] = ttlVal.AsInt64()
+	}
+
+	return result, nil
+}
+
 // KVKeys implements the client side of the protocol.ServerCommandKVKeys command.
 func (c *Client) KVKeys(db, coll string) ([]string, error) {
 	resp, err := c.SendCmd(&protocol.Command{

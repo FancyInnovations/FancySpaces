@@ -105,6 +105,77 @@ func (coll *KeyValueCollection) GetAllStruct(dest map[string]any) error {
 	return nil
 }
 
+func (coll *KeyValueCollection) GetTTL(key string) (time.Duration, error) {
+	expiresAt, err := coll.client.KVGetTTL(coll.database, coll.name, key)
+	if err != nil {
+		return time.Duration(0), err
+	}
+
+	if expiresAt == 0 {
+		return time.Duration(0), nil // Key does not exist or has no TTL
+	}
+
+	now := time.Now().UnixNano()
+	if expiresAt <= now {
+		return time.Duration(0), nil // Key has already expired
+	}
+
+	return time.Duration(expiresAt - now), nil
+}
+
+func (coll *KeyValueCollection) GetMultipleTTL(keys []string) (map[string]time.Duration, error) {
+	expiresAtMap, err := coll.client.KVGetMultipleTTL(coll.database, coll.name, keys)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]time.Duration, len(expiresAtMap))
+	now := time.Now().UnixNano()
+
+	for key, expiresAt := range expiresAtMap {
+
+		if expiresAt == 0 {
+			result[key] = time.Duration(0) // Key does not exist or has no TTL
+			continue
+		}
+
+		if expiresAt <= now {
+			result[key] = time.Duration(0) // Key has already expired
+			continue
+		}
+
+		result[key] = time.Duration(expiresAt - now)
+	}
+
+	return result, nil
+}
+
+func (coll *KeyValueCollection) GetAllTTL() (map[string]time.Duration, error) {
+	expiresAtMap, err := coll.client.KVGetAllTTL(coll.database, coll.name)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]time.Duration, len(expiresAtMap))
+	now := time.Now().UnixNano()
+
+	for key, expiresAt := range expiresAtMap {
+		if expiresAt == 0 {
+			result[key] = time.Duration(0) // Key does not exist or has no TTL
+			continue
+		}
+
+		if expiresAt <= now {
+			result[key] = time.Duration(0) // Key has already expired
+			continue
+		}
+
+		result[key] = time.Duration(expiresAt - now)
+	}
+
+	return result, nil
+}
+
 // Set sets a key-value pair in the collection.
 // The value can be of any type supported by codex.ValueType.
 func (coll *KeyValueCollection) Set(key string, value any) error {
@@ -126,33 +197,29 @@ func (coll *KeyValueCollection) SetStruct(key string, value any) error {
 	return coll.Set(key, data)
 }
 
-// SetWithTTL sets a key-value pair in the collection with a specified time-to-live (TTL) in milliseconds.
+// SetWithTTL sets a key-value pair in the collection with a specified time-to-live (TTL) duration.
 // After the TTL expires, the key will be automatically deleted from the collection.
 // The value can be of any type supported by codex.ValueType.
-func (coll *KeyValueCollection) SetWithTTL(key string, value any, ttlMillis uint64) error {
+func (coll *KeyValueCollection) SetWithTTL(key string, value any, ttl time.Duration) error {
 	cval, err := codex.NewValue(value)
 	if err != nil {
 		return err
 	}
 
-	ttlNanos := ttlMillis * 1_000_000 // Convert milliseconds to nanoseconds
-	expiresAt := uint64(time.Now().UnixNano()) + ttlNanos
+	expiresAt := uint64(time.Now().Add(ttl).UnixNano())
 
 	return coll.client.KVSetTTL(coll.database, coll.name, key, cval, expiresAt)
 }
 
-// SetStructWithTTL marshals the provided struct value and sets it in the collection under the specified key with a TTL.
+// SetStructWithTTL marshals the provided struct value and sets it in the collection under the specified key with a specified time-to-live (TTL) duration.
 // After the TTL expires, the key will be automatically deleted from the collection.
-func (coll *KeyValueCollection) SetStructWithTTL(key string, value any, ttlMillis uint64) error {
+func (coll *KeyValueCollection) SetStructWithTTL(key string, value any, ttl time.Duration) error {
 	data, err := codex.Marshal(value)
 	if err != nil {
 		return err
 	}
 
-	ttlNanos := ttlMillis * 1_000_000 // Convert milliseconds to nanoseconds
-	expiresAt := uint64(time.Now().UnixNano()) + ttlNanos
-
-	return coll.SetWithTTL(key, data, expiresAt)
+	return coll.SetWithTTL(key, data, ttl)
 }
 
 // Delete removes the key-value pair associated with the specified key from the collection.
