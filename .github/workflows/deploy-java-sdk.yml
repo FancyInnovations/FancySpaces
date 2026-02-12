@@ -29,7 +29,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build
-        run: ./gradlew :java-sdk:shadowJar
+        run: ./gradlew :java-sdk:jar
 
       - name: Publish to maven releases repo
         run: ./gradlew :java-sdk:publishMavenPublicationToFancyspacesReleasesRepository
