@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy core service
 
 on:
   workflow_dispatch:
