@@ -27,16 +27,20 @@ jobs:
 
       - name: Modify gradlew permissions
         run: chmod +x ./gradlew
+        working-directory: java-sdk
 
       - name: Build
-        run: ./gradlew :java-sdk:jar
+        run: ./gradlew jar
+        working-directory: java-sdk
 
       - name: Publish to maven releases repo
-        run: ./gradlew :java-sdk:publishMavenPublicationToFancyspacesReleasesRepository
+        run: ./gradlew publishMavenPublicationToFancyspacesReleasesRepository
         env:
           FANCYSPACES_API_KEY: ${{ secrets.FANCYSPACES_API_KEY }}
+        working-directory: java-sdk
 
       - name: Publish to maven snapshots repo
-        run: ./gradlew :java-sdk:publishMavenPublicationToFancyspacesSnapshotsRepository
+        run: ./gradlew publishMavenPublicationToFancyspacesSnapshotsRepository
         env:
           FANCYSPACES_API_KEY: ${{ secrets.FANCYSPACES_API_KEY }}
+        working-directory: java-sdk
