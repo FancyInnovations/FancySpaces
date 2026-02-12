@@ -25,7 +25,7 @@ RUN apt-get update && \
 # Copy the built binary from the builder stage
 COPY --from=builder main .
 
-EXPOSE [8090, 8091]
+EXPOSE 8090 8091
 
 # Run the binary
 CMD ["./main"]
