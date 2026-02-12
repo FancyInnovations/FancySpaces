@@ -23,7 +23,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the built binary from the builder stage
-COPY --from=builder main .
+COPY --from=builder ./app/main .
 
 EXPOSE 8090 8091
 
