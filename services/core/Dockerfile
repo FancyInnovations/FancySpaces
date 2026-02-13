@@ -8,10 +8,10 @@ WORKDIR /app
 COPY . .
 
 # Download dependencies
-RUN cd src && go mod download
+RUN go mod download
 
 # Build the Go application
-RUN cd src && go build -o main ./cmd/prod/main.go
+RUN go build -o main ./cmd/prod/main.go
 
 FROM ubuntu:22.04
 WORKDIR /root/
@@ -23,7 +23,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the built binary from the builder stage
-COPY --from=builder ./app/src/main .
+COPY --from=builder ./app/main .
 
 EXPOSE 8080
 
