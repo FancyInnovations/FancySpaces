@@ -4,8 +4,8 @@ import (
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/storage-sdk/client"
-	"github.com/fancyinnovations/fancyspaces/storage-sdk/client/collection"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/client"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/client/collection"
 )
 
 func main() {

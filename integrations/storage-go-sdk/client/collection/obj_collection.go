@@ -1,6 +1,6 @@
 package collection
 
-import "github.com/fancyinnovations/fancyspaces/storage-sdk/client"
+import "github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/client"
 
 // ObjectCollection represents a collection that stores objects in the storage system.
 type ObjectCollection struct {
