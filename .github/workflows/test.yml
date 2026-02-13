@@ -119,8 +119,8 @@ jobs:
 
       - name: Modify gradlew permissions
         run: chmod +x ./gradlew
-        working-directory: ./java-sdk/
+        working-directory: ./integrations/java-sdk/
 
       - name: Build java sdk
         run: ./gradlew jar
-        working-directory: ./java-sdk/
+        working-directory: ./integrations/java-sdk/
