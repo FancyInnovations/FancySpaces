@@ -1,6 +1,6 @@
 package handler
 
-import "github.com/fancyinnovations/fancyspaces/internal/versions"
+import "github.com/fancyinnovations/fancyspaces/core/internal/versions"
 
 type CreateVersionReq struct {
 	Name                      string            `json:"name"`

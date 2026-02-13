@@ -1,4 +1,4 @@
-module github.com/fancyinnovations/fancyspaces
+module github.com/fancyinnovations/fancyspaces/core
 
 go 1.25.5
 

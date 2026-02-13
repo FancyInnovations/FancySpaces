@@ -9,9 +9,9 @@ import (
 	"github.com/OliverSchlueter/goutils/badgegen"
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/internal/analytics"
-	"github.com/fancyinnovations/fancyspaces/internal/spaces"
-	"github.com/fancyinnovations/fancyspaces/internal/versions"
+	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
+	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/core/internal/versions"
 )
 
 type Handler struct {

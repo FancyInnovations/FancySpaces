@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/internal/analytics"
-	"github.com/fancyinnovations/fancyspaces/internal/maven/javadoccache"
-	"github.com/fancyinnovations/fancyspaces/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
+	"github.com/fancyinnovations/fancyspaces/core/internal/maven/javadoccache"
+	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 )
 
 type DB interface {

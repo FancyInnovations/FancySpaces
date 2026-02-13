@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/OliverSchlueter/goutils/idgen"
-	"github.com/fancyinnovations/fancyspaces/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 )
 
 type DB interface {

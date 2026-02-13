@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fancyinnovations/fancyspaces/internal/versions"
+	"github.com/fancyinnovations/fancyspaces/core/internal/versions"
 	"github.com/minio/minio-go/v7"
 )
 

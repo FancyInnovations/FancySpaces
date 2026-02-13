@@ -3,7 +3,7 @@ package mongo
 import (
 	"errors"
 
-	"github.com/fancyinnovations/fancyspaces/internal/issues"
+	"github.com/fancyinnovations/fancyspaces/core/internal/issues"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )

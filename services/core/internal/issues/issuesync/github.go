@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/internal/issues"
-	"github.com/fancyinnovations/fancyspaces/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/core/internal/issues"
+	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/google/go-github/v82/github"
 )
 

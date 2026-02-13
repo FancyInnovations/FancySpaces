@@ -14,8 +14,8 @@ import (
 	"github.com/OliverSchlueter/goutils/env"
 	"github.com/OliverSchlueter/goutils/middleware"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/internal/app"
-	"github.com/fancyinnovations/fancyspaces/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/core/internal/app"
+	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 	"github.com/justinas/alice"
 )
 

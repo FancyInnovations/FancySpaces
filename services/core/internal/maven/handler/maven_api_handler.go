@@ -9,9 +9,9 @@ import (
 
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/internal/maven"
-	"github.com/fancyinnovations/fancyspaces/internal/maven/javadoccache"
-	"github.com/fancyinnovations/fancyspaces/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/core/internal/maven"
+	"github.com/fancyinnovations/fancyspaces/core/internal/maven/javadoccache"
+	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 )
 
 var contentTypes = map[string]string{

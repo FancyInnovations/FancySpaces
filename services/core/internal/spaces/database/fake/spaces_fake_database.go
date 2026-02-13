@@ -3,7 +3,7 @@ package fake
 import (
 	"sync"
 
-	"github.com/fancyinnovations/fancyspaces/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 )
 
 type DB struct {

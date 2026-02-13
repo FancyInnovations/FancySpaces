@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/fancyinnovations/fancyspaces/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 )
 
 //go:embed sqlStatements/createSpacesTable.sql

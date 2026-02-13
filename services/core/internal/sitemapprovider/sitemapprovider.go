@@ -6,7 +6,7 @@ import (
 
 	"github.com/OliverSchlueter/goutils/sitemapgen"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 )
 
 const baseURL = "https://fancyspaces.net"

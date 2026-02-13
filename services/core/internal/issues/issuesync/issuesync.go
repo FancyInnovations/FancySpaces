@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/internal/issues"
-	"github.com/fancyinnovations/fancyspaces/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/core/internal/issues"
+	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/gofri/go-github-pagination/githubpagination"
 	"github.com/google/go-github/v82/github"
 )

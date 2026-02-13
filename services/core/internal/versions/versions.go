@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/fancyinnovations/fancyspaces/internal/analytics"
+	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
 )
 
 type DB interface {

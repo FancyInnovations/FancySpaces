@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/fancyinnovations/fancyspaces/internal/maven"
+	"github.com/fancyinnovations/fancyspaces/core/internal/maven"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
