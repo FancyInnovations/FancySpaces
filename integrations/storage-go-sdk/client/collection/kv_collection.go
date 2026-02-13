@@ -3,7 +3,7 @@ package collection
 import (
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/client"
+	"github.com/fancyinnovations/fancyspaces/storage-sdk/client"
 	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
 )
 

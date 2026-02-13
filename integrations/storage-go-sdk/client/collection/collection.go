@@ -1,6 +1,6 @@
 package collection
 
-import "github.com/fancyinnovations/fancyspaces/storage/pkg/client"
+import "github.com/fancyinnovations/fancyspaces/storage-sdk/client"
 
 type collection struct {
 	database string

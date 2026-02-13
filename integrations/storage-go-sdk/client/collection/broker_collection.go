@@ -1,6 +1,6 @@
 package collection
 
-import "github.com/fancyinnovations/fancyspaces/storage/pkg/client"
+import "github.com/fancyinnovations/fancyspaces/storage-sdk/client"
 
 // MessageBrokerCollection represents a collection that provides message broker functionality in the storage system.
 type MessageBrokerCollection struct {
