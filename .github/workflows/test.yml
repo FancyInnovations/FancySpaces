@@ -25,16 +25,13 @@ jobs:
           cache-dependency-path: "**/*.sum"
 
       - name: Install dependencies
-        run: go mod tidy
-        working-directory: ./services/core/
+        run: go work sync
 
       - name: Build
-        run: go build cmd/local/main.go
-        working-directory: ./services/core/
+        run: go build ./services/core/cmd/local/main.go
 
       - name: Test
-        run: go test ./... -v
-        working-directory: ./services/core/
+        run: go test ./services/core/... -v
 
   storage-service:
     name: storage-service
@@ -51,17 +48,13 @@ jobs:
           cache-dependency-path: "**/*.sum"
 
       - name: Install dependencies
-        run: go mod tidy
-        working-directory: ./services/storage/
+        run: go work sync
 
       - name: Build
-        run: go build cmd/local/main.go
-        working-directory: ./services/storage/
+        run: go build ./services/storage/cmd/local/main.go
 
       - name: Test
-        run: go test ./... -v
-        working-directory: ./services/storage/
-
+        run: go test ./services/storage/... -v
 
   frontend:
     name: Frontend

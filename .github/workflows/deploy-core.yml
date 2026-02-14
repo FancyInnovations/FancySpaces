@@ -42,8 +42,7 @@ jobs:
         working-directory: ./scripts/
 
       - name: Build Docker image
-        run: docker build -t oliverschlueter/fancyspaces:latest .
-        working-directory: services/storage/
+        run: docker build -t oliverschlueter/fancyspaces:latest -f services/core/Dockerfile .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -53,4 +52,3 @@ jobs:
 
       - name: Push Docker image
         run: docker push oliverschlueter/fancyspaces:latest
-        working-directory: services/storage/

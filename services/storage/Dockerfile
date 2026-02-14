@@ -11,7 +11,7 @@ COPY . .
 RUN go mod download
 
 # Build the Go application
-RUN go build -o main ./cmd/prod/main.go
+RUN go build -o main services/storage/cmd/prod/main.go
 
 FROM ubuntu:22.04
 WORKDIR /root/
