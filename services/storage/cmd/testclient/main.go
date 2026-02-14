@@ -33,16 +33,14 @@ func main() {
 	}
 	defer c.Close()
 
-	coll, err := collection.NewObjectCollection(c, "system", "obj_test")
+	coll, err := collection.NewKeyValueCollection(c, "system", "kv_test")
 	if err != nil {
 		slog.Error("Failed to create collection", sloki.WrapError(err))
 		return
 	}
 
-	count, err := coll.Count()
-	if err != nil {
-		slog.Error("Failed to count documents", sloki.WrapError(err))
-		return
-	}
-	slog.Info("Document count", slog.Int64("count", int64(count)))
+	coll.Set("foo", []byte("bar"))
+	coll.Set("foo2", []byte("bar"))
+	coll.Set("foo3", []byte("bar"))
+
 }

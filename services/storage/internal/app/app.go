@@ -72,8 +72,10 @@ func Start(cfg Configuration) *server.Server {
 	kvCommands := kvcmds.New(kvcmds.Configuration{
 		DatabaseStore: databaseStore,
 		EngineService: engineService,
+		UserFromCtx:   auth.UserFromContext,
 	})
 	cmdService.RegisterHandlers(kvCommands.Get())
+	kvCommands.RegisterHTTP(apiPrefix, cfg.Mux)
 
 	objectCommands := objectcmds.New(objectcmds.Configuration{
 		DatabaseStore: databaseStore,
