@@ -4,7 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/analytics-sdk/client"
+	"github.com/fancyinnovations/fancyspaces/integrations/analytics-go-sdk/client"
 )
 
 func ServiceStarted(service string) {

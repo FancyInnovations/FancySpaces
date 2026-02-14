@@ -1,4 +1,4 @@
-module github.com/fancyinnovations/fancyspaces/analytics-sdk
+module github.com/fancyinnovations/fancyspaces/integrations/analytics-go-sdk
 
 go 1.26
 

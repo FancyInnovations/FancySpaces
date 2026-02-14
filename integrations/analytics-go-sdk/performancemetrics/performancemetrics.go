@@ -4,7 +4,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/analytics-sdk/client"
+	"github.com/fancyinnovations/fancyspaces/integrations/analytics-go-sdk/client"
 )
 
 type Service struct {
