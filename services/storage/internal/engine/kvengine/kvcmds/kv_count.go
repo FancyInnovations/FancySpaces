@@ -15,7 +15,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine"
 )
 
-// handleCountTCP implements the server side of the protocol.ServerCommandKVCount command.
+// handleCountTCP implements the server side of the protocol.ServerCommandKVCount command over TCP.
 // Payload format: empty
 func (c *Commands) handleCountTCP(_ *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	e, err := c.engineService.GetEngine(cmd.DatabaseName, cmd.CollectionName)
@@ -50,7 +50,7 @@ type countResponseHTTP struct {
 	Count uint32 `json:"count"`
 }
 
-// handleCountHTTP implements the server side of the protocol.ServerCommandKVCount command.
+// handleCountHTTP implements the server side of the protocol.ServerCommandKVCount command over HTTP.
 func (c *Commands) handleCountHTTP(w http.ResponseWriter, _ *http.Request, _ *database.Database, _ *database.Collection, kve *kvengine.Engine) {
 	count := kve.Count()
 

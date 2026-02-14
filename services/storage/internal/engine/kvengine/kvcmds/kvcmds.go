@@ -147,6 +147,12 @@ func (c *Commands) handleCommandHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch uint16(cmdID) {
+	case protocol.ServerCommandKVDelete:
+		c.handleDeleteHTTP(w, r, db, coll, kve)
+	case protocol.ServerCommandKVDeleteMultiple:
+		c.handleDeleteMultipleHTTP(w, r, db, coll, kve)
+	case protocol.ServerCommandKVDeleteAll:
+		c.handleDeleteAllHTTP(w, r, db, coll, kve)
 	case protocol.ServerCommandKVCount:
 		c.handleCountHTTP(w, r, db, coll, kve)
 	default:

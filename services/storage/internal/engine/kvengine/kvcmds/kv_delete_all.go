@@ -3,17 +3,19 @@ package kvcmds
 import (
 	"errors"
 	"log/slog"
+	"net/http"
 
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine"
 )
 
-// handleDeleteAll deletes all key-value pairs in the specified collection. This is a destructive operation and should be used with caution.
+// handleDeleteAll implements the server side of the protocol.ServerCommandKVDeleteAll command over TCP.
 // Payload format: empty
-func (c *Commands) handleDeleteAll(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
+func (c *Commands) handleDeleteAll(_ *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	e, err := c.engineService.GetEngine(cmd.DatabaseName, cmd.CollectionName)
 	if err != nil {
 		if errors.Is(err, database.ErrCollectionNotFound) {
@@ -36,4 +38,11 @@ func (c *Commands) handleDeleteAll(ctx *command.ConnCtx, _ *protocol.Message, cm
 	kve.DeleteAll()
 
 	return commonresponses.OK, nil
+}
+
+// handleDeleteAllHTTP implements the server side of the protocol.ServerCommandKVDeleteAll command over HTTP.
+func (c *Commands) handleDeleteAllHTTP(w http.ResponseWriter, _ *http.Request, _ *database.Database, _ *database.Collection, kve *kvengine.Engine) {
+	kve.DeleteAll()
+
+	w.WriteHeader(http.StatusOK)
 }

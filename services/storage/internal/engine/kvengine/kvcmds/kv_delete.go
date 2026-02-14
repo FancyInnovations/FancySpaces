@@ -2,19 +2,23 @@ package kvcmds
 
 import (
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"log/slog"
+	"net/http"
 
+	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine"
 )
 
-// handleDelete handles the protocol.ServerCommandKVDelete command, which deletes a key-value pair for a given key in the key-value engine.
+// handleDelete implements the server side of the protocol.ServerCommandKVDelete command over TCP.
 // Payload format: | Key Length (2 bytes) | Key (variable) |
-func (c *Commands) handleDelete(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
+func (c *Commands) handleDelete(_ *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	e, err := c.engineService.GetEngine(cmd.DatabaseName, cmd.CollectionName)
 	if err != nil {
 		if errors.Is(err, database.ErrCollectionNotFound) {
@@ -58,4 +62,23 @@ func (c *Commands) handleDelete(ctx *command.ConnCtx, _ *protocol.Message, cmd *
 		Code:    protocol.StatusOK,
 		Payload: *commonresponses.EmptyPayload,
 	}, nil
+}
+
+// deleteRequestHTTP is the request format for the delete command over HTTP.
+type deleteRequestHTTP struct {
+	Key string `json:"key"`
+}
+
+// handleDeleteHTTP implements the server side of the protocol.ServerCommandKVDelete command over HTTP.
+func (c *Commands) handleDeleteHTTP(w http.ResponseWriter, r *http.Request, _ *database.Database, _ *database.Collection, kve *kvengine.Engine) {
+	var req deleteRequestHTTP
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		slog.Error("Failed to decode delete request", sloki.WrapError(err))
+		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
+		return
+	}
+
+	kve.Delete(req.Key)
+
+	w.WriteHeader(http.StatusOK)
 }
