@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/codex"
 )
 
 func contains(slice []string, v string) bool {

@@ -6,11 +6,11 @@ import (
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/commonresponses"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/objectengine"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
 // handleGetMetadata processes a get metadata command for an object engine.

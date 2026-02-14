@@ -3,9 +3,9 @@ package command
 import (
 	"encoding/binary"
 
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/commonresponses"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/auth"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
 var (

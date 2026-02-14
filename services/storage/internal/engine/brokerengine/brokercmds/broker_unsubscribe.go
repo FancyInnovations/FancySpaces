@@ -6,10 +6,10 @@ import (
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/commonresponses"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
 // handleUnsubscribe handles the protocol.ServerCommandBrokerUnsubscribe command, which unsubscribes the client from a given subject on the broker engine.

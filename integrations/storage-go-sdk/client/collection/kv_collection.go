@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/client"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/codex"
 )
 
 // KeyValueCollection represents a key-value collection in the storage system.

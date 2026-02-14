@@ -6,10 +6,10 @@ import (
 	"log/slog"
 
 	"github.com/OliverSchlueter/goutils/sloki"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/commonresponses"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/commonresponses"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
 // handleDelete handles the protocol.ServerCommandKVDelete command, which deletes a key-value pair for a given key in the key-value engine.

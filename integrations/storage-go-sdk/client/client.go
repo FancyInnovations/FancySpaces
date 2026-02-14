@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 )
 
 // Client is the main entry point for interacting with the FancySpaces storage system from Go code.

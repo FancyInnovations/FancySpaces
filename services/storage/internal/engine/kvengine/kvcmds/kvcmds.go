@@ -1,10 +1,10 @@
 package kvcmds
 
 import (
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
 )
 
 type Commands struct {

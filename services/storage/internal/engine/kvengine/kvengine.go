@@ -3,7 +3,7 @@ package kvengine
 import (
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/codex"
 )
 
 type Engine struct {

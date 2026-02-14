@@ -3,7 +3,7 @@ package command
 import (
 	"fmt"
 
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 )
 
 type Handler func(ctx *ConnCtx, msg *protocol.Message, cmd *protocol.Command) (*protocol.Response, error)

@@ -3,8 +3,8 @@ package client
 import (
 	"encoding/binary"
 
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/codex"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 )
 
 func (c *Client) DBDatabaseGet(dbName string) (*DatabaseDatabase, error) {

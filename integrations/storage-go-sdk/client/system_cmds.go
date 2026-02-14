@@ -3,7 +3,7 @@ package client
 import (
 	"encoding/binary"
 
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 )
 
 // Ping implements the client side of the protocol.ServerCommandPing command.

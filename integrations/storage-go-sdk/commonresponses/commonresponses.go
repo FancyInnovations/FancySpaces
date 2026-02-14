@@ -1,6 +1,6 @@
 package commonresponses
 
-import "github.com/fancyinnovations/fancyspaces/storage/pkg/protocol"
+import "github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 
 var EmptyPayload = &[]byte{}
 

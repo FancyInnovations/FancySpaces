@@ -3,7 +3,7 @@ package kvengine
 import (
 	"sync"
 
-	"github.com/fancyinnovations/fancyspaces/storage/pkg/codex"
+	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/codex"
 )
 
 const ShardCount = 256
