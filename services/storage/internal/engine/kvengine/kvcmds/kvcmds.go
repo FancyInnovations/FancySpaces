@@ -153,8 +153,20 @@ func (c *Commands) handleCommandHTTP(w http.ResponseWriter, r *http.Request) {
 		c.handleDeleteMultipleHTTP(w, r, db, coll, kve)
 	case protocol.ServerCommandKVDeleteAll:
 		c.handleDeleteAllHTTP(w, r, db, coll, kve)
+	case protocol.ServerCommandKVExists:
+		c.handleExistsHTTP(w, r, db, coll, kve)
+	case protocol.ServerCommandKVGet:
+		c.handleGetHTTP(w, r, db, coll, kve)
+	case protocol.ServerCommandKVGetMultiple:
+		c.handleGetMultipleHTTP(w, r, db, coll, kve)
+	case protocol.ServerCommandKVGetAll:
+		c.handleGetAllHTTP(w, r, db, coll, kve)
+	case protocol.ServerCommandKVKeys:
+		c.handleKeysHTTP(w, r, db, coll, kve)
 	case protocol.ServerCommandKVCount:
 		c.handleCountHTTP(w, r, db, coll, kve)
+	case protocol.ServerCommandKVSize:
+		c.handleSizeHTTP(w, r, db, coll, kve)
 	default:
 		problems.NotFound("Command", cmdIDStr).WriteToHTTP(w)
 	}

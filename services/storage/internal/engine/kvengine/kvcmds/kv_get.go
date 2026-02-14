@@ -2,20 +2,24 @@ package kvcmds
 
 import (
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"log/slog"
+	"net/http"
 
+	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/codex"
 	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/commonresponses"
 	"github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk/protocol"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine"
 )
 
-// handleGet handles the protocol.ServerCommandKVGet command, which retrieves the value for a given key from the key-value engine.
+// handleGet implements the server side of the protocol.ServerCommandKVGet command over TCP.
 // Payload format: | Key Length (2 bytes) | Key (variable) |
-func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
+func (c *Commands) handleGet(_ *command.ConnCtx, _ *protocol.Message, cmd *protocol.Command) (*protocol.Response, error) {
 	e, err := c.engineService.GetEngine(cmd.DatabaseName, cmd.CollectionName)
 	if err != nil {
 		if errors.Is(err, database.ErrCollectionNotFound) {
@@ -65,4 +69,43 @@ func (c *Commands) handleGet(ctx *command.ConnCtx, _ *protocol.Message, cmd *pro
 		Code:    protocol.StatusOK,
 		Payload: codex.EncodeValue(val),
 	}, nil
+}
+
+// getRequestHTTP is the request format for the get command over HTTP.
+type getRequestHTTP struct {
+	Key string `json:"key"`
+}
+
+// getResponseHTTP is the response format for the get command over HTTP.
+type getResponseHTTP struct {
+	Value any `json:"value"`
+}
+
+// handleGetHTTP implements the server side of the protocol.ServerCommandKVGet command over HTTP.
+func (c *Commands) handleGetHTTP(w http.ResponseWriter, r *http.Request, _ *database.Database, _ *database.Collection, kve *kvengine.Engine) {
+	var req getRequestHTTP
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		slog.Error("Failed to decode get request", sloki.WrapError(err))
+		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
+		return
+	}
+
+	val := kve.Get(req.Key)
+	if val == nil {
+		problems.NotFound("key", "Key not found").WriteToHTTP(w)
+		return
+	}
+
+	data, err := val.ToAny()
+	if err != nil {
+		slog.Error("Failed to convert value to any", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	resp := getResponseHTTP{
+		Value: data,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }
