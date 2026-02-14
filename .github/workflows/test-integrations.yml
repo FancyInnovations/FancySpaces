@@ -1,0 +1,78 @@
+name: Test Integrations
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'integrations/**'
+  workflow_dispatch:
+
+jobs:
+  analytics-go-sdk:
+    name: Analytics Go SDK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.26
+          check-latest: true
+          cache-dependency-path: "**/*.sum"
+
+      - name: Install dependencies for go-sdk
+        run: go work sync
+
+      - name: Test go-sdk
+        run: go test ./integrations/analytics-go-sdk/... -v
+
+  storage-go-sdk:
+    name: Storage Go SDK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.26
+          check-latest: true
+          cache-dependency-path: "**/*.sum"
+
+      - name: Install dependencies for go-sdk
+        run: go work sync
+
+      - name: Test go-sdk
+        run: go test ./integrations/storage-go-sdk/... -v
+
+  java-sdk:
+    name: Java SDK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '25'
+
+      - name: Modify gradlew permissions
+        run: chmod +x ./gradlew
+
+      - name: Build java sdk
+        run: ./gradlew :integrations:java-sdk:jar

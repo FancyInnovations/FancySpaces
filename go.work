@@ -1,6 +1,7 @@
 go 1.26
 
 use (
+	integrations/analytics-go-sdk
 	integrations/storage-go-sdk
 	services/core
 	services/storage

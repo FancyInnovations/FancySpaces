@@ -1,12 +1,11 @@
-name: Test
+name: Test Services
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+    paths:
+      - 'services/**'
   workflow_dispatch:
 
 jobs:
@@ -87,31 +86,3 @@ jobs:
       - name: Build web app
         run: pnpm run build
         working-directory: ./services/core/packages/webclient/
-
-  java-sdk:
-    name: Java SDK
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '25'
-
-      - name: Modify gradlew permissions
-        run: chmod +x ./gradlew
-
-      - name: Build java sdk
-        run: ./gradlew :integrations:java-sdk:jar
