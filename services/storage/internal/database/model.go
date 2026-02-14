@@ -34,6 +34,11 @@ func (db *Database) HasPermission(userID string, requiredLevel PermissionLevel) 
 	}
 }
 
+func (db *Database) IsMember(userID string) bool {
+	_, exists := db.Users[userID]
+	return exists
+}
+
 type Collection struct {
 	Database   string      `json:"database"`
 	Name       string      `json:"name"`

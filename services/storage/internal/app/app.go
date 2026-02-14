@@ -5,10 +5,12 @@ import (
 	"net/http"
 
 	"github.com/OliverSchlueter/goutils/sloki"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/command"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database"
 	fakeDatabaseDB "github.com/fancyinnovations/fancyspaces/storage/internal/database/databasedb/fake"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/database/dbcmds"
+	"github.com/fancyinnovations/fancyspaces/storage/internal/database/handler"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/brokerengine/brokercmds"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/engine/kvengine/kvcmds"
@@ -29,16 +31,23 @@ func Start(cfg Configuration) *server.Server {
 	databaseStore := database.NewService(database.Configuration{
 		DB: databaseDB,
 	})
+	databaseHandler := handler.New(handler.Configuration{
+		Store:       databaseStore,
+		UserFromCtx: auth.UserFromContext,
+	})
+	databaseHandler.Register(apiPrefix, cfg.Mux)
 
 	if err := seedInternalDatabases(databaseStore); err != nil {
 		slog.Error("Could not seed internal databases", sloki.WrapError(err))
 		panic(err)
 	}
 
+	// tcp server
 	srv := server.New(server.Configuration{
 		Addr: ":" + cfg.ServerPort,
 	})
 
+	// engine
 	engineService := engine.NewService(engine.Configuration{
 		DatabaseStore:       databaseStore,
 		SendBrokerMessage:   srv.SendBrokerMessage,
@@ -49,7 +58,7 @@ func Start(cfg Configuration) *server.Server {
 		panic(err)
 	}
 
-	// tcp server
+	// commands
 	cmdService := command.NewService()
 	cmdService.RegisterHandlers(command.SystemCommands())
 

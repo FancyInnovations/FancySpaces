@@ -5,10 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/fancyinnovations/fancyspaces/storage/internal/auth"
 )
 
 type DB interface {
 	GetDatabase(ctx context.Context, name string) (*Database, error)
+	GetDatabasesForUser(ctx context.Context, userid string) ([]*Database, error)
 	GetAllDatabases(ctx context.Context) ([]*Database, error)
 	CreateDatabase(ctx context.Context, db Database) error
 	UpdateDatabase(ctx context.Context, db Database) error
@@ -39,26 +42,36 @@ func (s *Store) GetDatabase(ctx context.Context, name string) (*Database, error)
 	return s.db.GetDatabase(ctx, name)
 }
 
+func (s *Store) GetDatabasesForUser(ctx context.Context, userid string) ([]*Database, error) {
+	return s.db.GetDatabasesForUser(ctx, userid)
+}
+
 func (s *Store) GetAllDatabases(ctx context.Context) ([]*Database, error) {
 	return s.db.GetAllDatabases(ctx)
 }
 
-func (s *Store) CreateDatabase(ctx context.Context, name string) error {
+func (s *Store) CreateDatabase(ctx context.Context, name string, creator *auth.User) error {
 	_, err := s.db.GetDatabase(ctx, name)
 	if err == nil {
 		return ErrDatabaseAlreadyExists
 	}
 
+	users := make(map[string]PermissionLevel)
+	if creator != nil {
+		users[creator.ID] = PermissionLevelAdmin
+	}
+
 	db := Database{
 		Name:      name,
 		CreatedAt: time.Now(),
+		Users:     users,
 	}
 
 	return s.db.CreateDatabase(ctx, db)
 }
 
-func (s *Store) CreateDatabaseIfNotExists(ctx context.Context, name string) error {
-	if err := s.CreateDatabase(ctx, name); err != nil && !errors.Is(err, ErrDatabaseAlreadyExists) {
+func (s *Store) CreateDatabaseIfNotExists(ctx context.Context, name string, creator *auth.User) error {
+	if err := s.CreateDatabase(ctx, name, creator); err != nil && !errors.Is(err, ErrDatabaseAlreadyExists) {
 		return err
 	}
 

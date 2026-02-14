@@ -31,6 +31,21 @@ func (dbdb *DB) GetDatabase(_ context.Context, name string) (*database.Database,
 	return nil, database.ErrDatabaseNotFound
 }
 
+func (dbdb *DB) GetDatabasesForUser(_ context.Context, userid string) ([]*database.Database, error) {
+	dbdb.mu.RLock()
+	defer dbdb.mu.RUnlock()
+
+	var dbs []*database.Database
+	for _, db := range dbdb.dbs {
+		if db.IsMember(userid) {
+			dbCopy := db
+			dbs = append(dbs, &dbCopy)
+		}
+	}
+
+	return dbs, nil
+}
+
 func (dbdb *DB) GetAllDatabases(_ context.Context) ([]*database.Database, error) {
 	dbdb.mu.RLock()
 	defer dbdb.mu.RUnlock()

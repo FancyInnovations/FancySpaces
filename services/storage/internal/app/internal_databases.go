@@ -11,18 +11,12 @@ func seedInternalDatabases(dbStore *database.Store) error {
 	ctx := context.Background()
 
 	// system database
-	if err := dbStore.CreateDatabaseIfNotExists(ctx, "system"); err != nil {
+	if err := dbStore.CreateDatabaseIfNotExists(ctx, "system", nil); err != nil {
 		return fmt.Errorf("failed to create internal database 'system': %w", err)
 	}
 	systemDB, err := dbStore.GetDatabase(ctx, "system")
 	if err != nil {
 		return fmt.Errorf("failed to get internal database 'system': %w", err)
-	}
-
-	users := map[string]database.PermissionLevel{}
-
-	if err := dbStore.UpdateDatabaseUsers(ctx, systemDB, users); err != nil {
-		return fmt.Errorf("failed to create internal database 'system': %w", err)
 	}
 
 	// key-value test collection

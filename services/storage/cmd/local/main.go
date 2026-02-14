@@ -57,7 +57,7 @@ func main() {
 
 	chain := alice.New(
 		middleware.RequestLogging,
-		//auth.Middleware,
+		auth.Middleware,
 		middleware.Recovery,
 	).Then(mux)
 
