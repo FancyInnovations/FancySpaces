@@ -5,6 +5,11 @@ import {mapCategoryToDisplayname, mapLinkToDisplayname, mapLinkToIcon, type Spac
 const props = defineProps<{
   space?: Space
 }>();
+
+const isLoggedIn = computed(() => {
+  return localStorage.getItem("fs_api_key") !== null;
+});
+
 </script>
 
 <template>
@@ -95,6 +100,14 @@ const props = defineProps<{
 <!--        prepend-icon="mdi-chart-box-outline"-->
 <!--        title="Analyitics"-->
 <!--      />-->
+
+          <v-list-item
+            v-if="space?.storage_settings.enabled && isLoggedIn"
+            :to="`/spaces/${space?.slug}/storage`"
+            link
+            prepend-icon="mdi-library-shelves"
+            title="Storage"
+          />
 
       <v-divider />
       <v-list-subheader>External links</v-list-subheader>

@@ -34,6 +34,9 @@ declare module 'vue-router/auto-routes' {
     '/spaces/[sid]/maven-repos/': RouteRecordInfo<'/spaces/[sid]/maven-repos/', '/spaces/:sid/maven-repos', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/maven-repos/[mvrid]/': RouteRecordInfo<'/spaces/[sid]/maven-repos/[mvrid]/', '/spaces/:sid/maven-repos/:mvrid', { sid: ParamValue<true>, mvrid: ParamValue<true> }, { sid: ParamValue<false>, mvrid: ParamValue<false> }>,
     '/spaces/[sid]/maven-repos/[mvrid]/[mvaid]/': RouteRecordInfo<'/spaces/[sid]/maven-repos/[mvrid]/[mvaid]/', '/spaces/:sid/maven-repos/:mvrid/:mvaid', { sid: ParamValue<true>, mvrid: ParamValue<true>, mvaid: ParamValue<true> }, { sid: ParamValue<false>, mvrid: ParamValue<false>, mvaid: ParamValue<false> }>,
+    '/spaces/[sid]/storage/': RouteRecordInfo<'/spaces/[sid]/storage/', '/spaces/:sid/storage', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
+    '/spaces/[sid]/storage/[dbid]/': RouteRecordInfo<'/spaces/[sid]/storage/[dbid]/', '/spaces/:sid/storage/:dbid', { sid: ParamValue<true>, dbid: ParamValue<true> }, { sid: ParamValue<false>, dbid: ParamValue<false> }>,
+    '/spaces/[sid]/storage/[dbid]/[collid]/': RouteRecordInfo<'/spaces/[sid]/storage/[dbid]/[collid]/', '/spaces/:sid/storage/:dbid/:collid', { sid: ParamValue<true>, dbid: ParamValue<true>, collid: ParamValue<true> }, { sid: ParamValue<false>, dbid: ParamValue<false>, collid: ParamValue<false> }>,
     '/spaces/[sid]/versions/': RouteRecordInfo<'/spaces/[sid]/versions/', '/spaces/:sid/versions', { sid: ParamValue<true> }, { sid: ParamValue<false> }>,
     '/spaces/[sid]/versions/[vid]/': RouteRecordInfo<'/spaces/[sid]/versions/[vid]/', '/spaces/:sid/versions/:vid', { sid: ParamValue<true>, vid: ParamValue<true> }, { sid: ParamValue<false>, vid: ParamValue<false> }>,
     '/tools/java-sdk': RouteRecordInfo<'/tools/java-sdk', '/tools/java-sdk', Record<never, never>, Record<never, never>>,
@@ -113,6 +116,18 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/spaces/[sid]/maven-repos/[mvrid]/[mvaid]/index.vue': {
       routes: '/spaces/[sid]/maven-repos/[mvrid]/[mvaid]/'
+      views: never
+    }
+    'src/pages/spaces/[sid]/storage/index.vue': {
+      routes: '/spaces/[sid]/storage/'
+      views: never
+    }
+    'src/pages/spaces/[sid]/storage/[dbid]/index.vue': {
+      routes: '/spaces/[sid]/storage/[dbid]/'
+      views: never
+    }
+    'src/pages/spaces/[sid]/storage/[dbid]/[collid]/index.vue': {
+      routes: '/spaces/[sid]/storage/[dbid]/[collid]/'
       views: never
     }
     'src/pages/spaces/[sid]/versions/index.vue': {

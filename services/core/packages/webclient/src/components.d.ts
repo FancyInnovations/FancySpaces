@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     AppHeader: typeof import('./components/AppHeader.vue')['default']
+    CollectionCard: typeof import('./components/storage/CollectionCard.vue')['default']
     Dialog: typeof import('./components/common/Dialog.vue')['default']
     IssueBoard: typeof import('./components/issues/IssueBoard.vue')['default']
     IssueCard: typeof import('./components/issues/IssueCard.vue')['default']
@@ -24,6 +25,7 @@ declare module 'vue' {
     IssueStatusChip: typeof import('./components/issues/IssueStatusChip.vue')['default']
     IssueTable: typeof import('./components/issues/IssueTable.vue')['default']
     IssueTypeChip: typeof import('./components/issues/IssueTypeChip.vue')['default']
+    KVCollectionDataPage: typeof import('./components/storage/KVCollectionDataPage.vue')['default']
     MarkdownRenderer: typeof import('./components/MarkdownRenderer.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
