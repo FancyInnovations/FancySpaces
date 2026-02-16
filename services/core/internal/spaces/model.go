@@ -22,6 +22,7 @@ type Space struct {
 	IssueSettings           IssueSettings           `json:"issue_settings"`
 	ReleaseSettings         ReleaseSettings         `json:"release_settings"`
 	MavenRepositorySettings MavenRepositorySettings `json:"maven_repository_settings"`
+	StorageSettings         StorageSettings         `json:"storage_settings"`
 }
 
 type IssueSettings struct {
@@ -42,6 +43,10 @@ type ReleaseSettings struct {
 }
 
 type MavenRepositorySettings struct {
+	Enabled bool `json:"enabled"`
+}
+
+type StorageSettings struct {
 	Enabled bool `json:"enabled"`
 }
 

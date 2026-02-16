@@ -13,6 +13,7 @@ export interface Space {
   issue_settings: SpaceIssueSettings;
   release_settings: SpaceReleaseSettings;
   maven_repository_settings: MavenRepositorySettings;
+  storage_settings: StorageSettings;
 }
 
 export interface SpaceIssueSettings {
@@ -24,6 +25,10 @@ export interface SpaceReleaseSettings {
 }
 
 export interface MavenRepositorySettings {
+  enabled: boolean;
+}
+
+export interface StorageSettings {
   enabled: boolean;
 }
 
