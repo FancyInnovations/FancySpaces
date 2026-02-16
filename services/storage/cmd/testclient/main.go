@@ -39,8 +39,8 @@ func main() {
 		return
 	}
 
-	coll.Set("foo", []byte("bar"))
-	coll.Set("foo2", []byte("bar"))
-	coll.Set("foo3", []byte("bar"))
+	coll.Set("foo", "bar")
+	coll.Set("foo2", "bar")
+	coll.Set("foo3", "bar")
 
 }

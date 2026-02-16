@@ -95,6 +95,12 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      '/storage/api/v1/': {
+        target: 'http://localhost:8090',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/storage/, ''),
+      },
       // '/api/v1/': {
       //   target: 'http://localhost:8080',
       // },
