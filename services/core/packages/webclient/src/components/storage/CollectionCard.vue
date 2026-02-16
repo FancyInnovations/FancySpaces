@@ -4,7 +4,7 @@ import type {Space} from "@/api/spaces/types.ts";
 import {mapEngineKeyToName, type SpaceDatabaseCollection} from "@/api/storage/types.ts";
 
 const props = defineProps<{
-  space: Space,
+  space?: Space,
   coll: SpaceDatabaseCollection
   withoutActions?: boolean
 }>();
@@ -30,7 +30,7 @@ const props = defineProps<{
 
     <v-card-actions v-if="!withoutActions">
       <v-btn
-        :to="`/spaces/${space.slug}/storage/${coll.database}/${coll.name}`"
+        :to="`/spaces/${space?.slug}/storage/${coll.database}/${coll.name}`"
         color="primary"
         variant="text"
       >
@@ -38,7 +38,7 @@ const props = defineProps<{
       </v-btn>
 
       <v-btn
-        :to="`/spaces/${space.slug}/storage/${coll.database}/${coll.name}/settings`"
+        :to="`/spaces/${space?.slug}/storage/${coll.database}/${coll.name}/settings`"
         color="primary"
         variant="text"
       >

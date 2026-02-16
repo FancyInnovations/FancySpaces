@@ -13,7 +13,7 @@ const isLoggedIn = computed(() => {
   return localStorage.getItem("fs_api_key") !== null;
 });
 
-const space = ref<Space>();
+const space = ref<Space|undefined>();
 const collections = ref<SpaceDatabaseCollection[]>();
 
 const collectionsByEngine = computed(() => {
