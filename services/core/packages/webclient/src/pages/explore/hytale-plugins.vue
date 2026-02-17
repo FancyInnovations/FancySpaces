@@ -44,6 +44,7 @@ onMounted(async () => {
     icon_url: "/soon-logo.png",
     status: "approved",
     created_at: new Date(),
+    creator: "admin",
     members: [],
     issue_settings: {
       enabled: false
@@ -56,6 +57,10 @@ onMounted(async () => {
     },
     storage_settings: {
       enabled: false
+    },
+    analytics_settings: {
+      enabled: false,
+      require_write_key: false
     }
   });
   plannedPlugins.value.push({
@@ -69,6 +74,7 @@ onMounted(async () => {
     icon_url: "/soon-logo.png",
     status: "approved",
     created_at: new Date(),
+    creator: "admin",
     members: [],
     issue_settings: {
       enabled: false
@@ -81,6 +87,10 @@ onMounted(async () => {
     },
     storage_settings: {
       enabled: false
+    },
+    analytics_settings: {
+      enabled: false,
+      require_write_key: false
     }
   });
   plannedPlugins.value.push({
@@ -94,6 +104,7 @@ onMounted(async () => {
     icon_url: "/soon-logo.png",
     status: "approved",
     created_at: new Date(),
+    creator: "admin",
     members: [],
     issue_settings: {
       enabled: false
@@ -106,6 +117,10 @@ onMounted(async () => {
     },
     storage_settings: {
       enabled: false
+    },
+    analytics_settings: {
+      enabled: false,
+      require_write_key: false
     }
   });
   plannedPlugins.value.push({
@@ -119,6 +134,7 @@ onMounted(async () => {
     icon_url: "/soon-logo.png",
     status: "approved",
     created_at: new Date(),
+    creator: "admin",
     members: [],
     issue_settings: {
       enabled: false
@@ -131,6 +147,10 @@ onMounted(async () => {
     },
     storage_settings: {
       enabled: false
+    },
+    analytics_settings: {
+      enabled: false,
+      require_write_key: false
     }
   });
 });
