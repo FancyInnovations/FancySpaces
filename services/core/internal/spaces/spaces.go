@@ -78,12 +78,8 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*Space, 
 		IconURL:     req.IconURL,
 		Status:      StatusDraft,
 		CreatedAt:   time.Now(),
-		Members: []Member{
-			{
-				UserID: creator.ID,
-				Role:   RoleOwner,
-			},
-		},
+		Creator:     creator.ID,
+		Members:     []Member{},
 	}
 
 	// check if slug is already taken by another space

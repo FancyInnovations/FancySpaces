@@ -186,12 +186,8 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancynpcs-logo.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2022, 12, 19, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "oliver",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled:         true,
 			GitHubSync:      true,
@@ -207,6 +203,11 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancynpcs); err != nil {
@@ -228,12 +229,8 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyholograms-logo.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2023, 2, 18, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "oliver",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled:         true,
 			GitHubSync:      true,
@@ -249,6 +246,11 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancyholograms); err != nil {
@@ -270,12 +272,8 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancydialogs-logo.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2023, 2, 18, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "oliver",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled:         true,
 			GitHubSync:      true,
@@ -291,6 +289,11 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancydialogs); err != nil {
@@ -316,12 +319,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancycore-logo.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2025, 11, 20, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "oliver",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled:         true,
 			GitHubSync:      true,
@@ -338,6 +337,11 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
 		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
+		},
 	}
 	if err := db.Create(fancycore); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -352,12 +356,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		IconURL:    "",
 		Status:     spaces.StatusPrivate,
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:    "oliver",
+		Members:    []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -369,6 +369,11 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancycorewebsite); err != nil {
@@ -384,12 +389,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		IconURL:    "",
 		Status:     spaces.StatusPrivate,
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:    "oliver",
+		Members:    []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -401,6 +402,11 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancyplots); err != nil {
@@ -416,12 +422,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		IconURL:    "",
 		Status:     spaces.StatusPrivate,
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:    "oliver",
+		Members:    []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -433,6 +435,11 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancyaudits); err != nil {
@@ -448,12 +455,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		IconURL:    "",
 		Status:     spaces.StatusPrivate,
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:    "oliver",
+		Members:    []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -465,6 +468,11 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancyconnect); err != nil {
@@ -480,12 +488,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		IconURL:    "",
 		Status:     spaces.StatusPrivate,
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:    "oliver",
+		Members:    []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -497,6 +501,11 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancyshops); err != nil {
@@ -512,12 +521,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		IconURL:    "",
 		Status:     spaces.StatusPrivate,
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:    "oliver",
+		Members:    []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -529,6 +534,11 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(citypass); err != nil {
@@ -544,12 +554,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		IconURL:    "",
 		Status:     spaces.StatusPrivate,
 		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:    "oliver",
+		Members:    []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -561,6 +567,11 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(cityquests); err != nil {
@@ -586,12 +597,8 @@ func seedOther(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyinnovations-logo.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2022, 12, 19, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "oliver",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -603,6 +610,11 @@ func seedOther(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancyinnovations); err != nil {
@@ -625,12 +637,8 @@ func seedOther(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyanalytics-logo.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2024, 1, 25, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "oliver",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -642,6 +650,11 @@ func seedOther(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: true,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancyanalytics); err != nil {
@@ -662,12 +675,8 @@ func seedOther(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://fancyinnovations.com/logos-and-banners/fancyverteiler-logo.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2025, 12, 2, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "oliver",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "oliver",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
 			Enabled: true,
 		},
@@ -679,6 +688,11 @@ func seedOther(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(fancyverteiler); err != nil {
@@ -703,14 +717,10 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://docs.wiflow.dev/orbisguard-icon.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2026, 1, 17, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "wiflow",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "wiflow",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
+			Enabled: false,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
@@ -720,6 +730,11 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(orbisguard); err != nil {
@@ -740,14 +755,10 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://docs.wiflow.dev/orbismines-icon.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2026, 1, 19, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "wiflow",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "wiflow",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
+			Enabled: false,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
@@ -757,6 +768,11 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(orbismines); err != nil {
@@ -777,14 +793,10 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		IconURL:   "https://docs.wiflow.dev/wiflows-scoreboard-icon.png",
 		Status:    spaces.StatusApproved,
 		CreatedAt: time.Date(2026, 1, 20, 20, 0, 0, 0, time.UTC),
-		Members: []spaces.Member{
-			{
-				UserID: "wiflow",
-				Role:   spaces.RoleOwner,
-			},
-		},
+		Creator:   "wiflow",
+		Members:   []spaces.Member{},
 		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
+			Enabled: false,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
 			Enabled: true,
@@ -794,6 +806,11 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
+		},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         false,
+			RequireWriteKey: false,
+			WriteKey:        "",
 		},
 	}
 	if err := db.Create(wiflowsScoreboard); err != nil {

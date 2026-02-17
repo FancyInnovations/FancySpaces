@@ -36,6 +36,7 @@ const (
 	ProviderDiscord Provider = "discord"
 )
 
+// IsUserValid checks if the user is valid for authentication or authorization purposes.
 func IsUserValid(user *User) bool {
 	if user == nil {
 		return false

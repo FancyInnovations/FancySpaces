@@ -173,6 +173,8 @@ onMounted(async () => {
           <v-card-title class="mt-2">Authors</v-card-title>
 
           <v-card-text>
+            <p class="text-body-1">{{ space?.creator }} (Creator)</p>
+
             <div v-for="author in space?.members" :key="author.user_id">
               <p class="text-body-1">{{ author.user_id }} ({{ author.role }})</p>
             </div>

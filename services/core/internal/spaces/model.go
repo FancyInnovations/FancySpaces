@@ -17,12 +17,14 @@ type Space struct {
 	IconURL     string     `json:"icon_url"`
 	Status      Status     `json:"status"`
 	CreatedAt   time.Time  `json:"created_at"`
+	Creator     string     `json:"creator"` // UserID of the creator
 	Members     []Member   `json:"members"`
 
 	IssueSettings           IssueSettings           `json:"issue_settings"`
 	ReleaseSettings         ReleaseSettings         `json:"release_settings"`
 	MavenRepositorySettings MavenRepositorySettings `json:"maven_repository_settings"`
 	StorageSettings         StorageSettings         `json:"storage_settings"`
+	AnalyticsSettings       AnalyticsSettings       `json:"analytics_settings"`
 }
 
 type IssueSettings struct {
@@ -50,6 +52,12 @@ type StorageSettings struct {
 	Enabled bool `json:"enabled"`
 }
 
+type AnalyticsSettings struct {
+	Enabled         bool   `json:"enabled"`
+	RequireWriteKey bool   `json:"require_write_key"`
+	WriteKey        string `json:"-"`
+}
+
 type Link struct {
 	Name string `json:"name"`
 	URL  string `json:"url"`
@@ -63,7 +71,6 @@ type Member struct {
 type Role string
 
 const (
-	RoleOwner  Role = "owner"
 	RoleAdmin  Role = "admin"
 	RoleMember Role = "member"
 )
@@ -93,6 +100,14 @@ const (
 )
 
 func (s *Space) IsMember(u *idp.User) bool {
+	if !idp.IsUserValid(u) {
+		return false
+	}
+
+	if s.Creator == u.ID {
+		return true
+	}
+
 	for _, m := range s.Members {
 		if m.UserID == u.ID {
 			return true
@@ -103,19 +118,25 @@ func (s *Space) IsMember(u *idp.User) bool {
 }
 
 func (s *Space) IsOwner(u *idp.User) bool {
-	for _, m := range s.Members {
-		if m.UserID == u.ID {
-			return m.Role == RoleOwner
-		}
+	if !idp.IsUserValid(u) {
+		return false
 	}
 
-	return false
+	return s.Creator == u.ID
 }
 
 func (s *Space) HasFullAccess(u *idp.User) bool {
+	if !idp.IsUserValid(u) {
+		return false
+	}
+
+	if s.Creator == u.ID {
+		return true
+	}
+
 	for _, m := range s.Members {
 		if m.UserID == u.ID {
-			return m.Role == RoleOwner || m.Role == RoleAdmin
+			return m.Role == RoleAdmin
 		}
 	}
 
@@ -123,9 +144,17 @@ func (s *Space) HasFullAccess(u *idp.User) bool {
 }
 
 func (s *Space) HasWriteAccess(u *idp.User) bool {
+	if !idp.IsUserValid(u) {
+		return false
+	}
+
+	if s.Creator == u.ID {
+		return true
+	}
+
 	for _, m := range s.Members {
 		if m.UserID == u.ID {
-			return m.Role == RoleOwner || m.Role == RoleAdmin || m.Role == RoleMember
+			return m.Role == RoleAdmin || m.Role == RoleMember
 		}
 	}
 

@@ -9,11 +9,13 @@ export interface Space {
   icon_url: string;
   status: string;
   created_at: Date;
+  creator: string;
   members: SpaceMember[];
   issue_settings: SpaceIssueSettings;
   release_settings: SpaceReleaseSettings;
   maven_repository_settings: MavenRepositorySettings;
   storage_settings: StorageSettings;
+  analytics_settings: AnalyticsSettings;
 }
 
 export interface SpaceIssueSettings {
@@ -32,6 +34,11 @@ export interface StorageSettings {
   enabled: boolean;
 }
 
+export interface AnalyticsSettings {
+  enabled: boolean;
+  require_write_key: boolean;
+}
+
 export interface SpaceLink {
   name: string;
   url: string;
@@ -41,12 +48,6 @@ export interface SpaceMember {
   user_id: string;
   role: string;
 }
-
-export interface DownloadsResponse {
-  downloads: number;
-  versions: Record<string, number>;
-}
-
 
 export function mapCategoryToDisplayname(name?: string): string {
   if (!name) return 'Unknown';
