@@ -39,7 +39,12 @@ func Middleware(next http.Handler) http.Handler {
 		}
 
 		u, found := Users[username]
-		if !found || u.Password != idp.PasswordHash(password) {
+		if !found {
+			next.ServeHTTP(w, r)
+			return
+		}
+		isPwdValid, err := idp.CheckPassword(password, u.Password)
+		if err != nil || !isPwdValid {
 			next.ServeHTTP(w, r)
 			return
 		}

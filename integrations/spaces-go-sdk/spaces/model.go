@@ -25,6 +25,7 @@ type Space struct {
 	MavenRepositorySettings MavenRepositorySettings `json:"maven_repository_settings"`
 	StorageSettings         StorageSettings         `json:"storage_settings"`
 	AnalyticsSettings       AnalyticsSettings       `json:"analytics_settings"`
+	SecretsSettings         SecretsSettings         `json:"secrets_settings"`
 }
 
 // InternalSpace is the internal representation of a Space, containing additional fields that are not exposed to clients.
@@ -63,6 +64,10 @@ type AnalyticsSettings struct {
 	Enabled         bool   `json:"enabled"`
 	RequireWriteKey bool   `json:"require_write_key"`
 	WriteKey        string `json:"-"`
+}
+
+type SecretsSettings struct {
+	Enabled bool `json:"enabled"`
 }
 
 type Link struct {

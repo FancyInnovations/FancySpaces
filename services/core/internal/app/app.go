@@ -26,6 +26,10 @@ import (
 	minioMavenFileStorage "github.com/fancyinnovations/fancyspaces/core/internal/maven/filestorage/minio"
 	mavenHandler "github.com/fancyinnovations/fancyspaces/core/internal/maven/handler"
 	"github.com/fancyinnovations/fancyspaces/core/internal/maven/javadoccache"
+	"github.com/fancyinnovations/fancyspaces/core/internal/secrets"
+	mongoSecretsDB "github.com/fancyinnovations/fancyspaces/core/internal/secrets/database/mongo"
+	"github.com/fancyinnovations/fancyspaces/core/internal/secrets/encrypter/aes"
+	secretsHandler "github.com/fancyinnovations/fancyspaces/core/internal/secrets/handler"
 	"github.com/fancyinnovations/fancyspaces/core/internal/sitemapprovider"
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	spacesHandler "github.com/fancyinnovations/fancyspaces/core/internal/spaces/handler"
@@ -41,12 +45,15 @@ import (
 const apiPrefix = "/api/v1"
 
 type Configuration struct {
-	Mux        *http.ServeMux
-	MavenMux   *http.ServeMux
+	Mux      *http.ServeMux
+	MavenMux *http.ServeMux
+
 	Broker     broker.Broker
 	Mongo      *mongo.Database
 	ClickHouse driver.Conn
 	MinIO      *minio.Client
+
+	SecretsMasterKey []byte
 }
 
 func Start(cfg Configuration) {
@@ -145,6 +152,29 @@ func Start(cfg Configuration) {
 		UserFromCtx: auth.UserFromContext,
 	})
 	ih.Register(apiPrefix, cfg.Mux)
+
+	// Secrets
+	secretsDB := mongoSecretsDB.NewDB(&mongoSecretsDB.Configuration{
+		Mongo: cfg.Mongo,
+	})
+	secretsStore := secrets.New(secrets.Configuration{
+		Database:  secretsDB,
+		Encrypter: &aes.AES{},
+		MasterKey: cfg.SecretsMasterKey,
+	})
+	secH := secretsHandler.New(secretsHandler.Configuration{
+		Store:       secretsStore,
+		Spaces:      spacesStore,
+		UserFromCtx: auth.UserFromContext,
+	})
+	secH.Register(apiPrefix, cfg.Mux)
+	secNatsH := secretsHandler.NewNatsHandler(secretsHandler.NatsConfiguration{
+		Broker: cfg.Broker,
+		Store:  secretsStore,
+	})
+	if err := secNatsH.Register(); err != nil {
+		panic(fmt.Errorf("could not register secrets nats handler: %w", err))
+	}
 
 	// Frontend
 	fh := frontend.NewHandler(frontend.Configuration{

@@ -2,7 +2,10 @@ package idp
 
 import (
 	"crypto/rand"
+	"crypto/subtle"
 	"encoding/base64"
+	"errors"
+	"strings"
 
 	"golang.org/x/crypto/argon2"
 )
@@ -21,4 +24,33 @@ func PasswordHash(password string) string {
 	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
 
 	return b64Salt + "." + b64Hash
+}
+
+func CheckPassword(password, stored string) (bool, error) {
+	parts := strings.Split(stored, ".")
+	if len(parts) != 2 {
+		return false, errors.New("invalid stored password format")
+	}
+
+	// Decode salt
+	salt, err := base64.RawStdEncoding.DecodeString(parts[0])
+	if err != nil {
+		return false, err
+	}
+
+	// Decode original hash
+	expectedHash, err := base64.RawStdEncoding.DecodeString(parts[1])
+	if err != nil {
+		return false, err
+	}
+
+	// Recompute hash using SAME parameters
+	hash := argon2.IDKey([]byte(password), salt, 3, 64*1024, 4, 32)
+
+	// Constant-time comparison
+	if subtle.ConstantTimeCompare(hash, expectedHash) == 1 {
+		return true, nil
+	}
+
+	return false, nil
 }

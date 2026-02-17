@@ -42,3 +42,26 @@ func (s *Service) GetSpace(id string) (*InternalSpace, error) {
 
 	return &space, nil
 }
+
+func (s *Service) GetDecryptedSecret(spaceID, key string) (string, error) {
+	req := GetSecretReqDTO{
+		SpaceID: spaceID,
+		Key:     key,
+	}
+	reqBytes, err := json.Marshal(req)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := s.broker.Request("fancyspaces.core.spaces.get_secret", reqBytes)
+	if err != nil {
+		return "", err
+	}
+
+	var secretResp GetSecretRespDTO
+	if err := json.Unmarshal(resp.Data, &secretResp); err != nil {
+		return "", err
+	}
+
+	return secretResp.Value, nil
+}

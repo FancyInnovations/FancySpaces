@@ -35,6 +35,8 @@ const (
 	minioUrlEnv       = "MINIO_URL"
 	minioAccessKeyEnv = "MINIO_ACCESS_KEY"
 	minioSecretKeyEnv = "MINIO_SECRET_KEY"
+
+	secretsMasterKeyEnv = "SECRETS_MASTER_KEY"
 )
 
 func main() {
@@ -77,12 +79,13 @@ func main() {
 	mavenMux := http.NewServeMux()
 
 	app.Start(app.Configuration{
-		Mux:        mux,
-		MavenMux:   mavenMux,
-		Broker:     b,
-		Mongo:      mc,
-		ClickHouse: ch,
-		MinIO:      mio,
+		Mux:              mux,
+		MavenMux:         mavenMux,
+		Broker:           b,
+		Mongo:            mc,
+		ClickHouse:       ch,
+		MinIO:            mio,
+		SecretsMasterKey: []byte(env.MustGetStr(secretsMasterKeyEnv)),
 	})
 
 	hostRouter := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

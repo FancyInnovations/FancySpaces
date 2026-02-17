@@ -209,6 +209,9 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(fancynpcs); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -252,6 +255,9 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(fancyholograms); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -294,6 +300,9 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled:         false,
 			RequireWriteKey: false,
 			WriteKey:        "",
+		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancydialogs); err != nil {
@@ -342,6 +351,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(fancycore); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -374,6 +386,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled:         false,
 			RequireWriteKey: false,
 			WriteKey:        "",
+		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancycorewebsite); err != nil {
@@ -408,6 +423,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(fancyplots); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -440,6 +458,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled:         false,
 			RequireWriteKey: false,
 			WriteKey:        "",
+		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyaudits); err != nil {
@@ -474,6 +495,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(fancyconnect); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -506,6 +530,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled:         false,
 			RequireWriteKey: false,
 			WriteKey:        "",
+		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyshops); err != nil {
@@ -540,6 +567,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(citypass); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -572,6 +602,9 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled:         false,
 			RequireWriteKey: false,
 			WriteKey:        "",
+		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
 		},
 	}
 	if err := db.Create(cityquests); err != nil {
@@ -616,6 +649,9 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(fancyinnovations); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -656,6 +692,9 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: true,
+		},
 	}
 	if err := db.Create(fancyanalytics); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -693,6 +732,9 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			Enabled:         false,
 			RequireWriteKey: false,
 			WriteKey:        "",
+		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
 		},
 	}
 	if err := db.Create(fancyverteiler); err != nil {
@@ -736,6 +778,9 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(orbisguard); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -774,6 +819,9 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
+		},
 	}
 	if err := db.Create(orbismines); err != nil {
 		return fmt.Errorf("could not seed spaces db: %w", err)
@@ -811,6 +859,9 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 			Enabled:         false,
 			RequireWriteKey: false,
 			WriteKey:        "",
+		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
 		},
 	}
 	if err := db.Create(wiflowsScoreboard); err != nil {

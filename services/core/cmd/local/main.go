@@ -66,12 +66,13 @@ func main() {
 	mavenMux := http.NewServeMux()
 
 	app.Start(app.Configuration{
-		Mux:        mux,
-		MavenMux:   mavenMux,
-		Broker:     b,
-		Mongo:      mc,
-		ClickHouse: ch,
-		MinIO:      mio,
+		Mux:              mux,
+		MavenMux:         mavenMux,
+		Broker:           b,
+		Mongo:            mc,
+		ClickHouse:       ch,
+		MinIO:            mio,
+		SecretsMasterKey: []byte("fooooooooooooooobarrrrrrrrrrrrrr"), // 32 bytes for AES-256
 	})
 
 	hostRouter := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
