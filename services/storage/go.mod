@@ -4,8 +4,9 @@ go 1.26
 
 require (
 	github.com/OliverSchlueter/goutils v0.0.28
+	github.com/fancyinnovations/fancyspaces/integrations/storage-go-sdk v0.0.4
 	github.com/justinas/alice v1.2.0
-	github.com/mattn/go-sqlite3 v1.14.33
+	github.com/mattn/go-sqlite3 v1.14.34
 )
 
 require (
