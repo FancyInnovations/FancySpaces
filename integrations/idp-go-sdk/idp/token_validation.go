@@ -10,32 +10,34 @@ const ServiceName = "fancyanalytics-idp"
 
 var SigningMethod = jwt.SigningMethodRS256
 
-// validateToken validates the given JWT token string and returns the user ID if the token is valid.
-func (s *Service) validateToken(tokenString string) (string, error) {
+// ValidateToken validates the provided JWT token string and returns the associated user if the token is valid.
+func (s *Service) ValidateToken(token string) (*User, error) {
 	parser := jwt.NewParser(
 		jwt.WithValidMethods([]string{SigningMethod.Alg()}),
 		jwt.WithIssuer(ServiceName),
 	)
 
-	token, err := parser.ParseWithClaims(
-		tokenString,
+	t, err := parser.ParseWithClaims(
+		token,
 		&jwt.RegisteredClaims{},
 		s.tokenKeyFunc,
 	)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse token: %w", err)
+		return nil, fmt.Errorf("failed to parse token: %w", err)
 	}
 
-	claims, ok := token.Claims.(*jwt.RegisteredClaims)
-	if !ok || !token.Valid {
-		return "", ErrInvalidToken
+	claims, ok := t.Claims.(*jwt.RegisteredClaims)
+	if !ok || !t.Valid {
+		return nil, ErrInvalidToken
 	}
 
 	if claims.Issuer != ServiceName {
-		return "", ErrInvalidToken
+		return nil, ErrInvalidToken
 	}
 
-	return claims.Subject, nil
+	userID := claims.Subject
+
+	return s.GetUser(userID)
 }
 
 // tokenKeyFunc is a helper function that returns the public key for validating the token's signature.

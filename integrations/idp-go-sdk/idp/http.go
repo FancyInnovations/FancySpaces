@@ -1,14 +1,13 @@
 package idp
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
 )
 
-func (s *Service) validateRequest(r *http.Request) (*User, error) {
+func (s *Service) validateHTTPRequest(r *http.Request) (*User, error) {
 	if r.Header.Get("Authorization") == "" {
 		return nil, ErrMissingAuthorizationHeader
 	}
@@ -21,29 +20,11 @@ func (s *Service) validateRequest(r *http.Request) (*User, error) {
 			return nil, err
 		}
 
-		userID, err := s.validateToken(token)
+		u, err := s.ValidateToken(token)
 		if err != nil {
 			return nil, fmt.Errorf("failed to validate token: %w", err)
 		}
-
-		userFromCache, err := s.usersCache.GetByID(userID)
-		if err == nil {
-			return userFromCache, nil
-		}
-
-		resp, err := s.broker.Request("idp.user.get", []byte(userID))
-		if err != nil {
-			return nil, fmt.Errorf("failed to get user data: %w", err)
-		}
-
-		var u User
-		if err := json.Unmarshal(resp.Data, &u); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal user data: %w", err)
-		}
-
-		s.usersCache.UpsertUser(&u)
-
-		return &u, nil
+		return u, nil
 	}
 
 	if strings.HasPrefix(authValue, "Basic ") {
@@ -52,23 +33,18 @@ func (s *Service) validateRequest(r *http.Request) (*User, error) {
 			return nil, err
 		}
 
-		resp, err := s.broker.Request("idp.user.validate", []byte(fmt.Sprintf(`{"username":"%s", "password":"%s"}`, userid, password)))
+		u, err := s.ValidateUser(userid, password)
 		if err != nil {
-			return nil, fmt.Errorf("failed to validate user: %w", err)
+			return nil, fmt.Errorf("failed to validate basic credentials: %w", err)
 		}
 
-		var u User
-		if err := json.Unmarshal(resp.Data, &u); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal user data: %w", err)
-		}
-
-		return &u, nil
+		return u, nil
 	}
 
 	return nil, ErrInvalidAuthenticationMethod
 }
 
-func (s *Service) Middleware(next http.Handler) http.Handler {
+func (s *Service) HTTPMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			next.ServeHTTP(w, r)
@@ -90,7 +66,7 @@ func (s *Service) Middleware(next http.Handler) http.Handler {
 		}
 
 		// validate the request and get the user
-		user, err := s.validateRequest(r)
+		user, err := s.validateHTTPRequest(r)
 		if err != nil {
 			fmt.Printf("Error validating user: %v\n", err)
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)

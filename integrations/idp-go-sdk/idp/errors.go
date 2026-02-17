@@ -12,6 +12,7 @@ var (
 	ErrMissingAuthorizationHeader  = errors.New("missing Authorization header")
 	ErrInvalidTokenFormat          = errors.New("invalid token format")
 	ErrInvalidAuthenticationMethod = errors.New("invalid authentication method, expected Bearer or Basic")
+	ErrInvalidBasicCredentials     = errors.New("invalid basic authentication credentials")
 	ErrInvalidToken                = errors.New("invalid token")
 	ErrUserNotFound                = errors.New("user not found")
 )
