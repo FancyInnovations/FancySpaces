@@ -46,6 +46,14 @@ updates:
         patterns:
           - "*"
   - package-ecosystem: "gomod"
+    directory: "/integrations/spaces-go-sdk"
+    schedule:
+      interval: "daily"
+    groups:
+      go-all:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
     directory: "/integrations/idp-go-sdk"
     schedule:
       interval: "daily"
