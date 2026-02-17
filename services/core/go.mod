@@ -11,7 +11,7 @@ require (
 	github.com/google/go-github/v82 v82.0.0
 	github.com/google/uuid v1.6.0
 	github.com/justinas/alice v1.2.0
-	github.com/mattn/go-sqlite3 v1.14.33
+	github.com/mattn/go-sqlite3 v1.14.34
 	github.com/minio/minio-go/v7 v7.0.98
 	go.mongodb.org/mongo-driver/v2 v2.5.0
 )
