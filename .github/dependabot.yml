@@ -1,7 +1,60 @@
 version: 2
 updates:
+  # gradle dependencies
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    groups:
+      gradle-all:
+        patterns:
+          - "*"
+  - package-ecosystem: "gradle"
+    directory: "/integrations/java-sdk"
+    schedule:
+      interval: "daily"
+    groups:
+      gradle-all:
+        patterns:
+          - "*"
+
+  # npm dependencies
+  - package-ecosystem: "npm"
+    directory: "services/core/packages/webclient"
+    schedule:
+      interval: "daily"
+    groups:
+      npm-all:
+        patterns:
+          - "*"
+
+  # go dependencies
   - package-ecosystem: "gomod"
-    directory: "src/"
+    directory: "/services/core"
+    schedule:
+      interval: "daily"
+    groups:
+      go-all:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/services/storage"
+    schedule:
+      interval: "daily"
+    groups:
+      go-all:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/integrations/analytics-go-sdk"
+    schedule:
+      interval: "daily"
+    groups:
+      go-all:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/integrations/storage-go-sdk"
     schedule:
       interval: "daily"
     groups:
