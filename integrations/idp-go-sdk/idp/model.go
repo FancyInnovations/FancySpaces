@@ -35,3 +35,16 @@ const (
 	ProviderGithub  Provider = "github"
 	ProviderDiscord Provider = "discord"
 )
+
+func IsUserValid(user *User) bool {
+	if user == nil {
+		return false
+	}
+	if !user.IsActive {
+		return false
+	}
+	if !user.Verified {
+		return false
+	}
+	return true
+}
