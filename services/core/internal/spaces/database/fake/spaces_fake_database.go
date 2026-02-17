@@ -3,7 +3,8 @@ package fake
 import (
 	"sync"
 
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 type DB struct {
@@ -57,7 +58,7 @@ func (db *DB) Create(s *spaces.Space) error {
 
 	for _, item := range db.Items {
 		if item.ID == s.ID || item.Slug == s.Slug {
-			return spaces.ErrSpaceAlreadyExists
+			return spacesStore.ErrSpaceAlreadyExists
 		}
 	}
 

@@ -8,7 +8,7 @@ import (
 
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 func (h *Handler) handleMembers(w http.ResponseWriter, r *http.Request) {

@@ -15,13 +15,14 @@ import (
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
 	"github.com/fancyinnovations/fancyspaces/core/internal/maven"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 type Handler struct {
 	store             *maven.Store
-	spaces            *spaces.Store
+	spaces            *spacesStore.Store
 	analytics         *analytics.Store
 	userFromCtx       func(ctx context.Context) *idp.User
 	downloadRatelimit *ratelimit.Service
@@ -29,7 +30,7 @@ type Handler struct {
 
 type Configuration struct {
 	Store       *maven.Store
-	Spaces      *spaces.Store
+	Spaces      *spacesStore.Store
 	Analytics   *analytics.Store
 	UserFromCtx func(ctx context.Context) *idp.User
 }
@@ -93,7 +94,7 @@ func (h *Handler) handleMavenRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.MavenRepositorySettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("maven-repository").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("maven-repository").WriteToHTTP(w)
 		return
 	}
 

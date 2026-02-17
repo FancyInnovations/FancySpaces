@@ -7,6 +7,7 @@ import (
 	"github.com/OliverSchlueter/goutils/sitemapgen"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesModel "github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 const baseURL = "https://fancyspaces.net"
@@ -66,9 +67,9 @@ func (s *Service) GenerateUrls() []sitemapgen.Url {
 		return urls
 	}
 
-	var filteredSpaces []spaces.Space
+	var filteredSpaces []spacesModel.Space
 	for _, space := range allSpaces {
-		if space.Status == spaces.StatusApproved || space.Status == spaces.StatusArchived {
+		if space.Status == spacesModel.StatusApproved || space.Status == spacesModel.StatusArchived {
 			filteredSpaces = append(filteredSpaces, space)
 			continue
 		}

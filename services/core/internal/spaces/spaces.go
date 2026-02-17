@@ -7,14 +7,15 @@ import (
 
 	"github.com/OliverSchlueter/goutils/idgen"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 type DB interface {
-	GetByID(id string) (*Space, error)
-	GetBySlug(slug string) (*Space, error)
-	GetAll() ([]Space, error)
-	Create(s *Space) error
-	Update(id string, s *Space) error
+	GetByID(id string) (*spaces.Space, error)
+	GetBySlug(slug string) (*spaces.Space, error)
+	GetAll() ([]spaces.Space, error)
+	Create(s *spaces.Space) error
+	Update(id string, s *spaces.Space) error
 	Delete(id string) error
 }
 
@@ -33,7 +34,7 @@ func New(cfg Configuration) *Store {
 }
 
 // Get tries to get a space by ID first, then by slug if not found by ID.
-func (s *Store) Get(id string) (*Space, error) {
+func (s *Store) Get(id string) (*spaces.Space, error) {
 	sp, err := s.db.GetBySlug(id)
 	if err != nil {
 		if errors.Is(err, ErrSpaceNotFound) {
@@ -49,19 +50,19 @@ func (s *Store) Get(id string) (*Space, error) {
 	return sp, nil
 }
 
-func (s *Store) GetByID(id string) (*Space, error) {
+func (s *Store) GetByID(id string) (*spaces.Space, error) {
 	return s.db.GetByID(id)
 }
 
-func (s *Store) GetBySlug(slug string) (*Space, error) {
+func (s *Store) GetBySlug(slug string) (*spaces.Space, error) {
 	return s.db.GetBySlug(slug)
 }
 
-func (s *Store) GetAll() ([]Space, error) {
+func (s *Store) GetAll() ([]spaces.Space, error) {
 	return s.db.GetAll()
 }
 
-func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*Space, error) {
+func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*spaces.Space, error) {
 	if !creator.IsActive {
 		return nil, ErrUserNotActive
 	}
@@ -69,17 +70,17 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*Space, 
 		return nil, ErrUserNotVerified
 	}
 
-	space := &Space{
+	space := &spaces.Space{
 		ID:          idgen.GenerateID(8),
 		Slug:        req.Slug,
 		Title:       req.Title,
 		Description: req.Description,
 		Categories:  req.Categories,
 		IconURL:     req.IconURL,
-		Status:      StatusDraft,
+		Status:      spaces.StatusDraft,
 		CreatedAt:   time.Now(),
 		Creator:     creator.ID,
-		Members:     []Member{},
+		Members:     []spaces.Member{},
 	}
 
 	// check if slug is already taken by another space
@@ -126,7 +127,7 @@ func (s *Store) Update(id string, req *CreateOrUpdateSpaceReq) error {
 	return s.db.Update(id, space)
 }
 
-func (s *Store) UpdateFull(space *Space) error {
+func (s *Store) UpdateFull(space *spaces.Space) error {
 	if err := space.Validate(); err != nil {
 		return fmt.Errorf("invalid space: %w", err)
 	}
@@ -138,7 +139,7 @@ func (s *Store) Delete(id string) error {
 	return s.db.Delete(id)
 }
 
-func (s *Store) ChangeStatus(space *Space, to Status) error {
+func (s *Store) ChangeStatus(space *spaces.Space, to spaces.Status) error {
 	if to == space.Status {
 		return nil // no change
 	}

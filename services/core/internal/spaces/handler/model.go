@@ -1,6 +1,8 @@
 package handler
 
-import "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+import (
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
+)
 
 type ChangeStatusReq struct {
 	To spaces.Status `json:"to"`

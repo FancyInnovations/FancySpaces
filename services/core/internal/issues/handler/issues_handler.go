@@ -11,19 +11,20 @@ import (
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/issues"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 type Handler struct {
 	store       *issues.Store
-	spaces      *spaces.Store
+	spaces      *spacesStore.Store
 	userFromCtx func(ctx context.Context) *idp.User
 }
 
 type Configuration struct {
 	Store       *issues.Store
-	Spaces      *spaces.Store
+	Spaces      *spacesStore.Store
 	UserFromCtx func(ctx context.Context) *idp.User
 }
 
@@ -66,7 +67,7 @@ func (h *Handler) handleIssues(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.ReleaseSettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
@@ -106,7 +107,7 @@ func (h *Handler) handleIssue(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.ReleaseSettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 

@@ -11,7 +11,8 @@ import (
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/maven"
 	"github.com/fancyinnovations/fancyspaces/core/internal/maven/javadoccache"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 var contentTypes = map[string]string{
@@ -70,7 +71,7 @@ func (h *Handler) handleRepositories(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.MavenRepositorySettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
@@ -143,7 +144,7 @@ func (h *Handler) handleRepository(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.MavenRepositorySettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
@@ -224,7 +225,7 @@ func (h *Handler) handleArtifacts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.MavenRepositorySettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
@@ -297,7 +298,7 @@ func (h *Handler) handleArtifact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.MavenRepositorySettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
@@ -386,7 +387,7 @@ func (h *Handler) handleJavadoc(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.MavenRepositorySettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 

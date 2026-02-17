@@ -9,8 +9,9 @@ import (
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/core/internal/versions"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 func (h *Handler) handleVersionFile(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +53,7 @@ func (h *Handler) handleVersionFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.ReleaseSettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 

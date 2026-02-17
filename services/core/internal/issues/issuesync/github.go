@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/fancyinnovations/fancyspaces/core/internal/issues"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 	"github.com/google/go-github/v82/github"
 )
 

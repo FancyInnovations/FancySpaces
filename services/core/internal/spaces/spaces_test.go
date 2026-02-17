@@ -5,9 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces/database/fake"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 )
@@ -35,7 +36,7 @@ func TestStore_GetByID(t *testing.T) {
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-1", Role: spaces.RoleOwner},
+						{UserID: "user-1", Role: spaces.RoleAdmin},
 					},
 				},
 			},
@@ -50,7 +51,7 @@ func TestStore_GetByID(t *testing.T) {
 				Status:      spaces.StatusApproved,
 				CreatedAt:   now,
 				Members: []spaces.Member{
-					{UserID: "user-1", Role: spaces.RoleOwner},
+					{UserID: "user-1", Role: spaces.RoleAdmin},
 				},
 			},
 			ExpErr: nil,
@@ -68,7 +69,7 @@ func TestStore_GetByID(t *testing.T) {
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-1", Role: spaces.RoleOwner},
+						{UserID: "user-1", Role: spaces.RoleAdmin},
 					},
 				},
 				{
@@ -81,7 +82,7 @@ func TestStore_GetByID(t *testing.T) {
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-2", Role: spaces.RoleOwner},
+						{UserID: "user-2", Role: spaces.RoleAdmin},
 					},
 				},
 				{
@@ -94,7 +95,7 @@ func TestStore_GetByID(t *testing.T) {
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-3", Role: spaces.RoleOwner},
+						{UserID: "user-3", Role: spaces.RoleAdmin},
 					},
 				},
 			},
@@ -109,7 +110,7 @@ func TestStore_GetByID(t *testing.T) {
 				Status:      spaces.StatusApproved,
 				CreatedAt:   now,
 				Members: []spaces.Member{
-					{UserID: "user-2", Role: spaces.RoleOwner},
+					{UserID: "user-2", Role: spaces.RoleAdmin},
 				},
 			},
 			ExpErr: nil,
@@ -134,7 +135,7 @@ func TestStore_GetByID(t *testing.T) {
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-1", Role: spaces.RoleOwner},
+						{UserID: "user-1", Role: spaces.RoleAdmin},
 					},
 				},
 			},
@@ -145,7 +146,7 @@ func TestStore_GetByID(t *testing.T) {
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
 			db := fake.New()
-			store := spaces.New(spaces.Configuration{
+			store := spacesStore.New(spacesStore.Configuration{
 				DB: db,
 			})
 
@@ -189,7 +190,7 @@ func TestStore_GetBySlug(t *testing.T) {
 					IconURL:     "https://example.com/icon1.png",
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
-					Members:     []spaces.Member{{UserID: "user-1", Role: spaces.RoleOwner}},
+					Members:     []spaces.Member{{UserID: "user-1", Role: spaces.RoleAdmin}},
 				},
 			},
 			Slug: "spaceOne",
@@ -202,7 +203,7 @@ func TestStore_GetBySlug(t *testing.T) {
 				IconURL:     "https://example.com/icon1.png",
 				Status:      spaces.StatusApproved,
 				CreatedAt:   now,
-				Members:     []spaces.Member{{UserID: "user-1", Role: spaces.RoleOwner}},
+				Members:     []spaces.Member{{UserID: "user-1", Role: spaces.RoleAdmin}},
 			},
 			ExpErr: nil,
 		},
@@ -218,7 +219,7 @@ func TestStore_GetBySlug(t *testing.T) {
 					IconURL:     "https://example.com/icon1.png",
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
-					Members:     []spaces.Member{{UserID: "user-1", Role: spaces.RoleOwner}},
+					Members:     []spaces.Member{{UserID: "user-1", Role: spaces.RoleAdmin}},
 				},
 				{
 					ID:          "space-2",
@@ -229,7 +230,7 @@ func TestStore_GetBySlug(t *testing.T) {
 					IconURL:     "https://example.com/icon2.png",
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
-					Members:     []spaces.Member{{UserID: "user-2", Role: spaces.RoleOwner}},
+					Members:     []spaces.Member{{UserID: "user-2", Role: spaces.RoleAdmin}},
 				},
 			},
 			Slug: "spaceTwo",
@@ -242,7 +243,7 @@ func TestStore_GetBySlug(t *testing.T) {
 				IconURL:     "https://example.com/icon2.png",
 				Status:      spaces.StatusApproved,
 				CreatedAt:   now,
-				Members:     []spaces.Member{{UserID: "user-2", Role: spaces.RoleOwner}},
+				Members:     []spaces.Member{{UserID: "user-2", Role: spaces.RoleAdmin}},
 			},
 			ExpErr: nil,
 		},
@@ -265,7 +266,7 @@ func TestStore_GetBySlug(t *testing.T) {
 					IconURL:     "https://example.com/icon1.png",
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
-					Members:     []spaces.Member{{UserID: "user-1", Role: spaces.RoleOwner}},
+					Members:     []spaces.Member{{UserID: "user-1", Role: spaces.RoleAdmin}},
 				},
 			},
 			Slug:   "spaceTwo",
@@ -277,7 +278,7 @@ func TestStore_GetBySlug(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.Name, func(t *testing.T) {
 			db := fake.New()
-			store := spaces.New(spaces.Configuration{DB: db})
+			store := spacesStore.New(spacesStore.Configuration{DB: db})
 
 			for _, s := range tc.Exiting {
 				if err := db.Create(&s); err != nil {
@@ -321,7 +322,7 @@ func TestStore_GetAll(t *testing.T) {
 					Status:      spaces.StatusDraft,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-1", Role: spaces.RoleOwner},
+						{UserID: "user-1", Role: spaces.RoleAdmin},
 					},
 				},
 			},
@@ -339,7 +340,7 @@ func TestStore_GetAll(t *testing.T) {
 					Status:      spaces.StatusDraft,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-1", Role: spaces.RoleOwner},
+						{UserID: "user-1", Role: spaces.RoleAdmin},
 					},
 				},
 				{
@@ -352,7 +353,7 @@ func TestStore_GetAll(t *testing.T) {
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-2", Role: spaces.RoleOwner},
+						{UserID: "user-2", Role: spaces.RoleAdmin},
 					},
 				},
 				{
@@ -365,7 +366,7 @@ func TestStore_GetAll(t *testing.T) {
 					Status:      spaces.StatusArchived,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-3", Role: spaces.RoleOwner},
+						{UserID: "user-3", Role: spaces.RoleAdmin},
 					},
 				},
 			},
@@ -373,7 +374,7 @@ func TestStore_GetAll(t *testing.T) {
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
 			db := fake.New()
-			store := spaces.New(spaces.Configuration{
+			store := spacesStore.New(spacesStore.Configuration{
 				DB: db,
 			})
 
@@ -415,7 +416,7 @@ func TestStore_Create(t *testing.T) {
 		Name    string
 		Exiting []spaces.Space
 		Creator *idp.User
-		Req     *spaces.CreateOrUpdateSpaceReq
+		Req     *spacesStore.CreateOrUpdateSpaceReq
 		Exp     *spaces.Space
 		ExpErr  error
 	}{
@@ -423,7 +424,7 @@ func TestStore_Create(t *testing.T) {
 			Name:    "Successful creation",
 			Exiting: []spaces.Space{},
 			Creator: &normalUser,
-			Req: &spaces.CreateOrUpdateSpaceReq{
+			Req: &spacesStore.CreateOrUpdateSpaceReq{
 				Slug:        "spaceOne",
 				Title:       "Space One",
 				Description: "This is the first space.",
@@ -439,9 +440,8 @@ func TestStore_Create(t *testing.T) {
 				IconURL:     "https://example.com/icon1.png",
 				Status:      spaces.StatusDraft,
 				CreatedAt:   now,
-				Members: []spaces.Member{
-					{UserID: "user-1", Role: spaces.RoleOwner},
-				},
+				Creator:     "user-1",
+				Members:     []spaces.Member{},
 			},
 			ExpErr: nil,
 		},
@@ -454,7 +454,7 @@ func TestStore_Create(t *testing.T) {
 				IsActive: false,
 				Roles:    []string{"user"},
 			},
-			Req: &spaces.CreateOrUpdateSpaceReq{
+			Req: &spacesStore.CreateOrUpdateSpaceReq{
 				Slug:        "spaceOne",
 				Title:       "Space One",
 				Description: "This is the first space.",
@@ -462,7 +462,7 @@ func TestStore_Create(t *testing.T) {
 				IconURL:     "https://example.com/icon1.png",
 			},
 			Exp:    nil,
-			ExpErr: spaces.ErrUserNotActive,
+			ExpErr: spacesStore.ErrUserNotActive,
 		},
 		{
 			Name:    "User is not verified",
@@ -473,7 +473,7 @@ func TestStore_Create(t *testing.T) {
 				IsActive: true,
 				Roles:    []string{"user"},
 			},
-			Req: &spaces.CreateOrUpdateSpaceReq{
+			Req: &spacesStore.CreateOrUpdateSpaceReq{
 				Slug:        "spaceOne",
 				Title:       "Space One",
 				Description: "This is the first space.",
@@ -481,7 +481,7 @@ func TestStore_Create(t *testing.T) {
 				IconURL:     "https://example.com/icon1.png",
 			},
 			Exp:    nil,
-			ExpErr: spaces.ErrUserNotVerified,
+			ExpErr: spacesStore.ErrUserNotVerified,
 		},
 		{
 			Name: "Slug is already taken",
@@ -495,13 +495,12 @@ func TestStore_Create(t *testing.T) {
 					IconURL:     "https://example.com/icon1.png",
 					Status:      spaces.StatusDraft,
 					CreatedAt:   now,
-					Members: []spaces.Member{
-						{UserID: "user-1", Role: spaces.RoleOwner},
-					},
+					Creator:     "user-1",
+					Members:     []spaces.Member{},
 				},
 			},
 			Creator: &normalUser,
-			Req: &spaces.CreateOrUpdateSpaceReq{
+			Req: &spacesStore.CreateOrUpdateSpaceReq{
 				Slug:        "spaceOne",
 				Title:       "Space One",
 				Description: "This is the first space.",
@@ -509,12 +508,12 @@ func TestStore_Create(t *testing.T) {
 				IconURL:     "https://example.com/icon1.png",
 			},
 			Exp:    nil,
-			ExpErr: spaces.ErrSpaceAlreadyExists,
+			ExpErr: spacesStore.ErrSpaceAlreadyExists,
 		},
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
 			db := fake.New()
-			store := spaces.New(spaces.Configuration{
+			store := spacesStore.New(spacesStore.Configuration{
 				DB: db,
 			})
 
@@ -556,7 +555,7 @@ func TestStore_Update(t *testing.T) {
 		Name    string
 		Exiting []spaces.Space
 		ID      string
-		Req     *spaces.CreateOrUpdateSpaceReq
+		Req     *spacesStore.CreateOrUpdateSpaceReq
 		Exp     *spaces.Space
 		ExpErr  error
 	}{
@@ -565,21 +564,20 @@ func TestStore_Update(t *testing.T) {
 			Exiting: []spaces.Space{
 				{
 					ID:          "space-1",
-					Slug:        "spaceOne",
+					Slug:        "mySpace",
 					Title:       "Space One",
 					Description: "This is the first space.",
 					Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
 					IconURL:     "https://example.com/icon1.png",
 					Status:      spaces.StatusDraft,
 					CreatedAt:   now,
-					Members: []spaces.Member{
-						{UserID: "user-1", Role: spaces.RoleOwner},
-					},
+					Creator:     "user-1",
+					Members:     []spaces.Member{},
 				},
 			},
 			ID: "space-1",
-			Req: &spaces.CreateOrUpdateSpaceReq{
-				Slug:        "spaceTwo",
+			Req: &spacesStore.CreateOrUpdateSpaceReq{
+				Slug:        "mySpace",
 				Title:       "Space Two",
 				Description: "This is the second space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin, spaces.CategoryWebApp},
@@ -587,16 +585,15 @@ func TestStore_Update(t *testing.T) {
 			},
 			Exp: &spaces.Space{
 				ID:          "space-1",
-				Slug:        "spaceTwo",
+				Slug:        "mySpace",
 				Title:       "Space Two",
 				Description: "This is the second space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin, spaces.CategoryWebApp},
 				IconURL:     "https://example.com/icon2.png",
 				Status:      spaces.StatusDraft,
 				CreatedAt:   now,
-				Members: []spaces.Member{
-					{UserID: "user-1", Role: spaces.RoleOwner},
-				},
+				Creator:     "user-1",
+				Members:     []spaces.Member{},
 			},
 			ExpErr: nil,
 		},
@@ -612,9 +609,8 @@ func TestStore_Update(t *testing.T) {
 					IconURL:     "https://example.com/icon1.png",
 					Status:      spaces.StatusDraft,
 					CreatedAt:   now,
-					Members: []spaces.Member{
-						{UserID: "user-1", Role: spaces.RoleOwner},
-					},
+					Creator:     "user-1",
+					Members:     []spaces.Member{},
 				},
 				{
 					ID:          "space-2",
@@ -625,13 +621,12 @@ func TestStore_Update(t *testing.T) {
 					IconURL:     "https://example.com/icon2.png",
 					Status:      spaces.StatusApproved,
 					CreatedAt:   now,
-					Members: []spaces.Member{
-						{UserID: "user-2", Role: spaces.RoleOwner},
-					},
+					Creator:     "user-2",
+					Members:     []spaces.Member{},
 				},
 			},
 			ID: "space-1",
-			Req: &spaces.CreateOrUpdateSpaceReq{
+			Req: &spacesStore.CreateOrUpdateSpaceReq{
 				Slug:        "spaceTwo",
 				Title:       "Space One",
 				Description: "This is the first space.",
@@ -639,12 +634,12 @@ func TestStore_Update(t *testing.T) {
 				IconURL:     "https://example.com/icon1.png",
 			},
 			Exp:    nil,
-			ExpErr: spaces.ErrSpaceAlreadyExists,
+			ExpErr: spacesStore.ErrSpaceAlreadyExists,
 		},
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
 			db := fake.New()
-			store := spaces.New(spaces.Configuration{
+			store := spacesStore.New(spacesStore.Configuration{
 				DB: db,
 			})
 
@@ -694,7 +689,7 @@ func TestStore_Delete(t *testing.T) {
 					Status:      spaces.StatusDraft,
 					CreatedAt:   now,
 					Members: []spaces.Member{
-						{UserID: "user-1", Role: spaces.RoleOwner},
+						{UserID: "user-1", Role: spaces.RoleAdmin},
 					},
 				},
 			},
@@ -704,7 +699,7 @@ func TestStore_Delete(t *testing.T) {
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
 			db := fake.New()
-			store := spaces.New(spaces.Configuration{
+			store := spacesStore.New(spacesStore.Configuration{
 				DB: db,
 			})
 
@@ -751,7 +746,7 @@ func TestStore_ChangeStatus(t *testing.T) {
 				Status:      spaces.StatusDraft,
 				CreatedAt:   now,
 				Members: []spaces.Member{
-					{UserID: "user-1", Role: spaces.RoleOwner},
+					{UserID: "user-1", Role: spaces.RoleAdmin},
 				},
 			},
 			To:     spaces.StatusReview,
@@ -770,7 +765,7 @@ func TestStore_ChangeStatus(t *testing.T) {
 				Status:      spaces.StatusReview,
 				CreatedAt:   now,
 				Members: []spaces.Member{
-					{UserID: "user-1", Role: spaces.RoleOwner},
+					{UserID: "user-1", Role: spaces.RoleAdmin},
 				},
 			},
 			To:     spaces.StatusApproved,
@@ -780,7 +775,7 @@ func TestStore_ChangeStatus(t *testing.T) {
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
 			db := fake.New()
-			store := spaces.New(spaces.Configuration{
+			store := spacesStore.New(spacesStore.Configuration{
 				DB: db,
 			})
 

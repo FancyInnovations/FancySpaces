@@ -9,6 +9,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
 	"github.com/fancyinnovations/fancyspaces/core/internal/maven/javadoccache"
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesModel "github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 type DB interface {
@@ -248,7 +249,7 @@ func (s *Store) DownloadArtifactFile(ctx context.Context, spaceID, repoName, gro
 	return s.fileStore.DownloadArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, fileName)
 }
 
-func (s *Store) GetJavadocFile(ctx context.Context, space *spaces.Space, repo *Repository, artifact *Artifact, version string, filePath string) ([]byte, error) {
+func (s *Store) GetJavadocFile(ctx context.Context, space *spacesModel.Space, repo *Repository, artifact *Artifact, version string, filePath string) ([]byte, error) {
 	// If the repository is an internal mirror, redirect the request to the mirrored repository
 	if repo.InternalMirror != nil {
 		mirroredSpace, err := s.spaces.Get(repo.InternalMirror.SpaceID)

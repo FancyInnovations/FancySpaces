@@ -16,6 +16,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/core/internal/versions"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
+	spacesModel "github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 type Handler struct {
@@ -73,7 +74,7 @@ func (h *Handler) handleVersions(w http.ResponseWriter, r *http.Request) {
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
 	}
-	if space.Status != spaces.StatusApproved && space.Status != spaces.StatusArchived {
+	if space.Status != spacesModel.StatusApproved && space.Status != spacesModel.StatusArchived {
 		u := h.userFromCtx(r.Context())
 		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
 			problems.NotFound("Space", space.ID).WriteToHTTP(w)
@@ -120,7 +121,7 @@ func (h *Handler) handleVersion(w http.ResponseWriter, r *http.Request) {
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
 	}
-	if space.Status != spaces.StatusApproved && space.Status != spaces.StatusArchived {
+	if space.Status != spacesModel.StatusApproved && space.Status != spacesModel.StatusArchived {
 		u := h.userFromCtx(r.Context())
 		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
 			problems.NotFound("Space", space.ID).WriteToHTTP(w)

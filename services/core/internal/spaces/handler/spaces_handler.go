@@ -10,18 +10,19 @@ import (
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 type Handler struct {
-	store       *spaces.Store
+	store       *spacesStore.Store
 	analytics   *analytics.Store
 	userFromCtx func(ctx context.Context) *idp.User
 }
 
 type Configuration struct {
-	Store       *spaces.Store
+	Store       *spacesStore.Store
 	Analytics   *analytics.Store
 	UserFromCtx func(ctx context.Context) *idp.User
 }
@@ -166,7 +167,7 @@ func (h *Handler) handleCreateSpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req spaces.CreateOrUpdateSpaceReq
+	var req spacesStore.CreateOrUpdateSpaceReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
 		return
@@ -174,11 +175,11 @@ func (h *Handler) handleCreateSpace(w http.ResponseWriter, r *http.Request) {
 
 	s, err := h.store.Create(u, &req)
 	if err != nil {
-		if errors.Is(err, spaces.ErrSpaceAlreadyExists) {
+		if errors.Is(err, spacesStore.ErrSpaceAlreadyExists) {
 			problems.AlreadyExists("Space", req.Slug).WriteToHTTP(w)
 			return
 		}
-		if errors.Is(err, spaces.ErrUserNotActive) || errors.Is(err, spaces.ErrUserNotVerified) {
+		if errors.Is(err, spacesStore.ErrUserNotActive) || errors.Is(err, spacesStore.ErrUserNotVerified) {
 			problems.Unauthorized().WriteToHTTP(w)
 			return
 		}
@@ -217,7 +218,7 @@ func (h *Handler) handleUpdateSpace(w http.ResponseWriter, r *http.Request, s *s
 		return
 	}
 
-	var req spaces.CreateOrUpdateSpaceReq
+	var req spacesStore.CreateOrUpdateSpaceReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
 		return
@@ -228,11 +229,11 @@ func (h *Handler) handleUpdateSpace(w http.ResponseWriter, r *http.Request, s *s
 			problems.NotFound("Space", s.ID).WriteToHTTP(w)
 			return
 		}
-		if errors.Is(err, spaces.ErrSpaceAlreadyExists) {
+		if errors.Is(err, spacesStore.ErrSpaceAlreadyExists) {
 			problems.AlreadyExists("Space", req.Slug).WriteToHTTP(w)
 			return
 		}
-		if errors.Is(err, spaces.ErrUserNotActive) || errors.Is(err, spaces.ErrUserNotVerified) {
+		if errors.Is(err, spacesStore.ErrUserNotActive) || errors.Is(err, spacesStore.ErrUserNotVerified) {
 			problems.Unauthorized().WriteToHTTP(w)
 			return
 		}

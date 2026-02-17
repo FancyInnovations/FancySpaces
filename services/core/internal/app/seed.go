@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/fancyinnovations/fancyspaces/core/internal/maven"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	fakeSpacesDB "github.com/fancyinnovations/fancyspaces/core/internal/spaces/database/fake"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 func seedMavenRepos(store *maven.Store) {

@@ -6,20 +6,21 @@ import (
 
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/issues"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 	"github.com/gofri/go-github-pagination/githubpagination"
 	"github.com/google/go-github/v82/github"
 )
 
 type Service struct {
-	spacesStore *spaces.Store
+	spacesStore *spacesStore.Store
 	issuesStore *issues.Store
 
 	ghc *github.Client
 }
 
 type Configuration struct {
-	SpacesStore  *spaces.Store
+	SpacesStore  *spacesStore.Store
 	IssuesStore  *issues.Store
 	GitHubClient *github.Client
 }
