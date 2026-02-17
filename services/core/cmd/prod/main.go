@@ -10,6 +10,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/OliverSchlueter/goutils/broker"
 	"github.com/OliverSchlueter/goutils/containers"
 	"github.com/OliverSchlueter/goutils/env"
 	"github.com/OliverSchlueter/goutils/middleware"
@@ -21,6 +22,9 @@ import (
 )
 
 const (
+	natsUrlEnv       = "NATS_URL"
+	natsAuthTokenEnv = "NATS_AUTH_TOKEN"
+
 	usersPathEnv = "USERS_PATH"
 
 	mongodbUrlEnv = "MONGODB_URL"
@@ -34,6 +38,9 @@ const (
 )
 
 func main() {
+	nc := containers.ConnectToNats(env.MustGetStr(natsUrlEnv), env.MustGetStr(natsAuthTokenEnv))
+	b := broker.NewNatsBroker(&broker.NatsConfiguration{Nats: nc})
+
 	// Setup logging
 	logService := sloki.NewService(sloki.Configuration{
 		URL:          "http://localhost:3100/loki/api/v1/push",
@@ -72,6 +79,7 @@ func main() {
 	app.Start(app.Configuration{
 		Mux:        mux,
 		MavenMux:   mavenMux,
+		Broker:     b,
 		Mongo:      mc,
 		ClickHouse: ch,
 		MinIO:      mio,
@@ -116,6 +124,7 @@ func main() {
 	case os.Interrupt:
 		slog.Info("Received interrupt signal, shutting down...")
 
+		containers.DisconnectNats(nc)
 		containers.DisconnectMongo(mc)
 		containers.DisconnectClickhouse(ch)
 		containers.DisconnectMinIO(mio)

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/OliverSchlueter/goutils/broker"
 	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sitemapgen"
 	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
@@ -42,6 +43,7 @@ const apiPrefix = "/api/v1"
 type Configuration struct {
 	Mux        *http.ServeMux
 	MavenMux   *http.ServeMux
+	Broker     broker.Broker
 	Mongo      *mongo.Database
 	ClickHouse driver.Conn
 	MinIO      *minio.Client
@@ -72,6 +74,13 @@ func Start(cfg Configuration) {
 		Analytics:   as,
 	})
 	sh.Register(apiPrefix, cfg.Mux)
+	snh := spacesHandler.NewNatsHandler(spacesHandler.NatsConfiguration{
+		Broker: cfg.Broker,
+		Store:  spacesStore,
+	})
+	if err := snh.Register(); err != nil {
+		panic(fmt.Errorf("could not register spaces nats handler: %w", err))
+	}
 
 	// Versions
 	versionsDB := mongoVersionsDB.NewDB(&mongoVersionsDB.Configuration{

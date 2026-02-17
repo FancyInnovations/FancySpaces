@@ -28,7 +28,7 @@ func (s *Service) GetSpace(id string) (*InternalSpace, error) {
 		return spaceFromCache, nil
 	}
 
-	resp, err := s.broker.Request("fancyspaces.space.get", []byte(id))
+	resp, err := s.broker.Request("fancyspaces.core.spaces.get", []byte(id))
 	if err != nil {
 		return nil, err
 	}

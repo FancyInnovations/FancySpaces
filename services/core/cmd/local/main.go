@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/OliverSchlueter/goutils/broker"
 	"github.com/OliverSchlueter/goutils/containers"
 	"github.com/OliverSchlueter/goutils/middleware"
 	"github.com/OliverSchlueter/goutils/sloki"
@@ -21,6 +22,9 @@ import (
 )
 
 func main() {
+	nc := containers.ConnectToNatsE2E()
+	b := broker.NewNatsBroker(&broker.NatsConfiguration{Nats: nc})
+
 	// Feature flags
 	fflags.DisableIssueSyncer.Enable()
 
@@ -64,6 +68,7 @@ func main() {
 	app.Start(app.Configuration{
 		Mux:        mux,
 		MavenMux:   mavenMux,
+		Broker:     b,
 		Mongo:      mc,
 		ClickHouse: ch,
 		MinIO:      mio,
@@ -101,6 +106,7 @@ func main() {
 	case os.Interrupt:
 		slog.Info("Received interrupt signal, shutting down...")
 
+		containers.DisconnectNats(nc)
 		containers.DisconnectMongo(mc)
 		containers.DisconnectClickhouse(ch)
 		containers.DisconnectMinIO(mio)
