@@ -3,6 +3,7 @@ go 1.26
 use (
 	integrations/analytics-go-sdk
 	integrations/idp-go-sdk
+	integrations/spaces-go-sdk
 	integrations/storage-go-sdk
 	services/core
 	services/storage
