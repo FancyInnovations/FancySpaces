@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/OliverSchlueter/goutils/idgen"
-	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 )
 
 type DB interface {
@@ -61,7 +61,7 @@ func (s *Store) GetAll() ([]Space, error) {
 	return s.db.GetAll()
 }
 
-func (s *Store) Create(creator *auth.User, req *CreateOrUpdateSpaceReq) (*Space, error) {
+func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*Space, error) {
 	if !creator.IsActive {
 		return nil, ErrUserNotActive
 	}

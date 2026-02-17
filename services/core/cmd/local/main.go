@@ -16,6 +16,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/core/internal/app"
 	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/core/internal/fflags"
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 	"github.com/justinas/alice"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -41,13 +42,13 @@ func main() {
 	mio := containers.ConnectToMinIOE2E()
 
 	// Setup default admin user
-	auth.Users["oliver"] = &auth.User{
+	auth.Users["oliver"] = &idp.User{
 		ID:        "oliver",
-		Provider:  auth.ProviderBasic,
+		Provider:  idp.ProviderBasic,
 		Name:      "Oliver",
 		Email:     "oliver@fancyinnovations.com",
 		Verified:  true,
-		Password:  auth.Hash("hello"),
+		Password:  idp.PasswordHash("hello"),
 		Roles:     []string{"admin", "user"},
 		CreatedAt: time.Date(2025, 12, 3, 19, 0, 0, 0, time.UTC),
 		IsActive:  true,

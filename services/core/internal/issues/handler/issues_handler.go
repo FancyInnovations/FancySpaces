@@ -10,21 +10,21 @@ import (
 
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/core/internal/issues"
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 )
 
 type Handler struct {
 	store       *issues.Store
 	spaces      *spaces.Store
-	userFromCtx func(ctx context.Context) *auth.User
+	userFromCtx func(ctx context.Context) *idp.User
 }
 
 type Configuration struct {
 	Store       *issues.Store
 	Spaces      *spaces.Store
-	UserFromCtx func(ctx context.Context) *auth.User
+	UserFromCtx func(ctx context.Context) *idp.User
 }
 
 func New(cfg Configuration) *Handler {

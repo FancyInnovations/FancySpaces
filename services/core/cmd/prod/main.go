@@ -16,6 +16,7 @@ import (
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/app"
 	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 	"github.com/justinas/alice"
 )
 
@@ -133,7 +134,7 @@ func loadUsers() {
 		return
 	}
 
-	var users []auth.User
+	var users []idp.User
 	if err := json.Unmarshal(data, &users); err != nil {
 		slog.Error("Could not parse users file", sloki.WrapError(err))
 		os.Exit(1)

@@ -14,16 +14,16 @@ import (
 	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
-	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/core/internal/maven"
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 )
 
 type Handler struct {
 	store             *maven.Store
 	spaces            *spaces.Store
 	analytics         *analytics.Store
-	userFromCtx       func(ctx context.Context) *auth.User
+	userFromCtx       func(ctx context.Context) *idp.User
 	downloadRatelimit *ratelimit.Service
 }
 
@@ -31,7 +31,7 @@ type Configuration struct {
 	Store       *maven.Store
 	Spaces      *spaces.Store
 	Analytics   *analytics.Store
-	UserFromCtx func(ctx context.Context) *auth.User
+	UserFromCtx func(ctx context.Context) *idp.User
 }
 
 func New(cfg Configuration) *Handler {

@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces/database/fake"
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 )
@@ -398,9 +398,9 @@ func TestStore_GetAll(t *testing.T) {
 func TestStore_Create(t *testing.T) {
 	now := time.Now()
 
-	normalUser := auth.User{
+	normalUser := idp.User{
 		ID:        "user-1",
-		Provider:  auth.ProviderBasic,
+		Provider:  idp.ProviderBasic,
 		Name:      "User",
 		Email:     "user@fancyspaces.net",
 		Verified:  true,
@@ -414,7 +414,7 @@ func TestStore_Create(t *testing.T) {
 	for _, tc := range []struct {
 		Name    string
 		Exiting []spaces.Space
-		Creator *auth.User
+		Creator *idp.User
 		Req     *spaces.CreateOrUpdateSpaceReq
 		Exp     *spaces.Space
 		ExpErr  error
@@ -448,7 +448,7 @@ func TestStore_Create(t *testing.T) {
 		{
 			Name:    "User is not active",
 			Exiting: []spaces.Space{},
-			Creator: &auth.User{
+			Creator: &idp.User{
 				ID:       "user-2",
 				Verified: true,
 				IsActive: false,
@@ -467,7 +467,7 @@ func TestStore_Create(t *testing.T) {
 		{
 			Name:    "User is not verified",
 			Exiting: []spaces.Space{},
-			Creator: &auth.User{
+			Creator: &idp.User{
 				ID:       "user-2",
 				Verified: false,
 				IsActive: true,

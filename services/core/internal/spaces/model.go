@@ -3,7 +3,7 @@ package spaces
 import (
 	"time"
 
-	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 )
 
 type Space struct {
@@ -92,7 +92,7 @@ const (
 	CategoryOther           Category = "other"
 )
 
-func (s *Space) IsMember(u *auth.User) bool {
+func (s *Space) IsMember(u *idp.User) bool {
 	for _, m := range s.Members {
 		if m.UserID == u.ID {
 			return true
@@ -102,7 +102,7 @@ func (s *Space) IsMember(u *auth.User) bool {
 	return false
 }
 
-func (s *Space) IsOwner(u *auth.User) bool {
+func (s *Space) IsOwner(u *idp.User) bool {
 	for _, m := range s.Members {
 		if m.UserID == u.ID {
 			return m.Role == RoleOwner
@@ -112,7 +112,7 @@ func (s *Space) IsOwner(u *auth.User) bool {
 	return false
 }
 
-func (s *Space) HasFullAccess(u *auth.User) bool {
+func (s *Space) HasFullAccess(u *idp.User) bool {
 	for _, m := range s.Members {
 		if m.UserID == u.ID {
 			return m.Role == RoleOwner || m.Role == RoleAdmin
@@ -122,7 +122,7 @@ func (s *Space) HasFullAccess(u *auth.User) bool {
 	return false
 }
 
-func (s *Space) HasWriteAccess(u *auth.User) bool {
+func (s *Space) HasWriteAccess(u *idp.User) bool {
 	for _, m := range s.Members {
 		if m.UserID == u.ID {
 			return m.Role == RoleOwner || m.Role == RoleAdmin || m.Role == RoleMember

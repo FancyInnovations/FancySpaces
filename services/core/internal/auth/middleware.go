@@ -2,16 +2,16 @@ package auth
 
 import (
 	"context"
-	"crypto/sha256"
-	"fmt"
 	"net/http"
+
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 )
 
 type contextKey string
 
 const userContextKey contextKey = "user"
 
-var Users = map[string]*User{}
+var Users = map[string]*idp.User{}
 
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +39,7 @@ func Middleware(next http.Handler) http.Handler {
 		}
 
 		u, found := Users[username]
-		if !found || u.Password != Hash(password) {
+		if !found || u.Password != idp.PasswordHash(password) {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -50,17 +50,10 @@ func Middleware(next http.Handler) http.Handler {
 	})
 }
 
-func UserFromContext(ctx context.Context) *User {
-	user, ok := ctx.Value(userContextKey).(*User)
+func UserFromContext(ctx context.Context) *idp.User {
+	user, ok := ctx.Value(userContextKey).(*idp.User)
 	if !ok {
 		return nil
 	}
 	return user
-}
-
-func Hash(password string) string {
-	h := sha256.New()
-	h.Write([]byte(password))
-	bs := h.Sum(nil)
-	return fmt.Sprintf("%x", bs)
 }
