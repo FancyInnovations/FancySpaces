@@ -4,7 +4,7 @@ import type {Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
-import {type KVValue, type SpaceDatabase, type SpaceDatabaseCollection} from "@/api/storage/types.ts";
+import {type SpaceDatabase, type SpaceDatabaseCollection} from "@/api/storage/types.ts";
 import KVCollectionDataPage from "@/components/storage/KVCollectionDataPage.vue";
 
 const router = useRouter();
@@ -17,7 +17,6 @@ const isLoggedIn = computed(() => {
 const space = ref<Space>();
 const database = ref<SpaceDatabase>();
 const collection = ref<SpaceDatabaseCollection>();
-const values = ref<KVValue[]>([]);
 
 onMounted(async () => {
   const spaceID = (route.params as any).sid as string;
@@ -36,7 +35,7 @@ onMounted(async () => {
 
   const collectionName = (route.params as any).collid as string;
   collection.value = {
-    database: "fancyanalytics",
+    database: databaseName,
     name: collectionName,
     created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
     engine: "kv"

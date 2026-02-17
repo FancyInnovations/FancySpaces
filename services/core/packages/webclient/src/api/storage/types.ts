@@ -13,15 +13,15 @@ export interface SpaceDatabaseCollection {
 export function mapEngineKeyToName(engine?: string): string {
   switch (engine) {
     case 'kv':
-      return 'Key-Value Store';
+      return 'Key-Value store';
     case 'document':
-      return 'Document Store';
+      return 'Document store';
     case 'object':
-      return 'Object Store';
+      return 'Object store';
     case 'analytical':
-      return 'Analytical Store';
+      return 'Analytical store';
     case 'broker':
-      return 'Message Broker';
+      return 'Message broker';
     default:
       return engine || 'Unknown';
   }

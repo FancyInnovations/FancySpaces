@@ -129,7 +129,7 @@ export async function kvGetMultiple(db: string, coll: string, keys: string[]): P
 
 export async function kvGetAll(db: string, coll: string): Promise<Record<string, any>> {
   const response = await fetch(
-    `/storage/api/v1/databases/${db}/collections/${coll}/kv/2032`,
+    `/storage/api/v1/databases/${db}/collections/${coll}/kv/2033`,
     {
       method: "POST",
       headers: {

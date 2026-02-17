@@ -84,6 +84,12 @@ onMounted(async () => {
 
   collections.value.push(
     {
+      database: "system",
+      name: "kv_test",
+      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+      engine: "kv"
+    },
+    {
       database: "fancyanalytics",
       name: "metadata-cache",
       created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),

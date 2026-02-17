@@ -2,6 +2,7 @@
 
 import type {Space} from "@/api/spaces/types.ts";
 import type {KVValue, SpaceDatabase, SpaceDatabaseCollection} from "@/api/storage/types.ts";
+import {kvGetAll} from "@/api/storage/kv/kv.ts";
 
 const props = defineProps<{
   space: Space
@@ -18,24 +19,14 @@ const tableHeaders = [
 ];
 
 onMounted(async () => {
-  values.value = [
-    {
-      key: "user:123",
-      value: {
-        name: "Alice",
-        email: "alice@fancyanalytics.net",
-      },
-      type: "map"
-    },
-    {
-      key: "user:456",
-      value: {
-        name: "Bob",
-        email: "bob@fancyanalytics.net",
-      },
-      type: "map"
-    }
-  ];
+  const data = await kvGetAll(props.database.name, props.collection.name);
+  for (const key in data) {
+    values.value.push({
+      key: key,
+      value: data[key],
+      type: typeof data[key]
+    });
+  }
 });
 
 </script>
