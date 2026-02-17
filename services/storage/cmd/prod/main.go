@@ -15,7 +15,6 @@ import (
 	"github.com/fancyinnovations/fancyspaces/storage/internal/app"
 	"github.com/fancyinnovations/fancyspaces/storage/internal/auth"
 	"github.com/justinas/alice"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {

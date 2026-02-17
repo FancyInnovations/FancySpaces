@@ -18,7 +18,6 @@ import (
 	"github.com/fancyinnovations/fancyspaces/core/internal/fflags"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 	"github.com/justinas/alice"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
