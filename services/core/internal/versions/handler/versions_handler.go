@@ -13,15 +13,15 @@ import (
 	"github.com/OliverSchlueter/goutils/ratelimit"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/core/internal/versions"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
-	spacesModel "github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 type Handler struct {
 	store             *versions.Store
-	spaces            *spaces.Store
+	spaces            *spacesStore.Store
 	analytics         *analytics.Store
 	userFromCtx       func(ctx context.Context) *idp.User
 	downloadRatelimit *ratelimit.Service
@@ -29,7 +29,7 @@ type Handler struct {
 
 type Configuration struct {
 	Store       *versions.Store
-	Spaces      *spaces.Store
+	Spaces      *spacesStore.Store
 	Analytics   *analytics.Store
 	UserFromCtx func(ctx context.Context) *idp.User
 }
@@ -74,7 +74,7 @@ func (h *Handler) handleVersions(w http.ResponseWriter, r *http.Request) {
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
 	}
-	if space.Status != spacesModel.StatusApproved && space.Status != spacesModel.StatusArchived {
+	if space.Status != spaces.StatusApproved && space.Status != spaces.StatusArchived {
 		u := h.userFromCtx(r.Context())
 		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
 			problems.NotFound("Space", space.ID).WriteToHTTP(w)
@@ -83,7 +83,7 @@ func (h *Handler) handleVersions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.ReleaseSettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
@@ -121,7 +121,7 @@ func (h *Handler) handleVersion(w http.ResponseWriter, r *http.Request) {
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
 	}
-	if space.Status != spacesModel.StatusApproved && space.Status != spacesModel.StatusArchived {
+	if space.Status != spaces.StatusApproved && space.Status != spaces.StatusArchived {
 		u := h.userFromCtx(r.Context())
 		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
 			problems.NotFound("Space", space.ID).WriteToHTTP(w)
@@ -130,7 +130,7 @@ func (h *Handler) handleVersion(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.ReleaseSettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
@@ -305,7 +305,7 @@ func (h *Handler) handleVersionDownloads(w http.ResponseWriter, r *http.Request)
 	}
 
 	if !space.ReleaseSettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 

@@ -130,18 +130,6 @@ func (h *Handler) handleGetSpace(w http.ResponseWriter, r *http.Request, s *spac
 		return
 	}
 
-	s, err := h.store.Get(s.ID)
-	if err != nil {
-		if errors.Is(err, spaces.ErrSpaceNotFound) {
-			problems.NotFound("Space", s.ID).WriteToHTTP(w)
-			return
-		}
-
-		slog.Error("Failed to get space by id", sloki.WrapError(err))
-		problems.InternalServerError("").WriteToHTTP(w)
-		return
-	}
-
 	if s.Status != spaces.StatusApproved && s.Status != spaces.StatusArchived {
 		u := h.userFromCtx(r.Context())
 		if u == nil || !u.Verified || !u.IsActive || !s.IsMember(u) {

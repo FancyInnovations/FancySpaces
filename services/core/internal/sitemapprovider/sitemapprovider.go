@@ -103,6 +103,21 @@ func (s *Service) GenerateUrls() []sitemapgen.Url {
 				},
 			)
 		}
+
+		if space.MavenRepositorySettings.Enabled {
+			urls = append(urls,
+				sitemapgen.Url{
+					Loc:        fmt.Sprintf("%s/spaces/%s/maven-repos", baseURL, space.Slug),
+					ChangeFreq: "daily",
+					Priority:   "0.5",
+				},
+				sitemapgen.Url{
+					Loc:        fmt.Sprintf("%s/spaces/%s/javadoc", baseURL, space.Slug),
+					ChangeFreq: "daily",
+					Priority:   "0.5",
+				},
+			)
+		}
 	}
 
 	return urls

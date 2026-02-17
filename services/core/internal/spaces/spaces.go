@@ -37,7 +37,7 @@ func New(cfg Configuration) *Store {
 func (s *Store) Get(id string) (*spaces.Space, error) {
 	sp, err := s.db.GetBySlug(id)
 	if err != nil {
-		if errors.Is(err, ErrSpaceNotFound) {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
 			sp, err = s.db.GetByID(id)
 			if err == nil {
 				return sp, nil
@@ -109,7 +109,7 @@ func (s *Store) Update(id string, req *CreateOrUpdateSpaceReq) error {
 
 	// check if slug is already taken by another space
 	if space.Slug != req.Slug {
-		if _, err := s.db.GetBySlug(req.Slug); !errors.Is(err, ErrSpaceNotFound) {
+		if _, err := s.db.GetBySlug(req.Slug); !errors.Is(err, spaces.ErrSpaceNotFound) {
 			return ErrSpaceAlreadyExists
 		}
 	}

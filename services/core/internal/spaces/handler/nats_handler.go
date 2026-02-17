@@ -10,19 +10,19 @@ import (
 	"github.com/OliverSchlueter/goutils/middleware"
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
-	spaces2 "github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 	"github.com/nats-io/nats.go"
 )
 
 type NatsHandler struct {
 	broker broker.Broker
-	store  *spaces.Store
+	store  *spacesStore.Store
 }
 
 type NatsConfiguration struct {
 	Broker broker.Broker
-	Store  *spaces.Store
+	Store  *spacesStore.Store
 }
 
 func NewNatsHandler(cfg NatsConfiguration) *NatsHandler {
@@ -59,7 +59,7 @@ func (h *NatsHandler) handleGet(msg *nats.Msg) {
 		return
 	}
 
-	response, err := json.Marshal(spaces2.InternalSpace{
+	response, err := json.Marshal(spaces.InternalSpace{
 		Space:             *space,
 		AnalyticsWriteKey: space.AnalyticsSettings.WriteKey,
 	})

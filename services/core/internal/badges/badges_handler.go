@@ -10,18 +10,19 @@ import (
 	"github.com/OliverSchlueter/goutils/problems"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
-	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/core/internal/versions"
+	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
 type Handler struct {
-	spaces    *spaces.Store
+	spaces    *spacesStore.Store
 	versions  *versions.Store
 	analytics *analytics.Store
 }
 
 type Configuration struct {
-	Spaces    *spaces.Store
+	Spaces    *spacesStore.Store
 	Versions  *versions.Store
 	Analytics *analytics.Store
 }
@@ -59,7 +60,7 @@ func (h *Handler) handleSpaceDownloadsBadge(w http.ResponseWriter, r *http.Reque
 	}
 
 	if !s.ReleaseSettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
@@ -98,7 +99,7 @@ func (h *Handler) handleSpaceLatestVersionBadge(w http.ResponseWriter, r *http.R
 	}
 
 	if !s.ReleaseSettings.Enabled {
-		spaces.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
 		return
 	}
 
