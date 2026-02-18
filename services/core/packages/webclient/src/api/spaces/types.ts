@@ -9,8 +9,10 @@ export interface Space {
   icon_url: string;
   status: string;
   created_at: Date;
+
   creator: string;
   members: SpaceMember[];
+
   issue_settings: SpaceIssueSettings;
   release_settings: SpaceReleaseSettings;
   maven_repository_settings: MavenRepositorySettings;

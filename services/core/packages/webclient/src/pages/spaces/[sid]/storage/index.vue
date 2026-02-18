@@ -6,6 +6,7 @@ import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import {type SpaceDatabaseCollection} from "@/api/storage/types.ts";
 import CollectionCard from "@/components/storage/CollectionCard.vue";
+import SpaceHeader from "@/components/SpaceHeader.vue";
 
 const router = useRouter();
 
@@ -188,51 +189,20 @@ onMounted(async () => {
       </v-col>
 
       <v-col>
-        <div class="d-flex justify-space-between">
-          <div class="d-flex flex-column justify-center">
-            <v-img
-              :href="`/spaces/${space?.slug}`"
-              :src="space?.icon_url || '/logo.png'"
-              alt="Space Icon"
-              height="100"
-              max-height="100"
-              max-width="100"
-              min-height="100"
-              min-width="100"
-              width="100"
-            />
-          </div>
-
-          <div class="mx-4 d-flex flex-column justify-space-between flex-grow-1">
-            <div>
-              <h1>{{ space?.title }}</h1>
-              <p class="text-body-1 mt-2">{{ space?.summary }}</p>
-            </div>
-          </div>
-
-          <div class="d-flex flex-column justify-center">
+        <SpaceHeader :space="space">
+          <template #quick-actions>
             <v-btn
               v-if="isLoggedIn"
-              :to="`/spaces/${space?.slug}/maven-repos/new`"
-              class="mb-2"
+              :to="`/spaces/${space?.slug}/storage/new`"
               color="primary"
-              size="large"
-              variant="tonal"
-            >
-              New database
-            </v-btn>
-
-            <v-btn
-              v-if="isLoggedIn"
-              :to="`/spaces/${space?.slug}/maven-repos/new`"
-              color="primary"
+              disabled
               size="large"
               variant="tonal"
             >
               New collection
             </v-btn>
-          </div>
-        </div>
+          </template>
+        </SpaceHeader>
 
         <hr
           class="grey-border-color mt-4"

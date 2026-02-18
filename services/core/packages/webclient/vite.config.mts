@@ -85,28 +85,34 @@ export default defineConfig({
   server: {
     port: 3001,
     proxy: {
-      // '/api/v1/': {
-      //   target: 'https://fancyspaces.net',
-      //   changeOrigin: true,
-      //   secure: true,
-      // },
-      // '/javadoc/': {
-      //   target: 'https://fancyspaces.net',
-      //   changeOrigin: true,
-      //   secure: true,
-      // },
+      '/api/v1/': {
+        target: 'https://fancyspaces.net',
+        changeOrigin: true,
+        secure: true,
+      },
+      '/javadoc/': {
+        target: 'https://fancyspaces.net',
+        changeOrigin: true,
+        secure: true,
+      },
       '/storage/api/v1/': {
-        target: 'http://localhost:8090',
+        target: 'https://storage.fancyspaces.net',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/storage/, ''),
       },
-      '/api/v1/': {
-        target: 'http://localhost:8080',
-      },
-      '/javadoc/': {
-        target: 'http://localhost:8080',
-      },
+      // '/storage/api/v1/': {
+      //   target: 'http://localhost:8090',
+      //   changeOrigin: true,
+      //   secure: false,
+      //   rewrite: (path) => path.replace(/^\/storage/, ''),
+      // },
+      // '/api/v1/': {
+      //   target: 'http://localhost:8080',
+      // },
+      // '/javadoc/': {
+      //   target: 'http://localhost:8080',
+      // },
     },
     watch: {
       usePolling: true,

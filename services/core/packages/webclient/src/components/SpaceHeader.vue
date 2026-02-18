@@ -1,12 +1,9 @@
 <script lang="ts" setup>
 
 import type {Space} from "@/api/spaces/types.ts";
-import type {SpaceVersion} from "@/api/versions/types.ts";
 
 const props = defineProps<{
   space?: Space;
-  latestVersion?: SpaceVersion;
-  downloadCount?: number;
 }>();
 
 </script>
@@ -34,37 +31,17 @@ const props = defineProps<{
       </div>
 
       <div class="d-flex mt-2 text-grey-lighten-1">
+        <p class="text-body-2">Creator: {{ space?.creator }}</p>
+        <p class="text-body-2 mx-4">-</p>
         <p class="text-body-2">Created {{ space?.created_at.toLocaleDateString() }}</p>
-        <p class="text-body-2 mx-4">-</p>
-        <p class="text-body-2">Updated {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
-        <p class="text-body-2 mx-4">-</p>
-        <p class="text-body-2">{{ downloadCount }} downloads</p>
+        <slot name="metadata">
+        </slot>
       </div>
     </div>
 
     <div class="d-flex flex-column justify-center">
-      <v-btn
-        v-if="latestVersion?.files.length != 1"
-        :to="`/spaces/${space?.slug}/versions/latest`"
-        class="sidebar__mobile"
-        color="primary"
-        prepend-icon="mdi-download"
-        size="large"
-        variant="tonal"
-      >
-        latest
-      </v-btn>
-      <v-btn
-        v-else
-        :href="latestVersion?.files[0]?.url"
-        class="sidebar__mobile"
-        color="primary"
-        prepend-icon="mdi-download"
-        size="large"
-        variant="tonal"
-      >
-        latest
-      </v-btn>
+      <slot name="quick-actions">
+      </slot>
     </div>
   </div>
 </template>

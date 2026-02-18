@@ -6,6 +6,7 @@ import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/maven/types.ts";
 import {getMavenArtifacts, getMavenRepository} from "@/api/maven/maven.ts";
+import SpaceHeader from "@/components/SpaceHeader.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -90,29 +91,12 @@ function formatSize(sizeInBytes: number): string {
       </v-col>
 
       <v-col>
-        <div class="d-flex justify-space-between">
-          <div class="d-flex flex-column justify-center">
-            <v-img
-              :href="`/spaces/${space?.slug}`"
-              :src="space?.icon_url || '/logo.png'"
-              alt="Space Icon"
-              height="100"
-              max-height="100"
-              max-width="100"
-              min-height="100"
-              min-width="100"
-              width="100"
-            />
-          </div>
-
-          <div class="mx-4 d-flex flex-column justify-space-between flex-grow-1">
-            <div>
-              <h1>{{ space?.title }}</h1>
-              <p class="text-body-1 mt-2">{{ space?.summary }}</p>
-            </div>
-          </div>
-
-          <div class="d-flex flex-column justify-center">
+        <SpaceHeader :space="space">
+          <template #metadata>
+            <p class="text-body-2 mx-4">-</p>
+            <p class="text-body-2">{{ artifact?.versions.length }} versions</p>
+          </template>
+          <template #quick-actions>
             <v-btn
               v-if="isLoggedIn"
               :to="`/spaces/${space?.slug}/maven-repos/new`"
@@ -123,8 +107,8 @@ function formatSize(sizeInBytes: number): string {
             >
               New Repo
             </v-btn>
-          </div>
-        </div>
+          </template>
+        </SpaceHeader>
 
         <hr
           class="grey-border-color mt-4"

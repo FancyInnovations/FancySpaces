@@ -69,11 +69,40 @@ function formatSize(sizeInBytes: number): string {
       </v-col>
 
       <v-col>
-        <SpaceHeader
-          :download-count="spaceDownloadCount"
-          :latest-version="latestVersion"
-          :space="space"
-        />
+        <SpaceHeader :space="space">
+          <template #metadata>
+            <p class="text-body-2 mx-4">-</p>
+            <p class="text-body-2">{{ spaceDownloadCount }} downloads</p>
+
+            <p v-if="latestVersion" class="text-body-2 mx-4">-</p>
+            <p v-if="latestVersion" class="text-body-2">Latest version: {{ latestVersion?.name }}</p>
+          </template>
+
+          <template #quick-actions>
+            <v-btn
+              v-if="latestVersion?.files.length != 1"
+              :to="`/spaces/${space?.slug}/versions/latest`"
+              class="sidebar__mobile"
+              color="primary"
+              prepend-icon="mdi-download"
+              size="large"
+              variant="tonal"
+            >
+              latest
+            </v-btn>
+            <v-btn
+              v-else
+              :href="latestVersion?.files[0]?.url"
+              class="sidebar__mobile"
+              color="primary"
+              prepend-icon="mdi-download"
+              size="large"
+              variant="tonal"
+            >
+              latest
+            </v-btn>
+          </template>
+        </SpaceHeader>
 
         <hr
           class="mt-4 grey-border-color"

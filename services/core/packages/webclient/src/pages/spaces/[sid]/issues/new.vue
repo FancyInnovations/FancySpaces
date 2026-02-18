@@ -5,6 +5,7 @@ import {getSpace} from "@/api/spaces/spaces.ts";
 import {useHead} from "@vueuse/head";
 import {createIssue} from "@/api/issues/issues.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
+import SpaceHeader from "@/components/SpaceHeader.vue";
 
 const router = useRouter();
 
@@ -63,28 +64,18 @@ async function createNewIssue() {
       </v-col>
 
       <v-col>
-        <div class="d-flex justify-space-between">
-          <div class="d-flex flex-column justify-center">
-            <v-img
-              :href="`/spaces/${space?.slug}`"
-              :src="space?.icon_url || '/logo.png'"
-              alt="Space Icon"
-              height="100"
-              max-height="100"
-              max-width="100"
-              min-height="100"
-              min-width="100"
-              width="100"
-            />
-          </div>
-
-          <div class="mx-4 d-flex flex-column justify-space-between flex-grow-1">
-            <div>
-              <h1>{{ space?.title }}</h1>
-              <p class="text-body-1 mt-2">{{ space?.summary }}</p>
-            </div>
-          </div>
-        </div>
+        <SpaceHeader :space="space">
+          <template #quick-actions>
+            <v-btn
+              :to="`/spaces/${space?.slug}/issues`"
+              color="primary"
+              size="large"
+              variant="tonal"
+            >
+              View Issues
+            </v-btn>
+          </template>
+        </SpaceHeader>
 
         <hr
           class="grey-border-color mt-4"

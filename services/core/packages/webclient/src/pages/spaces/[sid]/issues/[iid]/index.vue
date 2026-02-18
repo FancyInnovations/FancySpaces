@@ -6,6 +6,7 @@ import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import type {Issue, IssueComment} from "@/api/issues/types.ts";
 import {deleteIssue, getIssue, updateIssue} from "@/api/issues/issues.ts";
+import SpaceHeader from "@/components/SpaceHeader.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -67,29 +68,19 @@ async function statusChanged(newStatus: string) {
       </v-col>
 
       <v-col>
-        <div class="d-flex justify-space-between">
-          <div class="d-flex flex-column justify-center">
-            <v-img
-              :href="`/spaces/${space?.slug}`"
-              :src="space?.icon_url || '/logo.png'"
-              alt="Space Icon"
-              height="100"
-              max-height="100"
-              max-width="100"
-              min-height="100"
-              min-width="100"
-              width="100"
-            />
-          </div>
+        <SpaceHeader :space="space">
+          <template #quick-actions>
+            <v-btn
+              :to="`/spaces/${space?.slug}/issues`"
+              class="mb-2"
+              color="primary"
+              exact
+              size="large"
+              variant="tonal"
+            >
+              View Issues
+            </v-btn>
 
-          <div class="mx-4 d-flex flex-column justify-space-between flex-grow-1">
-            <div>
-              <h1>{{ space?.title }}</h1>
-              <p class="text-body-1 mt-2">{{ space?.summary }}</p>
-            </div>
-          </div>
-
-          <div class="d-flex flex-column justify-center">
             <v-btn
               v-if="isLoggedIn"
               :to="`/spaces/${space?.slug}/issues/new`"
@@ -99,8 +90,8 @@ async function statusChanged(newStatus: string) {
             >
               New Issue
             </v-btn>
-          </div>
-        </div>
+          </template>
+        </SpaceHeader>
 
         <hr
           class="grey-border-color mt-4"
