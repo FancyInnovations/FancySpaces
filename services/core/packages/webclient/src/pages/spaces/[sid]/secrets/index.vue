@@ -6,6 +6,7 @@ import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import type {SpaceSecret} from "@/api/secrets/types.ts";
 import {deleteSecret, getAllSecrets, getSecretDecrypted} from "@/api/secrets/secrets.ts";
+import SpaceHeader from "@/components/SpaceHeader.vue";
 
 const router = useRouter();
 
@@ -72,39 +73,24 @@ async function deleteSecretReq(secret: SpaceSecret) {
       </v-col>
 
       <v-col>
-        <div class="d-flex justify-space-between">
-          <div class="d-flex flex-column justify-center">
-            <v-img
-              :href="`/spaces/${space?.slug}`"
-              :src="space?.icon_url || '/logo.png'"
-              alt="Space Icon"
-              height="100"
-              max-height="100"
-              max-width="100"
-              min-height="100"
-              min-width="100"
-              width="100"
-            />
-          </div>
+        <SpaceHeader :space="space">
+          <template #metadata>
+            <p class="text-body-2 mx-4">-</p>
+            <p class="text-body-2">{{ secrets?.length || 0 }} secrets</p>
+          </template>
 
-          <div class="mx-4 d-flex flex-column justify-space-between flex-grow-1">
-            <div>
-              <h1>{{ space?.title }}</h1>
-              <p class="text-body-1 mt-2">{{ space?.summary }}</p>
-            </div>
-          </div>
-
-          <div class="d-flex flex-column justify-center">
+          <template #quick-actions>
             <v-btn
               :to="`/spaces/${space?.slug}/secrets/new`"
+              class="sidebar__mobile"
               color="primary"
               size="large"
               variant="tonal"
             >
               New Secret
             </v-btn>
-          </div>
-        </div>
+          </template>
+        </SpaceHeader>
 
         <hr
           class="grey-border-color mt-4"
