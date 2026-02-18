@@ -110,6 +110,7 @@ async function statusChanged(newStatus: string) {
             density="compact"
             hide-details
             max-width="200"
+            min-width="200"
             variant="solo"
             @update:modelValue="statusChanged"
           />

@@ -41,11 +41,7 @@ onMounted(async () => {
       </v-col>
 
       <v-col>
-        <SpaceHeader
-          :download-count="downloadCount"
-          :latest-version="latestVersion"
-          :space="space"
-        />
+        <SpaceHeader :space="space"/>
 
         <hr
           class="mt-4 grey-border-color"
