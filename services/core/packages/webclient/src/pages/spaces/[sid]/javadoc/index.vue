@@ -65,6 +65,10 @@ onMounted(async () => {
 
   repos.value = await getAllMavenRepositories(space.value.id);
 
+  if (repos.value.length > 0) {
+    selectedRepo.value = repos.value[0];
+  }
+
   useHead({
     title: `${space.value.title} javadoc - FancySpaces`,
     meta: [
