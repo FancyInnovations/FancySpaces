@@ -109,6 +109,14 @@ const isLoggedIn = computed(() => {
             title="Storage"
           />
 
+      <v-list-item
+        v-if="space?.secrets_settings.enabled && isLoggedIn"
+        :to="`/spaces/${space?.slug}/secrets`"
+        link
+        prepend-icon="mdi-shield-key-outline"
+        title="Secrets"
+      />
+
       <v-divider />
       <v-list-subheader>External links</v-list-subheader>
 

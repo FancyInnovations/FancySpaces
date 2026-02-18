@@ -16,6 +16,7 @@ export interface Space {
   maven_repository_settings: MavenRepositorySettings;
   storage_settings: StorageSettings;
   analytics_settings: AnalyticsSettings;
+  secrets_settings: SecretsSettings;
 }
 
 export interface SpaceIssueSettings {
@@ -37,6 +38,10 @@ export interface StorageSettings {
 export interface AnalyticsSettings {
   enabled: boolean;
   require_write_key: boolean;
+}
+
+export interface SecretsSettings {
+  enabled: boolean;
 }
 
 export interface SpaceLink {

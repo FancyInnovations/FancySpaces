@@ -61,6 +61,9 @@ onMounted(async () => {
     analytics_settings: {
       enabled: false,
       require_write_key: false
+    },
+    secrets_settings: {
+      enabled: false
     }
   });
   plannedPlugins.value.push({
@@ -91,6 +94,9 @@ onMounted(async () => {
     analytics_settings: {
       enabled: false,
       require_write_key: false
+    },
+    secrets_settings: {
+      enabled: false
     }
   });
   plannedPlugins.value.push({
@@ -121,6 +127,9 @@ onMounted(async () => {
     analytics_settings: {
       enabled: false,
       require_write_key: false
+    },
+    secrets_settings: {
+      enabled: false
     }
   });
   plannedPlugins.value.push({
@@ -151,6 +160,9 @@ onMounted(async () => {
     analytics_settings: {
       enabled: false,
       require_write_key: false
+    },
+    secrets_settings: {
+      enabled: false
     }
   });
 });
