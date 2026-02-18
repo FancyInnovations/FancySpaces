@@ -111,7 +111,7 @@ func (s *Store) UpdateSecret(secret *Secret) error {
 		return err
 	}
 
-	if bytes.Equal(existing.Value, secret.Value) {
+	if !bytes.Equal(existing.Value, secret.Value) {
 		// Generate a new data encryption key and encrypt the value before updating
 
 		dek, err := s.generateDEK()

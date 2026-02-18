@@ -102,7 +102,6 @@ func (h *Handler) handleGetSecrets(w http.ResponseWriter, _ *http.Request, space
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "public, max-age=60") // 1 minute
 	json.NewEncoder(w).Encode(all)
 }
 
@@ -301,11 +300,6 @@ func (h *Handler) handleUpdateSecret(w http.ResponseWriter, r *http.Request, _ *
 	var req UpdateSecretReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
-		return
-	}
-
-	if req.Value == "" {
-		problems.ValidationError("value", "Secret value is required").WriteToHTTP(w)
 		return
 	}
 
