@@ -28,7 +28,7 @@ const closedIssues = computed(() => {
 const filteredIssues = computed(() => {
   return issues.value.filter(issue => {
     const matchesSearch = searchQuery.value ?
-      issue.title.toLowerCase().includes(searchQuery.value.toLowerCase()) :
+      issue.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || issue.id.toLowerCase().includes(searchQuery.value.toLowerCase()) :
       true;
 
     const matchesType = typeFilter.value ? issue.type === typeFilter.value : true;
@@ -56,6 +56,12 @@ onMounted(async () => {
 
   issues.value = await getAllIssues(space.value.id);
 
+  // load displayType from localStorage
+  const savedDisplayType = localStorage.getItem(`issues_display_type`);
+  if (savedDisplayType === 'board' || savedDisplayType === 'list') {
+    displayType.value = savedDisplayType;
+  }
+
   useHead({
     title: `${space.value.title} issues - FancySpaces`,
     meta: [
@@ -65,6 +71,13 @@ onMounted(async () => {
       }
     ]
   });
+});
+
+// Watch for changes in displayType and save to localStorage
+watch(displayType, (newType) => {
+  if (space.value) {
+    localStorage.setItem(`issues_display_type`, newType);
+  }
 });
 
 </script>
