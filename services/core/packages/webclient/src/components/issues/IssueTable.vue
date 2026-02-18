@@ -22,8 +22,8 @@ const tableHeaders = [
   { title: 'Priority', key: 'priority' },
   { title: 'Status', key: 'status' },
   { title: 'Reporter', key: 'reporter' },
-  { title: 'Created at', key: 'created_at', value: (issue: Issue) => issue.created_at.toLocaleString() },
-  { title: 'Updated at', key: 'updated_at', value: (issue: Issue) => issue.updated_at.toLocaleString() },
+  { title: 'Created', key: 'created_at', value: (issue: Issue) => issue.created_at.toLocaleDateString() },
+  { title: 'Updated', key: 'updated_at', value: (issue: Issue) => issue.updated_at.toLocaleDateString() },
 ];
 
 function onRowClick(event: any, { item }: any) {
@@ -47,6 +47,7 @@ function onRowClick(event: any, { item }: any) {
         class="bg-transparent"
         hover
         item-key="id"
+        items-per-page="25"
         @click:row="onRowClick"
       >
         <template v-slot:item.id="{ item }">
