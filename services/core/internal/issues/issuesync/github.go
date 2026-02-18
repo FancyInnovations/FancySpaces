@@ -37,6 +37,10 @@ func (s *Service) syncGitHub(space spaces.Space) error {
 	updatedIssues := 0
 
 	for _, ghIssue := range ghIssues {
+		if ghIssue.IsPullRequest() {
+			continue // skip pull requests
+		}
+
 		var status issues.Status
 		if ghIssue.GetState() == "open" {
 			status = issues.StatusBacklog
