@@ -44,13 +44,36 @@ const renderedHtml = computed(() => {
 
 ::v-deep code, ::v-deep pre {
   background-color: rgba(104, 104, 104, 0.2);
-  padding: 2px 6px;
   border-radius: 8px;
   font-family: 'Courier New', Courier, monospace;
+  overflow-x: auto;
+}
+
+::v-deep code {
+  padding: 2px 4px;
+  border: 1px solid rgba(201, 189, 166, 0.2);
+  font-size: 0.9em;
+}
+
+::v-deep pre code {
+  padding: 0;
+  border: none;
+}
+
+::v-deep pre {
+  padding: 8px;
 }
 
 ::v-deep pre code {
   background-color: transparent;
+}
+
+::v-deep ul, ::v-deep ol{
+  padding-left: 1.5em;
+}
+
+::v-deep li {
+  margin: 0.5em 0;
 }
 
 ::v-deep img {
@@ -88,6 +111,7 @@ const renderedHtml = computed(() => {
 
 ::v-deep blockquote p {
   margin: 0;
+  text-align: start;
 }
 
 </style>
