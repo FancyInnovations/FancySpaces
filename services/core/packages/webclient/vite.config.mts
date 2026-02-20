@@ -95,6 +95,12 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      '/idp/api/v1/': {
+        target: 'https://idp.fancyspaces.net',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/idp/, ''),
+      },
       '/storage/api/v1/': {
         target: 'https://storage.fancyspaces.net',
         changeOrigin: true,
@@ -106,6 +112,12 @@ export default defineConfig({
       //   changeOrigin: true,
       //   secure: false,
       //   rewrite: (path) => path.replace(/^\/storage/, ''),
+      // },
+      // '/idp/api/v1/': {
+      //   target: 'http://localhost:8084',
+      //   changeOrigin: true,
+      //   secure: false,
+      //   rewrite: (path) => path.replace(/^\/idp/, ''),
       // },
       // '/api/v1/': {
       //   target: 'http://localhost:8080',
