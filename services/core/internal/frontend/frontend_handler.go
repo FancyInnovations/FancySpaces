@@ -58,13 +58,15 @@ func NewHandler(cfg Configuration) *Handler {
 
 func (h *Handler) Register(mux *http.ServeMux) {
 	pages := []string{
+		"login",
+		"register",
+		"auth/login",
 		"explore",
 		"explore/minecraft-plugins",
 		"explore/hytale-plugins",
 		"explore/other-projects",
 		"explore/by-other-creators",
 		"tools/markdown-editor",
-		"auth/login",
 		"spaces/{space_id}",
 		"spaces/{space_id}/versions",
 		"spaces/{space_id}/versions/{version_id}",
