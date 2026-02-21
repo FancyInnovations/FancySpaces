@@ -60,8 +60,9 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	pages := []string{
 		"login",
 		"register",
-		"profile",
+		"account-settings",
 		"auth/login", // old login page
+		"dashboard",  // creator dashboard
 		"explore",
 		"explore/minecraft-plugins",
 		"explore/hytale-plugins",

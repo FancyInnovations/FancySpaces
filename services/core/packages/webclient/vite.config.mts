@@ -96,10 +96,9 @@ export default defineConfig({
         secure: true,
       },
       '/idp/api/v1/': {
-        target: 'https://idp.fancyspaces.net',
+        target: 'https://fancyanalytics.net',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/idp/, ''),
       },
       '/storage/api/v1/': {
         target: 'https://storage.fancyspaces.net',

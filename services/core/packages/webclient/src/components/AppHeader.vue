@@ -1,5 +1,15 @@
 <script lang="ts" setup>
 
+import {useUserStore} from "@/stores/user.ts";
+
+const userStore = useUserStore();
+
+const isLoggedIn = ref(false);
+
+onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+});
+
 </script>
 
 <template>
@@ -156,16 +166,38 @@
           <v-list-subheader title="Account"/>
 
           <v-list-item
-            href="/auth/login"
+            v-if="!isLoggedIn"
+            href="/login"
             prepend-icon="mdi-login"
             title="Login"
           />
 
           <v-list-item
-            disabled
-            href="/auth/register"
+            v-if="!isLoggedIn"
+            href="/register"
             prepend-icon="mdi-account-plus"
             title="Register"
+          />
+
+          <v-list-item
+            v-if="isLoggedIn"
+            :href="`/users/${userStore.user?.name}`"
+            prepend-icon="mdi-account-circle-outline"
+            title="My profile"
+          />
+
+          <v-list-item
+            v-if="isLoggedIn"
+            href="/dashboard"
+            prepend-icon="mdi-view-dashboard-outline"
+            title="Creator dashboard"
+          />
+
+          <v-list-item
+            v-if="isLoggedIn"
+            href="/account-settings"
+            prepend-icon="mdi-cog-outline"
+            title="Account settings"
           />
 
           <v-list-subheader title="Links"/>

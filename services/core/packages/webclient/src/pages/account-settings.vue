@@ -35,7 +35,7 @@ const editedPasswordConfirm = ref('');
 
 onMounted(() => {
   useHead({
-    title: `FancySpaces - Profile`,
+    title: `FancySpaces - Account Settings`,
     meta: [
       {
         name: 'description',
@@ -221,7 +221,7 @@ function deleteAccount() {
     <v-container>
         <v-row justify="center">
             <v-col md="5">
-                <h1 class="text-center">Your Profile</h1>
+                <h1 class="text-center">Account Settings</h1>
                 <p class="text-body-1 text-center">Your account exists since {{ activeSince }}.</p>
                 <p class="text-body-1 text-center">Roles: {{ user.roles.join(", ") }}</p>
             </v-col>

@@ -3,10 +3,28 @@ import AppHeader from "@/components/AppHeader.vue";
 import {useConfirmationStore} from "@/stores/confirmation.ts";
 import {useNotificationStore} from "@/stores/notifications.ts";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
+import {useUserStore} from "@/stores/user.ts";
+import {refreshToken} from "@/api/auth/tokens.ts";
 
 const confirmationStore = useConfirmationStore();
-
 const notifications = useNotificationStore();
+const userStore = useUserStore();
+
+userStore.loadTokenFromStorage();
+userStore.loadUserFromStorage();
+
+// Refresh token if it's about to expire
+if (userStore.token) {
+  if (userStore.tokenTTL < 1000 * 60 * 60 * 24) {
+    refreshToken(userStore.token).then(value => {
+      userStore.setToken(value);
+    }).catch(() => {
+      userStore.clearUser();
+      userStore.clearToken();
+      // TODO send error message
+    })
+  }
+}
 
 function confirm() {
   confirmationStore.confirmation.onConfirm();
