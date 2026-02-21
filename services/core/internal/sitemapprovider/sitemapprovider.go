@@ -35,6 +35,16 @@ func (s *Service) GenerateUrls() []sitemapgen.Url {
 			Priority:   "1.0",
 		},
 		sitemapgen.Url{
+			Loc:        baseURL + "/login",
+			ChangeFreq: "weekly",
+			Priority:   "0.9",
+		},
+		sitemapgen.Url{
+			Loc:        baseURL + "/register",
+			ChangeFreq: "weekly",
+			Priority:   "0.9",
+		},
+		sitemapgen.Url{
 			Loc:        baseURL + "/explore",
 			ChangeFreq: "daily",
 			Priority:   "0.9",
