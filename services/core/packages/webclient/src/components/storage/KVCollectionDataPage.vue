@@ -3,6 +3,7 @@
 import type {Space} from "@/api/spaces/types.ts";
 import type {KVValue, SpaceDatabase, SpaceDatabaseCollection} from "@/api/storage/types.ts";
 import {kvGetAll} from "@/api/storage/kv/kv.ts";
+import Card from "@/components/common/Card.vue";
 
 const props = defineProps<{
   space: Space
@@ -34,12 +35,7 @@ onMounted(async () => {
 <template>
   <v-row>
     <v-col>
-      <v-card
-        class="card__border"
-        color="#19120D33"
-        elevation="12"
-        rounded="xl"
-      >
+      <Card>
         <v-card-title class="mt-2">All key-value pairs</v-card-title>
 
         <v-card-text>
@@ -53,7 +49,7 @@ onMounted(async () => {
             </template>
           </v-data-table>
         </v-card-text>
-      </v-card>
+      </Card>
     </v-col>
 
     <v-col md="3">

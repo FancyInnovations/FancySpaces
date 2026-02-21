@@ -8,6 +8,7 @@ import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/mav
 import {getAllMavenArtifacts, getMavenRepository} from "@/api/maven/maven.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useUserStore} from "@/stores/user.ts";
+import Card from "@/components/common/Card.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -44,7 +45,7 @@ const tableHeaders = [
 
 onMounted(async () => {
   isLoggedIn.value = await userStore.isAuthenticated;
-  
+
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
@@ -113,12 +114,10 @@ function onRowClick(event: any, { item }: any) {
 
     <v-row>
       <v-col class="mb-4">
-        <v-card
-          class="card__border bg-transparent"
+        <Card
+          class="bg-transparent"
           color="#150D1950"
-          elevation="12"
           min-width="600"
-          rounded="xl"
         >
           <v-card-text>
             <v-breadcrumbs
@@ -130,18 +129,16 @@ function onRowClick(event: any, { item }: any) {
               color="primary"
             />
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
 
     <v-row>
       <v-col md="7">
-        <v-card
-          class="card__border bg-transparent"
+        <Card
+          class="bg-transparent"
           color="#150D1950"
-          elevation="12"
           min-width="600"
-          rounded="xl"
         >
           <v-card-title class="mt-2">
             Artifacts in {{ repo?.name }}
@@ -157,15 +154,13 @@ function onRowClick(event: any, { item }: any) {
             >
             </v-data-table>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
 
       <v-col md="5">
-        <v-card
-          class="card__border bg-transparent mb-4"
-          color="#19120D33"
+        <Card
+          class="bg-transparent mb-4"
           elevation="6"
-          rounded="xl"
         >
           <v-card-title class="mt-2">How to use</v-card-title>
 
@@ -204,14 +199,12 @@ function onRowClick(event: any, { item }: any) {
               </v-tabs-window-item>
             </v-tabs-window>
           </v-card-text>
-        </v-card>
+        </Card>
 
-        <v-card
+        <Card
           v-if="isLoggedIn"
-          class="card__border bg-transparent"
-          color="#19120D33"
+          class="bg-transparent"
           elevation="6"
-          rounded="xl"
         >
           <v-card-text>
             <v-btn
@@ -233,7 +226,7 @@ function onRowClick(event: any, { item }: any) {
               Delete Repo
             </v-btn>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
   </v-container>

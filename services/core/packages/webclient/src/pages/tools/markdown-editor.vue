@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 
+import Card from "@/components/common/Card.vue";
+
 const rawMarkdown = ref<string>("# Welcome to the Markdown Editor!\n\nType your **Markdown** text in the left pane, and see the _preview_ on the right.\n\n- Easy to use\n- Real-time preview\n- Supports standard Markdown syntax\n\nHappy writing!");
 
 </script>
@@ -29,19 +31,16 @@ const rawMarkdown = ref<string>("# Welcome to the Markdown Editor!\n\nType your 
       </v-col>
 
       <v-col md="6">
-        <v-card
-          class="mb-4 card__border"
-          color="#19120D33"
-          elevation="12"
+        <Card
+          class="mb-4"
           height="100%"
-          rounded="xl"
         >
           <v-card-text>
             <MarkdownRenderer
               :markdown="rawMarkdown"
             />
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
   </v-container>

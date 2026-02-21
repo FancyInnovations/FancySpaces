@@ -8,8 +8,10 @@ import type {SpaceMavenRepository} from "@/api/maven/types.ts";
 import {getAllMavenRepositories} from "@/api/maven/maven.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useUserStore} from "@/stores/user.ts";
+import Card from "@/components/common/Card.vue";
 
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 
 const isLoggedIn = ref(false);
@@ -20,7 +22,7 @@ const repos = ref<SpaceMavenRepository[]>();
 onMounted(async () => {
   isLoggedIn.value = await userStore.isAuthenticated;
 
-  const spaceID = (useRoute().params as any).sid as string;
+  const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
   if (!space.value.maven_repository_settings.enabled) {
@@ -85,12 +87,7 @@ onMounted(async () => {
         :key="repo.name"
         md="3"
       >
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card>
           <v-card-title class="mt-2">
             Repository: {{ repo.name }}
           </v-card-title>
@@ -112,7 +109,7 @@ onMounted(async () => {
               View Repository
             </v-btn>
           </v-card-actions>
-        </v-card>
+        </Card>
       </v-col>
       <v-col
         v-else

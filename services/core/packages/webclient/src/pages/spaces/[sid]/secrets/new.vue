@@ -10,6 +10,7 @@ import {useNotificationStore} from "@/stores/notifications.ts";
 import {useUserStore} from "@/stores/user.ts";
 
 const router = useRouter();
+const route = useRoute();
 const notificationStore = useNotificationStore();
 const userStore = useUserStore();
 
@@ -24,7 +25,7 @@ const description = ref('');
 onMounted(async () => {
   isLoggedIn.value = await userStore.isAuthenticated;
 
-  const spaceID = (useRoute().params as any).sid as string;
+  const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
   if (!isLoggedIn || !space.value.secrets_settings.enabled) {

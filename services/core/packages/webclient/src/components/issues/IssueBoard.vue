@@ -3,6 +3,7 @@
 import type {Issue} from "@/api/issues/types.ts";
 import type {Space} from "@/api/spaces/types.ts";
 import IssueCard from "@/components/issues/IssueCard.vue";
+import Card from "@/components/common/Card.vue";
 
 const plannedIssues = computed(() => {
   return props.issues.filter(issue => issue.status === 'planned');
@@ -27,13 +28,7 @@ const props = defineProps<{
   <v-container>
     <v-row>
       <v-col class="pl-0 pt-0" cols="12" md="4">
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          min-height="600"
-          rounded="xl"
-        >
+        <Card min-height="600">
           <v-card-title class="my-2 ml-2">Planned ({{ plannedIssues.length }})</v-card-title>
 
           <v-card-text>
@@ -46,17 +41,11 @@ const props = defineProps<{
             />
             <p v-else class="text-center my-4">No planned issues.</p>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
 
       <v-col class="pt-0" cols="12" md="4">
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          min-height="600"
-          rounded="xl"
-        >
+        <Card min-height="600">
           <v-card-title class="my-2 ml-2">In Progress ({{ inProgressIssues.length }})</v-card-title>
 
           <v-card-text>
@@ -69,17 +58,11 @@ const props = defineProps<{
             />
             <p v-else class="text-center my-4">No issues in progress.</p>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
 
       <v-col class="pt-0 pr-0" cols="12" md="4">
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          min-height="600"
-          rounded="xl"
-        >
+        <Card min-height="600">
           <v-card-title class="my-2 ml-2">Done ({{ doneIssues.length }})</v-card-title>
 
           <v-card-text>
@@ -92,7 +75,7 @@ const props = defineProps<{
             />
             <p v-else class="text-center my-4">No done issues.</p>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
   </v-container>

@@ -9,11 +9,9 @@ const props = defineProps<{
 </script>
 
 <template>
-  <v-card
-    class="card__border mb-4"
+  <Card
+    class="mb-4"
     color="#4a2f0033"
-    elevation="12"
-    rounded="xl"
   >
     <v-card-text>
       <div class="d-flex justify-space-between">
@@ -52,7 +50,7 @@ const props = defineProps<{
         </div>
       </div>
     </v-card-text>
-  </v-card>
+  </Card>
 </template>
 
 <style scoped>

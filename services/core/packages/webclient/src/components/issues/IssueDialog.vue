@@ -6,6 +6,7 @@ import {useIssueDialogStore} from "@/stores/issue-dialog.ts";
 import type {IssueComment} from "@/api/issues/types.ts";
 import {updateIssue} from "@/api/issues/issues.ts";
 import {useNotificationStore} from "@/stores/notifications.ts";
+import Card from "@/components/common/Card.vue";
 
 const notificationStore = useNotificationStore();
 const issueDialogStore = useIssueDialogStore();
@@ -145,12 +146,10 @@ onMounted(() => {
         />
 
         <div class="issue-dialog-inner pr-4 flex-grow-1">
-          <v-card
-            class="card__border mt-4 bg-transparent"
+          <Card
+            class="mt-4 bg-transparent"
             color="#150D1950"
-            elevation="12"
             min-width="600"
-            rounded="xl"
           >
             <v-card-title class="mt-2">
               Description
@@ -162,14 +161,12 @@ onMounted(() => {
                 class="issue-description"
               />
             </v-card-text>
-          </v-card>
+          </Card>
 
-          <v-card
-            class="card__border my-4 bg-transparent"
+          <Card
+            class="my-4 bg-transparent"
             color="#150D1950"
-            elevation="12"
             min-width="600"
-            rounded="xl"
           >
             <v-card-title class="mt-2">
               Comments ({{ comments?.length }})
@@ -180,13 +177,11 @@ onMounted(() => {
                 No comments yet.
               </p>
               <div v-else class="issue-comments">
-                <v-card
+                <Card
                   v-for="comment in comments"
                   :key="comment.id"
-                  class="card__border bg-transparent mb-3"
-                  color="#19120D33"
+                  class="bg-transparent mb-3"
                   elevation="6"
-                  rounded="xl"
                 >
                   <v-card-text>
                     <div class="d-flex justify-space-between mb-2">
@@ -199,10 +194,10 @@ onMounted(() => {
                       :markdown="comment.content"
                     />
                   </v-card-text>
-                </v-card>
+                </Card>
               </div>
             </v-card-text>
-          </v-card>
+          </Card>
         </div>
       </div>
 

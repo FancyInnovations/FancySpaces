@@ -10,8 +10,10 @@ import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useConfirmationStore} from "@/stores/confirmation.ts";
 import {useNotificationStore} from "@/stores/notifications.ts";
 import {useUserStore} from "@/stores/user.ts";
+import Card from "@/components/common/Card.vue";
 
 const router = useRouter();
+const route = useRoute();
 const confirmationStore = useConfirmationStore();
 const notificationStore = useNotificationStore();
 const userStore = useUserStore();
@@ -31,8 +33,8 @@ const tableHeaders = [
 
 onMounted(async () => {
   isLoggedIn.value = await userStore.isAuthenticated;
-  
-  const spaceID = (useRoute().params as any).sid as string;
+
+  const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
   if (!isLoggedIn || !space.value.secrets_settings.enabled) {
@@ -114,12 +116,7 @@ async function deleteSecretReq(secret: SpaceSecret) {
 
     <v-row>
       <v-col>
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card>
           <v-card-text>
             <v-data-table
               :headers="tableHeaders"
@@ -153,7 +150,7 @@ async function deleteSecretReq(secret: SpaceSecret) {
 
             </v-data-table>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
   </v-container>

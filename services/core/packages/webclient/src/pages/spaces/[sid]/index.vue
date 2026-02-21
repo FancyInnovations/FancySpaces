@@ -7,13 +7,16 @@ import type {SpaceVersion} from "@/api/versions/types.ts";
 import {getLatestVersion} from "@/api/versions/versions.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
+import Card from "@/components/common/Card.vue";
+
+const route = useRoute();
 
 const space = ref<Space>();
 const latestVersion = ref<SpaceVersion>();
 const downloadCount = ref<number>(0);
 
 onMounted(async () => {
-  const spaceID = (useRoute().params as any).sid as string;
+  const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
   latestVersion.value = await getLatestVersion(space.value.id);
   downloadCount.value = await getDownloadCountForSpace(space.value.id);
@@ -76,27 +79,19 @@ onMounted(async () => {
 
     <v-row>
       <v-col md="8">
-        <v-card
-          class="mb-4 card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card class="mb-4">
           <v-card-text>
             <MarkdownRenderer
               :markdown="space?.description || ''"
             />
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
 
       <v-col md="4">
-        <v-card
-          class="mb-4 card__border"
-          color="#19120D33"
-          elevation="12"
+        <Card
+          class="mb-4"
           min-width="300"
-          rounded="xl"
         >
           <v-card-title class="mt-2">Details</v-card-title>
 
@@ -107,14 +102,11 @@ onMounted(async () => {
             <p class="text-body-1"><strong>Updated at:</strong> {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
             <p class="text-body-1"><strong>Created at:</strong> {{ space?.created_at.toLocaleDateString() }}</p>
           </v-card-text>
-        </v-card>
+        </Card>
 
-        <v-card
-          class="mb-4 card__border"
-          color="#19120D33"
-          elevation="12"
+        <Card
+          class="mb-4"
           min-width="300"
-          rounded="xl"
         >
           <v-card-title class="mt-2">Categories</v-card-title>
 
@@ -130,14 +122,11 @@ onMounted(async () => {
               </v-chip>
             </div>
           </v-card-text>
-        </v-card>
+        </Card>
 
-        <v-card
-          class="mb-4 card__border"
-          color="#19120D33"
+        <Card
+          class="mb-4"
           elevation="12"
-          min-width="300"
-          rounded="xl"
         >
           <v-card-title class="mt-2">Links</v-card-title>
 
@@ -157,14 +146,11 @@ onMounted(async () => {
               </a>
             </div>
           </v-card-text>
-        </v-card>
+        </Card>
 
-        <v-card
-          class="mb-4 card__border"
-          color="#19120D33"
-          elevation="12"
+        <Card
+          class="mb-4"
           min-width="300"
-          rounded="xl"
         >
           <v-card-title class="mt-2">Authors</v-card-title>
 
@@ -175,7 +161,7 @@ onMounted(async () => {
               <p class="text-body-1">{{ author.user_id }} ({{ author.role }})</p>
             </div>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
   </v-container>
@@ -189,11 +175,6 @@ onMounted(async () => {
 </style>
 
 <style>
-.card__border {
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 .link--hover:hover {
   text-decoration: underline;
 }

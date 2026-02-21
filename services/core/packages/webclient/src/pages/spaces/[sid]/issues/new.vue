@@ -8,6 +8,7 @@ import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 
 const router = useRouter();
+const route = useRoute();
 
 const space = ref<Space>();
 
@@ -17,7 +18,7 @@ const type = ref('task');
 const priority = ref('medium');
 
 onMounted(async () => {
-  const spaceID = (useRoute().params as any).sid as string;
+  const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
   if (!space.value.issue_settings.enabled) {

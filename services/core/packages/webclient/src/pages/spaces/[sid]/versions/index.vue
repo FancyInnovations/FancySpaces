@@ -8,8 +8,10 @@ import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";
 import {useNotificationStore} from "@/stores/notifications.ts";
+import Card from "@/components/common/Card.vue";
 
 const router = useRouter();
+const route = useRoute();
 const notificationStore = useNotificationStore();
 
 const space = ref<Space>();
@@ -47,7 +49,7 @@ const tableHeaders = [
 ]
 
 onMounted(async () => {
-  const spaceID = (useRoute().params as any).sid as string;
+  const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
   if (!space.value.release_settings.enabled) {
@@ -139,12 +141,7 @@ function copyToClipboard(text: string) {
 
     <v-row>
       <v-col md="6">
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card>
           <v-card-title class="mt-2">
             Filter
           </v-card-title>
@@ -182,18 +179,13 @@ function copyToClipboard(text: string) {
               </v-row>
             </v-container>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
 
     <v-row>
       <v-col>
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card>
           <v-card-text>
             <v-data-table
               :headers="tableHeaders"
@@ -229,7 +221,7 @@ function copyToClipboard(text: string) {
 
             </v-data-table>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
   </v-container>

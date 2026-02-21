@@ -11,8 +11,10 @@ import type {
 } from "@/api/maven/types.ts";
 import {getAllMavenArtifacts, getAllMavenRepositories} from "@/api/maven/maven.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import Card from "@/components/common/Card.vue";
 
 const router = useRouter();
+const route = useRoute();
 
 const space = ref<Space>();
 const repos = ref<SpaceMavenRepository[]>([]);
@@ -55,7 +57,7 @@ watch(selectedArtifact, (newArtifact) => {
 });
 
 onMounted(async () => {
-  const spaceID = (useRoute().params as any).sid as string;
+  const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
   if (!space.value.maven_repository_settings.enabled) {
@@ -101,12 +103,7 @@ onMounted(async () => {
 
     <v-row>
       <v-col>
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card>
           <v-card-title class="mt-2">Select artifact</v-card-title>
 
           <v-card-text class="d-flex flex-wrap align-center">
@@ -145,18 +142,13 @@ onMounted(async () => {
               label="Select version"
             />
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
 
     <v-row>
       <v-col>
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card>
           <v-card-title class="d-flex justify-space-between align-center">
             <span>JavaDoc</span>
 
@@ -182,7 +174,7 @@ onMounted(async () => {
               Please select a repository, artifact, and version to view the javadoc.
             </span>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
   </v-container>

@@ -8,8 +8,10 @@ import {getAllIssues} from "@/api/issues/issues.ts";
 import type {Issue} from "@/api/issues/types.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useUserStore} from "@/stores/user.ts";
+import Card from "@/components/common/Card.vue";
 
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 
 const isLoggedIn = ref(false);
@@ -48,7 +50,7 @@ const statusFilter = ref();
 onMounted(async () => {
   isLoggedIn.value = await userStore.isAuthenticated;
 
-  const spaceID = (useRoute().params as any).sid as string;
+  const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
   if (!space.value.issue_settings.enabled) {
@@ -125,12 +127,7 @@ watch(displayType, (newType) => {
       <v-col
         class="d-flex align-center justify-space-between flex-wrap"
       >
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card>
           <v-card-text>
             <div class="d-flex align-center justify-space-between">
               <div class="d-flex align-center flex-wrap">
@@ -203,14 +200,11 @@ watch(displayType, (newType) => {
               </div>
             </div>
           </v-card-text>
-        </v-card>
+        </Card>
 
-        <v-card
-          class="card__border margin-top flex-grow-1"
-          color="#19120D33"
-          elevation="12"
+        <Card
+          class="margin-top flex-grow-1"
           max-width="fit-content"
-          rounded="xl"
         >
           <v-card-text>
             <v-btn-group
@@ -235,7 +229,7 @@ watch(displayType, (newType) => {
               </v-btn>
             </v-btn-group>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
 

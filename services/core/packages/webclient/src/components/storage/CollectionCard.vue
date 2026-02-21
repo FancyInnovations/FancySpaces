@@ -3,6 +3,7 @@
 import type {Space} from "@/api/spaces/types.ts";
 import {mapEngineKeyToName, type SpaceDatabaseCollection} from "@/api/storage/types.ts";
 import {kvCount, kvSize} from "@/api/storage/kv/kv.ts";
+import Card from "@/components/common/Card.vue";
 
 const props = defineProps<{
   space?: Space,
@@ -35,12 +36,7 @@ function formatSize(sizeInBytes: number): string {
 </script>
 
 <template>
-  <v-card
-    class="card__border"
-    color="#19120D33"
-    elevation="12"
-    rounded="xl"
-  >
+  <Card>
     <v-card-title class="mt-2">
       {{ coll.name }}
     </v-card-title>
@@ -71,7 +67,7 @@ function formatSize(sizeInBytes: number): string {
         Settings
       </v-btn>
     </v-card-actions>
-  </v-card>
+  </Card>
 </template>
 
 <style scoped>

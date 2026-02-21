@@ -10,6 +10,7 @@ import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useConfirmationStore} from "@/stores/confirmation.ts";
 import {useNotificationStore} from "@/stores/notifications.ts";
 import {useUserStore} from "@/stores/user.ts";
+import Card from "@/components/common/Card.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -26,7 +27,7 @@ const comments = ref<IssueComment[]>([]);
 
 onMounted(async () => {
   isLoggedIn.value = await userStore.isAuthenticated;
-  
+
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
@@ -119,34 +120,22 @@ async function statusChanged(newStatus: string) {
 
     <v-row>
       <v-col md="9">
-        <v-card
-          class="card__border mb-4"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card class="mb-4">
           <v-card-title class="my-2">{{ currentIssue?.title }}</v-card-title>
-        </v-card>
+        </Card>
 
-        <v-card
-          class="card__border mb-4"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card class="mb-4">
           <v-card-text class="py-0">
             <MarkdownRenderer
               :markdown="currentIssue?.description"
             />
           </v-card-text>
-        </v-card>
+        </Card>
 
-        <v-card
-          class="card__border bg-transparent"
+        <Card
+          class="bg-transparent"
           color="#150D1950"
-          elevation="12"
           min-width="600"
-          rounded="xl"
         >
           <v-card-title class="mt-2">
             Comments ({{ comments?.length }})
@@ -157,13 +146,11 @@ async function statusChanged(newStatus: string) {
               No comments yet.
             </p>
             <div v-else class="issue-comments">
-              <v-card
+              <Card
                 v-for="comment in comments"
                 :key="comment.id"
-                class="card__border bg-transparent mb-3"
-                color="#19120D33"
+                class="bg-transparent mb-3"
                 elevation="6"
-                rounded="xl"
               >
                 <v-card-text>
                   <div class="d-flex justify-space-between mb-2">
@@ -176,10 +163,10 @@ async function statusChanged(newStatus: string) {
                     :markdown="comment.content"
                   />
                 </v-card-text>
-              </v-card>
+              </Card>
             </div>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
 
       <v-col>
@@ -188,12 +175,10 @@ async function statusChanged(newStatus: string) {
           :issue="currentIssue"
         />
 
-        <v-card
+        <Card
           v-if="isLoggedIn"
-          class="card__border bg-transparent mt-4"
-          color="#19120D33"
+          class="bg-transparent mt-4"
           elevation="6"
-          rounded="xl"
         >
           <v-card-text>
             <v-select
@@ -234,7 +219,7 @@ async function statusChanged(newStatus: string) {
               Delete Issue
             </v-btn>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
   </v-container>

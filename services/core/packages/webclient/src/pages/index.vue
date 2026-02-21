@@ -3,6 +3,7 @@
 import type {Space} from "@/api/spaces/types.ts";
 import {getAllSpaces, getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces.ts";
 import {getAllVersions} from "@/api/versions/versions.ts";
+import Card from "@/components/common/Card.vue";
 
 const spaces = ref<Space[]>();
 
@@ -77,12 +78,8 @@ async function fetchStats() {
 
     <v-row class="mt-16" justify="center">
       <v-col md="2">
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
+        <Card
           height="100%"
-          rounded="xl"
           to="/explore/minecraft-plugins"
         >
           <v-card-title class="mt-2">
@@ -95,16 +92,12 @@ async function fetchStats() {
           <v-card-text>
             FancyNpcs, FancyHolograms and more fancy Minecraft plugins made by FancyInnovations.
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
 
       <v-col md="2">
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
+        <Card
           height="100%"
-          rounded="xl"
           to="/explore/hytale-plugins"
         >
           <v-card-title class="mt-2">
@@ -115,16 +108,12 @@ async function fetchStats() {
           <v-card-text>
             Our first Hytale plugin FancyCore is a must-have for every Hytale server.
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
 
       <v-col md="2">
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
+        <Card
           height="100%"
-          rounded="xl"
           to="/explore/other-projects"
         >
           <v-card-title class="mt-2">
@@ -135,18 +124,15 @@ async function fetchStats() {
           <v-card-text>
             Explore our other exciting projects and tools like FancyAnalytics or FancyVerteiler.
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
 
     <v-row class="mt-10" justify="center">
       <v-col md="6">
-        <v-card
-          class="py-4 card__border"
-          color="#19120D33"
-          elevation="12"
+        <Card
+          class="py-4"
           height="100%"
-          rounded="xl"
         >
           <v-row>
             <v-col class="text-center">
@@ -179,7 +165,7 @@ async function fetchStats() {
               </div>
             </v-col>
           </v-row>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
 

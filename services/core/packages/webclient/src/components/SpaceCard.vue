@@ -4,6 +4,7 @@ import {mapCategoryToDisplayname, type Space} from "@/api/spaces/types.ts";
 import {getLatestVersion} from "@/api/versions/versions.ts";
 import type {SpaceVersion} from "@/api/versions/types.ts";
 import {getDownloadCountForSpace} from "@/api/spaces/spaces.ts";
+import Card from "@/components/common/Card.vue";
 
 const props = defineProps<{
   space?: Space
@@ -25,13 +26,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-card
+  <Card
     :disabled="soon"
-    class="card__border"
-    color="#19120D33"
-    elevation="12"
     min-width="600"
-    rounded="xl"
   >
 
     <v-card-text>
@@ -91,7 +88,7 @@ onMounted(async () => {
         </div>
       </div>
     </v-card-text>
-  </v-card>
+  </Card>
 </template>
 
 <style scoped>

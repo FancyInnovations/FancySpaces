@@ -3,6 +3,7 @@
 import IssueIDChip from "@/components/issues/IssueIDChip.vue";
 import type {Issue} from "@/api/issues/types.ts";
 import type {Space} from "@/api/spaces/types.ts";
+import Card from "@/components/common/Card.vue";
 
 const router = useRouter();
 
@@ -33,11 +34,7 @@ function onRowClick(event: any, { item }: any) {
 </script>
 
 <template>
-  <v-card
-    class="card__border"
-    color="#19120D33"
-    elevation="12"
-    rounded="xl"
+  <Card
     width="100%"
   >
     <v-card-text>
@@ -75,7 +72,7 @@ function onRowClick(event: any, { item }: any) {
         </template>
       </v-data-table>
     </v-card-text>
-  </v-card>
+  </Card>
 </template>
 
 <style scoped>

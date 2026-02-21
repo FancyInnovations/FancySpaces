@@ -7,6 +7,7 @@ import {getDownloadCountForVersion, getLatestVersion, getVersion} from "@/api/ve
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";
+import Card from "@/components/common/Card.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -112,12 +113,7 @@ function formatSize(sizeInBytes: number): string {
 
     <v-row>
       <v-col md="8">
-        <v-card
-          class="card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card>
           <v-card-title class="mt-2">Changelog</v-card-title>
 
           <v-card-text>
@@ -125,14 +121,9 @@ function formatSize(sizeInBytes: number): string {
               :markdown="currentVersion?.changelog"
             />
           </v-card-text>
-        </v-card>
+        </Card>
 
-        <v-card
-          class="mt-4 card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card class="mt-4">
           <v-card-title class="mt-2">Files</v-card-title>
 
           <v-card-text>
@@ -166,16 +157,11 @@ function formatSize(sizeInBytes: number): string {
               </tbody>
             </v-table>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
 
       <v-col>
-        <v-card
-          class="mb-4 card__border"
-          color="#19120D33"
-          elevation="12"
-          rounded="xl"
-        >
+        <Card class="mb-4">
           <v-card-title class="mt-2">Details</v-card-title>
 
           <v-card-text>
@@ -187,7 +173,7 @@ function formatSize(sizeInBytes: number): string {
             <p class="text-body-1"><strong>Released at:</strong> {{ currentVersion?.published_at.toLocaleString() }}</p>
             <p class="text-body-1"><strong>Downloads:</strong> {{ currentVersionDownloadCount }}</p>
           </v-card-text>
-        </v-card>
+        </Card>
       </v-col>
     </v-row>
   </v-container>
