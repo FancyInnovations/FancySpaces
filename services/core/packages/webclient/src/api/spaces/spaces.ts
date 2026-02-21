@@ -27,6 +27,31 @@ export async function getAllSpaces(): Promise<Space[]> {
   return spaces as Space[];
 }
 
+export async function getSpacesOfCreator(creatorID: string): Promise<Space[]> {
+  const userStore = useUserStore();
+
+  const response = await fetch(
+    `/api/v1/spaces?creator=${encodeURIComponent(creatorID)}`,
+    {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `Bearer ${userStore.token}`,
+      }
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch all spaces: " + await response.text());
+  }
+
+  const spaces = await response.json();
+  spaces.forEach((space: Space) => {
+    space.created_at = new Date(space.created_at);
+  });
+
+  return spaces as Space[];
+}
 
 export async function getSpace(id: string): Promise<Space> {
   const userStore = useUserStore();
