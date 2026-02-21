@@ -21,7 +21,7 @@ const collection = ref<SpaceDatabaseCollection>();
 
 onMounted(async () => {
   isLoggedIn.value = await userStore.isAuthenticated;
-  
+
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
@@ -96,8 +96,5 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.grey-border-color {
-  border-color: rgba(0, 0, 0, 0.8);
-}
 
 </style>

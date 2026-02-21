@@ -157,10 +157,6 @@ async function deleteSecretReq(secret: SpaceSecret) {
 </template>
 
 <style scoped>
-.grey-border-color {
-  border-color: rgba(0, 0, 0, 0.8);
-}
-
 table, tr, td, thead, tbody {
   background: transparent;
   border-collapse: collapse;

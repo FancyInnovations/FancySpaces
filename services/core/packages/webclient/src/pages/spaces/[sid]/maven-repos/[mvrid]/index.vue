@@ -233,10 +233,6 @@ function onRowClick(event: any, { item }: any) {
 </template>
 
 <style scoped>
-.grey-border-color {
-  border-color: rgba(0, 0, 0, 0.8);
-}
-
 pre {
   overflow-x: auto;
 }

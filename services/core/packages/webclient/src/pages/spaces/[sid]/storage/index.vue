@@ -307,8 +307,5 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.grey-border-color {
-  border-color: rgba(0, 0, 0, 0.8);
-}
 
 </style>

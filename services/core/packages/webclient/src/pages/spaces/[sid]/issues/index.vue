@@ -251,10 +251,6 @@ watch(displayType, (newType) => {
 </template>
 
 <style scoped>
-.grey-border-color {
-  border-color: rgba(0, 0, 0, 0.8);
-}
-
 @media (max-width: 1919px) {
   .margin-top {
     margin-top: 16px !important;
