@@ -7,9 +7,11 @@ import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {getSecret, updateSecret} from "@/api/secrets/secrets.ts";
 import type {SpaceSecret} from "@/api/secrets/types.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useNotificationStore} from "@/stores/notifications.ts";
 
 const router = useRouter();
 const route = useRoute();
+const notificationStore = useNotificationStore();
 
 const isLoggedIn = computed(() => {
   return localStorage.getItem("fs_api_key") !== null;
@@ -64,7 +66,7 @@ async function updateSecretReq() {
   newValue.value = '';
   newDescription.value = '';
 
-  window.alert("Secret updated successfully!");
+  notificationStore.info("Secret updated successfully");
 
   await router.push(`/spaces/${space.value?.slug}/secrets`);
 }

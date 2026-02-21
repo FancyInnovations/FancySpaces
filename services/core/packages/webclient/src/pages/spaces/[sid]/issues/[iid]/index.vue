@@ -7,9 +7,13 @@ import {useHead} from "@vueuse/head";
 import type {Issue, IssueComment} from "@/api/issues/types.ts";
 import {deleteIssue, getIssue, updateIssue} from "@/api/issues/issues.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useConfirmationStore} from "@/stores/confirmation.ts";
+import {useNotificationStore} from "@/stores/notifications.ts";
 
 const route = useRoute();
 const router = useRouter();
+const confirmationStore = useConfirmationStore();
+const notificationStore = useNotificationStore();
 
 const isLoggedIn = computed(() => {
   return localStorage.getItem("fs_api_key") !== null;
@@ -46,18 +50,26 @@ onMounted(async () => {
 async function deleteIssueReq() {
   if (!space.value || !currentIssue.value) return;
 
-  if (!confirm("Are you sure you want to delete this issue? This action cannot be undone.")) {
-    return;
-  }
+  confirmationStore.confirmation = {
+    shown: true,
+    persistent: true,
+    title: "Delete Issue",
+    text: "Are you sure you want to delete this issue? This action cannot be undone.",
+    yesText: "Delete",
+    onConfirm: async () => {
+      if (!space.value || !currentIssue.value) return;
 
-  await deleteIssue(space.value!.id, currentIssue.value.id);
-
-  await router.push(`/spaces/${space.value?.slug}/issues`);
+      await deleteIssue(space.value!.id, currentIssue.value.id);
+      notificationStore.info("Issue deleted successfully");
+      await router.push(`/spaces/${space.value?.slug}/issues`);
+    }
+  };
 }
 
 async function statusChanged(newStatus: string) {
   currentIssue.value!.status = newStatus as any;
   await updateIssue(currentIssue.value!.space, currentIssue.value!.id, currentIssue.value!);
+  notificationStore.info("Issue status updated successfully");
 }
 
 </script>

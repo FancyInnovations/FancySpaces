@@ -1,15 +1,19 @@
 <script lang="ts" setup>
 
+import {useNotificationStore} from "@/stores/notifications.ts";
+
+const notificationStore = useNotificationStore();
+
 const apiKey = ref('');
 
 function login() {
   localStorage.setItem('fs_api_key', apiKey.value);
-  window.alert('Logged in!');
+  notificationStore.info('Logged in successfully!');
 }
 
 function logout() {
   localStorage.removeItem('fs_api_key');
-  window.alert('Logged out!');
+  notificationStore.info('Logged out successfully!');
 }
 </script>
 

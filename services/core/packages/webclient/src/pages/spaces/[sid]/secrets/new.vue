@@ -6,8 +6,10 @@ import {useHead} from "@vueuse/head";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {createSecret} from "@/api/secrets/secrets.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useNotificationStore} from "@/stores/notifications.ts";
 
 const router = useRouter();
+const notificationStore = useNotificationStore();
 
 const isLoggedIn = computed(() => {
   return localStorage.getItem("fs_api_key") !== null;
@@ -46,7 +48,7 @@ async function createNewSecret() {
   value.value = '';
   description.value = '';
 
-  window.alert("Secret created successfully!");
+  notificationStore.info("Secret created successfully");
 
   await router.push(`/spaces/${space.value?.slug}/secrets`);
 }

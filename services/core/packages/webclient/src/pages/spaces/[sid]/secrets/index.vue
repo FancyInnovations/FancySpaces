@@ -7,8 +7,12 @@ import {useHead} from "@vueuse/head";
 import type {SpaceSecret} from "@/api/secrets/types.ts";
 import {deleteSecret, getAllSecrets, getSecretDecrypted} from "@/api/secrets/secrets.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useConfirmationStore} from "@/stores/confirmation.ts";
+import {useNotificationStore} from "@/stores/notifications.ts";
 
 const router = useRouter();
+const confirmationStore = useConfirmationStore();
+const notificationStore = useNotificationStore();
 
 const space = ref<Space>();
 const secrets = ref<SpaceSecret[]>();
@@ -51,14 +55,22 @@ async function copySecretToClipboard(secret: SpaceSecret) {
   const decryptedValue = await getSecretDecrypted(secret.space_id, secret.key);
 
   navigator.clipboard.writeText(decryptedValue);
-  window.alert("Copied secret to clipboard!");
+  notificationStore.info("Secret value copied to clipboard");
 }
 
 async function deleteSecretReq(secret: SpaceSecret) {
-  if (confirm(`Are you sure you want to delete the secret "${secret.key}"? This action cannot be undone.`)) {
-    await deleteSecret(secret.space_id, secret.key);
-    secrets.value = secrets.value?.filter(s => s.key !== secret.key);
-  }
+  confirmationStore.confirmation = {
+    shown: true,
+    persistent: true,
+    title: "Delete Secret",
+    text: `Are you sure you want to delete the secret "${secret.key}"? This action cannot be undone.`,
+    yesText: "Delete",
+    onConfirm: async () => {
+      await deleteSecret(secret.space_id, secret.key);
+      secrets.value = secrets.value?.filter(s => s.key !== secret.key);
+      notificationStore.info("Secret deleted successfully");
+    }
+  };
 }
 
 </script>

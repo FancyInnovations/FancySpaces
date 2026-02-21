@@ -7,8 +7,10 @@ import {getAllVersions, getLatestVersion} from "@/api/versions/versions.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";
+import {useNotificationStore} from "@/stores/notifications.ts";
 
 const router = useRouter();
+const notificationStore = useNotificationStore();
 
 const space = ref<Space>();
 const latestVersion = ref<SpaceVersion>();
@@ -76,7 +78,7 @@ function onRowClick(event: any, { item }: any) {
 
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
-  window.alert("Copied to clipboard!");
+  notificationStore.info("Copied to clipboard");
 }
 
 </script>

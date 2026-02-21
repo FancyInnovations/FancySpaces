@@ -5,7 +5,9 @@ import IssueDialogSidebar from "@/components/issues/IssueDialogSidebar.vue";
 import {useIssueDialogStore} from "@/stores/issue-dialog.ts";
 import type {IssueComment} from "@/api/issues/types.ts";
 import {updateIssue} from "@/api/issues/issues.ts";
+import {useNotificationStore} from "@/stores/notifications.ts";
 
+const notificationStore = useNotificationStore();
 const issueDialogStore = useIssueDialogStore();
 const isLoggedIn = computed(() => {
   return localStorage.getItem("fs_api_key") !== null;
@@ -62,14 +64,14 @@ function copyLink() {
   const issueLink = `${window.location.origin}/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`;
   navigator.clipboard.writeText(issueLink);
 
-  window.alert('Issue link copied to clipboard!');
+  notificationStore.info("Issue link copied to clipboard!");
 }
 
 function copyID() {
   const issueID = issueDialogStore.issue?.id;
   if (issueID) {
     navigator.clipboard.writeText(issueID);
-    window.alert('Issue ID copied to clipboard!');
+    notificationStore.info("Issue ID copied to clipboard!");
   }
 }
 

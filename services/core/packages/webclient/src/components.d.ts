@@ -14,6 +14,7 @@ declare module 'vue' {
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     AppHeader: typeof import('./components/AppHeader.vue')['default']
     CollectionCard: typeof import('./components/storage/CollectionCard.vue')['default']
+    ConfirmationDialog: typeof import('./components/common/ConfirmationDialog.vue')['default']
     Dialog: typeof import('./components/common/Dialog.vue')['default']
     IssueBoard: typeof import('./components/issues/IssueBoard.vue')['default']
     IssueCard: typeof import('./components/issues/IssueCard.vue')['default']
