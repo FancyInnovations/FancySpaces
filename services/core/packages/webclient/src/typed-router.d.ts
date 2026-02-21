@@ -72,6 +72,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/login': RouteRecordInfo<
+      '/login',
+      '/login',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/spaces/[sid]/': RouteRecordInfo<
       '/spaces/[sid]/',
       '/spaces/:sid',
@@ -257,6 +264,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/explore/other-projects.vue': {
       routes:
         | '/explore/other-projects'
+      views:
+        | never
+    }
+    'src/pages/login.vue': {
+      routes:
+        | '/login'
       views:
         | never
     }
