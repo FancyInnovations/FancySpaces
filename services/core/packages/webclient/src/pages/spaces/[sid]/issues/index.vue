@@ -7,12 +7,12 @@ import {useHead} from "@vueuse/head";
 import {getAllIssues} from "@/api/issues/issues.ts";
 import type {Issue} from "@/api/issues/types.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useUserStore} from "@/stores/user.ts";
 
 const router = useRouter();
+const userStore = useUserStore();
 
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
-});
+const isLoggedIn = ref(false);
 
 const space = ref<Space>();
 const issues = ref<Issue[]>([]);
@@ -46,6 +46,8 @@ const priorityFilter = ref();
 const statusFilter = ref();
 
 onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
 

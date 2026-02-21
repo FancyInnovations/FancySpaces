@@ -7,12 +7,12 @@ import {useHead} from "@vueuse/head";
 import {type SpaceDatabaseCollection} from "@/api/storage/types.ts";
 import CollectionCard from "@/components/storage/CollectionCard.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useUserStore} from "@/stores/user.ts";
 
 const router = useRouter();
+const userStore = useUserStore();
 
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
-});
+const isLoggedIn = ref(false);
 
 const space = ref<Space|undefined>();
 const collections = ref<SpaceDatabaseCollection[]>();
@@ -30,6 +30,8 @@ const collectionsByEngine = computed(() => {
 });
 
 onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
 

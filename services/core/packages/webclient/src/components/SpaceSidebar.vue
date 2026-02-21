@@ -6,8 +6,10 @@ const props = defineProps<{
   space?: Space
 }>();
 
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
+const isLoggedIn = ref(false);
+
+onMounted(() => {
+  isLoggedIn.value = localStorage.getItem("fs_api_key") !== null;
 });
 
 </script>

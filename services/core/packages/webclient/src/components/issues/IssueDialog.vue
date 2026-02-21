@@ -9,9 +9,7 @@ import {useNotificationStore} from "@/stores/notifications.ts";
 
 const notificationStore = useNotificationStore();
 const issueDialogStore = useIssueDialogStore();
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
-});
+const isLoggedIn = ref(false);
 
 const comments = computed<IssueComment[]>(() => {
   // return [
@@ -82,6 +80,10 @@ async function statusChanged(newStatus: string) {
   newIssue.status = newStatus as any;
   await updateIssue(newIssue.space, newIssue.id, newIssue);
 }
+
+onMounted(() => {
+  isLoggedIn.value = localStorage.getItem("fs_api_key") !== null;
+});
 
 </script>
 

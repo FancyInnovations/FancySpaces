@@ -7,17 +7,19 @@ import {useHead} from "@vueuse/head";
 import type {SpaceMavenRepository} from "@/api/maven/types.ts";
 import {getAllMavenRepositories} from "@/api/maven/maven.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useUserStore} from "@/stores/user.ts";
 
 const router = useRouter();
+const userStore = useUserStore();
 
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
-});
+const isLoggedIn = ref(false);
 
 const space = ref<Space>();
 const repos = ref<SpaceMavenRepository[]>();
 
 onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
 

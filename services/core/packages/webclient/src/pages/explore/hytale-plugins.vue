@@ -3,6 +3,11 @@
 import type {Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
 import {useHead} from "@vueuse/head";
+import {useUserStore} from "@/stores/user.ts";
+
+const userStore = useUserStore();
+
+const isLoggedIn = ref(false);
 
 useHead({
   title: 'Explore Hytale Plugins - FancySpaces',
@@ -18,10 +23,12 @@ const spaces = ref<Space[]>();
 const plannedPlugins = ref<Space[]>();
 
 onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+
   spaces.value = [];
   spaces.value.push(await getSpace("fc"));
 
-  if (localStorage.getItem("fs_api_key")) {
+  if (isLoggedIn.value) {
     spaces.value.push(await getSpace("fancyplots"));
     spaces.value.push(await getSpace("fancyconnect"));
     spaces.value.push(await getSpace("fancyaudits"));

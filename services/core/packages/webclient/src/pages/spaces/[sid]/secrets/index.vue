@@ -9,17 +9,17 @@ import {deleteSecret, getAllSecrets, getSecretDecrypted} from "@/api/secrets/sec
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useConfirmationStore} from "@/stores/confirmation.ts";
 import {useNotificationStore} from "@/stores/notifications.ts";
+import {useUserStore} from "@/stores/user.ts";
 
 const router = useRouter();
 const confirmationStore = useConfirmationStore();
 const notificationStore = useNotificationStore();
+const userStore = useUserStore();
 
 const space = ref<Space>();
 const secrets = ref<SpaceSecret[]>();
 
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
-});
+const isLoggedIn = ref(false);
 
 const tableHeaders = [
   { title: 'Key', key: 'key', sortable: true },
@@ -30,6 +30,8 @@ const tableHeaders = [
 ]
 
 onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+  
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
 

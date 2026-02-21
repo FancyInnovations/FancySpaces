@@ -7,13 +7,13 @@ import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {createSecret} from "@/api/secrets/secrets.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useNotificationStore} from "@/stores/notifications.ts";
+import {useUserStore} from "@/stores/user.ts";
 
 const router = useRouter();
 const notificationStore = useNotificationStore();
+const userStore = useUserStore();
 
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
-});
+const isLoggedIn = ref(false);
 
 const space = ref<Space>();
 
@@ -22,6 +22,8 @@ const value = ref('');
 const description = ref('');
 
 onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+
   const spaceID = (useRoute().params as any).sid as string;
   space.value = await getSpace(spaceID);
 

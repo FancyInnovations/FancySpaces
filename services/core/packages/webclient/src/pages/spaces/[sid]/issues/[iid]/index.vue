@@ -9,15 +9,15 @@ import {deleteIssue, getIssue, updateIssue} from "@/api/issues/issues.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useConfirmationStore} from "@/stores/confirmation.ts";
 import {useNotificationStore} from "@/stores/notifications.ts";
+import {useUserStore} from "@/stores/user.ts";
 
 const route = useRoute();
 const router = useRouter();
 const confirmationStore = useConfirmationStore();
 const notificationStore = useNotificationStore();
+const userStore = useUserStore();
 
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
-});
+const isLoggedIn = ref(false);
 
 const space = ref<Space>();
 
@@ -25,6 +25,8 @@ const currentIssue = ref<Issue>();
 const comments = ref<IssueComment[]>([]);
 
 onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+  
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 

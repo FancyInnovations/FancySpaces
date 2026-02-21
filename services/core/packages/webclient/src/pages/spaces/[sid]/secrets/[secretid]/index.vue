@@ -8,14 +8,14 @@ import {getSecret, updateSecret} from "@/api/secrets/secrets.ts";
 import type {SpaceSecret} from "@/api/secrets/types.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useNotificationStore} from "@/stores/notifications.ts";
+import {useUserStore} from "@/stores/user.ts";
 
 const router = useRouter();
 const route = useRoute();
+const userStore = useUserStore();
 const notificationStore = useNotificationStore();
 
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
-});
+const isLoggedIn = ref(false);
 
 const space = ref<Space>();
 const secret = ref<SpaceSecret>();
@@ -31,6 +31,8 @@ const newValue = ref('');
 const newDescription = ref('');
 
 onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 

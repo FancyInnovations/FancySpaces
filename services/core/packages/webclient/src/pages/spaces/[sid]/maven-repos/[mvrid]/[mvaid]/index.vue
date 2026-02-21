@@ -7,13 +7,13 @@ import {useHead} from "@vueuse/head";
 import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/maven/types.ts";
 import {getMavenArtifacts, getMavenRepository} from "@/api/maven/maven.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useUserStore} from "@/stores/user.ts";
 
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore();
 
-const isLoggedIn = computed(() => {
-  return localStorage.getItem("fs_api_key") !== null;
-});
+const isLoggedIn = ref(false);
 
 const space = ref<Space>();
 
@@ -33,6 +33,8 @@ function toggleExpand(key: any) {
 const howToUseTab = ref("build.gradle.kts");
 
 onMounted(async () => {
+  isLoggedIn.value = await userStore.isAuthenticated;
+  
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
