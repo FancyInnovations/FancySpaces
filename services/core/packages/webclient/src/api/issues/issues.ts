@@ -1,13 +1,16 @@
 import type {Issue} from "@/api/issues/types.ts";
+import {useUserStore} from "@/stores/user.ts";
 
 export async function getIssue(spaceId: string, issueId: string): Promise<Issue> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues/${issueId}`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -27,13 +30,15 @@ export async function getIssue(spaceId: string, issueId: string): Promise<Issue>
 }
 
 export async function getAllIssues(spaceId: string): Promise<Issue[]> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -55,6 +60,11 @@ export async function getAllIssues(spaceId: string): Promise<Issue[]> {
 }
 
 export async function createIssue(spaceId: string, issueData: Partial<Issue>): Promise<Issue> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues`,
     {
@@ -62,7 +72,7 @@ export async function createIssue(spaceId: string, issueData: Partial<Issue>): P
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       },
       body: JSON.stringify(issueData),
     },
@@ -83,6 +93,11 @@ export async function createIssue(spaceId: string, issueData: Partial<Issue>): P
 }
 
 export async function updateIssue(spaceId: string, issueID: string, issueData: Partial<Issue>): Promise<Issue> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues/${issueID}`,
     {
@@ -90,7 +105,7 @@ export async function updateIssue(spaceId: string, issueID: string, issueData: P
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       },
       body: JSON.stringify(issueData),
     },
@@ -111,12 +126,17 @@ export async function updateIssue(spaceId: string, issueID: string, issueData: P
 }
 
 export async function deleteIssue(spaceId: string, issueID: string): Promise<void> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues/${issueID}`,
     {
       method: "DELETE",
       headers: {
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );

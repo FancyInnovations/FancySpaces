@@ -1,13 +1,16 @@
 import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/maven/types.ts";
+import {useUserStore} from "@/stores/user.ts";
 
 export async function getAllMavenRepositories(spaceId: string): Promise<SpaceMavenRepository[]> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/maven-repositories`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -25,13 +28,15 @@ export async function getAllMavenRepositories(spaceId: string): Promise<SpaceMav
 }
 
 export async function getMavenRepository(spaceId: string, repoName: string): Promise<SpaceMavenRepository> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/maven-repositories/${repoName}`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -47,13 +52,15 @@ export async function getMavenRepository(spaceId: string, repoName: string): Pro
 }
 
 export async function getAllMavenArtifacts(spaceId: string, repoName: string): Promise<SpaceMavenRepositoryArtifact[]> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/maven-repositories/${repoName}/artifacts`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -77,13 +84,15 @@ export async function getAllMavenArtifacts(spaceId: string, repoName: string): P
 }
 
 export async function getMavenArtifacts(spaceId: string, repoName: string, groupArtifactID: string): Promise<SpaceMavenRepositoryArtifact> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/maven-repositories/${repoName}/artifacts/${encodeURIComponent(groupArtifactID)}`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );

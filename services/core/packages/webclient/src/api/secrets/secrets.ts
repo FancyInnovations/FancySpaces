@@ -1,13 +1,19 @@
 import type {SpaceSecret} from "@/api/secrets/types.ts";
+import {useUserStore} from "@/stores/user.ts";
 
 export async function getSecret(spaceId: string, key: string): Promise<SpaceSecret> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/secrets/${key}`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -24,13 +30,18 @@ export async function getSecret(spaceId: string, key: string): Promise<SpaceSecr
 }
 
 export async function getSecretDecrypted(spaceId: string, key: string): Promise<string> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/secrets/${key}/decrypted`,
     {
       method: "GET",
       headers: {
         "Accept": "text/plain",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -43,13 +54,18 @@ export async function getSecretDecrypted(spaceId: string, key: string): Promise<
 }
 
 export async function getAllSecrets(spaceId: string): Promise<SpaceSecret[]> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/secrets`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -67,13 +83,18 @@ export async function getAllSecrets(spaceId: string): Promise<SpaceSecret[]> {
 }
 
 export async function createSecret(spaceId: string, key: string, value: string, description: string): Promise<void> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/secrets`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       },
       body: JSON.stringify({
         key: key,
@@ -89,13 +110,18 @@ export async function createSecret(spaceId: string, key: string, value: string, 
 }
 
 export async function updateSecret(spaceId: string, key: string, value: string, description: string): Promise<void> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/secrets/${key}`,
     {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       },
       body: JSON.stringify({
         value: value,
@@ -110,12 +136,17 @@ export async function updateSecret(spaceId: string, key: string, value: string, 
 }
 
 export async function deleteSecret(spaceId: string, key: string): Promise<void> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/secrets/${key}`,
     {
       method: "DELETE",
       headers: {
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );

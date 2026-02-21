@@ -1,13 +1,16 @@
 import type {Space} from "@/api/spaces/types.ts";
+import {useUserStore} from "@/stores/user.ts";
 
 export async function getAllSpaces(): Promise<Space[]> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -26,13 +29,15 @@ export async function getAllSpaces(): Promise<Space[]> {
 
 
 export async function getSpace(id: string): Promise<Space> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${id}`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -48,12 +53,14 @@ export async function getSpace(id: string): Promise<Space> {
 }
 
 export async function getDownloadCountForSpace(spaceId: string): Promise<number> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/downloads`,
     {
       method: "GET",
       headers: {
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -66,12 +73,14 @@ export async function getDownloadCountForSpace(spaceId: string): Promise<number>
 }
 
 export async function getDownloadCountForSpacePerVersion(spaceId: string): Promise<Record<string, number>> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/downloads`,
     {
       method: "GET",
       headers: {
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );

@@ -1,13 +1,16 @@
 import type {SpaceVersion} from "@/api/versions/types.ts";
+import {useUserStore} from "@/stores/user.ts";
 
 export async function getVersion(spaceId: string, versionId: string): Promise<SpaceVersion> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/versions/${versionId}`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -27,13 +30,15 @@ export async function getLatestVersion(spaceId: string): Promise<SpaceVersion> {
 }
 
 export async function getAllVersions(spaceId: string): Promise<SpaceVersion[]> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/versions`,
     {
       method: "GET",
       headers: {
         "Accept": "application/json",
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
@@ -51,12 +56,14 @@ export async function getAllVersions(spaceId: string): Promise<SpaceVersion[]> {
 }
 
 export async function getDownloadCountForVersion(spaceId: string, versionId: string): Promise<number> {
+  const userStore = useUserStore();
+
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/versions/${versionId}/downloads`,
     {
       method: "GET",
       headers: {
-        "Authorization": localStorage.getItem("fs_api_key") || "",
+        "Authorization": `Bearer ${userStore.token}`,
       }
     },
   );
