@@ -226,6 +226,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/users/[userid]/': RouteRecordInfo<
+      '/users/[userid]/',
+      '/users/:userid',
+      { userid: ParamValue<true> },
+      { userid: ParamValue<false> },
+      | never
+    >,
   }
 
   /**
@@ -410,6 +417,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/tools/markdown-editor.vue': {
       routes:
         | '/tools/markdown-editor'
+      views:
+        | never
+    }
+    'src/pages/users/[userid]/index.vue': {
+      routes:
+        | '/users/[userid]/'
       views:
         | never
     }

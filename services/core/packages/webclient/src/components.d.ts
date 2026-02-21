@@ -35,6 +35,7 @@ declare module 'vue' {
     SpaceHeader: typeof import('./components/SpaceHeader.vue')['default']
     SpaceSidebar: typeof import('./components/SpaceSidebar.vue')['default']
     UserChip: typeof import('./components/UserChip.vue')['default']
+    UserHeader: typeof import('./components/users/UserHeader.vue')['default']
     VersionChip: typeof import('./components/VersionChip.vue')['default']
   }
 }
