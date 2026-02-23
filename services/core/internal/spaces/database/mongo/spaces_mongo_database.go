@@ -63,6 +63,32 @@ func (db *DB) GetBySlug(slug string) (*spaces.Space, error) {
 	return &sp, nil
 }
 
+func (db *DB) GetForUser(userID string) ([]spaces.Space, error) {
+	filter := bson.D{
+		{"$or", bson.A{
+			bson.D{{"creator", userID}},
+			bson.D{{"members.user_id", userID}},
+		}},
+	}
+
+	cur, err := db.coll.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(context.Background())
+
+	var spacesList []spaces.Space
+	for cur.Next(context.Background()) {
+		var sp spaces.Space
+		if err := cur.Decode(&sp); err != nil {
+			return nil, err
+		}
+		spacesList = append(spacesList, sp)
+	}
+
+	return spacesList, nil
+}
+
 func (db *DB) GetAll() ([]spaces.Space, error) {
 	cur, err := db.coll.Find(context.Background(), bson.D{})
 	if err != nil {

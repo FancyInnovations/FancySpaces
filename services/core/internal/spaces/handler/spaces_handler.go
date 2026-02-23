@@ -94,7 +94,16 @@ func (h *Handler) handleGetSpaces(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	all, err := h.store.GetAll()
+	forUser := r.URL.Query().Get("user")
+
+	var all []spaces.Space
+	var err error
+	if forUser != "" {
+		all, err = h.store.GetForUser(forUser)
+	} else {
+		all, err = h.store.GetAll()
+	}
+
 	if err != nil {
 		slog.Error("Failed to get spaces", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
@@ -113,7 +122,7 @@ func (h *Handler) handleGetSpaces(w http.ResponseWriter, r *http.Request) {
 		if u == nil || !u.Verified || !u.IsActive {
 			continue
 		}
-		if s.IsMember(u) {
+		if s.IsMember(u) || u.IsAdmin() {
 			res = append(res, s)
 		}
 	}
