@@ -89,6 +89,27 @@ func (db *DB) GetForUser(userID string) ([]spaces.Space, error) {
 	return spacesList, nil
 }
 
+func (db *DB) GetForCategory(category string) ([]spaces.Space, error) {
+	filter := bson.D{{"categories", bson.D{{"$in", bson.A{category}}}}}
+
+	cur, err := db.coll.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(context.Background())
+
+	var spacesList []spaces.Space
+	for cur.Next(context.Background()) {
+		var sp spaces.Space
+		if err := cur.Decode(&sp); err != nil {
+			return nil, err
+		}
+		spacesList = append(spacesList, sp)
+	}
+
+	return spacesList, nil
+}
+
 func (db *DB) GetAll() ([]spaces.Space, error) {
 	cur, err := db.coll.Find(context.Background(), bson.D{})
 	if err != nil {

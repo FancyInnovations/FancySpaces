@@ -67,6 +67,23 @@ func (db *DB) GetForUser(userID string) ([]spaces.Space, error) {
 	return result, nil
 }
 
+func (db *DB) GetForCategory(category string) ([]spaces.Space, error) {
+	db.Mu.Lock()
+	defer db.Mu.Unlock()
+
+	var result []spaces.Space
+	for _, s := range db.Items {
+		for _, c := range s.Categories {
+			if string(c) == category {
+				result = append(result, s)
+				break
+			}
+		}
+	}
+
+	return result, nil
+}
+
 func (db *DB) GetAll() ([]spaces.Space, error) {
 	db.Mu.Lock()
 	defer db.Mu.Unlock()

@@ -94,20 +94,44 @@ func (h *Handler) handleGetSpaces(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	forUser := r.URL.Query().Get("user")
+	userFilter := r.URL.Query().Get("user")
+	categoryFilter := r.URL.Query().Get("category")
+	hasFilter := userFilter != "" || categoryFilter != ""
 
-	var all []spaces.Space
-	var err error
-	if forUser != "" {
-		all, err = h.store.GetForUser(forUser)
+	all := make(map[string]spaces.Space)
+	if hasFilter {
+		if userFilter != "" {
+			userSpaces, err := h.store.GetForUser(userFilter)
+			if err != nil {
+				slog.Error("Failed to get spaces for user", "user", userFilter, sloki.WrapError(err))
+				problems.InternalServerError("").WriteToHTTP(w)
+				return
+			}
+			for _, s := range userSpaces {
+				all[s.ID] = s
+			}
+		}
+		if categoryFilter != "" {
+			categorySpaces, err := h.store.GetForCategory(categoryFilter)
+			if err != nil {
+				slog.Error("Failed to get spaces for category", "category", categoryFilter, sloki.WrapError(err))
+				problems.InternalServerError("").WriteToHTTP(w)
+				return
+			}
+			for _, s := range categorySpaces {
+				all[s.ID] = s
+			}
+		}
 	} else {
-		all, err = h.store.GetAll()
-	}
-
-	if err != nil {
-		slog.Error("Failed to get spaces", sloki.WrapError(err))
-		problems.InternalServerError("").WriteToHTTP(w)
-		return
+		allSpaces, err := h.store.GetAll()
+		if err != nil {
+			slog.Error("Failed to get all spaces", sloki.WrapError(err))
+			problems.InternalServerError("").WriteToHTTP(w)
+			return
+		}
+		for _, s := range allSpaces {
+			all[s.ID] = s
+		}
 	}
 
 	u := h.userFromCtx(r.Context())
