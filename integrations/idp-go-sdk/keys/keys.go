@@ -17,7 +17,7 @@ const (
 
 // GetOrGenerateRSAKeys tries to load RSA keys from the specified path. If loading fails, it generates new keys and saves them to the path.
 func GetOrGenerateRSAKeys(path string) (*rsa.PrivateKey, *rsa.PublicKey, error) {
-	privateKey, err := LoadPrivateKey(path + "private.pem")
+	privateKey, err := LoadPrivateKey(path)
 	if err != nil {
 		slog.Warn("Failed to load private key, generating new keys", "error", err)
 
@@ -33,7 +33,7 @@ func GetOrGenerateRSAKeys(path string) (*rsa.PrivateKey, *rsa.PublicKey, error) 
 		return privateKey, publicKey, nil
 	}
 
-	publicKey, err := LoadPublicKey(path + "public.pem")
+	publicKey, err := LoadPublicKey(path)
 	if err != nil {
 		slog.Warn("Failed to load public key, generating new keys", "error", err)
 		privateKey, publicKey, err := generateNewKeys()
