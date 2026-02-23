@@ -302,18 +302,22 @@ func (h *Handler) handleChangeStatus(w http.ResponseWriter, r *http.Request) {
 			problems.Forbidden().WriteToHTTP(w)
 			return
 		}
-	} else if req.To == spaces.StatusPrivate || req.To == spaces.StatusArchived {
-		if !s.HasFullAccess(u) {
+	} else if req.To == spaces.StatusReview || req.To == spaces.StatusPrivate || req.To == spaces.StatusArchived {
+		if !s.HasFullAccess(u) && !u.IsAdmin() {
 			problems.Forbidden().WriteToHTTP(w)
 			return
 		}
 
-		if req.To == spaces.StatusArchived && s.Status != spaces.StatusApproved {
-			problems.ValidationError("to", "Space must be approved before it can be archived").WriteToHTTP(w)
+		if req.To == spaces.StatusReview && s.Status != spaces.StatusDraft {
+			problems.ValidationError("to", "Only spaces in draft status can be submitted for review").WriteToHTTP(w)
 			return
 		}
 		if req.To == spaces.StatusPrivate && s.Status != spaces.StatusApproved {
 			problems.ValidationError("to", "Space must be approved before it can be made private").WriteToHTTP(w)
+			return
+		}
+		if req.To == spaces.StatusArchived && s.Status != spaces.StatusApproved {
+			problems.ValidationError("to", "Space must be approved before it can be archived").WriteToHTTP(w)
 			return
 		}
 	} else {
