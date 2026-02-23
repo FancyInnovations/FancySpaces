@@ -86,6 +86,11 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*spaces.
 		CreatedAt:   time.Now(),
 		Creator:     creator.ID,
 		Members:     []spaces.Member{},
+		AnalyticsSettings: spaces.AnalyticsSettings{
+			Enabled:         true,
+			RequireWriteKey: false,
+			WriteKey:        "",
+		},
 	}
 
 	// check if slug is already taken by another space
