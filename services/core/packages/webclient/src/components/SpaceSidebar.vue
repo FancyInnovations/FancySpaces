@@ -1,15 +1,20 @@
 <script lang="ts" setup>
 
 import {mapCategoryToDisplayname, mapLinkToDisplayname, mapLinkToIcon, type Space} from "@/api/spaces/types.ts";
+import {useUserStore} from "@/stores/user.ts";
+
+const userStore = useUserStore();
 
 const props = defineProps<{
   space?: Space
 }>();
 
-const isLoggedIn = ref(false);
+const isMember = computed(() => {
+  if (!props.space) return false;
+  if (!userStore.isAuthenticated) return false;
 
-onMounted(() => {
-  isLoggedIn.value = localStorage.getItem("fs_api_key") !== null;
+  const userID =  userStore.user?.id;
+  return props.space.creator == userID || props.space.members.some(member => member.user_id === userID);
 });
 
 </script>
@@ -104,7 +109,7 @@ onMounted(() => {
 <!--      />-->
 
           <v-list-item
-            v-if="space?.storage_settings.enabled && isLoggedIn"
+            v-if="space?.storage_settings.enabled && isMember"
             :to="`/spaces/${space?.slug}/storage`"
             link
             prepend-icon="mdi-library-shelves"
@@ -112,7 +117,7 @@ onMounted(() => {
           />
 
       <v-list-item
-        v-if="space?.secrets_settings.enabled && isLoggedIn"
+        v-if="space?.secrets_settings.enabled && isMember"
         :to="`/spaces/${space?.slug}/secrets`"
         link
         prepend-icon="mdi-shield-key-outline"

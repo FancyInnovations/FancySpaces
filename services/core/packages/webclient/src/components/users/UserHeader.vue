@@ -2,21 +2,46 @@
 
 import {getDownloadCountForSpace, getSpacesOfCreator} from "@/api/spaces/spaces.ts";
 import type {Space} from "@/api/spaces/types.ts";
+import type {User} from "@/api/auth/types.ts";
 
 const props = defineProps<{
-  userID?: string;
+  user?: User;
 }>();
 
 const spaces = ref<Space[]>([]);
 const totalDownloads = ref(0);
 
-onMounted(async () => {
-  spaces.value = await getSpacesOfCreator(props.userID!);
+const bio = computed(() => {
+  if (!props.user?.metadata || !props.user?.metadata['public_biography']) {
+    return "No biography set.";
+  }
+
+  return props.user?.metadata['public_biography'];
+});
+
+const profilePicture = computed(() => {
+  if (!props.user?.metadata || !props.user?.metadata['public_profile_picture']) {
+    return "/na-logo.png";
+  }
+
+  return props.user?.metadata['public_profile_picture'];
+});
+
+watch(() => props.user, async () => {
+  await updateSpaces();
+}, {immediate: true});
+
+async function updateSpaces() {
+  if (!props.user) {
+    return;
+  }
+
+  spaces.value = await getSpacesOfCreator(props.user!.id);
 
   for (let sp of spaces.value) {
     totalDownloads.value += await getDownloadCountForSpace(sp.id);
   }
-});
+}
 
 </script>
 
@@ -29,26 +54,25 @@ onMounted(async () => {
       <div class="d-flex justify-space-between">
         <div class="d-flex flex-column justify-center">
           <v-img
-            :href="`/users/${userID}`"
+            :src="profilePicture"
             alt="User Profile Picture"
             height="100"
             max-height="100"
             max-width="100"
             min-height="100"
             min-width="100"
-            src="/na-logo.png"
             width="100"
           />
         </div>
 
         <div class="mx-4 d-flex flex-column justify-space-between flex-grow-1">
           <div>
-            <h1>{{ userID }}</h1>
-            <p class="text-body-1 mt-2">The user bio belongs here</p>
+            <h1>{{ user?.name }}</h1>
+            <p class="text-body-1 mt-2">{{ bio }}</p>
           </div>
 
           <div class="d-flex mt-2 text-grey-lighten-1">
-            <p class="text-body-2">Joined at: {{ '2026-01-01' }}</p>
+            <p class="text-body-2">Joined at: {{ user?.created_at.toLocaleDateString() }}</p>
             <p class="text-body-2 mx-4">-</p>
             <p class="text-body-2">{{ spaces.length }} spaces</p>
             <p class="text-body-2 mx-4">-</p>

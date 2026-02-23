@@ -5,6 +5,8 @@ import {getLatestVersion} from "@/api/versions/versions.ts";
 import type {SpaceVersion} from "@/api/versions/types.ts";
 import {getDownloadCountForSpace} from "@/api/spaces/spaces.ts";
 import Card from "@/components/common/Card.vue";
+import type {User} from "@/api/auth/types.ts";
+import {getPublicUser} from "@/api/auth/users.ts";
 
 const props = defineProps<{
   space?: Space
@@ -15,6 +17,13 @@ const props = defineProps<{
 
 const latestVersion = ref<SpaceVersion>();
 const downloadCount = ref<number>(0);
+
+const creator = ref<User>();
+watch(() => props.space, async (newSpace) => {
+  if (newSpace) {
+    creator.value = await getPublicUser(newSpace.creator)
+  }
+}, {immediate: true});
 
 onMounted(async () => {
     if (props.space) {
@@ -71,6 +80,7 @@ onMounted(async () => {
 
           <div class="d-flex justify-space-between mt-2 text-grey-lighten-1">
             <p v-if="withAuthor" class="text-body-2">By {{ space?.creator }}</p>
+            <p v-if="creator" class="text-body-2 link--hover"><RouterLink :to="'/users/'+creator.name">By: {{ creator?.name }}</RouterLink></p>
             <p class="text-body-2">Created {{ space?.created_at.toLocaleDateString() }}</p>
             <p class="text-body-2">Updated {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
             <p class="text-body-2">{{ downloadCount }} downloads</p>
@@ -79,7 +89,7 @@ onMounted(async () => {
 
         <div class="d-flex flex-column justify-center">
           <v-btn
-            v-if="!soon"
+            v-if="!soon && space?.release_settings.enabled"
             :to="`/spaces/${space?.slug}/versions`"
             color="primary"
             icon="mdi-download"

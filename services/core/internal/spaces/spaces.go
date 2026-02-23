@@ -13,7 +13,7 @@ import (
 type DB interface {
 	GetByID(id string) (*spaces.Space, error)
 	GetBySlug(slug string) (*spaces.Space, error)
-	GetForUser(userID string) ([]spaces.Space, error)
+	GetForCreator(userID string) ([]spaces.Space, error)
 	GetForCategory(category string) ([]spaces.Space, error)
 	GetAll() ([]spaces.Space, error)
 	Create(s *spaces.Space) error
@@ -60,8 +60,8 @@ func (s *Store) GetBySlug(slug string) (*spaces.Space, error) {
 	return s.db.GetBySlug(slug)
 }
 
-func (s *Store) GetForUser(userID string) ([]spaces.Space, error) {
-	return s.db.GetForUser(userID)
+func (s *Store) GetForCreator(userID string) ([]spaces.Space, error) {
+	return s.db.GetForCreator(userID)
 }
 
 func (s *Store) GetForCategory(category string) ([]spaces.Space, error) {
@@ -82,9 +82,9 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*spaces.
 
 	// check if user exceeds max spaces limit
 	if !creator.IsAdmin() {
-		userSpaces, err := s.db.GetForUser(creator.ID)
+		userSpaces, err := s.db.GetForCreator(creator.ID)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get spaces for user: %w", err)
+			return nil, fmt.Errorf("failed to get spaces for creator: %w", err)
 		}
 		if len(userSpaces) >= 10 {
 			return nil, fmt.Errorf("user has reached the maximum number of spaces allowed")

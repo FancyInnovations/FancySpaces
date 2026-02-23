@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -94,16 +95,16 @@ func (h *Handler) handleGetSpaces(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userFilter := r.URL.Query().Get("user")
+	creatorFilter := r.URL.Query().Get("creator")
 	categoryFilter := r.URL.Query().Get("category")
-	hasFilter := userFilter != "" || categoryFilter != ""
+	hasFilter := creatorFilter != "" || categoryFilter != ""
 
 	all := make(map[string]spaces.Space)
 	if hasFilter {
-		if userFilter != "" {
-			userSpaces, err := h.store.GetForUser(userFilter)
+		if creatorFilter != "" {
+			userSpaces, err := h.store.GetForCreator(creatorFilter)
 			if err != nil {
-				slog.Error("Failed to get spaces for user", "user", userFilter, sloki.WrapError(err))
+				slog.Error("Failed to get spaces for creator", "creator", creatorFilter, sloki.WrapError(err))
 				problems.InternalServerError("").WriteToHTTP(w)
 				return
 			}
@@ -138,16 +139,20 @@ func (h *Handler) handleGetSpaces(w http.ResponseWriter, r *http.Request) {
 
 	var res []spaces.Space
 	for _, s := range all {
+		fmt.Printf("Space: %s, Status: %s\n", s.ID, s.Status)
 		if s.Status == spaces.StatusApproved || s.Status == spaces.StatusArchived {
 			res = append(res, s)
+			fmt.Printf("Included space %s (approved/archived)\n", s.ID)
 			continue
 		}
 
-		if u == nil || !u.Verified || !u.IsActive {
+		if !idp.IsUserValid(u) {
+			fmt.Printf("Excluded space %s for unauthenticated user\n", s.ID)
 			continue
 		}
 		if s.IsMember(u) || u.IsAdmin() {
 			res = append(res, s)
+			fmt.Printf("Included space %s for user %s\n", s.ID, u.ID)
 		}
 	}
 

@@ -63,13 +63,8 @@ func (db *DB) GetBySlug(slug string) (*spaces.Space, error) {
 	return &sp, nil
 }
 
-func (db *DB) GetForUser(userID string) ([]spaces.Space, error) {
-	filter := bson.D{
-		{"$or", bson.A{
-			bson.D{{"creator", userID}},
-			bson.D{{"members.user_id", userID}},
-		}},
-	}
+func (db *DB) GetForCreator(userID string) ([]spaces.Space, error) {
+	filter := bson.D{{"creator", userID}}
 
 	cur, err := db.coll.Find(context.Background(), filter)
 	if err != nil {

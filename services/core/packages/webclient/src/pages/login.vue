@@ -91,7 +91,7 @@ async function login() {
     }
 
     notifications.info("Login successful!");
-    await router.push("/");
+    window.location.href = "/users/"+user.name;
 }
 
 </script>

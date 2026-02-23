@@ -45,7 +45,7 @@ func (db *DB) GetBySlug(slug string) (*spaces.Space, error) {
 	return nil, spaces.ErrSpaceNotFound
 }
 
-func (db *DB) GetForUser(userID string) ([]spaces.Space, error) {
+func (db *DB) GetForCreator(userID string) ([]spaces.Space, error) {
 	db.Mu.Lock()
 	defer db.Mu.Unlock()
 
@@ -54,13 +54,6 @@ func (db *DB) GetForUser(userID string) ([]spaces.Space, error) {
 		if s.Creator == userID {
 			result = append(result, s)
 			continue
-		}
-
-		for _, m := range s.Members {
-			if m.UserID == userID {
-				result = append(result, s)
-				break
-			}
 		}
 	}
 

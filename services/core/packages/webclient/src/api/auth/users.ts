@@ -1,6 +1,24 @@
 import type {User} from "@/api/auth/types.ts";
 import {useUserStore} from "@/stores/user.ts";
 
+export async function getPublicUser(username: string): Promise<User> {
+    const resp = await fetch(`/idp/api/v1/public-users/${username}`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+        },
+    });
+
+    if (resp.status !== 200) {
+        throw new Error(`Failed to get user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
+    }
+
+    const user = await resp.json();
+    user.created_at = new Date(user.created_at);
+
+    return user as User;
+}
+
 export async function registerUser(username: string, email: string, password: string): Promise<void> {
     const resp = await fetch("/idp/api/v1/users/register", {
         method: "POST",
@@ -38,14 +56,10 @@ export async function validateUser(email: string, password: string): Promise<Use
         throw new Error(`Failed to validate user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
     }
 
-    let user: User;
-    try {
-        user = await resp.json();
-    } catch (e) {
-        throw new Error(`Failed to parse user data: ${e}`);
-    }
+    const user = await resp.json();
+    user.created_at = new Date(user.created_at);
 
-    return user;
+    return user as User;
 }
 
 export async function updateUser(userid: string, name: string, email: string, password: string): Promise<void> {

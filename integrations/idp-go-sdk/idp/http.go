@@ -53,6 +53,11 @@ func (s *Service) HTTPMiddleware(next http.Handler) http.Handler {
 
 		// check if the request path matches any of the excluded routes
 		for _, route := range s.excludedRoutes {
+			if route == "*" {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			matched, err := regexp.MatchString(route, r.URL.Path)
 			if err != nil {
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

@@ -8,18 +8,34 @@ import {getLatestVersion} from "@/api/versions/versions.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import Card from "@/components/common/Card.vue";
+import {getPublicUser} from "@/api/auth/users.ts";
+import type {User} from "@/api/auth/types.ts";
 
 const route = useRoute();
 
 const space = ref<Space>();
+const creator = ref<User>();
+const members = ref<User[]>([]);
 const latestVersion = ref<SpaceVersion>();
 const downloadCount = ref<number>(0);
 
 onMounted(async () => {
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
-  latestVersion.value = await getLatestVersion(space.value.id);
+
+  try {
+    latestVersion.value = await getLatestVersion(space.value.id);
+  } catch (e) {
+    console.error("Error fetching latest version:", e);
+  }
+
   downloadCount.value = await getDownloadCountForSpace(space.value.id);
+
+  creator.value = await getPublicUser(space.value.creator);
+   for (const member of space.value.members) {
+     const user = await getPublicUser(member.user_id);
+     members.value.push(user);
+   }
 
   useHead({
     title: `${space.value.title} - FancySpaces`,
@@ -35,7 +51,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-container width="90%">
+  <v-container v-if="space" width="90%">
     <v-row>
       <v-col class="flex-grow-0 pa-0">
         <SpaceSidebar
@@ -152,16 +168,39 @@ onMounted(async () => {
           class="mb-4"
           min-width="300"
         >
-          <v-card-title class="mt-2">Authors</v-card-title>
+          <v-card-title class="mt-2">Members</v-card-title>
 
           <v-card-text>
-            <p class="text-body-1">{{ space?.creator }} (Creator)</p>
+            <RouterLink :to="'/users/'+creator?.name">
+              <div class="d-flex align-center">
+                <v-icon
+                  class="me-2"
+                  icon="mdi-account-star-outline"
+                />
+                <p class="text-body-1 link--hover">{{ creator?.name }} (Creator)</p>
+              </div>
+            </RouterLink>
 
-            <div v-for="author in space?.members" :key="author.user_id">
-              <p class="text-body-1">{{ author.user_id }} ({{ author.role }})</p>
+            <div v-for="member in members" :key="member.id">
+              <RouterLink :to="'/users/'+member.name">
+                <div class="d-flex align-center">
+                  <v-icon
+                    class="me-2"
+                    icon="mdi-account-outline"
+                  />
+                  <p class="text-body-1 link--hover">{{ member.name }}</p>
+                </div>
+              </RouterLink>
             </div>
           </v-card-text>
         </Card>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container v-else width="60%">
+    <v-row>
+      <v-col>
+        <p class="text-h4 text-center mt-8">Space not found or still loading...</p>
       </v-col>
     </v-row>
   </v-container>
@@ -173,10 +212,6 @@ onMounted(async () => {
 </style>
 
 <style>
-.link--hover:hover {
-  text-decoration: underline;
-}
-
 .mobile-space-sidebar-buttons {
   display: none;
 }

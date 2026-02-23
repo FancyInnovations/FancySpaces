@@ -1,14 +1,23 @@
 <script lang="ts" setup>
 
 import {useUserStore} from "@/stores/user.ts";
+import {useNotificationStore} from "@/stores/notifications.ts";
 
+const router = useRouter();
 const userStore = useUserStore();
+const notificationStore = useNotificationStore();
 
 const isLoggedIn = ref(false);
 
 onMounted(async () => {
   isLoggedIn.value = await userStore.isAuthenticated;
 });
+
+async function logoutReq() {
+  userStore.clearUser();
+  notificationStore.info("You have been logged out.");
+  window.location.href = "/"; // Use full page reload to clear all user data from the app
+}
 
 </script>
 
@@ -26,7 +35,7 @@ onMounted(async () => {
         />
       </RouterLink>
 
-      <div>
+      <div class="position-absolute d-flex" style="left: 50%; transform: translateX(-50%)">
         <v-menu
           :close-on-content-click="false"
           open-delay="0"
@@ -154,71 +163,88 @@ onMounted(async () => {
         </v-menu>
       </div>
 
-      <v-menu>
-        <template v-slot:activator="{ props }">
-          <v-btn
-            class="mr-4"
-            icon="mdi-dots-vertical"
-            v-bind="props"
-          />
-        </template>
-        <v-list>
-          <v-list-subheader title="Account"/>
+      <div>
+        <v-btn
+          v-if="isLoggedIn"
+          :href="`/users/${userStore.user?.name}`"
+          class="mr-4"
+          color="secondary"
+          exact
+          prepend-icon="mdi-view-dashboard-outline"
+        >
+          My Spaces
+        </v-btn>
 
-          <v-list-item
-            v-if="!isLoggedIn"
-            href="/login"
-            prepend-icon="mdi-login"
-            title="Login"
-          />
+        <v-btn
+          v-if="isLoggedIn"
+          class="mr-4"
+          color="secondary"
+          exact
+          href="/spaces/new"
+          prepend-icon="mdi-plus"
+        >
+          New Space
+        </v-btn>
 
-          <v-list-item
-            v-if="!isLoggedIn"
-            href="/register"
-            prepend-icon="mdi-account-plus"
-            title="Register"
-          />
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn
+              class="mr-4"
+              icon="mdi-dots-vertical"
+              v-bind="props"
+            />
+          </template>
+          <v-list>
+            <v-list-subheader title="Account"/>
 
-          <v-list-item
-            v-if="isLoggedIn"
-            :href="`/users/${userStore.user?.name}`"
-            prepend-icon="mdi-account-circle-outline"
-            title="My profile"
-          />
+            <v-list-item
+              v-if="!isLoggedIn"
+              href="/login"
+              prepend-icon="mdi-login"
+              title="Login"
+            />
 
-          <v-list-item
-            v-if="isLoggedIn"
-            href="/dashboard"
-            prepend-icon="mdi-view-dashboard-outline"
-            title="Creator dashboard"
-          />
+            <v-list-item
+              v-if="!isLoggedIn"
+              href="/register"
+              prepend-icon="mdi-account-plus"
+              title="Register"
+            />
 
-          <v-list-item
-            v-if="isLoggedIn"
-            href="/account-settings"
-            prepend-icon="mdi-cog-outline"
-            title="Account settings"
-          />
+            <v-list-item
+              v-if="isLoggedIn"
+              prepend-icon="mdi-logout"
+              title="Log out"
+              @click="logoutReq()"
+            />
 
-          <v-list-subheader title="Links"/>
+            <v-list-item
+              v-if="isLoggedIn"
+              href="/account-settings"
+              prepend-icon="mdi-cog-outline"
+              title="Account settings"
+            />
 
-          <v-list-item
-            href="https://github.com/fancyinnovations"
-            prepend-icon="mdi-github"
-            title="GitHub"/>
+            <v-list-subheader title="Links"/>
 
-          <v-list-item
-            href="https://fancyinnovations.com/docs/general"
-            prepend-icon="mdi-script-text-outline"
-            title="Documentation"/>
+            <v-list-item
+              href="https://github.com/fancyinnovations"
+              prepend-icon="mdi-github"
+              title="GitHub"/>
 
-          <v-list-item
-            href="https://discord.gg/ZUgYCEJUEx"
-            prepend-icon="mdi-message"
-            title="Discord"/>
+            <v-list-item
+              href="https://fancyinnovations.com/docs/general"
+              prepend-icon="mdi-script-text-outline"
+              title="Documentation"/>
 
-        </v-list>
-      </v-menu>
+            <v-list-item
+              href="https://discord.gg/ZUgYCEJUEx"
+              prepend-icon="mdi-message"
+              title="Discord"/>
+
+          </v-list>
+        </v-menu>
+      </div>
     </div>
   </v-app-bar>
 </template>

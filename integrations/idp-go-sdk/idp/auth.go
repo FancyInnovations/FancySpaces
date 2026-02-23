@@ -3,6 +3,7 @@ package idp
 import (
 	"crypto/rsa"
 	"encoding/json"
+	"strings"
 
 	"github.com/OliverSchlueter/goutils/broker"
 )
@@ -53,6 +54,10 @@ func (s *Service) GetUser(id string) (*User, error) {
 	resp, err := s.broker.Request("idp.user.get", []byte(id))
 	if err != nil {
 		return nil, err
+	}
+
+	if strings.Contains(string(resp.Data), "NotFound") {
+		return nil, ErrUserNotFound
 	}
 
 	var u User

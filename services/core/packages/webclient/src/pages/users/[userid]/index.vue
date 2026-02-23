@@ -3,30 +3,34 @@ import {useHead} from "@vueuse/head";
 import Card from "@/components/common/Card.vue";
 import UserHeader from "@/components/users/UserHeader.vue";
 import {getDownloadCountForSpace, getSpacesOfCreator} from "@/api/spaces/spaces.ts";
-import {mapLinkToDisplayname, mapLinkToIcon, type Space} from "@/api/spaces/types.ts";
+import {type Space} from "@/api/spaces/types.ts";
+import {useUserStore} from "@/stores/user.ts";
+import type {User} from "@/api/auth/types.ts";
+import {getPublicUser} from "@/api/auth/users.ts";
 
 const route = useRoute();
+const userStore = useUserStore();
 
-const user = ref<string>(); // TODO replace with public user info
-const userLinks = ref<{ name: string; url: string }[]>([{name: "website", url: "https://github.com/oliverschlueter"}]); // TODO replace with public user info
+const user = ref<User>();
 const spaces = ref<Space[]>([]);
 const totalDownloads = ref(0);
 
 onMounted(async () => {
-  user.value = (route.params as any).userid as string;
+  const userID = (route.params as any).userid as string; // username
+  user.value = await getPublicUser(userID);
 
-  spaces.value = await getSpacesOfCreator(user.value);
+  spaces.value = await getSpacesOfCreator(user.value.id);
 
   for (let sp of spaces.value) {
     totalDownloads.value += await getDownloadCountForSpace(sp.id);
   }
 
   useHead({
-    title: `${user.value} - FancySpaces`,
+    title: `${user.value.name} - FancySpaces`,
     meta: [
       {
         name: 'description',
-        content: `Check out ${user.value}'s profile on FancySpaces, showcasing their spaces.`
+        content: `Check out ${user.value.name}'s profile on FancySpaces, showcasing their spaces.`
       }
     ]
   });
@@ -35,10 +39,23 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-container width="60%">
+  <v-container v-if="user" width="60%">
     <v-row>
       <v-col>
-        <UserHeader :userID="user"/>
+        <UserHeader :user="user">
+          <template #quick-actions>
+            <v-btn
+              v-if="user?.id === userStore.user?.id"
+              :to="`/spaces/new`"
+              class="sidebar__mobile"
+              color="primary"
+              size="large"
+              variant="tonal"
+            >
+              New Space
+            </v-btn>
+          </template>
+        </UserHeader>
 
         <hr
           class="mt-4 grey-border-color"
@@ -65,41 +82,24 @@ onMounted(async () => {
           <v-card-title class="mt-2">Details</v-card-title>
 
           <v-card-text>
-            <p class="text-body-1"><strong>ID:</strong> {{ user }}</p>
-            <p class="text-body-1"><strong>Joined at:</strong> {{ '2026-01-01' }}</p>
+            <p class="text-body-1"><strong>ID:</strong> {{ user?.id }}</p>
+            <p class="text-body-1"><strong>Username:</strong> {{ user?.name }}</p>
+            <p class="text-body-1"><strong>Roles:</strong> {{ user?.roles.join(", ") }}</p>
+            <p class="text-body-1"><strong>Joined at:</strong> {{ user?.created_at.toLocaleDateString() }}</p>
             <p class="text-body-1"><strong>Spaces:</strong> {{ spaces.length }}</p>
             <p class="text-body-1"><strong>Total Downloads:</strong> {{ totalDownloads }}</p>
-          </v-card-text>
-        </Card>
-
-        <Card
-          v-if="userLinks.length > 0"
-          class="mb-4"
-          elevation="12"
-        >
-          <v-card-title class="mt-2">Links</v-card-title>
-
-          <v-card-text>
-            <div v-for="(link) in userLinks" :key="link.name" class="mb-2">
-              <a
-                :href="link.url"
-                target="_blank"
-              >
-                <div class="d-flex align-center">
-                  <v-icon
-                    :icon="mapLinkToIcon(link.name)"
-                    class="me-2"
-                  />
-                  <p class="text-body-1 link--hover">{{ mapLinkToDisplayname(link.name) }}</p>
-                </div>
-              </a>
-            </div>
           </v-card-text>
         </Card>
       </v-col>
     </v-row>
   </v-container>
-
+  <v-container v-else width="60%">
+    <v-row>
+      <v-col>
+        <p class="text-h4 text-center mt-8">User not found or still loading...</p>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style scoped>
@@ -107,8 +107,5 @@ onMounted(async () => {
 </style>
 
 <style>
-.link--hover:hover {
-  text-decoration: underline;
-}
 
 </style>

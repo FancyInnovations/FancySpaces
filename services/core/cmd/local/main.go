@@ -18,6 +18,7 @@ import (
 	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/core/internal/fflags"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/keys"
 	"github.com/justinas/alice"
 )
 
@@ -84,9 +85,21 @@ func main() {
 		}
 	})
 
+	pubKey, err := keys.LoadPublicKey(keys.E2EKeyPath)
+	if err != nil {
+		slog.Error("Failed to load public key", sloki.WrapError(err))
+		os.Exit(1)
+	}
+	idp.ServiceBaseURL = "http://localhost:8083"
+	a := idp.NewService(idp.Configuration{
+		Broker:         b,
+		PublicKey:      pubKey,
+		ExcludedRoutes: []string{"*"},
+	})
+
 	chain := alice.New(
 		middleware.RequestLogging,
-		auth.Middleware,
+		a.HTTPMiddleware,
 		middleware.Recovery,
 	).Then(hostRouter)
 

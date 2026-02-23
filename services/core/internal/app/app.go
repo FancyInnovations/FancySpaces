@@ -12,7 +12,6 @@ import (
 	"github.com/fancyinnovations/fancyspaces/core/internal/analytics"
 	analyticsCache "github.com/fancyinnovations/fancyspaces/core/internal/analytics/cache"
 	analyticsDatabase "github.com/fancyinnovations/fancyspaces/core/internal/analytics/database/clickhouse"
-	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/core/internal/badges"
 	"github.com/fancyinnovations/fancyspaces/core/internal/fflags"
 	"github.com/fancyinnovations/fancyspaces/core/internal/frontend"
@@ -39,6 +38,7 @@ import (
 	memoryVersionFileStorage "github.com/fancyinnovations/fancyspaces/core/internal/versions/filestorage/memory"
 	minioVersionFileStorage "github.com/fancyinnovations/fancyspaces/core/internal/versions/filestorage/minio"
 	versionsHandler "github.com/fancyinnovations/fancyspaces/core/internal/versions/handler"
+	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 	"github.com/minio/minio-go/v7"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -82,7 +82,7 @@ func Start(cfg Configuration) {
 	seedSpaces(spacesStore)
 	sh := spacesHandler.New(spacesHandler.Configuration{
 		Store:       spacesStore,
-		UserFromCtx: auth.UserFromContext,
+		UserFromCtx: idp.UserFromCtx,
 		Analytics:   as,
 	})
 	sh.Register(apiPrefix, cfg.Mux)
@@ -113,7 +113,7 @@ func Start(cfg Configuration) {
 		Store:       versionsStore,
 		Spaces:      spacesStore,
 		Analytics:   as,
-		UserFromCtx: auth.UserFromContext,
+		UserFromCtx: idp.UserFromCtx,
 	})
 	vh.Register(apiPrefix, cfg.Mux)
 
@@ -139,7 +139,7 @@ func Start(cfg Configuration) {
 		Store:       mavenStore,
 		Spaces:      spacesStore,
 		Analytics:   as,
-		UserFromCtx: auth.UserFromContext,
+		UserFromCtx: idp.UserFromCtx,
 	})
 	mh.RegisterAPIEndpoints(apiPrefix, cfg.Mux)
 	mh.RegisterMavenEndpoints(cfg.MavenMux)
@@ -154,7 +154,7 @@ func Start(cfg Configuration) {
 	ih := issuesHandler.New(issuesHandler.Configuration{
 		Store:       issuesStore,
 		Spaces:      spacesStore,
-		UserFromCtx: auth.UserFromContext,
+		UserFromCtx: idp.UserFromCtx,
 	})
 	ih.Register(apiPrefix, cfg.Mux)
 
@@ -170,7 +170,7 @@ func Start(cfg Configuration) {
 	secH := secretsHandler.New(secretsHandler.Configuration{
 		Store:       secretsStore,
 		Spaces:      spacesStore,
-		UserFromCtx: auth.UserFromContext,
+		UserFromCtx: idp.UserFromCtx,
 	})
 	secH.Register(apiPrefix, cfg.Mux)
 	secNatsH := secretsHandler.NewNatsHandler(secretsHandler.NatsConfiguration{

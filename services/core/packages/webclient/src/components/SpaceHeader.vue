@@ -1,10 +1,19 @@
 <script lang="ts" setup>
 
 import type {Space} from "@/api/spaces/types.ts";
+import type {User} from "@/api/auth/types.ts";
+import {getPublicUser} from "@/api/auth/users.ts";
 
 const props = defineProps<{
   space?: Space;
 }>();
+
+const creator = ref<User>();
+watch(() => props.space, async (newSpace) => {
+  if (newSpace) {
+    creator.value = await getPublicUser(newSpace.creator)
+  }
+}, {immediate: true});
 
 </script>
 
@@ -36,7 +45,7 @@ const props = defineProps<{
           </div>
 
           <div class="d-flex mt-2 text-grey-lighten-1">
-            <p class="text-body-2">Creator: {{ space?.creator }}</p>
+            <p class="text-body-2 link--hover">Creator: <RouterLink :to="'/users/'+creator?.name">{{ creator?.name }}</RouterLink></p>
             <p class="text-body-2 mx-4">-</p>
             <p class="text-body-2">Created {{ space?.created_at.toLocaleDateString() }}</p>
             <slot name="metadata">

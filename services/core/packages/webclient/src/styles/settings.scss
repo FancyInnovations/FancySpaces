@@ -17,3 +17,8 @@ a {
 .grey-border-color {
   border-color: rgba(0, 0, 0, 0.8);
 }
+
+.link--hover:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
