@@ -7,18 +7,18 @@ import (
 )
 
 type Space struct {
-	ID          string     `json:"id"`
-	Slug        string     `json:"slug"`
-	Title       string     `json:"title"`
-	Summary     string     `json:"summary"`
-	Description string     `json:"description"`
-	Categories  []Category `json:"categories"`
-	Links       []Link     `json:"links"`
-	IconURL     string     `json:"icon_url"`
-	Status      Status     `json:"status"`
-	CreatedAt   time.Time  `json:"created_at"`
-	Creator     string     `json:"creator"` // UserID of the creator
-	Members     []Member   `json:"members"`
+	ID          string     `json:"id" bson:"space_id"`
+	Slug        string     `json:"slug" bson:"slug"`
+	Title       string     `json:"title" bson:"title"`
+	Summary     string     `json:"summary" bson:"summary"`
+	Description string     `json:"description" bson:"description"`
+	Categories  []Category `json:"categories" bson:"categories"`
+	Links       []Link     `json:"links" bson:"links"`
+	IconURL     string     `json:"icon_url" bson:"icon_url"`
+	Status      Status     `json:"status" bson:"status"`
+	CreatedAt   time.Time  `json:"created_at" bson:"created_at"`
+	Creator     string     `json:"creator" bson:"creator"` // UserID of the creator
+	Members     []Member   `json:"members" bson:"members"`
 
 	IssueSettings           IssueSettings           `json:"issue_settings"`
 	ReleaseSettings         ReleaseSettings         `json:"release_settings"`
@@ -36,16 +36,16 @@ type InternalSpace struct {
 }
 
 type IssueSettings struct {
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" bson:"enabled"`
 
-	GitHubSync      bool   `json:"github_sync"`
-	GitHubSyncOwner string `json:"github_sync_owner"` // GitHub username or organization (required if GitHubSync is true)
-	GitHubSyncRepo  string `json:"github_sync_repo"`  // GitHub repository name (required if GitHubSync is true)
-	GitHubSyncLabel string `json:"github_sync_label"` // only sync issues with this label (optional)
+	GitHubSync      bool   `json:"github_sync" bson:"github_sync"`
+	GitHubSyncOwner string `json:"github_sync_owner" bson:"github_sync_owner"` // GitHub username or organization (required if GitHubSync is true)
+	GitHubSyncRepo  string `json:"github_sync_repo" bson:"github_sync_repo"`   // GitHub repository name (required if GitHubSync is true)
+	GitHubSyncLabel string `json:"github_sync_label" bson:"github_sync_label"` // only sync issues with this label (optional)
 }
 
 type ReleaseSettings struct {
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" bson:"enabled"`
 
 	// TODO: Implement these settings in the future
 	//DiscordNotifications          bool   `json:"discord_notifications"`
@@ -53,31 +53,31 @@ type ReleaseSettings struct {
 }
 
 type MavenRepositorySettings struct {
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" bson:"enabled"`
 }
 
 type StorageSettings struct {
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" bson:"enabled"`
 }
 
 type AnalyticsSettings struct {
-	Enabled         bool   `json:"enabled"`
-	RequireWriteKey bool   `json:"require_write_key"`
-	WriteKey        string `json:"-"`
+	Enabled         bool   `json:"enabled" bson:"enabled"`
+	RequireWriteKey bool   `json:"require_write_key" bson:"require_write_key"`
+	WriteKey        string `json:"-" bson:"write_key"`
 }
 
 type SecretsSettings struct {
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" bson:"enabled"`
 }
 
 type Link struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
+	Name string `json:"name" bson:"name"`
+	URL  string `json:"url" bson:"url"`
 }
 
 type Member struct {
-	UserID string `json:"user_id"`
-	Role   Role   `json:"role"`
+	UserID string `json:"user_id" bson:"user_id"`
+	Role   Role   `json:"role" bson:"role"`
 }
 
 type Role string
