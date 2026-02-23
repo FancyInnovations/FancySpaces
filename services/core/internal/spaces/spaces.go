@@ -75,21 +75,50 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*spaces.
 		return nil, ErrUserNotVerified
 	}
 
+	// check if user exceeds max spaces limit
+	if !creator.IsAdmin() {
+		userSpaces, err := s.db.GetForUser(creator.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get spaces for user: %w", err)
+		}
+		if len(userSpaces) >= 10 {
+			return nil, fmt.Errorf("user has reached the maximum number of spaces allowed")
+		}
+	}
+
 	space := &spaces.Space{
 		ID:          idgen.GenerateID(8),
 		Slug:        req.Slug,
 		Title:       req.Title,
+		Summary:     req.Summary,
 		Description: req.Description,
 		Categories:  req.Categories,
+		Links:       []spaces.Link{},
 		IconURL:     req.IconURL,
 		Status:      spaces.StatusDraft,
 		CreatedAt:   time.Now(),
 		Creator:     creator.ID,
 		Members:     []spaces.Member{},
+
+		IssueSettings: spaces.IssueSettings{
+			Enabled: false,
+		},
+		ReleaseSettings: spaces.ReleaseSettings{
+			Enabled: false,
+		},
+		MavenRepositorySettings: spaces.MavenRepositorySettings{
+			Enabled: false,
+		},
+		StorageSettings: spaces.StorageSettings{
+			Enabled: false,
+		},
 		AnalyticsSettings: spaces.AnalyticsSettings{
 			Enabled:         true,
 			RequireWriteKey: false,
 			WriteKey:        "",
+		},
+		SecretsSettings: spaces.SecretsSettings{
+			Enabled: false,
 		},
 	}
 
