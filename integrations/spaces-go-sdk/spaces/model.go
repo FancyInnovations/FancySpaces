@@ -20,12 +20,12 @@ type Space struct {
 	Creator     string     `json:"creator" bson:"creator"` // UserID of the creator
 	Members     []Member   `json:"members" bson:"members"`
 
-	IssueSettings           IssueSettings           `json:"issue_settings"`
-	ReleaseSettings         ReleaseSettings         `json:"release_settings"`
-	MavenRepositorySettings MavenRepositorySettings `json:"maven_repository_settings"`
-	StorageSettings         StorageSettings         `json:"storage_settings"`
-	AnalyticsSettings       AnalyticsSettings       `json:"analytics_settings"`
-	SecretsSettings         SecretsSettings         `json:"secrets_settings"`
+	IssueSettings           IssueSettings           `json:"issue_settings" bson:"issue_settings"`
+	ReleaseSettings         ReleaseSettings         `json:"release_settings" bson:"release_settings"`
+	MavenRepositorySettings MavenRepositorySettings `json:"maven_repository_settings" bson:"maven_repository_settings"`
+	StorageSettings         StorageSettings         `json:"storage_settings" bson:"storage_settings"`
+	AnalyticsSettings       AnalyticsSettings       `json:"analytics_settings" bson:"analytics_settings"`
+	SecretsSettings         SecretsSettings         `json:"secrets_settings" bson:"secrets_settings"`
 }
 
 // InternalSpace is the internal representation of a Space, containing additional fields that are not exposed to clients.
@@ -188,7 +188,7 @@ func (s *Space) Validate() error {
 		return ErrTitleTooShort
 	}
 
-	if len(s.Description) > 500 {
+	if len(s.Description) > 10_000 {
 		return ErrDescriptionTooLong
 	}
 

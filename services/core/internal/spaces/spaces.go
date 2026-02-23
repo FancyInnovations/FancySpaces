@@ -89,10 +89,8 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*spaces.
 	}
 
 	// check if slug is already taken by another space
-	if space.Slug != req.Slug {
-		if _, err := s.db.GetBySlug(req.Slug); err != nil {
-			return nil, ErrSpaceAlreadyExists
-		}
+	if _, err := s.db.GetBySlug(space.Slug); err == nil {
+		return nil, ErrSpaceAlreadyExists
 	}
 
 	if err := space.Validate(); err != nil {
@@ -104,6 +102,19 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*spaces.
 	}
 
 	return space, nil
+}
+
+func (s *Store) CreateFull(space *spaces.Space) error {
+	// check if slug is already taken by another space
+	if _, err := s.db.GetBySlug(space.Slug); err == nil {
+		return ErrSpaceAlreadyExists
+	}
+
+	if err := space.Validate(); err != nil {
+		return fmt.Errorf("invalid space: %w", err)
+	}
+
+	return s.db.Create(space)
 }
 
 func (s *Store) Update(id string, req *CreateOrUpdateSpaceReq) error {

@@ -32,6 +32,7 @@ import (
 	secretsHandler "github.com/fancyinnovations/fancyspaces/core/internal/secrets/handler"
 	"github.com/fancyinnovations/fancyspaces/core/internal/sitemapprovider"
 	"github.com/fancyinnovations/fancyspaces/core/internal/spaces"
+	mongoSpacesDB "github.com/fancyinnovations/fancyspaces/core/internal/spaces/database/mongo"
 	spacesHandler "github.com/fancyinnovations/fancyspaces/core/internal/spaces/handler"
 	"github.com/fancyinnovations/fancyspaces/core/internal/versions"
 	mongoVersionsDB "github.com/fancyinnovations/fancyspaces/core/internal/versions/database/mongo"
@@ -72,9 +73,13 @@ func Start(cfg Configuration) {
 	})
 
 	// Spaces
-	spacesStore := spaces.New(spaces.Configuration{
-		DB: seedSpacesDB(),
+	spacesDB := mongoSpacesDB.NewDB(&mongoSpacesDB.Configuration{
+		Mongo: cfg.Mongo,
 	})
+	spacesStore := spaces.New(spaces.Configuration{
+		DB: spacesDB,
+	})
+	seedSpaces(spacesStore)
 	sh := spacesHandler.New(spacesHandler.Configuration{
 		Store:       spacesStore,
 		UserFromCtx: auth.UserFromContext,

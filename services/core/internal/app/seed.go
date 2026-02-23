@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
+	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/maven"
-	fakeSpacesDB "github.com/fancyinnovations/fancyspaces/core/internal/spaces/database/fake"
+	spacesStore "github.com/fancyinnovations/fancyspaces/core/internal/spaces"
 	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
 )
 
@@ -148,29 +150,14 @@ func seedMavenRepos(store *maven.Store) {
 
 }
 
-func seedSpacesDB() *fakeSpacesDB.DB {
-	db := fakeSpacesDB.New()
-
-	if err := seedMinecraftPlugins(db); err != nil {
-		panic(fmt.Errorf("could not seed spaces db: %w", err))
-	}
-
-	if err := seedHytalePlugins(db); err != nil {
-		panic(fmt.Errorf("could not seed spaces db: %w", err))
-	}
-
-	if err := seedOther(db); err != nil {
-		panic(fmt.Errorf("could not seed spaces db: %w", err))
-	}
-
-	if err := seedByOtherCreators(db); err != nil {
-		panic(fmt.Errorf("could not seed spaces db: %w", err))
-	}
-
-	return db
+func seedSpaces(store *spacesStore.Store) {
+	seedMinecraftPlugins(store)
+	seedHytalePlugins(store)
+	seedOther(store)
+	seedByOtherCreators(store)
 }
 
-func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
+func seedMinecraftPlugins(store *spacesStore.Store) {
 	fancynpcs := &spaces.Space{
 		ID:          "fn",
 		Slug:        "fancynpcs",
@@ -213,8 +200,8 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancynpcs); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancynpcs); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancynpcs.ID), sloki.WrapError(err))
 	}
 
 	fancyholograms := &spaces.Space{
@@ -259,8 +246,8 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancyholograms); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancyholograms); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancyholograms.ID), sloki.WrapError(err))
 	}
 
 	fancydialogs := &spaces.Space{
@@ -305,14 +292,12 @@ func seedMinecraftPlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancydialogs); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancydialogs); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancydialogs.ID), sloki.WrapError(err))
 	}
-
-	return nil
 }
 
-func seedHytalePlugins(db *fakeSpacesDB.DB) error {
+func seedHytalePlugins(store *spacesStore.Store) {
 	fancycore := &spaces.Space{
 		ID:          "fc",
 		Slug:        "fancycore",
@@ -355,8 +340,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancycore); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancycore); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancycore.ID), sloki.WrapError(err))
 	}
 
 	fancycorewebsite := &spaces.Space{
@@ -391,8 +376,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancycorewebsite); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancycorewebsite); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancycorewebsite.ID), sloki.WrapError(err))
 	}
 
 	fancyplots := &spaces.Space{
@@ -427,8 +412,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancyplots); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancyplots); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancyplots.ID), sloki.WrapError(err))
 	}
 
 	fancyaudits := &spaces.Space{
@@ -463,8 +448,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancyaudits); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancyaudits); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancyaudits.ID), sloki.WrapError(err))
 	}
 
 	fancyconnect := &spaces.Space{
@@ -499,8 +484,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancyconnect); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancyconnect); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancyconnect.ID), sloki.WrapError(err))
 	}
 
 	fancyshops := &spaces.Space{
@@ -535,8 +520,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancyshops); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancyshops); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancyshops.ID), sloki.WrapError(err))
 	}
 
 	citypass := &spaces.Space{
@@ -571,8 +556,8 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(citypass); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(citypass); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", citypass.ID), sloki.WrapError(err))
 	}
 
 	cityquests := &spaces.Space{
@@ -607,14 +592,12 @@ func seedHytalePlugins(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(cityquests); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(cityquests); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", cityquests.ID), sloki.WrapError(err))
 	}
-
-	return nil
 }
 
-func seedOther(db *fakeSpacesDB.DB) error {
+func seedOther(store *spacesStore.Store) {
 	fancyinnovations := &spaces.Space{
 		ID:          "fi",
 		Slug:        "fancyinnovations",
@@ -653,8 +636,8 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancyinnovations); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancyinnovations); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancyinnovations.ID), sloki.WrapError(err))
 	}
 
 	fancyanalytics := &spaces.Space{
@@ -696,8 +679,8 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			Enabled: true,
 		},
 	}
-	if err := db.Create(fancyanalytics); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancyanalytics); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancyanalytics.ID), sloki.WrapError(err))
 	}
 
 	fancyverteiler := &spaces.Space{
@@ -737,14 +720,12 @@ func seedOther(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(fancyverteiler); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(fancyverteiler); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", fancyverteiler.ID), sloki.WrapError(err))
 	}
-
-	return nil
 }
 
-func seedByOtherCreators(db *fakeSpacesDB.DB) error {
+func seedByOtherCreators(store *spacesStore.Store) {
 	orbisguard := &spaces.Space{
 		ID:          "orbisguard",
 		Slug:        "orbisguard",
@@ -782,8 +763,8 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(orbisguard); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(orbisguard); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", orbisguard.ID), sloki.WrapError(err))
 	}
 
 	orbismines := &spaces.Space{
@@ -823,8 +804,8 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(orbismines); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(orbismines); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", orbismines.ID), sloki.WrapError(err))
 	}
 
 	wiflowsScoreboard := &spaces.Space{
@@ -864,9 +845,7 @@ func seedByOtherCreators(db *fakeSpacesDB.DB) error {
 			Enabled: false,
 		},
 	}
-	if err := db.Create(wiflowsScoreboard); err != nil {
-		return fmt.Errorf("could not seed spaces db: %w", err)
+	if err := store.CreateFull(wiflowsScoreboard); err != nil {
+		slog.Warn("Could not seed space", slog.String("space_id", wiflowsScoreboard.ID), sloki.WrapError(err))
 	}
-
-	return nil
 }
