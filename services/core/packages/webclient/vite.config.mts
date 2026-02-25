@@ -85,44 +85,45 @@ export default defineConfig({
   server: {
     port: 3001,
     proxy: {
-      // '/api/v1/': {
-      //   target: 'https://fancyspaces.net',
+      '/api/v1/': {
+        target: 'https://fancyspaces.net',
+        changeOrigin: true,
+        secure: true,
+      },
+      '/javadoc/': {
+        target: 'https://fancyspaces.net',
+        changeOrigin: true,
+        secure: true,
+      },
+      '/idp/api/v1/': {
+        target: 'https://fancyanalytics.net',
+        changeOrigin: true,
+        secure: false,
+      },
+      // '/storage/api/v1/': {
+      //   target: 'https://storage.fancyspaces.net',
       //   changeOrigin: true,
-      //   secure: true,
+      //   secure: false,
+      //   rewrite: (path) => path.replace(/^\/storage/, ''),
+      // },
+
+      // '/api/v1/': {
+      //   target: 'http://localhost:8080',
       // },
       // '/javadoc/': {
-      //   target: 'https://fancyspaces.net',
-      //   changeOrigin: true,
-      //   secure: true,
+      //   target: 'http://localhost:8080',
       // },
       // '/idp/api/v1/': {
-      //   target: 'https://fancyanalytics.net',
+      //   target: 'http://localhost:8083',
       //   changeOrigin: true,
       //   secure: false,
       // },
-      '/storage/api/v1/': {
-        target: 'https://storage.fancyspaces.net',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/storage/, ''),
-      },
       // '/storage/api/v1/': {
       //   target: 'http://localhost:8090',
       //   changeOrigin: true,
       //   secure: false,
       //   rewrite: (path) => path.replace(/^\/storage/, ''),
       // },
-      '/idp/api/v1/': {
-        target: 'http://localhost:8083',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/api/v1/': {
-        target: 'http://localhost:8080',
-      },
-      '/javadoc/': {
-        target: 'http://localhost:8080',
-      },
     },
     watch: {
       usePolling: true,
