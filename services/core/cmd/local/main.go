@@ -90,7 +90,6 @@ func main() {
 		slog.Error("Failed to load public key", sloki.WrapError(err))
 		os.Exit(1)
 	}
-	idp.ServiceBaseURL = "http://localhost:8083"
 	a := idp.NewService(idp.Configuration{
 		Broker:         b,
 		PublicKey:      pubKey,
