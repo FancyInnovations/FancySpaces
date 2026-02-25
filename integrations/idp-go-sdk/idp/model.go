@@ -5,16 +5,16 @@ import "time"
 // User represents a user in the identity provider system.
 // The ID and Email fields are unique identifiers.
 type User struct {
-	ID        string            `json:"id"`
-	Provider  Provider          `json:"provider"`
-	Name      string            `json:"name"`
-	Email     string            `json:"email"`
-	Verified  bool              `json:"verified"`
-	Password  string            `json:"password"`
-	Roles     []string          `json:"roles"` // e.g., ["admin", "user"]
-	CreatedAt time.Time         `json:"created_at"`
-	IsActive  bool              `json:"is_active"`
-	Metadata  map[string]string `json:"metadata"` // Additional user metadata
+	ID        string            `json:"id" bson:"id"`
+	Provider  Provider          `json:"provider" bson:"provider"`
+	Name      string            `json:"name" bson:"name"`
+	Email     string            `json:"email" bson:"email"`
+	Verified  bool              `json:"verified" bson:"verified"`
+	Password  string            `json:"password" bson:"password"`
+	Roles     []string          `json:"roles" bson:"roles"` // e.g., ["admin", "user"]
+	CreatedAt time.Time         `json:"created_at" bson:"created_at"`
+	IsActive  bool              `json:"is_active" bson:"is_active"`
+	Metadata  map[string]string `json:"metadata" bson:"metadata"` // Additional user metadata
 }
 
 func (u *User) IsAdmin() bool {
