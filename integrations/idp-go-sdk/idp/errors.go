@@ -10,11 +10,18 @@ import (
 
 var (
 	ErrMissingAuthorizationHeader  = errors.New("missing Authorization header")
-	ErrInvalidTokenFormat          = errors.New("invalid token format")
 	ErrInvalidAuthenticationMethod = errors.New("invalid authentication method, expected Bearer or Basic")
-	ErrInvalidBasicCredentials     = errors.New("invalid basic authentication credentials")
-	ErrInvalidToken                = errors.New("invalid token")
-	ErrUserNotFound                = errors.New("user not found")
+
+	ErrInvalidTokenFormat = errors.New("invalid token format")
+	ErrInvalidToken       = errors.New("invalid token")
+
+	ErrInvalidApiKeyFormat = errors.New("invalid API key format")
+	ErrApiKeyNotFound      = errors.New("API key not found")
+	ErrInvalidApiKey       = errors.New("invalid API key")
+
+	ErrInvalidBasicCredentials = errors.New("invalid basic authentication credentials")
+
+	ErrUserNotFound = errors.New("user not found")
 )
 
 func AccountNotVerifiedProblem() *problems.Problem {

@@ -49,3 +49,13 @@ func IsUserValid(user *User) bool {
 	}
 	return true
 }
+
+// ApiKey represents an API key associated with a user.
+type ApiKey struct {
+	KeyID       string     `json:"key_id" bson:"key_id"` // globally unique identifier for the API key
+	UserID      string     `json:"user_id" bson:"user_id"`
+	Description string     `json:"description" bson:"description"`
+	Key         string     `json:"key" bson:"key"`
+	CreatedAt   time.Time  `json:"created_at" bson:"created_at"`
+	LastUsedAt  *time.Time `json:"last_used_at,omitempty" bson:"last_used_at,omitempty"`
+}

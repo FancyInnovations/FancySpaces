@@ -29,6 +29,19 @@ func (s *Service) validateHTTPRequest(r *http.Request) (*User, error) {
 		return u, nil
 	}
 
+	if strings.HasPrefix(authValue, "ApiKey ") {
+		apiKey, err := apiKeyFromHeader(r)
+		if err != nil {
+			return nil, err
+		}
+
+		u, err := s.ValidateApiKey(apiKey)
+		if err != nil {
+			return nil, fmt.Errorf("failed to validate api key: %w", err)
+		}
+		return u, nil
+	}
+
 	if strings.HasPrefix(authValue, "Basic ") {
 		userid, password, err := basicFromHeader(r)
 		if err != nil {
@@ -79,6 +92,20 @@ func tokenFromHeader(r *http.Request) (string, error) {
 	}
 
 	return authHeader[len("Bearer "):], nil
+}
+
+// apiKeyFromHeader extracts the api key from the Authorization header and validates its format.
+func apiKeyFromHeader(r *http.Request) (string, error) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		return "", ErrMissingAuthorizationHeader
+	}
+
+	if !strings.HasPrefix(authHeader, "ApiKey ") {
+		return "", ErrInvalidApiKeyFormat
+	}
+
+	return authHeader[len("ApiKey "):], nil
 }
 
 // basicFromHeader extracts the username and password from the Authorization header and validates its format.
