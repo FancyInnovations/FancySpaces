@@ -12,7 +12,7 @@
       <v-row justify="space-evenly">
         <v-col class="mr-16" md="auto">
           <h1 class="text-h3 mb-2">FancySpaces</h1>
-          <p class="mb-4">Download platform for products by FancyInnovations.</p>
+          <p class="mb-4">A platform every project needs.<br>Tasks, releases, analytics and more.</p>
           <p>&copy; 2025-{{ (new Date()).getFullYear() }} <span class="d-none d-sm-inline-block">FancyInnovations</span>
           </p>
         </v-col>
@@ -32,8 +32,11 @@
         </v-col>
 
         <v-col md="auto">
-          <h3 class="mb-2">Other products</h3>
-          <a class="hide-link" href="https://fancyanalytics.net" target="_blank"><p>FancyAnalytics</p></a>
+          <h3 class="mb-2">Features</h3>
+          <a class="hide-link" href="https://fancyspaces.net/explore" target="_blank"><p>Projects</p></a>
+          <a class="hide-link" href="https://fancyspaces.net/analytics" target="_blank"><p>Analytics</p></a>
+          <a class="hide-link" href="/coming-soon" target="_blank"><p>Storage (soon)</p></a>
+          <a class="hide-link" href="/coming-soon" target="_blank"><p>Cloud (soon)</p></a>
         </v-col>
 
         <v-col md="auto">

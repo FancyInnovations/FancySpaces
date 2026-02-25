@@ -100,6 +100,13 @@ declare module 'vue-router/auto-routes' {
       { sid: ParamValue<false> },
       | never
     >,
+    '/spaces/[sid]/features': RouteRecordInfo<
+      '/spaces/[sid]/features',
+      '/spaces/:sid/features',
+      { sid: ParamValue<true> },
+      { sid: ParamValue<false> },
+      | never
+    >,
     '/spaces/[sid]/issues/': RouteRecordInfo<
       '/spaces/[sid]/issues/',
       '/spaces/:sid/issues',
@@ -177,6 +184,13 @@ declare module 'vue-router/auto-routes' {
       { sid: ParamValue<false> },
       | never
     >,
+    '/spaces/[sid]/settings': RouteRecordInfo<
+      '/spaces/[sid]/settings',
+      '/spaces/:sid/settings',
+      { sid: ParamValue<true> },
+      { sid: ParamValue<false> },
+      | never
+    >,
     '/spaces/[sid]/storage/': RouteRecordInfo<
       '/spaces/[sid]/storage/',
       '/spaces/:sid/storage',
@@ -210,6 +224,13 @@ declare module 'vue-router/auto-routes' {
       '/spaces/:sid/versions/:vid',
       { sid: ParamValue<true>, vid: ParamValue<true> },
       { sid: ParamValue<false>, vid: ParamValue<false> },
+      | never
+    >,
+    '/spaces/new': RouteRecordInfo<
+      '/spaces/new',
+      '/spaces/new',
+      Record<never, never>,
+      Record<never, never>,
       | never
     >,
     '/tools/java-sdk': RouteRecordInfo<
@@ -312,6 +333,12 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/spaces/[sid]/features.vue': {
+      routes:
+        | '/spaces/[sid]/features'
+      views:
+        | never
+    }
     'src/pages/spaces/[sid]/issues/index.vue': {
       routes:
         | '/spaces/[sid]/issues/'
@@ -378,6 +405,12 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/spaces/[sid]/settings.vue': {
+      routes:
+        | '/spaces/[sid]/settings'
+      views:
+        | never
+    }
     'src/pages/spaces/[sid]/storage/index.vue': {
       routes:
         | '/spaces/[sid]/storage/'
@@ -405,6 +438,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/spaces/[sid]/versions/[vid]/index.vue': {
       routes:
         | '/spaces/[sid]/versions/[vid]/'
+      views:
+        | never
+    }
+    'src/pages/spaces/new.vue': {
+      routes:
+        | '/spaces/new'
       views:
         | never
     }

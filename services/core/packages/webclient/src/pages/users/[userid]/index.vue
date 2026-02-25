@@ -13,6 +13,10 @@ const userStore = useUserStore();
 
 const user = ref<User>();
 const spaces = ref<Space[]>([]);
+const sortedSpaces = computed(() => {
+  return spaces.value.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
+});
+
 const totalDownloads = ref(0);
 
 onMounted(async () => {
@@ -65,7 +69,7 @@ onMounted(async () => {
 
     <v-row>
       <v-col md="8">
-        <template v-for="space in spaces" :key="space.id" >
+        <template v-for="space in sortedSpaces" :key="space.id" >
             <SpaceCard
               :space="space"
               :with-badge="true"

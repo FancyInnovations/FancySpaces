@@ -86,7 +86,7 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*spaces.
 		if err != nil {
 			return nil, fmt.Errorf("failed to get spaces for creator: %w", err)
 		}
-		if len(userSpaces) >= 10 {
+		if len(userSpaces) >= 100 {
 			return nil, fmt.Errorf("user has reached the maximum number of spaces allowed")
 		}
 	}
@@ -171,6 +171,7 @@ func (s *Store) Update(id string, req *CreateOrUpdateSpaceReq) error {
 
 	space.Slug = req.Slug
 	space.Title = req.Title
+	space.Summary = req.Summary
 	space.Description = req.Description
 	space.Categories = req.Categories
 	space.IconURL = req.IconURL

@@ -1,6 +1,7 @@
 package spaces
 
 import (
+	"regexp"
 	"time"
 
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
@@ -181,11 +182,24 @@ func (s *Space) Validate() error {
 		return ErrSlugTooLong
 	}
 
+	slugPattern := `^[a-z0-9]+(?:-[a-z0-9]+)*$`
+	matched, err := regexp.MatchString(slugPattern, s.Slug)
+	if err != nil {
+		return err
+	}
+	if !matched {
+		return ErrSlugInvalidFormat
+	}
+
 	if len(s.Title) > 100 {
 		return ErrTitleTooLong
 	}
 	if len(s.Title) < 3 {
 		return ErrTitleTooShort
+	}
+
+	if len(s.Summary) > 300 {
+		return ErrSummaryTooLong
 	}
 
 	if len(s.Description) > 10_000 {

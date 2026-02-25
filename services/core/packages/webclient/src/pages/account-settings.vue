@@ -33,6 +33,8 @@ const showEditPasswordDialog = ref(false);
 const editedPassword = ref('');
 const editedPasswordConfirm = ref('');
 
+const showDeleteDialog = ref(false);
+
 onMounted(() => {
   useHead({
     title: `FancySpaces - Account Settings`,
@@ -278,13 +280,37 @@ function deleteAccount() {
                     class="ml-4"
                     color="error"
                     variant="outlined"
-                    @click="deleteAccount"
+                    @click="showDeleteDialog = true"
                 >
                     Delete Account
                 </v-btn>
             </v-col>
         </v-row>
     </v-container>
+
+
+  <Dialog :shown="showDeleteDialog">
+    <v-card
+      max-width="500"
+    >
+      <v-card-title class="text-h6">Delete account</v-card-title>
+
+      <v-card-text>
+        To delete your account, please reach out to our support team (via E-Mail or our Discord server) and provide them with your user id and email. We will then verify your identity and proceed with the deletion.
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+
+        <v-btn
+          text
+          @click="showDeleteDialog = false"
+        >
+          Close
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </Dialog>
 </template>
 
 <style scoped>

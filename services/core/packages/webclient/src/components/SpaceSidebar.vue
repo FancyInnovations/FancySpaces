@@ -101,20 +101,21 @@ const isMember = computed(() => {
 <!--        title="Roadmap"-->
 <!--      />-->
 
-<!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/analytics`"-->
-<!--        link-->
-<!--        prepend-icon="mdi-chart-box-outline"-->
-<!--        title="Analyitics"-->
-<!--      />-->
+      <v-list-item
+        v-if="space?.storage_settings.enabled && isMember"
+        :to="`/spaces/${space?.slug}/storage`"
+        link
+        prepend-icon="mdi-library-shelves"
+        title="Storage"
+      />
 
-          <v-list-item
-            v-if="space?.storage_settings.enabled && isMember"
-            :to="`/spaces/${space?.slug}/storage`"
-            link
-            prepend-icon="mdi-library-shelves"
-            title="Storage"
-          />
+      <v-list-item
+        v-if="space?.analytics_settings.enabled"
+        :to="`/analytics/${space?.slug}`"
+        link
+        prepend-icon="mdi-chart-box-outline"
+        title="Analytics"
+      />
 
       <v-list-item
         v-if="space?.secrets_settings.enabled && isMember"
@@ -124,8 +125,8 @@ const isMember = computed(() => {
         title="Secrets"
       />
 
-      <v-divider />
-      <v-list-subheader>External links</v-list-subheader>
+      <v-divider v-if="space && space.links.length > 0"/>
+      <v-list-subheader v-if="space && space.links.length > 0">External Links</v-list-subheader>
 
       <v-list-item
         v-for="(link) in space?.links" :key="link.name"
@@ -134,6 +135,33 @@ const isMember = computed(() => {
         :title="mapLinkToDisplayname(link.name)"
         link
         target="_blank"
+      />
+
+      <v-divider v-if="isMember" />
+      <v-list-subheader v-if="isMember">Settings</v-list-subheader>
+
+      <v-list-item
+        v-if="isMember"
+        :to="`/spaces/${space?.slug}/settings`"
+        link
+        prepend-icon="mdi-cog-outline"
+        title="Settings"
+      />
+
+      <v-list-item
+        v-if="isMember"
+        :to="`/spaces/${space?.slug}/features`"
+        link
+        prepend-icon="mdi-star-outline"
+        title="Features"
+      />
+
+      <v-list-item
+        v-if="isMember"
+        :to="`/spaces/${space?.slug}/members`"
+        link
+        prepend-icon="mdi-account-multiple-outline"
+        title="Members"
       />
 
     </v-list>

@@ -117,3 +117,93 @@ export async function getDownloadCountForSpacePerVersion(spaceId: string): Promi
   return (await response.json()).versions as Record<string, number>;
 }
 
+export async function createSpace(slug: string, title: string, summary: string, description: string, categories: string[], iconURL: string): Promise<Space> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
+  const response = await fetch(
+    `/api/v1/spaces`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${userStore.token}`,
+      },
+      body: JSON.stringify({
+        slug: slug,
+        title: title,
+        summary: summary,
+        description: description,
+        categories: categories,
+        icon_url: iconURL,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to create space: " + await response.text());
+  }
+
+  const space = await response.json();
+  space.created_at = new Date(space.created_at);
+
+  return space as Space;
+}
+
+export async function updateSpace(spaceID: string, slug: string, title: string, summary: string, description: string, categories: string[], iconURL: string): Promise<void> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
+  const response = await fetch(
+    `/api/v1/spaces/${spaceID}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userStore.token}`,
+      },
+      body: JSON.stringify({
+        slug: slug,
+        title: title,
+        summary: summary,
+        description: description,
+        categories: categories,
+        icon_url: iconURL,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update space: " + await response.text());
+  }
+}
+
+export async function changeSpaceStatus(spaceID: string, toStatus: string): Promise<void> {
+  const userStore = useUserStore();
+  if (!userStore.isAuthenticated) {
+    throw new Error("User is not logged in");
+  }
+
+  const response = await fetch(
+    `/api/v1/spaces/${spaceID}/status`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userStore.token}`,
+      },
+      body: JSON.stringify({
+        to: toStatus
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to change space status: " + await response.text());
+  }
+}

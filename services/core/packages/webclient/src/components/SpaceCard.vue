@@ -83,7 +83,7 @@ onMounted(async () => {
             <p v-if="creator" class="text-body-2 link--hover"><RouterLink :to="'/users/'+creator.name">By: {{ creator?.name }}</RouterLink></p>
             <p class="text-body-2">Created {{ space?.created_at.toLocaleDateString() }}</p>
             <p class="text-body-2">Updated {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
-            <p class="text-body-2">{{ downloadCount }} downloads</p>
+            <p v-if="downloadCount > 0" class="text-body-2">{{ downloadCount }} downloads</p>
           </div>
         </div>
 

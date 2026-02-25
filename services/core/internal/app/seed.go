@@ -192,7 +192,7 @@ func seedMinecraftPlugins(store *spacesStore.Store) {
 			Enabled: false,
 		},
 		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
+			Enabled:         true,
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
@@ -238,7 +238,7 @@ func seedMinecraftPlugins(store *spacesStore.Store) {
 			Enabled: false,
 		},
 		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
+			Enabled:         true,
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
@@ -284,7 +284,7 @@ func seedMinecraftPlugins(store *spacesStore.Store) {
 			Enabled: false,
 		},
 		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
+			Enabled:         true,
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
@@ -332,7 +332,7 @@ func seedHytalePlugins(store *spacesStore.Store) {
 			Enabled: false,
 		},
 		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
+			Enabled:         true,
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
