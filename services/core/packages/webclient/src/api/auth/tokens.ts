@@ -1,5 +1,5 @@
 export async function createToken(email: string, password: string): Promise<string> {
-    const resp = await fetch("/idp/api/v1/tokens/create", {
+    const resp = await fetch("https://idp.fancyspaces.net/idp/api/v1/tokens/create", {
         method: "POST",
         headers: {
             "Accept": "text/plain",
@@ -20,7 +20,7 @@ export async function createToken(email: string, password: string): Promise<stri
 }
 
 export async function validateToken(token: string): Promise<boolean> {
-    const resp = await fetch("/idp/api/v1/tokens/validate", {
+    const resp = await fetch("https://idp.fancyspaces.net/idp/api/v1/tokens/validate", {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -36,7 +36,7 @@ export async function validateToken(token: string): Promise<boolean> {
 }
 
 export async function refreshToken(token: string): Promise<string> {
-    const resp = await fetch("/idp/api/v1/tokens/refresh", {
+    const resp = await fetch("https://idp.fancyspaces.net/idp/api/v1/tokens/refresh", {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,

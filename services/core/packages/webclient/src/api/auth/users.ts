@@ -2,7 +2,7 @@ import type {User} from "@/api/auth/types.ts";
 import {useUserStore} from "@/stores/user.ts";
 
 export async function getPublicUser(username: string): Promise<User> {
-    const resp = await fetch(`/idp/api/v1/public-users/${username}`, {
+    const resp = await fetch(`https://idp.fancyspaces.net/idp/api/v1/public-users/${username}`, {
         method: "GET",
         headers: {
             "Accept": "application/json",
@@ -20,7 +20,7 @@ export async function getPublicUser(username: string): Promise<User> {
 }
 
 export async function registerUser(username: string, email: string, password: string): Promise<void> {
-    const resp = await fetch("/idp/api/v1/users/register", {
+    const resp = await fetch("https://idp.fancyspaces.net/idp/api/v1/users/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export async function registerUser(username: string, email: string, password: st
 }
 
 export async function validateUser(email: string, password: string): Promise<User> {
-    const resp = await fetch("/idp/api/v1/users/validate", {
+    const resp = await fetch("https://idp.fancyspaces.net/idp/api/v1/users/validate", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -68,7 +68,7 @@ export async function updateUser(userid: string, name: string, email: string, pa
         throw new Error("User is not logged in");
     }
 
-    const resp = await fetch(`/idp/api/v1/users/${userid}`, {
+    const resp = await fetch(`https://idp.fancyspaces.net/idp/api/v1/users/${userid}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -93,7 +93,7 @@ export async function verifyUser(code: string): Promise<void> {
         throw new Error("User is not logged in");
     }
 
-    const resp = await fetch(`/idp/api/v1/users/verify/check`, {
+    const resp = await fetch(`https://idp.fancyspaces.net/idp/api/v1/users/verify/check`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -114,7 +114,7 @@ export async function resendVerificationCode(): Promise<void> {
         throw new Error("User is not logged in");
     }
 
-    const resp = await fetch(`/idp/api/v1/users/verify/resend`, {
+    const resp = await fetch(`https://idp.fancyspaces.net/idp/api/v1/users/verify/resend`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
