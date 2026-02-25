@@ -62,7 +62,7 @@ func (h *Handler) Register(mux *http.ServeMux) {
 		"register",
 		"account-settings",
 		"auth/login", // old login page
-		"dashboard",  // creator dashboard
+		"users/{user_id}",
 		"explore",
 		"explore/minecraft-plugins",
 		"explore/hytale-plugins",
