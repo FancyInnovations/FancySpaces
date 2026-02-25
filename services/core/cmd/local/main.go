@@ -91,9 +91,8 @@ func main() {
 		os.Exit(1)
 	}
 	a := idp.NewService(idp.Configuration{
-		Broker:         b,
-		PublicKey:      pubKey,
-		ExcludedRoutes: []string{},
+		Broker:    b,
+		PublicKey: pubKey,
 	})
 
 	chain := alice.New(

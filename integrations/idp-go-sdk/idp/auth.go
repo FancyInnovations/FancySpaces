@@ -12,10 +12,9 @@ var ServiceBaseURL = "https://fancyanalytics.net/idp/api/v1"
 
 // Service provides methods to interact with the IDP service.
 type Service struct {
-	broker         broker.Broker
-	excludedRoutes []string
-	publicKey      *rsa.PublicKey
-	usersCache     *usersCache
+	broker     broker.Broker
+	publicKey  *rsa.PublicKey
+	usersCache *usersCache
 }
 
 // Configuration holds the necessary configuration for initializing the IDP service.
@@ -25,22 +24,14 @@ type Configuration struct {
 
 	// PublicKey is the RSA public key used for validating JWT tokens issued by the IDP service.
 	PublicKey *rsa.PublicKey
-
-	// ExcludedRoutes is a list of (HTTP) routes that should be excluded from authentication checks. (optional)
-	ExcludedRoutes []string
 }
 
 // NewService initializes and returns a new instance of the IDP service with the provided configuration.
 func NewService(cfg Configuration) *Service {
-	if cfg.ExcludedRoutes == nil {
-		cfg.ExcludedRoutes = []string{}
-	}
-
 	return &Service{
-		broker:         cfg.Broker,
-		excludedRoutes: cfg.ExcludedRoutes,
-		publicKey:      cfg.PublicKey,
-		usersCache:     newUsersCache(),
+		broker:     cfg.Broker,
+		publicKey:  cfg.PublicKey,
+		usersCache: newUsersCache(),
 	}
 }
 

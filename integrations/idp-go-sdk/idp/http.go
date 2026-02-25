@@ -2,9 +2,11 @@ package idp
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
-	"regexp"
 	"strings"
+
+	"github.com/OliverSchlueter/goutils/sloki"
 )
 
 func (s *Service) validateHTTPRequest(r *http.Request) (*User, error) {
@@ -51,30 +53,11 @@ func (s *Service) HTTPMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// check if the request path matches any of the excluded routes
-		for _, route := range s.excludedRoutes {
-			if route == "*" {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			matched, err := regexp.MatchString(route, r.URL.Path)
-			if err != nil {
-				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-				return
-			}
-
-			if matched {
-				next.ServeHTTP(w, r)
-				return
-			}
-		}
-
 		// validate the request and get the user
 		user, err := s.validateHTTPRequest(r)
 		if err != nil {
-			fmt.Printf("Error validating user: %v\n", err)
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+			slog.Warn("Unauthorized request", sloki.WrapError(err))
+			next.ServeHTTP(w, r)
 			return
 		}
 
