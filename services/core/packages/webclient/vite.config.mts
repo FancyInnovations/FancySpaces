@@ -98,7 +98,7 @@ export default defineConfig({
       '/idp/api/v1/': {
         target: 'https://fancyanalytics.net',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
       // '/storage/api/v1/': {
       //   target: 'https://storage.fancyspaces.net',
