@@ -75,7 +75,7 @@ func (s *Service) ValidateUser(userID, password string) (*User, error) {
 	userFromCache, err := s.usersCache.GetByID(userID)
 	if err == nil {
 		// user found in cache, validate password
-		if userFromCache.Password != PasswordHash(password) {
+		if isValid, err := CheckPassword(password, userFromCache.Password); err != nil || !isValid {
 			return nil, ErrInvalidBasicCredentials
 		}
 		return userFromCache, nil
