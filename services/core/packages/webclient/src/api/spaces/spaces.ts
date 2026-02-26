@@ -119,7 +119,7 @@ export async function getDownloadCountForSpacePerVersion(spaceId: string): Promi
 
 export async function createSpace(slug: string, title: string, summary: string, description: string, categories: string[], iconURL: string): Promise<Space> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -155,7 +155,7 @@ export async function createSpace(slug: string, title: string, summary: string, 
 
 export async function updateSpace(spaceID: string, slug: string, title: string, summary: string, description: string, categories: string[], iconURL: string): Promise<void> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -185,7 +185,7 @@ export async function updateSpace(spaceID: string, slug: string, title: string, 
 
 export async function changeSpaceStatus(spaceID: string, toStatus: string): Promise<void> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 

@@ -2,7 +2,7 @@ import {useUserStore} from "@/stores/user.ts";
 
 export async function kvDelete(db: string, coll: string, key: string): Promise<void> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -27,7 +27,7 @@ export async function kvDelete(db: string, coll: string, key: string): Promise<v
 
 export async function kvDeleteMultiple(db: string, coll: string, keys: string[]): Promise<void> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -52,7 +52,7 @@ export async function kvDeleteMultiple(db: string, coll: string, keys: string[])
 
 export async function kvDeleteAll(db: string, coll: string): Promise<void> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -74,7 +74,7 @@ export async function kvDeleteAll(db: string, coll: string): Promise<void> {
 
 export async function kvExists(db: string, coll: string, key: string): Promise<boolean> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -103,7 +103,7 @@ export async function kvExists(db: string, coll: string, key: string): Promise<b
 
 export async function kvGet(db: string, coll: string, key: string): Promise<any> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -132,7 +132,7 @@ export async function kvGet(db: string, coll: string, key: string): Promise<any>
 
 export async function kvGetMultiple(db: string, coll: string, keys: string[]): Promise<Record<string, any>> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -161,7 +161,7 @@ export async function kvGetMultiple(db: string, coll: string, keys: string[]): P
 
 export async function kvGetAll(db: string, coll: string): Promise<Record<string, any>> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -187,7 +187,7 @@ export async function kvGetAll(db: string, coll: string): Promise<Record<string,
 
 export async function kvKeys(db: string, coll: string): Promise<string[]> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -213,7 +213,7 @@ export async function kvKeys(db: string, coll: string): Promise<string[]> {
 
 export async function kvCount(db: string, coll: string): Promise<number> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -239,7 +239,7 @@ export async function kvCount(db: string, coll: string): Promise<number> {
 
 export async function kvSize(db: string, coll: string): Promise<number> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 

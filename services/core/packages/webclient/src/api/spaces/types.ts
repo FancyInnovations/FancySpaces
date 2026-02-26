@@ -19,6 +19,7 @@ export interface Space {
   storage_settings: StorageSettings;
   analytics_settings: AnalyticsSettings;
   secrets_settings: SecretsSettings;
+  blog_settings: BlogSettings;
 }
 
 export interface SpaceIssueSettings {
@@ -43,6 +44,10 @@ export interface AnalyticsSettings {
 }
 
 export interface SecretsSettings {
+  enabled: boolean;
+}
+
+export interface BlogSettings {
   enabled: boolean;
 }
 

@@ -3,7 +3,7 @@ import {useUserStore} from "@/stores/user.ts";
 
 export async function getSecret(spaceId: string, key: string): Promise<SpaceSecret> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -31,7 +31,7 @@ export async function getSecret(spaceId: string, key: string): Promise<SpaceSecr
 
 export async function getSecretDecrypted(spaceId: string, key: string): Promise<string> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -55,7 +55,7 @@ export async function getSecretDecrypted(spaceId: string, key: string): Promise<
 
 export async function getAllSecrets(spaceId: string): Promise<SpaceSecret[]> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -84,7 +84,7 @@ export async function getAllSecrets(spaceId: string): Promise<SpaceSecret[]> {
 
 export async function createSecret(spaceId: string, key: string, value: string, description: string): Promise<void> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -111,7 +111,7 @@ export async function createSecret(spaceId: string, key: string, value: string, 
 
 export async function updateSecret(spaceId: string, key: string, value: string, description: string): Promise<void> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -137,7 +137,7 @@ export async function updateSecret(spaceId: string, key: string, value: string, 
 
 export async function deleteSecret(spaceId: string, key: string): Promise<void> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 

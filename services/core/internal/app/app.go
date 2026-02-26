@@ -13,6 +13,9 @@ import (
 	analyticsCache "github.com/fancyinnovations/fancyspaces/core/internal/analytics/cache"
 	analyticsDatabase "github.com/fancyinnovations/fancyspaces/core/internal/analytics/database/clickhouse"
 	"github.com/fancyinnovations/fancyspaces/core/internal/badges"
+	"github.com/fancyinnovations/fancyspaces/core/internal/blogs"
+	mongoBlogsDB "github.com/fancyinnovations/fancyspaces/core/internal/blogs/database/mongo"
+	blogsHandler "github.com/fancyinnovations/fancyspaces/core/internal/blogs/handler"
 	"github.com/fancyinnovations/fancyspaces/core/internal/fflags"
 	"github.com/fancyinnovations/fancyspaces/core/internal/frontend"
 	"github.com/fancyinnovations/fancyspaces/core/internal/issues"
@@ -180,6 +183,20 @@ func Start(cfg Configuration) {
 	if err := secNatsH.Register(); err != nil {
 		panic(fmt.Errorf("could not register secrets nats handler: %w", err))
 	}
+
+	// Blog
+	blogDB := mongoBlogsDB.NewDB(&mongoBlogsDB.Configuration{
+		Mongo: cfg.Mongo,
+	})
+	blogStore := blogs.NewStore(&blogs.Configuration{
+		Database: blogDB,
+	})
+	blgh := blogsHandler.New(blogsHandler.Configuration{
+		Store:       blogStore,
+		Spaces:      spacesStore,
+		UserFromCtx: idp.UserFromCtx,
+	})
+	blgh.Register(apiPrefix, cfg.Mux)
 
 	// Frontend
 	fh := frontend.NewHandler(frontend.Configuration{

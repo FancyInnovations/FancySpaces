@@ -61,7 +61,7 @@ export async function getAllIssues(spaceId: string): Promise<Issue[]> {
 
 export async function createIssue(spaceId: string, issueData: Partial<Issue>): Promise<Issue> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -94,7 +94,7 @@ export async function createIssue(spaceId: string, issueData: Partial<Issue>): P
 
 export async function updateIssue(spaceId: string, issueID: string, issueData: Partial<Issue>): Promise<Issue> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 
@@ -127,7 +127,7 @@ export async function updateIssue(spaceId: string, issueID: string, issueData: P
 
 export async function deleteIssue(spaceId: string, issueID: string): Promise<void> {
   const userStore = useUserStore();
-  if (!userStore.isAuthenticated) {
+  if (!(await userStore.isAuthenticated)) {
     throw new Error("User is not logged in");
   }
 

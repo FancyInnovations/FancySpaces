@@ -213,9 +213,9 @@ async function logoutReq() {
 
             <v-list-item
               v-if="isLoggedIn"
-              prepend-icon="mdi-logout"
-              title="Log out"
-              @click="logoutReq()"
+              href="/api-keys"
+              prepend-icon="mdi-key-outline"
+              title="API keys"
             />
 
             <v-list-item
@@ -223,6 +223,13 @@ async function logoutReq() {
               href="/account-settings"
               prepend-icon="mdi-cog-outline"
               title="Account settings"
+            />
+
+            <v-list-item
+              v-if="isLoggedIn"
+              prepend-icon="mdi-logout"
+              title="Log out"
+              @click="logoutReq()"
             />
 
             <v-list-subheader title="Links"/>

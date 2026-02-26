@@ -37,6 +37,20 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/api-keys/': RouteRecordInfo<
+      '/api-keys/',
+      '/api-keys',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/api-keys/new': RouteRecordInfo<
+      '/api-keys/new',
+      '/api-keys/new',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/auth/login': RouteRecordInfo<
       '/auth/login',
       '/auth/login',
@@ -96,6 +110,34 @@ declare module 'vue-router/auto-routes' {
     '/spaces/[sid]/': RouteRecordInfo<
       '/spaces/[sid]/',
       '/spaces/:sid',
+      { sid: ParamValue<true> },
+      { sid: ParamValue<false> },
+      | never
+    >,
+    '/spaces/[sid]/blog/': RouteRecordInfo<
+      '/spaces/[sid]/blog/',
+      '/spaces/:sid/blog',
+      { sid: ParamValue<true> },
+      { sid: ParamValue<false> },
+      | never
+    >,
+    '/spaces/[sid]/blog/[blogid]/': RouteRecordInfo<
+      '/spaces/[sid]/blog/[blogid]/',
+      '/spaces/:sid/blog/:blogid',
+      { sid: ParamValue<true>, blogid: ParamValue<true> },
+      { sid: ParamValue<false>, blogid: ParamValue<false> },
+      | never
+    >,
+    '/spaces/[sid]/blog/[blogid]/edit': RouteRecordInfo<
+      '/spaces/[sid]/blog/[blogid]/edit',
+      '/spaces/:sid/blog/:blogid/edit',
+      { sid: ParamValue<true>, blogid: ParamValue<true> },
+      { sid: ParamValue<false>, blogid: ParamValue<false> },
+      | never
+    >,
+    '/spaces/[sid]/blog/new': RouteRecordInfo<
+      '/spaces/[sid]/blog/new',
+      '/spaces/:sid/blog/new',
       { sid: ParamValue<true> },
       { sid: ParamValue<false> },
       | never
@@ -279,6 +321,18 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/api-keys/index.vue': {
+      routes:
+        | '/api-keys/'
+      views:
+        | never
+    }
+    'src/pages/api-keys/new.vue': {
+      routes:
+        | '/api-keys/new'
+      views:
+        | never
+    }
     'src/pages/auth/login.vue': {
       routes:
         | '/auth/login'
@@ -330,6 +384,30 @@ declare module 'vue-router/auto-routes' {
     'src/pages/spaces/[sid]/index.vue': {
       routes:
         | '/spaces/[sid]/'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/blog/index.vue': {
+      routes:
+        | '/spaces/[sid]/blog/'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/blog/[blogid]/index.vue': {
+      routes:
+        | '/spaces/[sid]/blog/[blogid]/'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/blog/[blogid]/edit.vue': {
+      routes:
+        | '/spaces/[sid]/blog/[blogid]/edit'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/blog/new.vue': {
+      routes:
+        | '/spaces/[sid]/blog/new'
       views:
         | never
     }

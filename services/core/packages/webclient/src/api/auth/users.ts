@@ -1,8 +1,8 @@
-import type {User} from "@/api/auth/types.ts";
+import {IDP_API_BASE_URL, type User} from "@/api/auth/types.ts";
 import {useUserStore} from "@/stores/user.ts";
 
 export async function getPublicUser(username: string): Promise<User> {
-    const resp = await fetch(`https://idp.fancyspaces.net/idp/api/v1/public-users/${username}`, {
+    const resp = await fetch(`${IDP_API_BASE_URL}/public-users/${username}`, {
         method: "GET",
         headers: {
             "Accept": "application/json",
@@ -20,7 +20,7 @@ export async function getPublicUser(username: string): Promise<User> {
 }
 
 export async function registerUser(username: string, email: string, password: string): Promise<void> {
-    const resp = await fetch("https://idp.fancyspaces.net/idp/api/v1/users/register", {
+    const resp = await fetch(`${IDP_API_BASE_URL}/users/register`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export async function registerUser(username: string, email: string, password: st
 }
 
 export async function validateUser(email: string, password: string): Promise<User> {
-    const resp = await fetch("https://idp.fancyspaces.net/idp/api/v1/users/validate", {
+    const resp = await fetch(`${IDP_API_BASE_URL}/users/validate`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -64,11 +64,11 @@ export async function validateUser(email: string, password: string): Promise<Use
 
 export async function updateUser(userid: string, name: string, email: string, password: string): Promise<void> {
     const userStore = useUserStore();
-    if (!userStore.isAuthenticated) {
+    if (!(await userStore.isAuthenticated)) {
         throw new Error("User is not logged in");
     }
 
-    const resp = await fetch(`https://idp.fancyspaces.net/idp/api/v1/users/${userid}`, {
+    const resp = await fetch(`${IDP_API_BASE_URL}/users/${userid}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -89,11 +89,11 @@ export async function updateUser(userid: string, name: string, email: string, pa
 
 export async function verifyUser(code: string): Promise<void> {
     const userStore = useUserStore();
-    if (!userStore.isAuthenticated) {
+    if (!(await userStore.isAuthenticated)) {
         throw new Error("User is not logged in");
     }
 
-    const resp = await fetch(`https://idp.fancyspaces.net/idp/api/v1/users/verify/check`, {
+    const resp = await fetch(`${IDP_API_BASE_URL}/users/verify/check`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -110,11 +110,11 @@ export async function verifyUser(code: string): Promise<void> {
 
 export async function resendVerificationCode(): Promise<void> {
     const userStore = useUserStore();
-    if (!userStore.isAuthenticated) {
+    if (!(await userStore.isAuthenticated)) {
         throw new Error("User is not logged in");
     }
 
-    const resp = await fetch(`https://idp.fancyspaces.net/idp/api/v1/users/verify/resend`, {
+    const resp = await fetch(`${IDP_API_BASE_URL}/users/verify/resend`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

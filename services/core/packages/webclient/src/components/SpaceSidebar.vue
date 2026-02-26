@@ -41,6 +41,14 @@ const isMember = computed(() => {
         title="Information"
       />
 
+      <v-list-item
+        v-if="space?.blog_settings.enabled"
+        :to="`/spaces/${space?.slug}/blog`"
+        link
+        prepend-icon="mdi-notebook-outline"
+        title="Blog"
+      />
+
 <!--      <v-list-item-->
 <!--        :to="`/spaces/${space?.slug}/docs`"-->
 <!--        link-->
@@ -125,8 +133,8 @@ const isMember = computed(() => {
         title="Secrets"
       />
 
-      <v-divider v-if="space && space.links.length > 0"/>
-      <v-list-subheader v-if="space && space.links.length > 0">External Links</v-list-subheader>
+      <v-divider v-if="space && space.links && space.links.length > 0"/>
+      <v-list-subheader v-if="space && space.links && space.links.length > 0">External Links</v-list-subheader>
 
       <v-list-item
         v-for="(link) in space?.links" :key="link.name"

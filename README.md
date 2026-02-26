@@ -9,6 +9,7 @@ Features:
 * View Javadoc from published maven artifacts
 * Create issues and visualize them on a kanban board
 * Sync issues from GitHub
+* Publish blog articles and view them publicly
 * Store secrets (database credentials, API keys ...) securely
 * Managed storage (document storage, key-value storage, object storage, ...) - WIP
 * Track analytical data (metrics, events, logs) and visualize it on dashboards - WIP

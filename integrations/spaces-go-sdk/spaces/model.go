@@ -27,6 +27,7 @@ type Space struct {
 	StorageSettings         StorageSettings         `json:"storage_settings" bson:"storage_settings"`
 	AnalyticsSettings       AnalyticsSettings       `json:"analytics_settings" bson:"analytics_settings"`
 	SecretsSettings         SecretsSettings         `json:"secrets_settings" bson:"secrets_settings"`
+	BlogSettings            BlogSettings            `json:"blog_settings" bson:"blog_settings"`
 }
 
 // InternalSpace is the internal representation of a Space, containing additional fields that are not exposed to clients.
@@ -68,6 +69,10 @@ type AnalyticsSettings struct {
 }
 
 type SecretsSettings struct {
+	Enabled bool `json:"enabled" bson:"enabled"`
+}
+
+type BlogSettings struct {
 	Enabled bool `json:"enabled" bson:"enabled"`
 }
 
