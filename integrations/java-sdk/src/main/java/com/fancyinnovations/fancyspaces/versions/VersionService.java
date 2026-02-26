@@ -38,7 +38,7 @@ public class VersionService {
                 .withHeader("User-Agent", "FancySpaces Java-SDK");
 
         if (apiKey != null && !apiKey.isEmpty()) {
-            req = req.withHeader("Authorization", apiKey);
+            req = req.withHeader("Authorization", "ApiKey " + apiKey);
         }
 
         try {
@@ -74,7 +74,7 @@ public class VersionService {
                 .withHeader("User-Agent", "FancySpaces Java-SDK");
 
         if (apiKey != null && !apiKey.isEmpty()) {
-            req = req.withHeader("Authorization", apiKey);
+            req = req.withHeader("Authorization", "ApiKey " + apiKey);
         }
 
         try {
@@ -113,7 +113,7 @@ public class VersionService {
                 .withHeader("User-Agent", "FancySpaces Java-SDK");
 
         if (apiKey != null && !apiKey.isEmpty()) {
-            req = req.withHeader("Authorization", apiKey);
+            req = req.withHeader("Authorization", "ApiKey " + apiKey);
         }
 
         try {
