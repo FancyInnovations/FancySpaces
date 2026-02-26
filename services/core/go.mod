@@ -6,13 +6,15 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.43.0
 	github.com/OliverSchlueter/goutils v0.0.28
 	github.com/dgraph-io/ristretto/v2 v2.4.0
-	github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk v0.0.1
+	github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk v0.0.5
+	github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk v0.0.1
 	github.com/gofri/go-github-pagination v1.0.1
 	github.com/google/go-cmp v0.7.0
 	github.com/google/go-github/v82 v82.0.0
 	github.com/google/uuid v1.6.0
 	github.com/justinas/alice v1.2.0
 	github.com/minio/minio-go/v7 v7.0.98
+	github.com/nats-io/nats.go v1.48.0
 	go.mongodb.org/mongo-driver/v2 v2.5.0
 )
 
@@ -63,7 +65,6 @@ require (
 	github.com/moby/sys/userns v0.1.0 // indirect
 	github.com/moby/term v0.5.2 // indirect
 	github.com/morikuni/aec v1.1.0 // indirect
-	github.com/nats-io/nats.go v1.48.0 // indirect
 	github.com/nats-io/nkeys v0.4.12 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect

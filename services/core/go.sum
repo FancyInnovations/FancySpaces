@@ -55,8 +55,10 @@ github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkp
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/ebitengine/purego v0.9.1 h1:a/k2f2HQU3Pi399RPW1MOaZyhKJL9w/xFpKAg4q1s0A=
 github.com/ebitengine/purego v0.9.1/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
-github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk v0.0.1 h1:lQd46FkhjRT3MFgfUImSJwlCWjzI9PQQkw1afnaC/g0=
-github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk v0.0.1/go.mod h1:cVrIjiSuUleXCDqRwG14ZaicbZd6P8jouTzLw6s3e00=
+github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk v0.0.5 h1:HXd2c/rGRlXFnv6Hbo9LT3FRB3ayJ9QxHQcNtfSPjpg=
+github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk v0.0.5/go.mod h1:e9rS4jNApedNGRRH61qp67N2nICTmgNWbeSqptGgZI4=
+github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk v0.0.1 h1:/ika0uMqN7gU8UEwGbjJxRNTkO8YkptOrau7WVi0k7Y=
+github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk v0.0.1/go.mod h1:57cLQDyskD/FVF4tUt4ddcg/rPYTwDySVhF7Yw6DIyQ=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/go-faster/city v1.0.1 h1:4WAxSZ3V2Ws4QRDrscLEDcibJY8uf41H6AhXDrNDcGw=
