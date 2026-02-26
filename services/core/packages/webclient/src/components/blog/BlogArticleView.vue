@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 
+import type {BlogArticle} from "@/api/blogs/types.ts";
+
 const props = defineProps<{
   article: BlogArticle;
   content: string;
