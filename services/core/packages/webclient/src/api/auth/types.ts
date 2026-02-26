@@ -1,5 +1,5 @@
-// export const IDP_API_BASE_URL = "https://idp.fancyspaces.net/idp/api/v1";
-export const IDP_API_BASE_URL = "http://localhost:8083/idp/api/v1";
+export const IDP_API_BASE_URL = "https://idp.fancyspaces.net/idp/api/v1";
+// export const IDP_API_BASE_URL = "http://localhost:8083/idp/api/v1";
 
 export interface User {
     id: string;
