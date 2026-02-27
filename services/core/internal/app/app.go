@@ -82,7 +82,6 @@ func Start(cfg Configuration) {
 	spacesStore := spaces.New(spaces.Configuration{
 		DB: spacesDB,
 	})
-	seedSpaces(spacesStore)
 	sh := spacesHandler.New(spacesHandler.Configuration{
 		Store:       spacesStore,
 		UserFromCtx: idp.UserFromCtx,

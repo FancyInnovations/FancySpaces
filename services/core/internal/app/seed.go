@@ -344,42 +344,6 @@ func seedHytalePlugins(store *spacesStore.Store) {
 		slog.Warn("Could not seed space", slog.String("space_id", fancycore.ID), sloki.WrapError(err))
 	}
 
-	fancycorewebsite := &spaces.Space{
-		ID:         "fancycorewebsite",
-		Slug:       "fancycorewebsite",
-		Title:      "FancyCore Website",
-		Summary:    "Web frontend for the FancyCore Hytale plugin.",
-		Categories: []spaces.Category{spaces.CategoryWebApp},
-		IconURL:    "",
-		Status:     spaces.StatusPrivate,
-		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Creator:    "oliver",
-		Members:    []spaces.Member{},
-		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
-		},
-		ReleaseSettings: spaces.ReleaseSettings{
-			Enabled: true,
-		},
-		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
-		},
-		StorageSettings: spaces.StorageSettings{
-			Enabled: false,
-		},
-		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
-			RequireWriteKey: false,
-			WriteKey:        "",
-		},
-		SecretsSettings: spaces.SecretsSettings{
-			Enabled: false,
-		},
-	}
-	if err := store.CreateFull(fancycorewebsite); err != nil {
-		slog.Warn("Could not seed space", slog.String("space_id", fancycorewebsite.ID), sloki.WrapError(err))
-	}
-
 	fancyplots := &spaces.Space{
 		ID:         "fancyplots",
 		Slug:       "fancyplots",
@@ -414,186 +378,6 @@ func seedHytalePlugins(store *spacesStore.Store) {
 	}
 	if err := store.CreateFull(fancyplots); err != nil {
 		slog.Warn("Could not seed space", slog.String("space_id", fancyplots.ID), sloki.WrapError(err))
-	}
-
-	fancyaudits := &spaces.Space{
-		ID:         "fancyaudits",
-		Slug:       "fancyaudits",
-		Title:      "FancyAudits",
-		Summary:    "Log various player actions + dupe detection for Hytale.",
-		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:    "",
-		Status:     spaces.StatusPrivate,
-		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Creator:    "oliver",
-		Members:    []spaces.Member{},
-		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
-		},
-		ReleaseSettings: spaces.ReleaseSettings{
-			Enabled: true,
-		},
-		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
-		},
-		StorageSettings: spaces.StorageSettings{
-			Enabled: false,
-		},
-		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
-			RequireWriteKey: false,
-			WriteKey:        "",
-		},
-		SecretsSettings: spaces.SecretsSettings{
-			Enabled: false,
-		},
-	}
-	if err := store.CreateFull(fancyaudits); err != nil {
-		slog.Warn("Could not seed space", slog.String("space_id", fancyaudits.ID), sloki.WrapError(err))
-	}
-
-	fancyconnect := &spaces.Space{
-		ID:         "fancyconnect",
-		Slug:       "fancyconnect",
-		Title:      "FancyConnect",
-		Summary:    "Proxy software for Hytale server networks.",
-		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:    "",
-		Status:     spaces.StatusPrivate,
-		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Creator:    "oliver",
-		Members:    []spaces.Member{},
-		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
-		},
-		ReleaseSettings: spaces.ReleaseSettings{
-			Enabled: true,
-		},
-		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
-		},
-		StorageSettings: spaces.StorageSettings{
-			Enabled: false,
-		},
-		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
-			RequireWriteKey: false,
-			WriteKey:        "",
-		},
-		SecretsSettings: spaces.SecretsSettings{
-			Enabled: false,
-		},
-	}
-	if err := store.CreateFull(fancyconnect); err != nil {
-		slog.Warn("Could not seed space", slog.String("space_id", fancyconnect.ID), sloki.WrapError(err))
-	}
-
-	fancyshops := &spaces.Space{
-		ID:         "fancyshops",
-		Slug:       "fancyshops",
-		Title:      "FancyShops",
-		Summary:    "Admin shops, chest shops, auctions, trade system and more for Hytale.",
-		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:    "",
-		Status:     spaces.StatusPrivate,
-		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Creator:    "oliver",
-		Members:    []spaces.Member{},
-		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
-		},
-		ReleaseSettings: spaces.ReleaseSettings{
-			Enabled: true,
-		},
-		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
-		},
-		StorageSettings: spaces.StorageSettings{
-			Enabled: false,
-		},
-		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
-			RequireWriteKey: false,
-			WriteKey:        "",
-		},
-		SecretsSettings: spaces.SecretsSettings{
-			Enabled: false,
-		},
-	}
-	if err := store.CreateFull(fancyshops); err != nil {
-		slog.Warn("Could not seed space", slog.String("space_id", fancyshops.ID), sloki.WrapError(err))
-	}
-
-	citypass := &spaces.Space{
-		ID:         "citypass",
-		Slug:       "citypass",
-		Title:      "CityPass",
-		Summary:    "Pass plugin for Hytale.",
-		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:    "",
-		Status:     spaces.StatusPrivate,
-		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Creator:    "oliver",
-		Members:    []spaces.Member{},
-		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
-		},
-		ReleaseSettings: spaces.ReleaseSettings{
-			Enabled: true,
-		},
-		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
-		},
-		StorageSettings: spaces.StorageSettings{
-			Enabled: false,
-		},
-		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
-			RequireWriteKey: false,
-			WriteKey:        "",
-		},
-		SecretsSettings: spaces.SecretsSettings{
-			Enabled: false,
-		},
-	}
-	if err := store.CreateFull(citypass); err != nil {
-		slog.Warn("Could not seed space", slog.String("space_id", citypass.ID), sloki.WrapError(err))
-	}
-
-	cityquests := &spaces.Space{
-		ID:         "cityquests",
-		Slug:       "cityquests",
-		Title:      "CityQuests",
-		Summary:    "Quests plugin for Hytale.",
-		Categories: []spaces.Category{spaces.CategoryHytalePlugin},
-		IconURL:    "",
-		Status:     spaces.StatusPrivate,
-		CreatedAt:  time.Date(2025, 12, 5, 20, 0, 0, 0, time.UTC),
-		Creator:    "oliver",
-		Members:    []spaces.Member{},
-		IssueSettings: spaces.IssueSettings{
-			Enabled: true,
-		},
-		ReleaseSettings: spaces.ReleaseSettings{
-			Enabled: true,
-		},
-		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
-		},
-		StorageSettings: spaces.StorageSettings{
-			Enabled: false,
-		},
-		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
-			RequireWriteKey: false,
-			WriteKey:        "",
-		},
-		SecretsSettings: spaces.SecretsSettings{
-			Enabled: false,
-		},
-	}
-	if err := store.CreateFull(cityquests); err != nil {
-		slog.Warn("Could not seed space", slog.String("space_id", cityquests.ID), sloki.WrapError(err))
 	}
 }
 
@@ -633,7 +417,7 @@ func seedOther(store *spacesStore.Store) {
 			WriteKey:        "",
 		},
 		SecretsSettings: spaces.SecretsSettings{
-			Enabled: false,
+			Enabled: true,
 		},
 	}
 	if err := store.CreateFull(fancyinnovations); err != nil {
@@ -671,7 +455,7 @@ func seedOther(store *spacesStore.Store) {
 			Enabled: true,
 		},
 		AnalyticsSettings: spaces.AnalyticsSettings{
-			Enabled:         false,
+			Enabled:         true,
 			RequireWriteKey: false,
 			WriteKey:        "",
 		},
