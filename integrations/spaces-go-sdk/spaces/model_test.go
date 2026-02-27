@@ -60,7 +60,7 @@ func TestSpace_Validate(t *testing.T) {
 			space: Space{
 				Slug:        "validslug",
 				Title:       "Valid Title",
-				Description: string(make([]byte, 501)),
+				Description: string(make([]byte, 10001)),
 			},
 			wantErr: ErrDescriptionTooLong,
 		},
