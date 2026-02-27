@@ -67,14 +67,26 @@ func (h *Handler) handleArticles(w http.ResponseWriter, r *http.Request) {
 		problems.ValidationError("title", "Title is required").WriteToHTTP(w)
 		return
 	}
+	if len(req.Title) > blogs.MaxTitleSize {
+		problems.ValidationError("title", "Title is too long").WriteToHTTP(w)
+		return
+	}
 
 	if req.Summary == "" {
 		problems.ValidationError("summary", "Summary is required").WriteToHTTP(w)
 		return
 	}
+	if len(req.Summary) > blogs.MaxSummarySize {
+		problems.ValidationError("summary", "Summary is too long").WriteToHTTP(w)
+		return
+	}
 
 	if req.Content == "" {
 		problems.ValidationError("content", "Content is required").WriteToHTTP(w)
+		return
+	}
+	if len(req.Content) > blogs.MaxContentSize {
+		problems.ValidationError("content", "Content is too long").WriteToHTTP(w)
 		return
 	}
 
@@ -321,14 +333,26 @@ func (h *Handler) handleUpdateArticle(w http.ResponseWriter, r *http.Request, a 
 	}
 
 	if req.Title != "" {
+		if len(req.Title) > blogs.MaxTitleSize {
+			problems.ValidationError("title", "Title is too long").WriteToHTTP(w)
+			return
+		}
 		a.Title = req.Title
 	}
 
 	if req.Summary != "" {
+		if len(req.Summary) > blogs.MaxSummarySize {
+			problems.ValidationError("summary", "Summary is too long").WriteToHTTP(w)
+			return
+		}
 		a.Summary = req.Summary
 	}
 
 	if req.Content != "" {
+		if len(req.Content) > blogs.MaxContentSize {
+			problems.ValidationError("content", "Content is too long").WriteToHTTP(w)
+			return
+		}
 		a.Content = req.Content
 	}
 

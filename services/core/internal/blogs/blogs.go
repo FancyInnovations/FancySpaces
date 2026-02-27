@@ -53,6 +53,16 @@ func (s *Store) GetArticleContentByID(articleID string) (string, error) {
 }
 
 func (s *Store) CreateArticle(article *Article, content string) error {
+	if len(article.Title) > MaxTitleSize {
+		return ErrTitleTooLong
+	}
+	if len(article.Summary) > MaxSummarySize {
+		return ErrSummaryTooLong
+	}
+	if len(content) > MaxContentSize {
+		return ErrContentTooLong
+	}
+
 	article.ID = idgen.GenerateID(12)
 	article.PublishedAt = time.Now()
 	article.Content = content
@@ -61,10 +71,24 @@ func (s *Store) CreateArticle(article *Article, content string) error {
 }
 
 func (s *Store) UpdateArticle(article *Article) error {
+	if len(article.Title) > MaxTitleSize {
+		return ErrTitleTooLong
+	}
+	if len(article.Summary) > MaxSummarySize {
+		return ErrSummaryTooLong
+	}
+	if len(article.Content) > MaxContentSize {
+		return ErrContentTooLong
+	}
+
 	return s.db.UpdateArticle(article)
 }
 
 func (s *Store) UpdateArticleContent(articleID string, content string) error {
+	if len(content) > MaxContentSize {
+		return ErrContentTooLong
+	}
+
 	article, err := s.db.GetArticleByID(articleID)
 	if err != nil {
 		return err
