@@ -3,12 +3,12 @@
 import type {Space} from "@/api/spaces/types.ts";
 import {getSpace} from "@/api/spaces/spaces.ts";
 import {useHead} from "@vueuse/head";
-import type {SpaceMavenRepository} from "@/api/maven/types.ts";
-import {getAllMavenRepositories} from "@/api/maven/maven.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useUserStore} from "@/stores/user.ts";
 import Card from "@/components/common/Card.vue";
 import AnalyticsSidebar from "@/components/analytics/AnalyticsSidebar.vue";
+import type {Dashboard} from "@/api/analytics/dashboards/types.ts";
+import {getDashboards} from "@/api/analytics/dashboards/dashboards.ts";
 
 const router = useRouter();
 const route = useRoute();
@@ -17,7 +17,7 @@ const userStore = useUserStore();
 const isLoggedIn = ref(false);
 
 const space = ref<Space>();
-const repos = ref<SpaceMavenRepository[]>();
+const dashboards = ref<Dashboard[]>();
 
 onMounted(async () => {
   isLoggedIn.value = await userStore.isAuthenticated;
@@ -25,12 +25,13 @@ onMounted(async () => {
   const spaceID = (route.params as any).sid as string;
   space.value = await getSpace(spaceID);
 
-  if (!space.value.maven_repository_settings.enabled) {
+  if (!space.value.analytics_settings.enabled) {
     router.push(`/spaces/${space.value.slug}`);
     return;
   }
 
-  repos.value = await getAllMavenRepositories(space.value.id);
+  dashboards.value = await getDashboards(space.value.id);
+  await refreshMetrics();
 
   useHead({
     title: `${space.value.title} analytics portal - FancySpaces`,
@@ -49,6 +50,7 @@ onMounted(async () => {
     <v-row>
       <v-col class="flex-grow-0 pa-0">
         <AnalyticsSidebar
+          :dashboards="dashboards"
           :space="space"
         />
       </v-col>
@@ -69,6 +71,7 @@ onMounted(async () => {
         </p>
       </v-col>
     </v-row>
+
     <v-row class="mb-4" justify="center">
       <v-col md="3">
         <Card

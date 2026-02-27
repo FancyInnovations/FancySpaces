@@ -22,8 +22,10 @@ export async function getLatestRecordsByCount(projectID: string, metricId: strin
 
     const data: RecordQueryResult = await response.json();
 
-    for (let i = 0; i < data.records.length; i++) {
-        data.records[i]!.timestamp = new Date(data.records[i]!.timestamp);
+    if (data.records) {
+      for (let i = 0; i < data.records.length; i++) {
+          data.records[i]!.timestamp = new Date(data.records[i]!.timestamp);
+      }
     }
 
     return data;
