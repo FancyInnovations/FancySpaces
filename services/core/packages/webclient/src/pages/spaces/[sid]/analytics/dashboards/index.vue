@@ -5,7 +5,6 @@ import {getSpace} from "@/api/spaces/spaces.ts";
 import {useHead} from "@vueuse/head";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useUserStore} from "@/stores/user.ts";
-import Card from "@/components/common/Card.vue";
 import AnalyticsSidebar from "@/components/analytics/AnalyticsSidebar.vue";
 import type {Dashboard} from "@/api/analytics/dashboards/types.ts";
 import {getDashboards} from "@/api/analytics/dashboards/dashboards.ts";
@@ -66,68 +65,37 @@ onMounted(async () => {
     <v-row>
       <v-col>
         <p class="text-h4 text-center">
-          Explore data of {{ space?.title }}
+          Dashboard overview
         </p>
       </v-col>
     </v-row>
 
-    <v-row class="mb-4" justify="center">
-      <v-col md="3">
+    <v-row align="stretch" class="mb-4" justify="center">
+      <v-col
+        v-for="d in dashboards"
+        :key="d.dashboard_id"
+        md="3"
+      >
         <Card
-          :to="`/spaces/${space?.slug}/analytics/metrics`"
-          prepend-icon="mdi-chart-timeline-variant"
-          text="In the metrics explorer, you can preview all collected metric data for your project."
-          title="Metrics"
-        />
+          :appendIcon="d.public ? 'mdi-lock-open-variant-outline' : 'mdi-lock-outline'"
+          :subtitle="'Created at ' + new Date(d.created_at).toLocaleDateString()"
+          :title="d.name"
+          :to="`/spaces/${space?.id}/analytics/dashboards/${d.dashboard_id}`"
+          height="100%"
+        >
+          <v-card-text>{{ d.summary }}</v-card-text>
+        </Card>
       </v-col>
-      <v-col md="3">
-        <Card
-          :to="`/spaces/${space?.slug}/analytics/events`"
-          prepend-icon="mdi-radar"
-          text="In the event explorer, you can preview all collected event data for your project."
-          title="Events"
-        />
-      </v-col>
-      <v-col md="3">
-        <Card
-          :to="`/spaces/${space?.slug}/analytics/logs`"
-          prepend-icon="mdi-script-text"
-          text="In the logs explorer, you can preview all collected log data for your project."
-          title="Logs"
-        />
-      </v-col>
-    </v-row>
 
-    <v-row justify="center">
       <v-col md="3">
-        <v-badge
-          color="error"
-          content="SOON"
-          offset-x="20"
+        <Card
+          :to="`/spaces/${space?.id}/analytics/dashboards/new`"
+          class="d-flex align-center justify-center"
+          height="100%"
+          min-height="120px"
         >
-          <Card
-            :to="`/spaces/${space?.slug}/analytics/exceptions`"
-            disabled
-            prepend-icon="mdi-bug"
-            text="In the exception overview, you can view and manage all exceptions for your project."
-            title="Exceptions"
-          />
-        </v-badge>
-      </v-col>
-      <v-col md="3">
-        <v-badge
-          color="error"
-          content="SOON"
-          offset-x="20"
-        >
-          <Card
-            :to="`/spaces/${space?.slug}/analytics/alerts`"
-            disabled
-            prepend-icon="mdi-bell-ring"
-            text="In the alert overview, you can view and manage all alerts for your project."
-            title="Alerts"
-          />
-        </v-badge>
+          <v-icon size="48">mdi-plus</v-icon>
+        </Card>
       </v-col>
     </v-row>
   </v-container>

@@ -128,6 +128,20 @@ declare module 'vue-router/auto-routes' {
       { sid: ParamValue<false> },
       | never
     >,
+    '/spaces/[sid]/analytics/dashboards/': RouteRecordInfo<
+      '/spaces/[sid]/analytics/dashboards/',
+      '/spaces/:sid/analytics/dashboards',
+      { sid: ParamValue<true> },
+      { sid: ParamValue<false> },
+      | never
+    >,
+    '/spaces/[sid]/analytics/dashboards/new': RouteRecordInfo<
+      '/spaces/[sid]/analytics/dashboards/new',
+      '/spaces/:sid/analytics/dashboards/new',
+      { sid: ParamValue<true> },
+      { sid: ParamValue<false> },
+      | never
+    >,
     '/spaces/[sid]/analytics/metrics': RouteRecordInfo<
       '/spaces/[sid]/analytics/metrics',
       '/spaces/:sid/analytics/metrics',
@@ -417,6 +431,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/spaces/[sid]/analytics/index.vue': {
       routes:
         | '/spaces/[sid]/analytics/'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/analytics/dashboards/index.vue': {
+      routes:
+        | '/spaces/[sid]/analytics/dashboards/'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/analytics/dashboards/new.vue': {
+      routes:
+        | '/spaces/[sid]/analytics/dashboards/new'
       views:
         | never
     }

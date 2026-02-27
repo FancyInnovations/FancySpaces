@@ -75,7 +75,8 @@ const isMember = computed(() => {
       <v-list-subheader>Dashboards</v-list-subheader>
 
       <v-list-item
-        :to="`/projects/${space?.slug}/analytics/dashboards/`"
+        :to="`/spaces/${space?.slug}/analytics/dashboards/`"
+        class="mb-4"
         exact
         link
         prepend-icon="mdi-view-list"
@@ -85,7 +86,7 @@ const isMember = computed(() => {
       <template v-for="dashboard in dashboards" v-if="dashboards" :key="dashboard.id">
         <v-list-item
           :title="dashboard.name"
-          :to="`/projects/${space?.slug}/analytics/dashboards/${dashboard.dashboard_id}`"
+          :to="`/spaces/${space?.slug}/analytics/dashboards/${dashboard.dashboard_id}`"
           link
           prepend-icon="mdi-view-dashboard-variant"
         />

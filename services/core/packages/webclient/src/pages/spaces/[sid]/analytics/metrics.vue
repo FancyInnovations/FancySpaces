@@ -157,8 +157,8 @@ async function queryMetrics() {
     </v-row>
 
 
-    <v-row>
-      <v-col>
+    <v-row justify="center">
+      <v-col md="8">
         <Card>
           <v-card-title class="mt-2">
             Metric definitions
@@ -171,6 +171,7 @@ async function queryMetrics() {
                 <th>Metric Name</th>
                 <th>Multi sender</th>
                 <th>Pull metric</th>
+                <th>Aggregation interval</th>
                 <th>Actions</th>
               </tr>
               </thead>
@@ -179,7 +180,8 @@ async function queryMetrics() {
                 <td>{{ m.name }}</td>
                 <td>{{ m.multi_sender ? 'Yes' : 'No' }}</td>
                 <td>{{ m.pull_metric ? 'Yes' : 'No' }}</td>
-                <td>
+                <td>{{ m.aggregation_interval }} seconds</td>
+                <td style="width: 140px">
                   <v-btn
                     icon="mdi-pencil"
                     variant="text"
@@ -199,12 +201,13 @@ async function queryMetrics() {
               class="mt-4"
               color="primary"
               prepend-icon="mdi-plus"
+              variant="tonal"
               @click="showNewMetricDialog = true"
             >
               New Metric
             </v-btn>
              <v-btn
-              class="ml-2 mt-4"
+              class="ml-4 mt-4"
               color="primary"
               prepend-icon="mdi-refresh"
               variant="tonal"
@@ -217,8 +220,8 @@ async function queryMetrics() {
       </v-col>
     </v-row>
 
-    <v-row class="mt-8">
-      <v-col>
+    <v-row class="mt-8" justify="center">
+      <v-col md="8">
         <Card>
           <v-card-title class="mt-2">
             Metric query
@@ -252,8 +255,8 @@ async function queryMetrics() {
       </v-col>
     </v-row>
 
-    <v-row v-if="queryResult">
-      <v-col>
+    <v-row v-if="queryResult" justify="center">
+      <v-col md="8">
         <Card>
           <v-card-title class="mt-2">
             Metric query result
