@@ -425,7 +425,7 @@ func TestStore_Create(t *testing.T) {
 			Exiting: []spaces.Space{},
 			Creator: &normalUser,
 			Req: &spacesStore.CreateOrUpdateSpaceReq{
-				Slug:        "spaceOne",
+				Slug:        "space-one",
 				Title:       "Space One",
 				Description: "This is the first space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -433,7 +433,7 @@ func TestStore_Create(t *testing.T) {
 			},
 			Exp: &spaces.Space{
 				ID:          "",
-				Slug:        "spaceOne",
+				Slug:        "space-one",
 				Title:       "Space One",
 				Description: "This is the first space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -442,6 +442,10 @@ func TestStore_Create(t *testing.T) {
 				CreatedAt:   now,
 				Creator:     "user-1",
 				Members:     []spaces.Member{},
+				Links:       []spaces.Link{},
+				AnalyticsSettings: spaces.AnalyticsSettings{
+					Enabled: true,
+				},
 			},
 			ExpErr: nil,
 		},
@@ -455,7 +459,7 @@ func TestStore_Create(t *testing.T) {
 				Roles:    []string{"user"},
 			},
 			Req: &spacesStore.CreateOrUpdateSpaceReq{
-				Slug:        "spaceOne",
+				Slug:        "space-one",
 				Title:       "Space One",
 				Description: "This is the first space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -474,7 +478,7 @@ func TestStore_Create(t *testing.T) {
 				Roles:    []string{"user"},
 			},
 			Req: &spacesStore.CreateOrUpdateSpaceReq{
-				Slug:        "spaceOne",
+				Slug:        "space-one",
 				Title:       "Space One",
 				Description: "This is the first space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -488,7 +492,7 @@ func TestStore_Create(t *testing.T) {
 			Exiting: []spaces.Space{
 				{
 					ID:          uuid.New().String(),
-					Slug:        "spaceOne",
+					Slug:        "space-one",
 					Title:       "Space One",
 					Description: "This is the first space.",
 					Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -501,7 +505,7 @@ func TestStore_Create(t *testing.T) {
 			},
 			Creator: &normalUser,
 			Req: &spacesStore.CreateOrUpdateSpaceReq{
-				Slug:        "spaceOne",
+				Slug:        "space-one",
 				Title:       "Space One",
 				Description: "This is the first space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -564,7 +568,7 @@ func TestStore_Update(t *testing.T) {
 			Exiting: []spaces.Space{
 				{
 					ID:          "space-1",
-					Slug:        "mySpace",
+					Slug:        "my-space",
 					Title:       "Space One",
 					Description: "This is the first space.",
 					Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -577,7 +581,7 @@ func TestStore_Update(t *testing.T) {
 			},
 			ID: "space-1",
 			Req: &spacesStore.CreateOrUpdateSpaceReq{
-				Slug:        "mySpace",
+				Slug:        "my-space",
 				Title:       "Space Two",
 				Description: "This is the second space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin, spaces.CategoryWebApp},
@@ -585,7 +589,7 @@ func TestStore_Update(t *testing.T) {
 			},
 			Exp: &spaces.Space{
 				ID:          "space-1",
-				Slug:        "mySpace",
+				Slug:        "my-space",
 				Title:       "Space Two",
 				Description: "This is the second space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin, spaces.CategoryWebApp},
@@ -602,7 +606,7 @@ func TestStore_Update(t *testing.T) {
 			Exiting: []spaces.Space{
 				{
 					ID:          "space-1",
-					Slug:        "spaceOne",
+					Slug:        "space-one",
 					Title:       "Space One",
 					Description: "This is the first space.",
 					Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -614,7 +618,7 @@ func TestStore_Update(t *testing.T) {
 				},
 				{
 					ID:          "space-2",
-					Slug:        "spaceTwo",
+					Slug:        "space-two",
 					Title:       "Space Two",
 					Description: "This is the second space.",
 					Categories:  []spaces.Category{spaces.CategoryMinecraftMod},
@@ -627,7 +631,7 @@ func TestStore_Update(t *testing.T) {
 			},
 			ID: "space-1",
 			Req: &spacesStore.CreateOrUpdateSpaceReq{
-				Slug:        "spaceTwo",
+				Slug:        "space-two",
 				Title:       "Space One",
 				Description: "This is the first space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -738,7 +742,7 @@ func TestStore_ChangeStatus(t *testing.T) {
 			Name: "Successful change status from draft to review",
 			Space: spaces.Space{
 				ID:          "space-1",
-				Slug:        "spaceOne",
+				Slug:        "space-one",
 				Title:       "Space One",
 				Description: "This is the first space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
@@ -757,7 +761,7 @@ func TestStore_ChangeStatus(t *testing.T) {
 			Name: "Successful change status from review to approved",
 			Space: spaces.Space{
 				ID:          "space-1",
-				Slug:        "spaceOne",
+				Slug:        "space-one",
 				Title:       "Space One",
 				Description: "This is the first space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
