@@ -5,7 +5,7 @@ use (
 	integrations/idp-go-sdk
 	integrations/spaces-go-sdk
 	integrations/storage-go-sdk
+	services/cloud
 	services/core
 	services/storage
-	services/cloud
 )

@@ -122,7 +122,6 @@ const isMember = computed(() => {
       <v-list-subheader>Space</v-list-subheader>
 
       <v-list-item
-        v-if="isMember"
         :to="`/spaces/${space?.slug}`"
         exact
         link
