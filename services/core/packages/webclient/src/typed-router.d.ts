@@ -121,6 +121,13 @@ declare module 'vue-router/auto-routes' {
       { sid: ParamValue<false> },
       | never
     >,
+    '/spaces/[sid]/analytics/': RouteRecordInfo<
+      '/spaces/[sid]/analytics/',
+      '/spaces/:sid/analytics',
+      { sid: ParamValue<true> },
+      { sid: ParamValue<false> },
+      | never
+    >,
     '/spaces/[sid]/blog/': RouteRecordInfo<
       '/spaces/[sid]/blog/',
       '/spaces/:sid/blog',
@@ -397,6 +404,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/spaces/[sid]/index.vue': {
       routes:
         | '/spaces/[sid]/'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/analytics/index.vue': {
+      routes:
+        | '/spaces/[sid]/analytics/'
       views:
         | never
     }

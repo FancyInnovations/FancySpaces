@@ -8,7 +8,7 @@
                 <v-col class="text-center" cols="12" md="8">
                     <v-img class="mb-8" height="200" src="https://fancyinnovations.com/logos-and-banners/fancyanalytics-banner.png"/>
 
-                    <h1 class="text-h3 font-weight-medium">Analytics made simple</h1>
+                    <h1 class="text-h3 font-weight-medium">Explore your data like never before</h1>
 
                     <p class="text-subtitle-1 mb-8">
                       Collect, analyze, and visualize your data with ease.

@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AnalyticsSidebar: typeof import('./components/analytics/AnalyticsSidebar.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     AppHeader: typeof import('./components/AppHeader.vue')['default']
     BlogArticleView: typeof import('./components/blog/BlogArticleView.vue')['default']
