@@ -83,7 +83,7 @@ const isMember = computed(() => {
         title="Dashboard Overview"
       />
 
-      <template v-for="dashboard in dashboards" v-if="dashboards" :key="dashboard.id">
+      <template v-for="dashboard in dashboards" v-if="dashboards" :key="dashboard.dashboard_id">
         <v-list-item
           :title="dashboard.name"
           :to="`/spaces/${space?.slug}/analytics/dashboards/${dashboard.dashboard_id}`"
