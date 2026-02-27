@@ -35,11 +35,30 @@ const isMember = computed(() => {
 
       <v-divider class="mt-2"/>
 
-      <v-list-item :to="`/spaces/${space?.slug}/analytics/metrics`" link prepend-icon="mdi-chart-timeline-variant" title="Metrics"/>
-      <v-list-item :to="`/spaces/${space?.slug}/analytics/events`" link prepend-icon="mdi-radar" title="Events"/>
-      <v-list-item :to="`/spaces/${space?.slug}/analytics/logs`" link prepend-icon="mdi-script-text" title="Logs"/>
+      <v-list-item
+        v-if="isMember"
+        :to="`/spaces/${space?.slug}/analytics/metrics`"
+        link
+        prepend-icon="mdi-chart-timeline-variant"
+        title="Metrics"
+      />
+      <v-list-item
+        v-if="isMember"
+        :to="`/spaces/${space?.slug}/analytics/events`"
+        link
+        prepend-icon="mdi-radar"
+        title="Events"
+      />
+      <v-list-item
+        v-if="isMember"
+        :to="`/spaces/${space?.slug}/analytics/logs`"
+        link
+        prepend-icon="mdi-script-text"
+        title="Logs"
+      />
 
       <v-list-item
+        v-if="isMember"
         :to="`/spaces/${space?.slug}/analytics/exceptions`"
         disabled
         link
@@ -56,6 +75,7 @@ const isMember = computed(() => {
       </v-list-item>
 
       <v-list-item
+        v-if="isMember"
         :to="`/spaces/${space?.slug}/analytics/alerts`"
         disabled
         link
@@ -83,8 +103,13 @@ const isMember = computed(() => {
         title="Dashboard Overview"
       />
 
-      <template v-for="dashboard in dashboards" v-if="dashboards" :key="dashboard.dashboard_id">
+      <template
+        v-for="dashboard in dashboards"
+        v-if="dashboards"
+        :key="dashboard.dashboard_id"
+      >
         <v-list-item
+          v-if="dashboard.public || isMember"
           :title="dashboard.name"
           :to="`/spaces/${space?.slug}/analytics/dashboards/${dashboard.dashboard_id}`"
           link

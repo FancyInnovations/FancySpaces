@@ -14,6 +14,7 @@ const route = useRoute();
 const userStore = useUserStore();
 
 const isLoggedIn = ref(false);
+const isMember = ref(false);
 
 const space = ref<Space>();
 const dashboards = ref<Dashboard[]>();
@@ -28,6 +29,8 @@ onMounted(async () => {
     router.push(`/spaces/${space.value.slug}`);
     return;
   }
+
+  isMember.value = (await userStore.isAuthenticated) && (space.value.creator == userStore.user?.id || space.value.members.some(member => member.user_id === userStore.user?.id));
 
   dashboards.value = await getDashboards(space.value.id);
 
@@ -87,7 +90,7 @@ onMounted(async () => {
         </Card>
       </v-col>
 
-      <v-col md="3">
+      <v-col v-if="isMember" md="3">
         <Card
           :to="`/spaces/${space?.id}/analytics/dashboards/new`"
           class="d-flex align-center justify-center"

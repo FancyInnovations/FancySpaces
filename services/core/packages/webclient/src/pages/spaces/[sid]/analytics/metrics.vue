@@ -21,6 +21,7 @@ const userStore = useUserStore();
 const notifications = useNotificationStore();
 
 const isLoggedIn = ref(false);
+const isMember = ref(false);
 
 const space = ref<Space>();
 const dashboards = ref<Dashboard[]>();
@@ -51,6 +52,13 @@ onMounted(async () => {
 
   if (!space.value.analytics_settings.enabled) {
     router.push(`/spaces/${space.value.slug}`);
+    return;
+  }
+
+  isMember.value = (await userStore.isAuthenticated) && (space.value.creator == userStore.user?.id || space.value.members.some(member => member.user_id === userStore.user?.id));
+
+  if (!isMember.value) {
+    router.push(`/spaces/${space.value.slug}/analytics`);
     return;
   }
 
