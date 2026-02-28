@@ -120,6 +120,7 @@ const isMember = computed(() => {
       <v-list-item
         v-if="space?.analytics_settings.enabled"
         :to="`/spaces/${space?.slug}/analytics`"
+        disabled
         link
         prepend-icon="mdi-chart-box-outline"
         title="Analytics Portal"
