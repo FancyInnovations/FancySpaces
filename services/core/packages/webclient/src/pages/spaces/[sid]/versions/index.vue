@@ -11,6 +11,7 @@ import {useNotificationStore} from "@/stores/notifications.ts";
 import Card from "@/components/common/Card.vue";
 import {useUserStore} from "@/stores/user.ts";
 import {useConfirmationStore} from "@/stores/confirmation.ts";
+import VersionChannelChip from "@/components/versions/VersionChannelChip.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -52,7 +53,7 @@ const filteredVersions = computed(() => {
 
 const tableHeaders = [
   { title: 'Version', key: 'name', sortable: false },
-  { title: 'Channel', key: 'channel', value: (ver: SpaceVersion) => ver.channel.toUpperCase(), sortable: false },
+  { title: 'Channel', key: 'channel', sortable: false },
   { title: 'Platform', key: 'platform', value: (ver: SpaceVersion) => mapPlatformToDisplayname(ver.platform), sortable: false },
   { title: 'Platform versions', key: 'supported_platform_versions', sortable: false, value: (ver: SpaceVersion) => ver.supported_platform_versions.join(", "), class: 'platform-versions__max-width' },
   { title: 'Released at', key: 'published_at', sortable: false, value: (ver: SpaceVersion) => new Date(ver.published_at).toLocaleString() },
@@ -232,6 +233,25 @@ function deleteVersionReq(evt: any, v: SpaceVersion) {
               hover
               @click:row="onRowClick"
             >
+              <template v-slot:item.name="{ item }">
+                  <VersionChip
+                    :spaceID="item.space_id"
+                    :version="item.name"
+                  />
+              </template>
+
+              <template v-slot:item.channel="{ item }">
+                  <VersionChannelChip
+                    :version="item"
+                  />
+              </template>
+
+              <template v-slot:item.platform="{ item }">
+                <VersionPlatformChip
+                  :version="item"
+                />
+              </template>
+
               <template v-slot:item.actions="{ item }">
                 <div class="actions__width">
                   <v-btn
@@ -284,6 +304,6 @@ table, tr, td, thead, tbody {
 }
 
 .actions__width {
-  min-width: 130px;
+  min-width: 55px;
 }
 </style>
