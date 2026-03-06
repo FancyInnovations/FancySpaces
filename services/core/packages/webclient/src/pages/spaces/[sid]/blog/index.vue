@@ -59,6 +59,11 @@ onMounted(async () => {
 
       <v-col>
         <SpaceHeader :space="space">
+          <template #metadata>
+            <p class="text-body-2 mx-4">-</p>
+            <p class="text-body-2">{{ articles.length }} {{ articles.length === 1 ? 'Article' : 'Articles' }}</p>
+          </template>
+
           <template #quick-actions>
             <v-btn
               v-if="isMember"
@@ -80,8 +85,7 @@ onMounted(async () => {
 
     <v-row justify="center">
       <v-col md="8">
-        <h1 class="text-h4 text-center font-weight-bold mb-2">{{ space?.title }} Blog</h1>
-        <p class="text-subtitle-1 text-center text-grey">{{ articles.length }} {{ articles.length === 1 ? 'article' : 'articles' }}</p>
+        <h1 class="text-h4 text-center font-weight-bold">{{ space?.title }} Blog</h1>
       </v-col>
     </v-row>
 
