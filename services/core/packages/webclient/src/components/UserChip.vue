@@ -10,6 +10,7 @@ const props = defineProps<{
 <template>
   <v-chip
     :density="props.density || 'default'"
+    :to="`/users/${props.user}`"
     color="secondary"
     prepend-icon="mdi-account"
     rounded
