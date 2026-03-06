@@ -88,56 +88,50 @@ async function createNewSecret() {
       </v-col>
     </v-row>
 
-    <v-row>
-      <v-col>
-        <h1 class="text-center">Create new secret for {{ space?.title }}</h1>
-      </v-col>
-    </v-row>
-
     <v-row justify="center">
-      <v-col md="6">
-        <v-text-field
-          v-model="key"
-          color="primary"
-          hide-details
-          label="Key"
-          required
-        />
-      </v-col>
-    </v-row>
+      <v-col md="8">
+        <Card>
+          <v-card-title class="mt-2">
+            New Secret
+          </v-card-title>
 
-    <v-row justify="center">
-      <v-col md="6">
-        <v-textarea
-          v-model="value"
-          color="primary"
-          hide-details
-          label="Secret"
-          rows="3"
-        />
-      </v-col>
-    </v-row>
+          <v-card-text>
+            <v-text-field
+              v-model="key"
+              class="mb-4"
+              color="primary"
+              hide-details
+              label="Key"
+              required
+            />
 
-    <v-row justify="center">
-      <v-col md="6">
-        <v-textarea
-          v-model="description"
-          color="primary"
-          hide-details
-          label="Description"
-          rows="6"
-        />
-      </v-col>
-    </v-row>
+            <v-textarea
+              v-model="value"
+              class="mb-4"
+              color="primary"
+              hide-details
+              label="Secret"
+              rows="3"
+            />
 
-    <v-row justify="center">
-      <v-col md="6">
-        <v-btn
-          color="primary"
-          @click="createNewSecret()"
-        >
-          Create Secret
-        </v-btn>
+            <v-textarea
+              v-model="description"
+              class="mb-4"
+              color="primary"
+              hide-details
+              label="Description"
+              rows="6"
+            />
+
+            <v-btn
+              class="mt-4"
+              color="primary"
+              @click="createNewSecret()"
+            >
+              Create Secret
+            </v-btn>
+          </v-card-text>
+        </Card>
       </v-col>
     </v-row>
   </v-container>
