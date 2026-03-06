@@ -3,16 +3,28 @@
 import type {Space} from "@/api/spaces/types.ts";
 import {getDownloadCountForSpace, getDownloadCountForSpacePerVersion, getSpace} from "@/api/spaces/spaces.ts";
 import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types.ts";
-import {getAllVersions, getLatestVersion} from "@/api/versions/versions.ts";
+import {deleteVersion, getAllVersions, getLatestVersion} from "@/api/versions/versions.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";
 import {useNotificationStore} from "@/stores/notifications.ts";
 import Card from "@/components/common/Card.vue";
+import {useUserStore} from "@/stores/user.ts";
+import {useConfirmationStore} from "@/stores/confirmation.ts";
 
 const router = useRouter();
 const route = useRoute();
 const notificationStore = useNotificationStore();
+const confirmationStore = useConfirmationStore();
+const userStore = useUserStore();
+
+const isMember = computed(() => {
+  if (!space.value) return false;
+  if (!userStore.isAuthenticated) return false;
+
+  const userID =  userStore.user?.id;
+  return space.value?.creator == userID || space.value?.members.some(member => member.user_id === userID);
+});
 
 const space = ref<Space>();
 const latestVersion = ref<SpaceVersion>();
@@ -78,9 +90,22 @@ function onRowClick(event: any, { item }: any) {
   router.push(`/spaces/${space.value?.slug}/versions/${item.name}`);
 }
 
-function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text);
-  notificationStore.info("Copied to clipboard");
+function deleteVersionReq(evt: any, v: SpaceVersion) {
+  evt.stopPropagation();
+
+  confirmationStore.confirmation = {
+    shown: true,
+    persistent: true,
+    title: "Delete version",
+    text: "Are you sure you want to delete this version? This action cannot be undone.",
+    yesText: "Delete",
+    onConfirm: async () => {
+      await deleteVersion(v.space_id, v.id);
+
+      versions.value = versions.value?.filter(ver => ver.id !== v.id);
+      notificationStore.info("Version deleted");
+    }
+  };
 }
 
 </script>
@@ -129,6 +154,19 @@ function copyToClipboard(text: string) {
               variant="tonal"
             >
               latest
+            </v-btn>
+
+            <v-btn
+              v-if="isMember"
+              :to="`/spaces/${space?.slug}/versions/new`"
+              class="sidebar__mobile mt-4"
+              color="primary"
+              disabled
+              prepend-icon="mdi-plus"
+              size="large"
+              variant="tonal"
+            >
+              new version
             </v-btn>
           </template>
         </SpaceHeader>
@@ -206,15 +244,27 @@ function copyToClipboard(text: string) {
                   <v-btn
                     v-else
                     :href="item.files[0]?.url"
-                    class="mr-4 my-1"
+                    class="my-1"
                     icon="mdi-download"
                     variant="text"
                   />
 
                   <v-btn
-                    icon="mdi-link-variant"
+                    v-if="isMember"
+                    :to="`/spaces/${space?.slug}/versions/${item.name}/edit`"
+                    class="ml-4 my-1"
+                    disabled
+                    icon="mdi-pencil"
                     variant="text"
-                    @click="copyToClipboard(`https://fancyspaces.net/spaces/${space?.slug}/versions/${item.name}`)"
+                  />
+
+                  <v-btn
+                    v-if="isMember"
+                    class="ml-4 my-1"
+                    color="red"
+                    icon="mdi-delete"
+                    variant="text"
+                    @click="deleteVersionReq($event, item)"
                   />
                 </div>
               </template>

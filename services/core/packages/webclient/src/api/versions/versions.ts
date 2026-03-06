@@ -74,3 +74,24 @@ export async function getDownloadCountForVersion(spaceId: string, versionId: str
 
   return (await response.json()).downloads as number;
 }
+
+export async function deleteVersion(spaceID: string, versionId: string): Promise<void> {
+  const userStore = useUserStore();
+  if (!(await userStore.isAuthenticated)) {
+    throw new Error("User is not logged in");
+  }
+
+  const response = await fetch(
+    `/api/v1/spaces/${spaceID}/versions/${versionId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${userStore.token}`,
+      }
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete version: " + await response.text());
+  }
+}
