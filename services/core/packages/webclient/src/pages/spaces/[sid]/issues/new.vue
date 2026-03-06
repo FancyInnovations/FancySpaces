@@ -6,9 +6,11 @@ import {useHead} from "@vueuse/head";
 import {createIssue} from "@/api/issues/issues.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
+import {useNotificationStore} from "@/stores/notifications.ts";
 
 const router = useRouter();
 const route = useRoute();
+const notifications = useNotificationStore();
 
 const space = ref<Space>();
 
@@ -38,6 +40,23 @@ onMounted(async () => {
 });
 
 async function createNewIssue() {
+  if (!space.value) return;
+
+  if (!title.value.trim()) {
+    notifications.error("Title is required.");
+    return;
+  }
+
+  if (!type.value) {
+    notifications.error("Type is required.");
+    return;
+  }
+
+  if (!priority.value) {
+    notifications.error("Priority is required.");
+    return;
+  }
+
   const issue = await createIssue(space.value!.id, {
     title: title.value,
     description: description.value,
@@ -84,80 +103,75 @@ async function createNewIssue() {
       </v-col>
     </v-row>
 
-    <v-row>
-      <v-col>
-        <h1 class="text-center">Create new issue in {{ space?.title }}</h1>
-      </v-col>
-    </v-row>
-
     <v-row justify="center">
-      <v-col md="6">
-        <v-text-field
-          v-model="title"
-          color="primary"
-          hide-details
-          label="Title"
-          required
-        />
-      </v-col>
-    </v-row>
+      <v-col md="8">
+        <Card>
+          <v-card-title class="mt-2">
+            New Issue
+          </v-card-title>
 
-    <v-row justify="center">
-      <v-col md="6">
-        <v-textarea
-          v-model="description"
-          color="primary"
-          hide-details
-          label="Description"
-          rows="8"
-        />
-      </v-col>
-    </v-row>
+          <v-card-text>
+            <v-text-field
+              v-model="title"
+              class="mb-4"
+              color="primary"
+              hide-details
+              label="Title"
+              required
+            />
 
-    <v-row justify="center">
-      <v-col md="3">
-        <v-select
-          v-model="type"
-          :items="[
-                    { title: 'Epic', value: 'epic' },
-                    { title: 'Bug', value: 'bug' },
-                    { title: 'Task', value: 'task' },
-                    { title: 'Story', value: 'story' },
-                    { title: 'Idea', value: 'idea' },
+            <v-textarea
+              v-model="description"
+              class="mb-4"
+              color="primary"
+              hide-details
+              label="Description"
+              rows="8"
+            />
 
-                  ]"
-          color="primary"
-          hide-details
-          label="Type"
-          required
-        />
-      </v-col>
+            <div class="d-flex mb-4">
+              <v-select
+                v-model="type"
+                :items="[
+                      { title: 'Epic', value: 'epic' },
+                      { title: 'Bug', value: 'bug' },
+                      { title: 'Task', value: 'task' },
+                      { title: 'Story', value: 'story' },
+                      { title: 'Idea', value: 'idea' },
 
-      <v-col md="3">
-        <v-select
-          v-model="priority"
-          :items="[
-                    { title: 'Low', value: 'low' },
-                    { title: 'Medium', value: 'medium' },
-                    { title: 'High', value: 'high' },
-                    { title: 'Critical', value: 'critical' },
-                  ]"
-          color="primary"
-          hide-details
-          label="Priority"
-          required
-        />
-      </v-col>
-    </v-row>
+                    ]"
+                class="mr-2"
+                color="primary"
+                hide-details
+                label="Type"
+                required
+              />
 
-    <v-row justify="center">
-      <v-col md="6">
-        <v-btn
-          color="primary"
-          @click="createNewIssue"
-        >
-          Create Issue
-        </v-btn>
+              <v-select
+                v-model="priority"
+                :items="[
+                      { title: 'Low', value: 'low' },
+                      { title: 'Medium', value: 'medium' },
+                      { title: 'High', value: 'high' },
+                      { title: 'Critical', value: 'critical' },
+                    ]"
+                class="ml-2"
+                color="primary"
+                hide-details
+                label="Priority"
+                required
+              />
+            </div>
+
+            <v-btn
+              class="mt-4"
+              color="primary"
+              @click="createNewIssue"
+            >
+              Create Issue
+            </v-btn>
+          </v-card-text>
+        </Card>
       </v-col>
     </v-row>
   </v-container>
