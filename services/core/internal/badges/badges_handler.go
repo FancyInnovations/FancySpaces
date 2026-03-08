@@ -71,7 +71,7 @@ func (h *Handler) handleSpaceDownloadsBadge(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	badge := badgegen.Generate("Downloads", fmt.Sprintf("%d", downloads), "#541ea6")
+	badge := badgegen.Generate("Downloads", fmt.Sprintf("%d", downloads), "#bf9126")
 
 	w.Header().Set("Content-Type", "image/svg+xml;charset=utf-8")
 	w.Header().Set("Cache-Control", "public, max-age=300") // 5 minutes
