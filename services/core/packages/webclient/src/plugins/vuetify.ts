@@ -6,8 +6,10 @@
 
 // Styles
 import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
 import {md3} from 'vuetify/blueprints'
+
+// @ts-ignore
+import 'vuetify/styles'
 
 // Composables
 import {createVuetify, type ThemeDefinition} from 'vuetify'
