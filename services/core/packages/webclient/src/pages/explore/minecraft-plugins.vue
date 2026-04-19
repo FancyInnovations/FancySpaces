@@ -21,6 +21,8 @@ onMounted(async () => {
   spaces.value.push(await getSpace("fn"));
   spaces.value.push(await getSpace("fh"));
   spaces.value.push(await getSpace("fd"));
+  spaces.value.push(await getSpace("MX6Cna3z"));
+  spaces.value.push(await getSpace("s1gGcHj5"));
 });
 </script>
 
