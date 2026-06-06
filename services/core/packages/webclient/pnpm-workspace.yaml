@@ -1,3 +1,4 @@
 minimumReleaseAge: 60
-onlyBuiltDependencies:
-  - '@parcel/watcher'
+allowBuilds:
+  esbuild: true
+  parcel/watcher: true
