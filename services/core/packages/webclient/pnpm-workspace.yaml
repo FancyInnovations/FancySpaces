@@ -1,4 +1,4 @@
 minimumReleaseAge: 60
 allowBuilds:
   esbuild: true
-  parcel/watcher: true
+  parcel-watcher: true
