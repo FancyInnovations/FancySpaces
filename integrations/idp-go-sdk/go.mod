@@ -6,7 +6,7 @@ require (
 	github.com/OliverSchlueter/goutils v0.0.28
 	github.com/dgraph-io/ristretto/v2 v2.4.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
-	golang.org/x/crypto v0.50.0
+	golang.org/x/crypto v0.53.0
 )
 
 require (
@@ -18,5 +18,5 @@ require (
 	github.com/nats-io/nkeys v0.4.15 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
 )
