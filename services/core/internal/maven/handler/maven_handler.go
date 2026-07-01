@@ -250,42 +250,46 @@ func (h *Handler) handleStoreFile(w http.ResponseWriter, r *http.Request, space 
 }
 
 func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space *spaces.Space, repo *maven.Repository) {
-	group, err := GroupFromURL(r.URL.String())
-	if err != nil {
-		problems.NotFound("Maven Artifact", "<url>").WriteToHTTP(w)
-		return
-	}
-
-	artifactID, err := ArtifactFromURL(r.URL.String())
-	if err != nil {
-		problems.NotFound("Maven Artifact", "<url>").WriteToHTTP(w)
-		return
-	}
-
-	if err := h.downloadRatelimit.CheckRequest(r, group+":"+artifactID); err != nil {
-		ratelimit.RateLimitExceededProblem().WriteToHTTP(w)
-		return
-	}
-
-	artifact, err := h.store.GetArtifact(r.Context(), space.ID, repo.Name, group, artifactID)
-	if err != nil {
-		if errors.Is(err, maven.ErrArtifactNotFound) {
-			problems.NotFound("Maven Artifact", artifactID).WriteToHTTP(w)
+	// If the request is for metadata, parse group/artifact in a metadata-aware way
+	if IsMetadataURL(r.URL.String()) {
+		parts := strings.Split(r.URL.String(), "/")
+		if len(parts) < 4 {
+			problems.NotFound("Maven Artifact", "<url>").WriteToHTTP(w)
 			return
 		}
 
-		slog.Error("Failed to get artifact", sloki.WrapError(err))
-		problems.InternalServerError("").WriteToHTTP(w)
-		return
-	}
+		// default: artifact-level metadata where URL is .../{groupPath}/{artifactId}/maven-metadata.xml
+		// artifactId is the segment before the metadata filename
+		artifactID := parts[len(parts)-2]
+		groupParts := parts[3 : len(parts)-1]
 
-	// metadata handling – support both artifact-level and version-level (snapshot) metadata
-	if IsMetadataURL(r.URL.String()) {
-		parts := strings.Split(r.URL.String(), "/")
-		// try to detect version folder before the metadata filename
-		if len(parts) >= 2 {
+		// detect version-level snapshot metadata: .../{groupPath}/{artifactId}/{version}/maven-metadata.xml
+		// in that case the segment before the metadata is the version, and artifactId is one segment earlier
+		if len(parts) >= 3 {
+			maybeVersion := parts[len(parts)-2]
+			if strings.HasSuffix(maybeVersion, "-SNAPSHOT") {
+				artifactID = parts[len(parts)-3]
+				groupParts = parts[3 : len(parts)-2]
+			}
+		}
+
+		group := strings.Join(groupParts, ".")
+
+		// fetch artifact using computed group/artifactID
+		artifact, err := h.store.GetArtifact(r.Context(), space.ID, repo.Name, group, artifactID)
+		if err != nil {
+			if errors.Is(err, maven.ErrArtifactNotFound) {
+				problems.NotFound("Maven Artifact", artifactID).WriteToHTTP(w)
+				return
+			}
+			slog.Error("Failed to get artifact", sloki.WrapError(err))
+			problems.InternalServerError("").WriteToHTTP(w)
+			return
+		}
+
+		// if version-level snapshot metadata
+		if len(parts) >= 3 {
 			versionCandidate := parts[len(parts)-2]
-			// version-level snapshot metadata (folder named X-SNAPSHOT)
 			if strings.HasSuffix(versionCandidate, "-SNAPSHOT") {
 				metadata := artifact.ToSnapshotMetadataXML(versionCandidate)
 
@@ -320,6 +324,36 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 			problems.InternalServerError("").WriteToHTTP(w)
 			return
 		}
+		return
+	}
+
+	// non-metadata flow
+	group, err := GroupFromURL(r.URL.String())
+	if err != nil {
+		problems.NotFound("Maven Artifact", "<url>").WriteToHTTP(w)
+		return
+	}
+
+	artifactID, err := ArtifactFromURL(r.URL.String())
+	if err != nil {
+		problems.NotFound("Maven Artifact", "<url>").WriteToHTTP(w)
+		return
+	}
+
+	if err := h.downloadRatelimit.CheckRequest(r, group+":"+artifactID); err != nil {
+		ratelimit.RateLimitExceededProblem().WriteToHTTP(w)
+		return
+	}
+
+	artifact, err := h.store.GetArtifact(r.Context(), space.ID, repo.Name, group, artifactID)
+	if err != nil {
+		if errors.Is(err, maven.ErrArtifactNotFound) {
+			problems.NotFound("Maven Artifact", artifactID).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get artifact", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
 		return
 	}
 
