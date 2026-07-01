@@ -2,6 +2,7 @@ package maven
 
 import (
 	"encoding/xml"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -83,15 +84,35 @@ func (a *Artifact) GetVersion(version string) *ArtifactVersion {
 }
 
 func (a *Artifact) ToMetadataXML() MetadataXML {
+	// sort versions deterministically by PublishedAt then by Version
+	sorted := make([]*ArtifactVersion, len(a.Versions))
+	copy(sorted, a.Versions)
+	sort.Slice(sorted, func(i, j int) bool {
+		if !sorted[i].PublishedAt.Equal(sorted[j].PublishedAt) {
+			return sorted[i].PublishedAt.Before(sorted[j].PublishedAt)
+		}
+		return sorted[i].Version < sorted[j].Version
+	})
+
 	latest := ""
 	release := ""
-	if len(a.Versions) > 0 {
-		latest = a.Versions[len(a.Versions)-1].Version
-		release = a.Versions[len(a.Versions)-1].Version
+	if len(sorted) > 0 {
+		latest = sorted[len(sorted)-1].Version
+		// find last non-SNAPSHOT as release
+		for k := len(sorted) - 1; k >= 0; k-- {
+			if !strings.Contains(sorted[k].Version, "SNAPSHOT") {
+				release = sorted[k].Version
+				break
+			}
+		}
+		// fallback to latest if no non-snapshot found
+		if release == "" {
+			release = latest
+		}
 	}
 
-	versions := make([]string, len(a.Versions))
-	for i, v := range a.Versions {
+	versions := make([]string, len(sorted))
+	for i, v := range sorted {
 		versions[i] = v.Version
 	}
 
@@ -129,57 +150,88 @@ type VersionMetadataXML struct {
 
 func (a *Artifact) ToSnapshotMetadataXML(snapshotVersion string) VersionMetadataXML {
 	base := strings.TrimSuffix(snapshotVersion, "-SNAPSHOT")
-	var snapshotVersions []SnapshotVersion
-	var latest time.Time
-	var latestTimestamp string
-	var latestBuildNumber int
-
+	// collect timestamped snapshots that match base
+	type sv struct {
+		version     string
+		publishedAt time.Time
+		files       []*ArtifactVersionFile
+	}
+	var snaps []sv
 	for _, v := range a.Versions {
 		if strings.HasPrefix(v.Version, base+"-") {
-			// parse timestamp and build number from version name: base-timestamp-build
-			suffix := strings.TrimPrefix(v.Version, base+"-")
-			parts := strings.Split(suffix, "-")
-			ts := ""
-			bn := 0
-			if len(parts) >= 2 {
-				ts = parts[0]
-				bn, _ = strconv.Atoi(parts[1])
+			snaps = append(snaps, sv{version: v.Version, publishedAt: v.PublishedAt, files: v.Files})
+		}
+	}
+
+	// sort snaps by PublishedAt ascending
+	sort.Slice(snaps, func(i, j int) bool {
+		if !snaps[i].publishedAt.Equal(snaps[j].publishedAt) {
+			return snaps[i].publishedAt.Before(snaps[j].publishedAt)
+		}
+		return snaps[i].version < snaps[j].version
+	})
+
+	var latest time.Time
+	latestTimestamp := ""
+	latestBuildNumber := 0
+	if len(snaps) > 0 {
+		latest = snaps[len(snaps)-1].publishedAt
+		// parse timestamp/build from last snap version
+		suffix := strings.TrimPrefix(snaps[len(snaps)-1].version, base+"-")
+		parts := strings.Split(suffix, "-")
+		if len(parts) >= 2 {
+			latestTimestamp = parts[0]
+			latestBuildNumber, _ = strconv.Atoi(parts[1])
+		}
+	}
+
+	// build deduped snapshotVersions keyed by extension|classifier
+	dedupe := map[string]SnapshotVersion{}
+	for _, s := range snaps {
+		updated := s.publishedAt.UTC().Format("20060102150405")
+		for _, f := range s.files {
+			ext := ""
+			if idx := strings.LastIndex(f.Name, "."); idx != -1 {
+				ext = f.Name[idx+1:]
 			}
 
-			if v.PublishedAt.After(latest) {
-				latest = v.PublishedAt
-				latestTimestamp = ts
-				latestBuildNumber = bn
+			// determine classifier: what's between artifactId-version- and .ext
+			cls := ""
+			prefix := a.ID + "-" + s.version + "-"
+			if strings.HasPrefix(f.Name, prefix) {
+				clsWithExt := f.Name[len(prefix):]
+				if dot := strings.LastIndex(clsWithExt, "."); dot != -1 {
+					cls = clsWithExt[:dot]
+				} else {
+					cls = clsWithExt
+				}
 			}
 
-			updated := v.PublishedAt.UTC().Format("20060102150405")
-			for _, f := range v.Files {
-				ext := ""
-				cls := ""
-				if idx := strings.LastIndex(f.Name, "."); idx != -1 {
-					ext = f.Name[idx+1:]
-				}
-
-				// detect classifier by comparing prefix artifactId-version-
-				prefix := a.ID + "-" + v.Version + "-"
-				if strings.HasPrefix(f.Name, prefix) {
-					clsWithExt := f.Name[len(prefix):]
-					if dot := strings.LastIndex(clsWithExt, "."); dot != -1 {
-						cls = clsWithExt[:dot]
-					} else {
-						cls = clsWithExt
-					}
-				}
-
-				snapshotVersions = append(snapshotVersions, SnapshotVersion{
+			key := ext + "|" + cls
+			// keep the latest entry for each key
+			existing, ok := dedupe[key]
+			if !ok || existing.Updated < updated {
+				dedupe[key] = SnapshotVersion{
 					Extension:  ext,
 					Classifier: cls,
-					Value:      v.Version,
+					Value:      s.version,
 					Updated:    updated,
-				})
+				}
 			}
 		}
 	}
+
+	// convert dedupe map to slice and sort for deterministic output
+	snapshotVersions := make([]SnapshotVersion, 0, len(dedupe))
+	for _, v := range dedupe {
+		snapshotVersions = append(snapshotVersions, v)
+	}
+	sort.Slice(snapshotVersions, func(i, j int) bool {
+		if snapshotVersions[i].Extension != snapshotVersions[j].Extension {
+			return snapshotVersions[i].Extension < snapshotVersions[j].Extension
+		}
+		return snapshotVersions[i].Classifier < snapshotVersions[j].Classifier
+	})
 
 	vm := VersionMetadataXML{GroupID: a.Group, ArtifactID: a.ID, Version: snapshotVersion}
 	if latestTimestamp != "" {

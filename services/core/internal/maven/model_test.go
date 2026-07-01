@@ -90,7 +90,7 @@ func TestArtifact_ToSnapshotMetadataXML(t *testing.T) {
 	if vm.Versioning.LastUpdated == "" {
 		t.Fatalf("expected lastUpdated to be set")
 	}
-	if len(vm.Versioning.SnapshotVersions) != 3 {
-		t.Fatalf("expected 3 snapshotVersions entries (2 files + 1 jar), got %d", len(vm.Versioning.SnapshotVersions))
+	if len(vm.Versioning.SnapshotVersions) != 2 {
+		t.Fatalf("expected 2 snapshotVersions entries (deduped by extension+classifier), got %d", len(vm.Versioning.SnapshotVersions))
 	}
 }

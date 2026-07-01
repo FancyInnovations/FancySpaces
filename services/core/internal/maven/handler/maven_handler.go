@@ -1,7 +1,11 @@
 package handler
 
 import (
+	"bytes"
 	"context"
+	"crypto/md5"
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/xml"
 	"errors"
 	"io"
@@ -293,18 +297,36 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 			if strings.HasSuffix(versionCandidate, "-SNAPSHOT") {
 				metadata := artifact.ToSnapshotMetadataXML(versionCandidate)
 
-				w.Header().Set("Content-Type", "application/xml")
-				w.WriteHeader(http.StatusOK)
-
-				encoder := xml.NewEncoder(w)
-				defer encoder.Close()
-
+				// encode into buffer so checksum endpoints can be generated
+				var buf bytes.Buffer
+				encoder := xml.NewEncoder(&buf)
 				encoder.Indent("", "  ")
 				if err := encoder.Encode(metadata); err != nil {
 					slog.Error("Failed to encode snapshot metadata XML", sloki.WrapError(err))
 					problems.InternalServerError("").WriteToHTTP(w)
 					return
 				}
+
+				// detect checksum request
+				fileName, _ := FilenameFromURL(r.URL.String())
+				if strings.HasSuffix(fileName, ".sha1") {
+					h := sha1.Sum(buf.Bytes())
+					w.Header().Set("Content-Type", "text/plain")
+					w.WriteHeader(http.StatusOK)
+					w.Write([]byte(hex.EncodeToString(h[:])))
+					return
+				}
+				if strings.HasSuffix(fileName, ".md5") {
+					m := md5.Sum(buf.Bytes())
+					w.Header().Set("Content-Type", "text/plain")
+					w.WriteHeader(http.StatusOK)
+					w.Write([]byte(hex.EncodeToString(m[:])))
+					return
+				}
+
+				w.Header().Set("Content-Type", "application/xml")
+				w.WriteHeader(http.StatusOK)
+				w.Write(buf.Bytes())
 				return
 			}
 		}
@@ -312,18 +334,35 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 		// fallback to artifact-level metadata
 		metadata := artifact.ToMetadataXML()
 
-		w.Header().Set("Content-Type", "application/xml")
-		w.WriteHeader(http.StatusOK)
-
-		encoder := xml.NewEncoder(w)
-		defer encoder.Close()
-
+		var buf bytes.Buffer
+		encoder := xml.NewEncoder(&buf)
 		encoder.Indent("", "  ")
 		if err := encoder.Encode(metadata); err != nil {
 			slog.Error("Failed to encode metadata XML", sloki.WrapError(err))
 			problems.InternalServerError("").WriteToHTTP(w)
 			return
 		}
+
+		fileName, _ := FilenameFromURL(r.URL.String())
+		if strings.HasSuffix(fileName, ".sha1") {
+			h := sha1.Sum(buf.Bytes())
+			w.Header().Set("Content-Type", "text/plain")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(hex.EncodeToString(h[:])))
+			return
+		}
+		if strings.HasSuffix(fileName, ".md5") {
+			m := md5.Sum(buf.Bytes())
+			w.Header().Set("Content-Type", "text/plain")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(hex.EncodeToString(m[:])))
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/xml")
+		w.WriteHeader(http.StatusOK)
+
+		w.Write(buf.Bytes())
 		return
 	}
 
@@ -375,23 +414,55 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 		problems.NotFound("Maven Artifact File", "<url>").WriteToHTTP(w)
 		return
 	}
-	artifactVersionFile := artifactVersion.GetFile(fileName)
+
+	isChecksum := false
+	checksumType := ""
+	baseFileName := fileName
+	if strings.HasSuffix(fileName, ".sha1") {
+		isChecksum = true
+		checksumType = "sha1"
+		baseFileName = strings.TrimSuffix(fileName, ".sha1")
+	} else if strings.HasSuffix(fileName, ".md5") {
+		isChecksum = true
+		checksumType = "md5"
+		baseFileName = strings.TrimSuffix(fileName, ".md5")
+	}
+
+	artifactVersionFile := artifactVersion.GetFile(baseFileName)
 	if artifactVersionFile == nil {
-		problems.NotFound("Maven Artifact File", fileName).WriteToHTTP(w)
+		problems.NotFound("Maven Artifact File", baseFileName).WriteToHTTP(w)
 		return
 	}
 
-	if artifactVersionFile.Name == artifactID+"-"+version+".jar" && h.analytics != nil {
+	if artifactVersionFile.Name == artifactID+"-"+version+".jar" && h.analytics != nil && !isChecksum {
 		if err := h.analytics.LogMavenArtifactDownload(r.Context(), space.ID, repo.Name, group, artifactID, version, r); err != nil {
 			slog.Error("Failed to log maven artifact download", sloki.WrapError(err))
 		}
 	}
 
-	data, err := h.store.DownloadArtifactFile(r.Context(), space.ID, repo.Name, group, artifactID, version, fileName)
+	data, err := h.store.DownloadArtifactFile(r.Context(), space.ID, repo.Name, group, artifactID, version, baseFileName)
 	if err != nil {
 		slog.Error("Failed to get artifact file", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
+	}
+
+	if isChecksum {
+		// compute checksum over the actual file bytes
+		if checksumType == "sha1" {
+			h := sha1.Sum(data)
+			w.Header().Set("Content-Type", "text/plain")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(hex.EncodeToString(h[:])))
+			return
+		}
+		if checksumType == "md5" {
+			m := md5.Sum(data)
+			w.Header().Set("Content-Type", "text/plain")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(hex.EncodeToString(m[:])))
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")
