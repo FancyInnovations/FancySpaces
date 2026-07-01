@@ -2,6 +2,7 @@ package maven
 
 import (
 	"encoding/xml"
+	"strings"
 	"time"
 )
 
@@ -49,15 +50,34 @@ type MetadataXML struct {
 }
 
 func (a *Artifact) GetVersion(version string) *ArtifactVersion {
+	// "latest" returns the most recent stored version
 	if version == "latest" && len(a.Versions) > 0 {
 		return a.Versions[len(a.Versions)-1]
 	}
 
+	// direct match
 	for _, v := range a.Versions {
 		if v.Version == version {
 			return v
 		}
 	}
+
+	// support SNAPSHOT resolution: when client requests X-SNAPSHOT, find the
+	// latest stored timestamped snapshot like X-20230701.123456-1
+	if strings.HasSuffix(version, "-SNAPSHOT") {
+		base := strings.TrimSuffix(version, "-SNAPSHOT")
+		var found *ArtifactVersion
+		for _, v := range a.Versions {
+			if strings.HasPrefix(v.Version, base+"-") {
+				// keep iterating so the last matching (most recent) is returned
+				found = v
+			}
+		}
+		if found != nil {
+			return found
+		}
+	}
+
 	return nil
 }
 
