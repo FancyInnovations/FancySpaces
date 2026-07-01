@@ -279,14 +279,33 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 		return
 	}
 
-	version, err := VersionFromURL(r.URL.String())
-	if err != nil {
-		slog.Error("Failed to parse version from URL", slog.String("error", err.Error()))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
+	// metadata handling – support both artifact-level and version-level (snapshot) metadata
 	if IsMetadataURL(r.URL.String()) {
+		parts := strings.Split(r.URL.String(), "/")
+		// try to detect version folder before the metadata filename
+		if len(parts) >= 2 {
+			versionCandidate := parts[len(parts)-2]
+			// version-level snapshot metadata (folder named X-SNAPSHOT)
+			if strings.HasSuffix(versionCandidate, "-SNAPSHOT") {
+				metadata := artifact.ToSnapshotMetadataXML(versionCandidate)
+
+				w.Header().Set("Content-Type", "application/xml")
+				w.WriteHeader(http.StatusOK)
+
+				encoder := xml.NewEncoder(w)
+				defer encoder.Close()
+
+				encoder.Indent("", "  ")
+				if err := encoder.Encode(metadata); err != nil {
+					slog.Error("Failed to encode snapshot metadata XML", sloki.WrapError(err))
+					problems.InternalServerError("").WriteToHTTP(w)
+					return
+				}
+				return
+			}
+		}
+
+		// fallback to artifact-level metadata
 		metadata := artifact.ToMetadataXML()
 
 		w.Header().Set("Content-Type", "application/xml")
@@ -301,6 +320,13 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 			problems.InternalServerError("").WriteToHTTP(w)
 			return
 		}
+		return
+	}
+
+	version, err := VersionFromURL(r.URL.String())
+	if err != nil {
+		slog.Error("Failed to parse version from URL", slog.String("error", err.Error()))
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 

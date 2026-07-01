@@ -2,6 +2,7 @@ package maven
 
 import (
 	"encoding/xml"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -102,6 +103,97 @@ func (a *Artifact) ToMetadataXML() MetadataXML {
 		Latest:     latest,
 		Release:    release,
 	}
+}
+
+type SnapshotVersion struct {
+	Extension  string `xml:"extension"`
+	Classifier string `xml:"classifier,omitempty"`
+	Value      string `xml:"value"`
+	Updated    string `xml:"updated"`
+}
+
+type VersionMetadataXML struct {
+	XMLName    xml.Name `xml:"metadata"`
+	GroupID    string   `xml:"groupId"`
+	ArtifactID string   `xml:"artifactId"`
+	Version    string   `xml:"version"`
+	Versioning struct {
+		Snapshot         *struct {
+			Timestamp   string `xml:"timestamp"`
+			BuildNumber int    `xml:"buildNumber"`
+		} `xml:"snapshot,omitempty"`
+		LastUpdated      string            `xml:"lastUpdated"`
+		SnapshotVersions []SnapshotVersion `xml:"snapshotVersions>snapshotVersion"`
+	} `xml:"versioning"`
+}
+
+func (a *Artifact) ToSnapshotMetadataXML(snapshotVersion string) VersionMetadataXML {
+	base := strings.TrimSuffix(snapshotVersion, "-SNAPSHOT")
+	var snapshotVersions []SnapshotVersion
+	var latest time.Time
+	var latestTimestamp string
+	var latestBuildNumber int
+
+	for _, v := range a.Versions {
+		if strings.HasPrefix(v.Version, base+"-") {
+			// parse timestamp and build number from version name: base-timestamp-build
+			suffix := strings.TrimPrefix(v.Version, base+"-")
+			parts := strings.Split(suffix, "-")
+			ts := ""
+			bn := 0
+			if len(parts) >= 2 {
+				ts = parts[0]
+				bn, _ = strconv.Atoi(parts[1])
+			}
+
+			if v.PublishedAt.After(latest) {
+				latest = v.PublishedAt
+				latestTimestamp = ts
+				latestBuildNumber = bn
+			}
+
+			updated := v.PublishedAt.UTC().Format("20060102150405")
+			for _, f := range v.Files {
+				ext := ""
+				cls := ""
+				if idx := strings.LastIndex(f.Name, "."); idx != -1 {
+					ext = f.Name[idx+1:]
+				}
+
+				// detect classifier by comparing prefix artifactId-version-
+				prefix := a.ID + "-" + v.Version + "-"
+				if strings.HasPrefix(f.Name, prefix) {
+					clsWithExt := f.Name[len(prefix):]
+					if dot := strings.LastIndex(clsWithExt, "."); dot != -1 {
+						cls = clsWithExt[:dot]
+					} else {
+						cls = clsWithExt
+					}
+				}
+
+				snapshotVersions = append(snapshotVersions, SnapshotVersion{
+					Extension:  ext,
+					Classifier: cls,
+					Value:      v.Version,
+					Updated:    updated,
+				})
+			}
+		}
+	}
+
+	vm := VersionMetadataXML{GroupID: a.Group, ArtifactID: a.ID, Version: snapshotVersion}
+	if latestTimestamp != "" {
+		vm.Versioning.Snapshot = &struct {
+			Timestamp   string `xml:"timestamp"`
+			BuildNumber int    `xml:"buildNumber"`
+		}{latestTimestamp, latestBuildNumber}
+	}
+	if !latest.IsZero() {
+		vm.Versioning.LastUpdated = latest.UTC().Format("20060102150405")
+	}
+	vm.Versioning.SnapshotVersions = snapshotVersions
+
+	return vm
 }
 
 func (f *ArtifactVersion) GetFile(fileName string) *ArtifactVersionFile {
