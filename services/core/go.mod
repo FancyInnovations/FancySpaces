@@ -15,7 +15,7 @@ require (
 	github.com/justinas/alice v1.2.0
 	github.com/minio/minio-go/v7 v7.3.0
 	github.com/nats-io/nats.go v1.53.1
-	go.mongodb.org/mongo-driver/v2 v2.8.1
+	go.mongodb.org/mongo-driver/v2 v2.8.2
 )
 
 require (
