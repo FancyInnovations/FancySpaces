@@ -1,7 +1,7 @@
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {useUserStore} from "@/stores/user.ts";
-import type {Metric} from "@/api/analytics/metrics/types.ts";
-import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url.ts";
+import {useNotificationStore} from "@/stores/notifications";
+import {useUserStore} from "@/stores/user";
+import type {Metric} from "@/api/analytics/metrics/types";
+import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url";
 
 export async function getMetrics(projectId: string): Promise<Metric[]> {
     const response = await fetch(

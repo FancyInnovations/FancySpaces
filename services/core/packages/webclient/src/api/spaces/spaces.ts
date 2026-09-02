@@ -1,5 +1,5 @@
-import type {Space} from "@/api/spaces/types.ts";
-import {useUserStore} from "@/stores/user.ts";
+import type {Space} from "@/api/spaces/types";
+import {useUserStore} from "@/stores/user";
 
 export async function getAllSpaces(): Promise<Space[]> {
   const userStore = useUserStore();

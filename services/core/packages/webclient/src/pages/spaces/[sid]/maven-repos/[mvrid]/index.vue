@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
-import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/maven/types.ts";
-import {getAllMavenArtifacts, getMavenRepository} from "@/api/maven/maven.ts";
+import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/maven/types";
+import {getAllMavenArtifacts, getMavenRepository} from "@/api/maven/maven";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useUserStore} from "@/stores/user.ts";
+import {useUserStore} from "@/stores/user";
 import Card from "@/components/common/Card.vue";
 
 const route = useRoute();

@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 
-import {mapCategoryToDisplayname, mapLinkToDisplayname, type Space} from "@/api/spaces/types.ts";
-import {getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces.ts";
+import {mapCategoryToDisplayname, mapLinkToDisplayname, type Space} from "@/api/spaces/types";
+import {getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import type {SpaceVersion} from "@/api/versions/types.ts";
-import {getLatestVersion} from "@/api/versions/versions.ts";
+import type {SpaceVersion} from "@/api/versions/types";
+import {getLatestVersion} from "@/api/versions/versions";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import Card from "@/components/common/Card.vue";
-import {getPublicUser} from "@/api/auth/users.ts";
-import type {User} from "@/api/auth/types.ts";
+import {getPublicUser} from "@/api/auth/users";
+import type {User} from "@/api/auth/types";
 
 const route = useRoute();
 

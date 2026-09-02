@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
-import {useUserStore} from "@/stores/user.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {createBlogArticle} from "@/api/blogs/blogs.ts";
+import {useUserStore} from "@/stores/user";
+import {useNotificationStore} from "@/stores/notifications";
+import {createBlogArticle} from "@/api/blogs/blogs";
 
 const router = useRouter();
 const userStore = useUserStore();

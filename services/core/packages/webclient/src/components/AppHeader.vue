@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
-import {useUserStore} from "@/stores/user.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
+import {useUserStore} from "@/stores/user";
+import {useNotificationStore} from "@/stores/notifications";
 
 const router = useRouter();
 const userStore = useUserStore();

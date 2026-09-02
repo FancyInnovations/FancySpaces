@@ -2,10 +2,10 @@
 
 import Dialog from "@/components/common/Dialog.vue";
 import IssueDialogSidebar from "@/components/issues/IssueDialogSidebar.vue";
-import {useIssueDialogStore} from "@/stores/issue-dialog.ts";
-import type {IssueComment} from "@/api/issues/types.ts";
-import {updateIssue} from "@/api/issues/issues.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
+import {useIssueDialogStore} from "@/stores/issue-dialog";
+import type {IssueComment} from "@/api/issues/types";
+import {updateIssue} from "@/api/issues/issues";
+import {useNotificationStore} from "@/stores/notifications";
 import Card from "@/components/common/Card.vue";
 
 const notificationStore = useNotificationStore();

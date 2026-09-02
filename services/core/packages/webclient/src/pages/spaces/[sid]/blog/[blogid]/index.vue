@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import type {BlogArticle} from "@/api/blogs/types.ts";
+import type {BlogArticle} from "@/api/blogs/types";
 import BlogArticleView from "@/components/blog/BlogArticleView.vue";
-import {getBlogArticle, getBlogArticleContent} from "@/api/blogs/blogs.ts";
-import {useUserStore} from "@/stores/user.ts";
+import {getBlogArticle, getBlogArticleContent} from "@/api/blogs/blogs";
+import {useUserStore} from "@/stores/user";
 
 const router = useRouter();
 const route = useRoute();

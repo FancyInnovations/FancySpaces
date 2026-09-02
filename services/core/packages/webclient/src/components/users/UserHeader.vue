@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
-import {getDownloadCountForSpace, getSpacesOfCreator} from "@/api/spaces/spaces.ts";
-import type {Space} from "@/api/spaces/types.ts";
-import type {User} from "@/api/auth/types.ts";
+import {getDownloadCountForSpace, getSpacesOfCreator} from "@/api/spaces/spaces";
+import type {Space} from "@/api/spaces/types";
+import type {User} from "@/api/auth/types";
 
 const props = defineProps<{
   user?: User;

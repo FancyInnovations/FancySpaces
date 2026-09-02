@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getAllSpaces, getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces.ts";
-import {getAllVersions} from "@/api/versions/versions.ts";
+import type {Space} from "@/api/spaces/types";
+import {getAllSpaces, getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces";
+import {getAllVersions} from "@/api/versions/versions";
 import Card from "@/components/common/Card.vue";
 
 const spaces = ref<Space[]>();

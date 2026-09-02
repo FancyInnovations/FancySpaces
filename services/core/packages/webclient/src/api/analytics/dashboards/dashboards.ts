@@ -1,7 +1,7 @@
-import {useUserStore} from "@/stores/user.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import type {Chart, Dashboard} from "@/api/analytics/dashboards/types.ts";
-import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url.ts";
+import {useUserStore} from "@/stores/user";
+import {useNotificationStore} from "@/stores/notifications";
+import type {Chart, Dashboard} from "@/api/analytics/dashboards/types";
+import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url";
 
 export async function getDashboards(projectID: string): Promise<Dashboard[]> {
     const response = await fetch(

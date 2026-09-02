@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import {useHead} from "@vueuse/head";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useUserStore} from "@/stores/user.ts";
+import {useUserStore} from "@/stores/user";
 import AnalyticsSidebar from "@/components/analytics/AnalyticsSidebar.vue";
 import Card from "@/components/common/Card.vue";
-import type {Dashboard} from "@/api/analytics/dashboards/types.ts";
-import {getDashboards} from "@/api/analytics/dashboards/dashboards.ts";
-import type {Metric} from "@/api/analytics/metrics/types.ts";
-import {createMetric, getMetrics} from "@/api/analytics/metrics/metrics.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import type {RecordQueryResult} from "@/api/analytics/metricrecords/types.ts";
-import {getLatestRecordsByCount} from "@/api/analytics/metricrecords/metricrecords.ts";
+import type {Dashboard} from "@/api/analytics/dashboards/types";
+import {getDashboards} from "@/api/analytics/dashboards/dashboards";
+import type {Metric} from "@/api/analytics/metrics/types";
+import {createMetric, getMetrics} from "@/api/analytics/metrics/metrics";
+import {useNotificationStore} from "@/stores/notifications";
+import type {RecordQueryResult} from "@/api/analytics/metricrecords/types";
+import {getLatestRecordsByCount} from "@/api/analytics/metricrecords/metricrecords";
 
 const router = useRouter();
 const route = useRoute();

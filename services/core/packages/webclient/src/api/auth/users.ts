@@ -1,5 +1,5 @@
-import {IDP_API_BASE_URL, type User} from "@/api/auth/types.ts";
-import {useUserStore} from "@/stores/user.ts";
+import {IDP_API_BASE_URL, type User} from "@/api/auth/types";
+import {useUserStore} from "@/stores/user";
 
 export async function getPublicUser(username: string): Promise<User> {
     const resp = await fetch(`${IDP_API_BASE_URL}/public-users/${username}`, {

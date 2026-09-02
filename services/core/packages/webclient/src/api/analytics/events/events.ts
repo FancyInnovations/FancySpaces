@@ -1,7 +1,7 @@
-import {useUserStore} from "@/stores/user.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import type {EventQueryResult} from "@/api/analytics/events/types.ts";
-import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url.ts";
+import {useUserStore} from "@/stores/user";
+import {useNotificationStore} from "@/stores/notifications";
+import type {EventQueryResult} from "@/api/analytics/events/types";
+import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url";
 
 export async function getLatestEventsByTime(projectID: string, name: string = "", hours: number = 1): Promise<EventQueryResult> {
     const response = await fetch(

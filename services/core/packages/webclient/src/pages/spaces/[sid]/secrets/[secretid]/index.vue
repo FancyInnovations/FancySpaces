@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import {useHead} from "@vueuse/head";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {getSecret, updateSecret} from "@/api/secrets/secrets.ts";
-import type {SpaceSecret} from "@/api/secrets/types.ts";
+import {getSecret, updateSecret} from "@/api/secrets/secrets";
+import type {SpaceSecret} from "@/api/secrets/types";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {useUserStore} from "@/stores/user.ts";
+import {useNotificationStore} from "@/stores/notifications";
+import {useUserStore} from "@/stores/user";
 
 const router = useRouter();
 const route = useRoute();

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import AppHeader from "@/components/AppHeader.vue";
-import {useConfirmationStore} from "@/stores/confirmation.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
+import {useConfirmationStore} from "@/stores/confirmation";
+import {useNotificationStore} from "@/stores/notifications";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
-import {useUserStore} from "@/stores/user.ts";
-import {refreshToken} from "@/api/auth/tokens.ts";
+import {useUserStore} from "@/stores/user";
+import {refreshToken} from "@/api/auth/tokens";
 
 const confirmationStore = useConfirmationStore();
 const notifications = useNotificationStore();

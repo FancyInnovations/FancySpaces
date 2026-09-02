@@ -1,5 +1,5 @@
-import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/maven/types.ts";
-import {useUserStore} from "@/stores/user.ts";
+import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/maven/types";
+import {useUserStore} from "@/stores/user";
 
 export async function getAllMavenRepositories(spaceId: string): Promise<SpaceMavenRepository[]> {
   const userStore = useUserStore();

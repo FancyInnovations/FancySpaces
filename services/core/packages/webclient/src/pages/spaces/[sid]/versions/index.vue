@@ -1,16 +1,16 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getDownloadCountForSpace, getDownloadCountForSpacePerVersion, getSpace} from "@/api/spaces/spaces.ts";
-import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types.ts";
-import {deleteVersion, getAllVersions, getLatestVersion} from "@/api/versions/versions.ts";
+import type {Space} from "@/api/spaces/types";
+import {getDownloadCountForSpace, getDownloadCountForSpacePerVersion, getSpace} from "@/api/spaces/spaces";
+import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types";
+import {deleteVersion, getAllVersions, getLatestVersion} from "@/api/versions/versions";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";
-import {useNotificationStore} from "@/stores/notifications.ts";
+import {useNotificationStore} from "@/stores/notifications";
 import Card from "@/components/common/Card.vue";
-import {useUserStore} from "@/stores/user.ts";
-import {useConfirmationStore} from "@/stores/confirmation.ts";
+import {useUserStore} from "@/stores/user";
+import {useConfirmationStore} from "@/stores/confirmation";
 import VersionChannelChip from "@/components/versions/VersionChannelChip.vue";
 
 const router = useRouter();

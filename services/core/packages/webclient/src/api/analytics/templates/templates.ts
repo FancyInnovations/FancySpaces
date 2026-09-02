@@ -1,7 +1,7 @@
-import {useNotificationStore} from "@/stores/notifications.ts";
-import type {Template} from "@/api/analytics/templates/types.ts";
-import {useUserStore} from "@/stores/user.ts";
-import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url.ts";
+import {useNotificationStore} from "@/stores/notifications";
+import type {Template} from "@/api/analytics/templates/types";
+import {useUserStore} from "@/stores/user";
+import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url";
 
 export async function getTemplates(): Promise<Template[]> {
     const response = await fetch(

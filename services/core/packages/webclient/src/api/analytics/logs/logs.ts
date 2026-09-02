@@ -1,7 +1,7 @@
-import type {LogsQueryResult} from "@/api/analytics/logs/types.ts";
-import {useUserStore} from "@/stores/user.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url.ts";
+import type {LogsQueryResult} from "@/api/analytics/logs/types";
+import {useUserStore} from "@/stores/user";
+import {useNotificationStore} from "@/stores/notifications";
+import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url";
 
 export async function getLatestLogsByTime(projectID: string, service: string = "", hours: number = 1): Promise<LogsQueryResult> {
     const response = await fetch(

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import {getBlogArticle, getBlogArticleContent} from "@/api/blogs/blogs.ts";
+import {getBlogArticle, getBlogArticleContent} from "@/api/blogs/blogs";
 import BlogEdit from "@/components/blog/BlogEdit.vue";
 
 const router = useRouter();

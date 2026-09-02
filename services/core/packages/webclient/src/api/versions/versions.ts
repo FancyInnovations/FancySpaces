@@ -1,5 +1,5 @@
-import type {SpaceVersion} from "@/api/versions/types.ts";
-import {useUserStore} from "@/stores/user.ts";
+import type {SpaceVersion} from "@/api/versions/types";
+import {useUserStore} from "@/stores/user";
 
 export async function getVersion(spaceId: string, versionId: string): Promise<SpaceVersion> {
   const userStore = useUserStore();

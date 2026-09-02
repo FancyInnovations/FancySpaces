@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import type {User} from "@/api/auth/types.ts";
-import {getPublicUser} from "@/api/auth/users.ts";
+import type {Space} from "@/api/spaces/types";
+import type {User} from "@/api/auth/types";
+import {getPublicUser} from "@/api/auth/users";
 
 const props = defineProps<{
   space?: Space;

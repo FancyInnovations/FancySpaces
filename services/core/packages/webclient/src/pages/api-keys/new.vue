@@ -3,9 +3,9 @@
 import {onMounted} from "vue";
 import {useHead} from "@vueuse/head";
 import router from "@/router";
-import {useUserStore} from "@/stores/user.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {createApiKey} from "@/api/auth/api-keys.ts";
+import {useUserStore} from "@/stores/user";
+import {useNotificationStore} from "@/stores/notifications";
+import {createApiKey} from "@/api/auth/api-keys";
 
 const userStore = useUserStore();
 const notificationStore = useNotificationStore();

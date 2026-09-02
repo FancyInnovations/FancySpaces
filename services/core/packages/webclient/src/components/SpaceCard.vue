@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 
-import {mapCategoryToDisplayname, type Space} from "@/api/spaces/types.ts";
-import {getLatestVersion} from "@/api/versions/versions.ts";
-import type {SpaceVersion} from "@/api/versions/types.ts";
-import {getDownloadCountForSpace} from "@/api/spaces/spaces.ts";
+import {mapCategoryToDisplayname, type Space} from "@/api/spaces/types";
+import {getLatestVersion} from "@/api/versions/versions";
+import type {SpaceVersion} from "@/api/versions/types";
+import {getDownloadCountForSpace} from "@/api/spaces/spaces";
 import Card from "@/components/common/Card.vue";
-import type {User} from "@/api/auth/types.ts";
-import {getPublicUser} from "@/api/auth/users.ts";
+import type {User} from "@/api/auth/types";
+import {getPublicUser} from "@/api/auth/users";
 
 const props = defineProps<{
   space?: Space

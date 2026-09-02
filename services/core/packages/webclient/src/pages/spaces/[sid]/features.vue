@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 
-import {getSpace} from "@/api/spaces/spaces.ts";
+import {getSpace} from "@/api/spaces/spaces";
 import {useHead} from "@vueuse/head";
-import {useUserStore} from "@/stores/user.ts";
-import {type Space} from "@/api/spaces/types.ts";
+import {useUserStore} from "@/stores/user";
+import {type Space} from "@/api/spaces/types";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 

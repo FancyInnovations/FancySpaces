@@ -1,4 +1,4 @@
-import {useUserStore} from "@/stores/user.ts";
+import {useUserStore} from "@/stores/user";
 
 export async function kvDelete(db: string, coll: string, key: string): Promise<void> {
   const userStore = useUserStore();

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 
 import {onMounted} from "vue";
-import {validateUser} from "@/api/auth/users.ts";
-import {useUserStore} from "@/stores/user.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {createToken, validateToken} from "@/api/auth/tokens.ts";
+import {validateUser} from "@/api/auth/users";
+import {useUserStore} from "@/stores/user";
+import {useNotificationStore} from "@/stores/notifications";
+import {createToken, validateToken} from "@/api/auth/tokens";
 import router from "@/router";
 import {useHead} from "@vueuse/head";
 

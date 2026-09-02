@@ -1,4 +1,4 @@
-import type {Issue} from "@/api/issues/types.ts";
+import type {Issue} from "@/api/issues/types";
 
 
 export const useIssueDialogStore = defineStore('issue-dialog', {

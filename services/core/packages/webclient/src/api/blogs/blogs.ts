@@ -1,5 +1,5 @@
-import type {BlogArticle} from "@/api/blogs/types.ts";
-import {useUserStore} from "@/stores/user.ts";
+import type {BlogArticle} from "@/api/blogs/types";
+import {useUserStore} from "@/stores/user";
 
 export async function getBlogArticlesForSpace(spaceId: string): Promise<BlogArticle[]> {
   const userStore = useUserStore();

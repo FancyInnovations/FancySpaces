@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
-import type {Issue, IssueComment} from "@/api/issues/types.ts";
-import {deleteIssue, getIssue, updateIssue} from "@/api/issues/issues.ts";
+import type {Issue, IssueComment} from "@/api/issues/types";
+import {deleteIssue, getIssue, updateIssue} from "@/api/issues/issues";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useConfirmationStore} from "@/stores/confirmation.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {useUserStore} from "@/stores/user.ts";
+import {useConfirmationStore} from "@/stores/confirmation";
+import {useNotificationStore} from "@/stores/notifications";
+import {useUserStore} from "@/stores/user";
 import Card from "@/components/common/Card.vue";
 
 const route = useRoute();

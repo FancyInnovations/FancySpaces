@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
-import {type SpaceDatabaseCollection} from "@/api/storage/types.ts";
+import {type SpaceDatabaseCollection} from "@/api/storage/types";
 import CollectionCard from "@/components/storage/CollectionCard.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useUserStore} from "@/stores/user.ts";
+import {useUserStore} from "@/stores/user";
 
 const router = useRouter();
 const route = useRoute();

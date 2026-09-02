@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
-import type {SpaceSecret} from "@/api/secrets/types.ts";
-import {deleteSecret, getAllSecrets, getSecretDecrypted} from "@/api/secrets/secrets.ts";
+import type {SpaceSecret} from "@/api/secrets/types";
+import {deleteSecret, getAllSecrets, getSecretDecrypted} from "@/api/secrets/secrets";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useConfirmationStore} from "@/stores/confirmation.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {useUserStore} from "@/stores/user.ts";
+import {useConfirmationStore} from "@/stores/confirmation";
+import {useNotificationStore} from "@/stores/notifications";
+import {useUserStore} from "@/stores/user";
 import Card from "@/components/common/Card.vue";
 
 const router = useRouter();

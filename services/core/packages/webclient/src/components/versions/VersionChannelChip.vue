@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import type {SpaceVersion} from "@/api/versions/types.ts";
+import type {SpaceVersion} from "@/api/versions/types";
 
 const props = defineProps<{
   version: SpaceVersion,

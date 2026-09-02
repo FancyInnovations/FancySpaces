@@ -1,5 +1,5 @@
-import type {SpaceSecret} from "@/api/secrets/types.ts";
-import {useUserStore} from "@/stores/user.ts";
+import type {SpaceSecret} from "@/api/secrets/types";
+import {useUserStore} from "@/stores/user";
 
 export async function getSecret(spaceId: string, key: string): Promise<SpaceSecret> {
   const userStore = useUserStore();

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 
-import {useUserStore} from "@/stores/user.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {deleteBlogArticle, updateBlogArticle} from "@/api/blogs/blogs.ts";
-import type {BlogArticle} from "@/api/blogs/types.ts";
+import {useUserStore} from "@/stores/user";
+import {useNotificationStore} from "@/stores/notifications";
+import {deleteBlogArticle, updateBlogArticle} from "@/api/blogs/blogs";
+import type {BlogArticle} from "@/api/blogs/types";
 import {useRouter} from "vue-router";
-import {useConfirmationStore} from "@/stores/confirmation.ts";
+import {useConfirmationStore} from "@/stores/confirmation";
 
 const router = useRouter();
 const userStore = useUserStore();

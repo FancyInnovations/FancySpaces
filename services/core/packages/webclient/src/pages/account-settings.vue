@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 
 import {onMounted} from "vue";
-import {useUserStore} from "@/stores/user.ts";
-import {updateUser} from "@/api/auth/users.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {useConfirmationStore} from "@/stores/confirmation.ts";
-import type {User} from "@/api/auth/types.ts";
+import {useUserStore} from "@/stores/user";
+import {updateUser} from "@/api/auth/users";
+import {useNotificationStore} from "@/stores/notifications";
+import {useConfirmationStore} from "@/stores/confirmation";
+import type {User} from "@/api/auth/types";
 import {useHead} from "@vueuse/head";
 
 const userStore = useUserStore();

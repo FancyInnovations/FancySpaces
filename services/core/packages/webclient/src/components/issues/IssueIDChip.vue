@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
-import type {Issue} from "@/api/issues/types.ts";
-import {useIssueDialogStore} from "@/stores/issue-dialog.ts";
+import type {Issue} from "@/api/issues/types";
+import {useIssueDialogStore} from "@/stores/issue-dialog";
 
 const issueDialogStore = useIssueDialogStore();
 

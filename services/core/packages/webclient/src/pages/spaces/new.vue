@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 
-import {createSpace} from "@/api/spaces/spaces.ts";
+import {createSpace} from "@/api/spaces/spaces";
 import {useHead} from "@vueuse/head";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {useUserStore} from "@/stores/user.ts";
-import {mapCategoryToDisplayname} from "@/api/spaces/types.ts";
+import {useNotificationStore} from "@/stores/notifications";
+import {useUserStore} from "@/stores/user";
+import {mapCategoryToDisplayname} from "@/api/spaces/types";
 
 const router = useRouter();
 const route = useRoute();

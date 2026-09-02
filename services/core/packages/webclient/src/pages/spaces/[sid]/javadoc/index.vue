@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import type {
   SpaceMavenRepository,
   SpaceMavenRepositoryArtifact,
   SpaceMavenRepositoryArtifactVersion
-} from "@/api/maven/types.ts";
-import {getAllMavenArtifacts, getAllMavenRepositories} from "@/api/maven/maven.ts";
+} from "@/api/maven/types";
+import {getAllMavenArtifacts, getAllMavenRepositories} from "@/api/maven/maven";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import Card from "@/components/common/Card.vue";
 

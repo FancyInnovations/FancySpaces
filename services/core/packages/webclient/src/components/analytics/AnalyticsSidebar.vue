@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
-import {type Space} from "@/api/spaces/types.ts";
-import {useUserStore} from "@/stores/user.ts";
-import type {Dashboard} from "@/api/analytics/dashboards/types.ts";
+import {type Space} from "@/api/spaces/types";
+import {useUserStore} from "@/stores/user";
+import type {Dashboard} from "@/api/analytics/dashboards/types";
 
 const userStore = useUserStore();
 

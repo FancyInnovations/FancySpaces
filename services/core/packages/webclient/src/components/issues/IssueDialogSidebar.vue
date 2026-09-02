@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import type {Issue, IssueComment} from "@/api/issues/types.ts";
+import type {Issue, IssueComment} from "@/api/issues/types";
 import IssueIDChip from "@/components/issues/IssueIDChip.vue";
 import IssueStatusChip from "@/components/issues/IssueStatusChip.vue";
 import IssuePriorityChip from "@/components/issues/IssuePriorityChip.vue";

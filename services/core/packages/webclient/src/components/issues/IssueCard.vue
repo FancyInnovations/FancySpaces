@@ -3,9 +3,9 @@
 import IssueTypeChip from "@/components/issues/IssueTypeChip.vue";
 import IssueIDChip from "@/components/issues/IssueIDChip.vue";
 import IssuePriorityChip from "@/components/issues/IssuePriorityChip.vue";
-import type {Issue} from "@/api/issues/types.ts";
-import {useIssueDialogStore} from "@/stores/issue-dialog.ts";
-import type {Space} from "@/api/spaces/types.ts";
+import type {Issue} from "@/api/issues/types";
+import {useIssueDialogStore} from "@/stores/issue-dialog";
+import type {Space} from "@/api/spaces/types";
 
 const issueDialogStore = useIssueDialogStore();
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import type {Issue} from "@/api/issues/types.ts";
+import type {Issue} from "@/api/issues/types";
 
 const props = defineProps<{
   issue: Issue,

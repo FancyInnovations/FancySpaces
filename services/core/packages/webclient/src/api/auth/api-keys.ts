@@ -1,5 +1,5 @@
-import {useUserStore} from "@/stores/user.ts";
-import {type ApiKey, IDP_API_BASE_URL} from "@/api/auth/types.ts";
+import {useUserStore} from "@/stores/user";
+import {type ApiKey, IDP_API_BASE_URL} from "@/api/auth/types";
 
 export async function getApiKeys(userid: string): Promise<ApiKey[]> {
   const userStore = useUserStore();

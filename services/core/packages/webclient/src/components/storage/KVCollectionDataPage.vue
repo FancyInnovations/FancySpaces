@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import type {KVValue, SpaceDatabase, SpaceDatabaseCollection} from "@/api/storage/types.ts";
-import {kvGetAll} from "@/api/storage/kv/kv.ts";
+import type {Space} from "@/api/spaces/types";
+import type {KVValue, SpaceDatabase, SpaceDatabaseCollection} from "@/api/storage/types";
+import {kvGetAll} from "@/api/storage/kv/kv";
 import Card from "@/components/common/Card.vue";
 
 const props = defineProps<{

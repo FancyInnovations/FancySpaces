@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
-import {mapCategoryToDisplayname, mapLinkToDisplayname, mapLinkToIcon, type Space} from "@/api/spaces/types.ts";
-import {useUserStore} from "@/stores/user.ts";
+import {mapCategoryToDisplayname, mapLinkToDisplayname, mapLinkToIcon, type Space} from "@/api/spaces/types";
+import {useUserStore} from "@/stores/user";
 
 const userStore = useUserStore();
 

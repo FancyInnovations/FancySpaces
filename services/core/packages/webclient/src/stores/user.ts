@@ -1,5 +1,5 @@
-import type {User} from "@/api/auth/types.ts";
-import {validateToken} from "@/api/auth/tokens.ts";
+import type {User} from "@/api/auth/types";
+import {validateToken} from "@/api/auth/tokens";
 import {jwtDecode} from "jwt-decode";
 
 export const useUserStore = defineStore('user', {

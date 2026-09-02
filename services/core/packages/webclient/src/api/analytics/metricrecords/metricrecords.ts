@@ -1,7 +1,7 @@
-import {useUserStore} from "@/stores/user.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import type {RecordQueryResult} from "@/api/analytics/metricrecords/types.ts";
-import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url.ts";
+import {useUserStore} from "@/stores/user";
+import {useNotificationStore} from "@/stores/notifications";
+import type {RecordQueryResult} from "@/api/analytics/metricrecords/types";
+import {ANALYTICS_CORE_API_BASE_URL} from "@/api/analytics/url";
 
 export async function getLatestRecordsByCount(projectID: string, metricId: string, count: number = 100): Promise<RecordQueryResult> {
     const response = await fetch(

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 
-import {getSpace, updateSpace} from "@/api/spaces/spaces.ts";
+import {getSpace, updateSpace} from "@/api/spaces/spaces";
 import {useHead} from "@vueuse/head";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {useUserStore} from "@/stores/user.ts";
-import {mapCategoryToDisplayname, type Space} from "@/api/spaces/types.ts";
+import {useNotificationStore} from "@/stores/notifications";
+import {useUserStore} from "@/stores/user";
+import {mapCategoryToDisplayname, type Space} from "@/api/spaces/types";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import Card from "@/components/common/Card.vue";

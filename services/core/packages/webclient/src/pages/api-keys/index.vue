@@ -3,11 +3,11 @@
 import {onMounted} from "vue";
 import {useHead} from "@vueuse/head";
 import router from "@/router";
-import {useUserStore} from "@/stores/user.ts";
-import {deleteApiKey, getApiKeys} from "@/api/auth/api-keys.ts";
-import type {ApiKey} from "@/api/auth/types.ts";
-import {useNotificationStore} from "@/stores/notifications.ts";
-import {useConfirmationStore} from "@/stores/confirmation.ts";
+import {useUserStore} from "@/stores/user";
+import {deleteApiKey, getApiKeys} from "@/api/auth/api-keys";
+import type {ApiKey} from "@/api/auth/types";
+import {useNotificationStore} from "@/stores/notifications";
+import {useConfirmationStore} from "@/stores/confirmation";
 
 const userStore = useUserStore();
 const notificationStore = useNotificationStore();

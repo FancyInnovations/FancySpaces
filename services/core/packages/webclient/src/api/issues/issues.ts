@@ -1,5 +1,5 @@
-import type {Issue} from "@/api/issues/types.ts";
-import {useUserStore} from "@/stores/user.ts";
+import type {Issue} from "@/api/issues/types";
+import {useUserStore} from "@/stores/user";
 
 export async function getIssue(spaceId: string, issueId: string): Promise<Issue> {
   const userStore = useUserStore();

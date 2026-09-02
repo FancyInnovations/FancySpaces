@@ -2,11 +2,11 @@
 import {useHead} from "@vueuse/head";
 import Card from "@/components/common/Card.vue";
 import UserHeader from "@/components/users/UserHeader.vue";
-import {getDownloadCountForSpace, getSpacesOfCreator} from "@/api/spaces/spaces.ts";
-import {type Space} from "@/api/spaces/types.ts";
-import {useUserStore} from "@/stores/user.ts";
-import type {User} from "@/api/auth/types.ts";
-import {getPublicUser} from "@/api/auth/users.ts";
+import {getDownloadCountForSpace, getSpacesOfCreator} from "@/api/spaces/spaces";
+import {type Space} from "@/api/spaces/types";
+import {useUserStore} from "@/stores/user";
+import type {User} from "@/api/auth/types";
+import {getPublicUser} from "@/api/auth/users";
 
 const route = useRoute();
 const userStore = useUserStore();

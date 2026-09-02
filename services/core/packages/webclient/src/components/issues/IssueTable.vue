@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
 import IssueIDChip from "@/components/issues/IssueIDChip.vue";
-import type {Issue} from "@/api/issues/types.ts";
-import type {Space} from "@/api/spaces/types.ts";
+import type {Issue} from "@/api/issues/types";
+import type {Space} from "@/api/spaces/types";
 import Card from "@/components/common/Card.vue";
 
 const router = useRouter();

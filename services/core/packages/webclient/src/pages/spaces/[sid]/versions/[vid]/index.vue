@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces.ts";
-import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types.ts";
-import {getDownloadCountForVersion, getLatestVersion, getVersion} from "@/api/versions/versions.ts";
+import type {Space} from "@/api/spaces/types";
+import {getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces";
+import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types";
+import {getDownloadCountForVersion, getLatestVersion, getVersion} from "@/api/versions/versions";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types.ts";
-import {getSpace} from "@/api/spaces/spaces.ts";
+import type {Space} from "@/api/spaces/types";
+import {getSpace} from "@/api/spaces/spaces";
 import {useHead} from "@vueuse/head";
-import {createIssue} from "@/api/issues/issues.ts";
+import {createIssue} from "@/api/issues/issues";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useNotificationStore} from "@/stores/notifications.ts";
+import {useNotificationStore} from "@/stores/notifications";
 
 const router = useRouter();
 const route = useRoute();

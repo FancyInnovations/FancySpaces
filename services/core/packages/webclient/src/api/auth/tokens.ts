@@ -1,4 +1,4 @@
-import {IDP_API_BASE_URL} from "@/api/auth/types.ts";
+import {IDP_API_BASE_URL} from "@/api/auth/types";
 
 export async function createToken(email: string, password: string): Promise<string> {
     const resp = await fetch(`${IDP_API_BASE_URL}/tokens/create`, {
