@@ -5,7 +5,12 @@ import {getSpace} from "@/api/spaces/spaces";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/maven/types";
-import {deleteMavenArtifactVersion, getMavenArtifacts, getMavenRepository} from "@/api/maven/maven";
+import {
+  deleteMavenArtifact,
+  deleteMavenArtifactVersion,
+  getMavenArtifacts,
+  getMavenRepository
+} from "@/api/maven/maven";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useUserStore} from "@/stores/user";
 import Card from "@/components/common/Card.vue";
@@ -65,6 +70,22 @@ onMounted(async () => {
   });
 });
 
+function deleteArtifact() {
+  confirmationStore.confirmation = {
+    shown: true,
+    persistent: true,
+    title: "Delete artifact",
+    text: "Are you sure you want to delete this artifact? This action cannot be undone.",
+    yesText: "Delete",
+    onConfirm: async () => {
+      await deleteMavenArtifact(space.value!.id, repo.value!.name, artifact.value?.group + ":" +artifact.value?.id)
+      notifications.info(`Artifact ${artifact.value?.group}:${artifact.value?.id} deleted successfully!`);
+
+      router.push(`/spaces/${space.value!.slug}/maven-repos/${repo.value!.name}`);
+    }
+  };
+}
+
 function deleteVersion(version: string) {
   confirmationStore.confirmation = {
     shown: true,
@@ -75,6 +96,8 @@ function deleteVersion(version: string) {
     onConfirm: async () => {
       await deleteMavenArtifactVersion(space.value!.id, repo.value!.name, artifact.value?.group + ":" +artifact.value?.id, version)
       notifications.info(`Version ${version} deleted successfully!`);
+
+      artifact.value = await getMavenArtifacts(space.value!.id, repo.value!.name, artifact.value?.group + ":" +artifact.value?.id);
     }
   };
 }
@@ -159,8 +182,7 @@ function formatSize(sizeInBytes: number): string {
       </v-col>
     </v-row>
 
-    <v-row
-    >
+    <v-row>
       <v-col
         v-for="version in sortedVersions"
         :key="version.version"
@@ -301,18 +323,29 @@ dependencies {
                 </Card>
               </v-card-text>
 
-              <div class="mb-4 ml-4">
+              <div v-if="isLoggedIn" class="mb-4 ml-4">
                 <v-btn
                   color="red"
                   @click="deleteVersion(version.version)"
                 >
-                  Delete
+                  DELETE
                 </v-btn>
               </div>
             </div>
 
           </v-expand-transition>
         </Card>
+      </v-col>
+    </v-row>
+
+    <v-row v-if="isLoggedIn" class="mt-4">
+      <v-col md="12">
+        <v-btn
+        color="red"
+        @click="deleteArtifact()"
+        >
+          DELETE ARTIFACT
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
