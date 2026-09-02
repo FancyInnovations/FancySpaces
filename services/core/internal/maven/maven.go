@@ -208,6 +208,55 @@ func (s *Store) DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, 
 	return s.db.DeleteArtifact(ctx, spaceID, repoName, groupID, artifactID)
 }
 
+func (s *Store) DeleteArtifactVersion(ctx context.Context, spaceID, repoName, groupID, artifactID, version string) error {
+	repo, err := s.GetRepository(ctx, spaceID, repoName)
+	if err != nil {
+		return err
+	}
+
+	// If the repository is an internal mirror, forbid artifact version deletion
+	if repo.InternalMirror != nil {
+		return ErrCannotModifyArtifactInMirrorRepository
+	}
+
+	artifact, err := s.GetArtifact(ctx, spaceID, repoName, groupID, artifactID)
+	if err != nil {
+		return err
+	}
+
+	var versionToDelete *ArtifactVersion
+	for _, v := range artifact.Versions {
+		if v.Version == version {
+			versionToDelete = v
+			break
+		}
+	}
+
+	if versionToDelete == nil {
+		return ErrArtifactVersionNotFound
+	}
+
+	// Delete all artifact files from file storage
+	for _, file := range versionToDelete.Files {
+		if err := s.fileStore.DeleteArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version, file.Name); err != nil {
+			return err
+		}
+		if err := s.fileCache.DeleteArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version, file.Name); err != nil {
+			return err
+		}
+	}
+
+	// Remove the version from the artifact
+	for i, v := range artifact.Versions {
+		if v.Version == version {
+			artifact.Versions = append(artifact.Versions[:i], artifact.Versions[i+1:]...)
+			break
+		}
+	}
+
+	return s.db.UpdateArtifact(ctx, spaceID, repoName, *artifact)
+}
+
 func (s *Store) UploadArtifactFile(ctx context.Context, spaceID, repoName, groupID, artifactID, version, fileName string, data []byte) error {
 	repo, err := s.GetRepository(ctx, spaceID, repoName)
 	if err != nil {

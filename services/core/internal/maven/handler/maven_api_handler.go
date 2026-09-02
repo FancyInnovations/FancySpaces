@@ -530,23 +530,7 @@ func (h *Handler) handleDeleteArtifactVersion(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	// Remove the version from artifact and update
-	newVersions := []*maven.ArtifactVersion{}
-	found := false
-	for _, v := range artifact.Versions {
-		if v.Version == version.Version {
-			found = true
-			continue
-		}
-		newVersions = append(newVersions, v)
-	}
-	if !found {
-		problems.NotFound("Maven Artifact Version", version.Version).WriteToHTTP(w)
-		return
-	}
-
-	artifact.Versions = newVersions
-	if err := h.store.UpdateArtifact(r.Context(), space.ID, repo.Name, *artifact); err != nil {
+	if err := h.store.DeleteArtifactVersion(r.Context(), space.ID, repo.Name, artifact.Group, artifact.ID, version.Version); err != nil {
 		slog.Error("Failed to delete maven artifact version", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
