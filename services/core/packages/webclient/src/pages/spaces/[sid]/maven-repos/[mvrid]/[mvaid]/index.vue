@@ -5,14 +5,18 @@ import {getSpace} from "@/api/spaces/spaces.ts";
 import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import {useHead} from "@vueuse/head";
 import type {SpaceMavenRepository, SpaceMavenRepositoryArtifact} from "@/api/maven/types.ts";
-import {getMavenArtifacts, getMavenRepository} from "@/api/maven/maven.ts";
+import {deleteMavenArtifactVersion, getMavenArtifacts, getMavenRepository} from "@/api/maven/maven.ts";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useUserStore} from "@/stores/user.ts";
 import Card from "@/components/common/Card.vue";
+import {useConfirmationStore} from "@/stores/confirmation.ts";
+import {useNotificationStore} from "@/stores/notifications.ts";
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
+const notifications = useNotificationStore();
+const confirmationStore = useConfirmationStore();
 
 const isLoggedIn = ref(false);
 
@@ -60,6 +64,20 @@ onMounted(async () => {
     ]
   });
 });
+
+function deleteVersion(version: string) {
+  confirmationStore.confirmation = {
+    shown: true,
+    persistent: true,
+    title: "Delete artifact version",
+    text: "Are you sure you want to delete this artifact version? This action cannot be undone.",
+    yesText: "Delete",
+    onConfirm: async () => {
+      await deleteMavenArtifactVersion(space.value!.id, repo.value!.name, artifact.value?.group + ":" +artifact.value?.id, version)
+      notifications.info(`Version ${version} deleted successfully!`);
+    }
+  };
+}
 
 function filesWithoutChecksums(ver: string) {
   return artifact.value?.versions
@@ -282,7 +300,17 @@ dependencies {
                   </v-card-text>
                 </Card>
               </v-card-text>
+
+              <div class="mb-4 ml-4">
+                <v-btn
+                  color="red"
+                  @click="deleteVersion(version.version)"
+                >
+                  Delete
+                </v-btn>
+              </div>
             </div>
+
           </v-expand-transition>
         </Card>
       </v-col>

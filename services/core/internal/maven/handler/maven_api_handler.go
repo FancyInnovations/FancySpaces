@@ -113,8 +113,36 @@ func (h *Handler) handleGetRepositories(w http.ResponseWriter, r *http.Request, 
 }
 
 func (h *Handler) handleCreateRepository(w http.ResponseWriter, r *http.Request, space *spaces.Space) {
-	// TODO: implement
-	w.WriteHeader(http.StatusNotImplemented)
+	u := h.userFromCtx(r.Context())
+	if u == nil || !u.Verified || !u.IsActive || !space.HasWriteAccess(u) {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+
+	var repo maven.Repository
+	if err := json.NewDecoder(r.Body).Decode(&repo); err != nil {
+		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
+		return
+	}
+
+	if repo.Name == "" {
+		problems.ValidationError("name", "Repository name is required").WriteToHTTP(w)
+		return
+	}
+
+	if err := h.store.CreateRepository(r.Context(), space.ID, repo); err != nil {
+		if errors.Is(err, maven.ErrRepositoryAlreadyExists) {
+			problems.AlreadyExists("Maven Repository", repo.Name).WriteToHTTP(w)
+			return
+		}
+		slog.Error("Failed to create maven repository", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(repo)
 }
 
 func (h *Handler) handleRepository(w http.ResponseWriter, r *http.Request) {
@@ -189,13 +217,49 @@ func (h *Handler) handleGetRepository(w http.ResponseWriter, r *http.Request, sp
 }
 
 func (h *Handler) handleUpdateRepository(w http.ResponseWriter, r *http.Request, space *spaces.Space, repo *maven.Repository) {
-	// TODO: implement
-	w.WriteHeader(http.StatusNotImplemented)
+	u := h.userFromCtx(r.Context())
+	if u == nil || !u.Verified || !u.IsActive || !space.HasWriteAccess(u) {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+
+	var body maven.Repository
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
+		return
+	}
+
+	// Only certain fields are updatable: Public
+	repo.Public = body.Public
+
+	if err := h.store.UpdateRepository(r.Context(), space.ID, *repo); err != nil {
+		slog.Error("Failed to update maven repository", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(repo)
 }
 
 func (h *Handler) handleDeleteRepository(w http.ResponseWriter, r *http.Request, space *spaces.Space, repo *maven.Repository) {
-	// TODO: implement
-	w.WriteHeader(http.StatusNotImplemented)
+	u := h.userFromCtx(r.Context())
+	if u == nil || !u.Verified || !u.IsActive || !space.HasWriteAccess(u) {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+
+	if err := h.store.DeleteRepository(r.Context(), space.ID, repo.Name); err != nil {
+		if errors.Is(err, maven.ErrRepositoryNotFound) {
+			problems.NotFound("Maven Repository", repo.Name).WriteToHTTP(w)
+			return
+		}
+		slog.Error("Failed to delete maven repository", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) handleArtifacts(w http.ResponseWriter, r *http.Request) {
@@ -348,6 +412,149 @@ func (h *Handler) handleArtifact(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *Handler) handleArtifactVersion(w http.ResponseWriter, r *http.Request) {
+	sid := r.PathValue("space_id")
+	if sid == "" {
+		problems.ValidationError("space_id", "Space ID is required").WriteToHTTP(w)
+		return
+	}
+
+	space, err := h.spaces.Get(sid)
+	if err != nil {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
+			problems.NotFound("Space", sid).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get space by id", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	if space.Status != spaces.StatusApproved && space.Status != spaces.StatusArchived {
+		u := h.userFromCtx(r.Context())
+		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
+			problems.NotFound("Space", space.ID).WriteToHTTP(w)
+			return
+		}
+	}
+
+	if !space.MavenRepositorySettings.Enabled {
+		spacesStore.ProblemFeatureNotEnabled("releases").WriteToHTTP(w)
+		return
+	}
+
+	repoName := r.PathValue("repository_name")
+	repo, err := h.store.GetRepository(r.Context(), space.ID, repoName)
+	if err != nil {
+		if errors.Is(err, maven.ErrRepositoryNotFound) {
+			problems.NotFound("Maven Repository", repoName).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get maven repository", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	if !repo.Public {
+		u := h.userFromCtx(r.Context())
+		if u == nil || !u.Verified || !u.IsActive || !space.IsMember(u) {
+			problems.NotFound("Maven Repository", repo.Name).WriteToHTTP(w)
+			return
+		}
+	}
+
+	groupArtifactID := r.PathValue("group_artifact_id")
+	if groupArtifactID == "" {
+		problems.ValidationError("group_artifact_id", "Maven Artifact is required").WriteToHTTP(w)
+		return
+	}
+	groupID := strings.SplitN(groupArtifactID, ":", 2)[0]
+	artifactID := strings.SplitN(groupArtifactID, ":", 2)[1]
+	artifact, err := h.store.GetArtifact(r.Context(), space.ID, repo.Name, groupID, artifactID)
+	if err != nil {
+		if errors.Is(err, maven.ErrArtifactNotFound) {
+			problems.NotFound("Maven Artifact", groupArtifactID).WriteToHTTP(w)
+			return
+		}
+
+		slog.Error("Failed to get maven artifact", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	versionName := r.PathValue("version")
+	if versionName == "" {
+		problems.ValidationError("version", "Maven Artifact Version is required").WriteToHTTP(w)
+		return
+	}
+	version := artifact.GetVersion(versionName)
+	if version == nil {
+		problems.NotFound("Maven Artifact Version", versionName).WriteToHTTP(w)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		h.handleGetArtifactVersion(w, r, space, repo, artifact, *version)
+	case http.MethodDelete:
+		h.handleDeleteArtifactVersion(w, r, space, repo, artifact, *version)
+	default:
+		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodDelete}).WriteToHTTP(w)
+	}
+}
+
+// no auth required
+func (h *Handler) handleGetArtifactVersion(w http.ResponseWriter, r *http.Request, space *spaces.Space, repo *maven.Repository, artifact *maven.Artifact, version maven.ArtifactVersion) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "public, max-age=60")
+	json.NewEncoder(w).Encode(version)
+}
+
+func (h *Handler) handleDeleteArtifactVersion(w http.ResponseWriter, r *http.Request, space *spaces.Space, repo *maven.Repository, artifact *maven.Artifact, version maven.ArtifactVersion) {
+	u := h.userFromCtx(r.Context())
+	if u == nil || !u.Verified || !u.IsActive || !space.HasWriteAccess(u) {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+
+	// If repository is a mirror, forbid
+	repoCheck, err := h.store.GetRepository(r.Context(), space.ID, repo.Name)
+	if err != nil {
+		slog.Error("Failed to get maven repository", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	if repoCheck.InternalMirror != nil {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+
+	// Remove the version from artifact and update
+	newVersions := []*maven.ArtifactVersion{}
+	found := false
+	for _, v := range artifact.Versions {
+		if v.Version == version.Version {
+			found = true
+			continue
+		}
+		newVersions = append(newVersions, v)
+	}
+	if !found {
+		problems.NotFound("Maven Artifact Version", version.Version).WriteToHTTP(w)
+		return
+	}
+
+	artifact.Versions = newVersions
+	if err := h.store.UpdateArtifact(r.Context(), space.ID, repo.Name, *artifact); err != nil {
+		slog.Error("Failed to delete maven artifact version", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // no auth required
 func (h *Handler) handleGetArtifact(w http.ResponseWriter, r *http.Request, space *spaces.Space, repo *maven.Repository, artifact *maven.Artifact) {
 	w.Header().Set("Content-Type", "application/json")
@@ -356,8 +563,24 @@ func (h *Handler) handleGetArtifact(w http.ResponseWriter, r *http.Request, spac
 }
 
 func (h *Handler) handleDeleteArtifact(w http.ResponseWriter, r *http.Request, space *spaces.Space, repo *maven.Repository, artifact *maven.Artifact) {
-	// TODO: implement
-	w.WriteHeader(http.StatusNotImplemented)
+	// Only allow write access
+	u := h.userFromCtx(r.Context())
+	if u == nil || !u.Verified || !u.IsActive || !space.HasWriteAccess(u) {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+
+	if err := h.store.DeleteArtifact(r.Context(), space.ID, repo.Name, artifact.Group, artifact.ID); err != nil {
+		if errors.Is(err, maven.ErrArtifactNotFound) {
+			problems.NotFound("Maven Artifact", artifact.Group+":"+artifact.ID).WriteToHTTP(w)
+			return
+		}
+		slog.Error("Failed to delete maven artifact", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) handleJavadoc(w http.ResponseWriter, r *http.Request) {

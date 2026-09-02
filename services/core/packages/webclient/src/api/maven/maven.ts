@@ -108,3 +108,21 @@ export async function getMavenArtifacts(spaceId: string, repoName: string, group
 
   return artifact as SpaceMavenRepositoryArtifact;
 }
+
+export async function deleteMavenArtifactVersion(spaceId: string, repoName: string, groupArtifactID: string, version: string): Promise<void> {
+  const userStore = useUserStore();
+
+  const response = await fetch(
+    `/api/v1/spaces/${spaceId}/maven-repositories/${repoName}/artifacts/${encodeURIComponent(groupArtifactID)}/versions/${encodeURIComponent(version)}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${userStore.token}`,
+      }
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete maven artifact version: " + await response.text());
+  }
+}

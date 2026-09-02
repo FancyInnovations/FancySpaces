@@ -55,6 +55,7 @@ func (h *Handler) RegisterAPIEndpoints(prefix string, mux *http.ServeMux) {
 	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}", h.handleRepository)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts", h.handleArtifacts)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts/{group_artifact_id}", h.handleArtifact)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/maven-repositories/{repository_name}/artifacts/{group_artifact_id}/versions/{version}", h.handleArtifactVersion)
 
 	mux.HandleFunc("/javadoc/{space_id}/{repository_name}/{group_artifact_id}/{version}/{file_path...}", h.handleJavadoc)
 }
