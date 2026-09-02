@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/OliverSchlueter/goutils v0.0.28
-	github.com/dgraph-io/ristretto/v2 v2.4.1
+	github.com/dgraph-io/ristretto/v2 v2.4.2
 	github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk v0.0.5
 )
 
