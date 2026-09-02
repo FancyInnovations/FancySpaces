@@ -38,7 +38,7 @@ onMounted(async () => {
     </v-row>
 
     <v-row v-for="space in spaces" :key="space.id" justify="center">
-      <v-col class="mb-4" md="5">
+      <v-col class="mb-4" md="6">
         <SpaceCard
           :space="space"
           :with-badge="true"

@@ -72,21 +72,19 @@ async function fetchStats() {
 
     <v-row justify="center">
       <v-col>
-        <p class="text-h5 text-center text-primary">Download platform for products by FancyInnovations</p>
+        <p class="text-h5 text-center text-primary">Download and product management platform for products by FancyInnovations</p>
       </v-col>
     </v-row>
 
     <v-row class="mt-16" justify="center">
-      <v-col md="2">
+      <v-col md="3">
         <Card
           height="100%"
           to="/explore/minecraft-plugins"
         >
           <v-card-title class="mt-2">
-            <div class="d-flex align-center">
               <v-icon class="mr-2" color="green-lighten-1">mdi-minecraft</v-icon>
-              <p>Minecraft plugins</p>
-            </div>
+              Minecraft plugins
           </v-card-title>
 
           <v-card-text>
@@ -95,7 +93,7 @@ async function fetchStats() {
         </Card>
       </v-col>
 
-      <v-col md="2">
+      <v-col md="3">
         <Card
           height="100%"
           to="/explore/hytale-plugins"
@@ -111,7 +109,7 @@ async function fetchStats() {
         </Card>
       </v-col>
 
-      <v-col md="2">
+      <v-col md="3">
         <Card
           height="100%"
           to="/explore/other-projects"
@@ -129,15 +127,15 @@ async function fetchStats() {
     </v-row>
 
     <v-row class="mt-10" justify="center">
-      <v-col md="6">
+      <v-col md="9">
         <Card
           class="py-4"
           height="100%"
         >
           <v-row>
             <v-col class="text-center">
-              <div class="text-h6">Projects</div>
-              <div class="text-h4 mt-2">
+              <div class="text-headline-small">Projects</div>
+              <div class="text-headline-medium mt-2">
                 <v-skeleton-loader v-if="statsLoading" type="heading" />
                 <template v-else>
                   {{ totalSpaces !== null ? totalSpaces : '—' }}
@@ -146,8 +144,8 @@ async function fetchStats() {
             </v-col>
 
             <v-col class="text-center">
-              <div class="text-h6">Versions</div>
-              <div class="text-h4 mt-2">
+              <div class="text-headline-small">Versions</div>
+              <div class="text-headline-medium mt-2">
                 <v-skeleton-loader v-if="statsLoading" type="heading" />
                 <template v-else>
                   {{ totalVersions !== null ? totalVersions : '—' }}
@@ -156,8 +154,8 @@ async function fetchStats() {
             </v-col>
 
             <v-col class="text-center">
-              <div class="text-h6">Downloads</div>
-              <div class="text-h4 mt-2">
+              <div class="text-headline-small">Downloads</div>
+              <div class="text-headline-medium mt-2">
                 <v-skeleton-loader v-if="statsLoading" type="heading" />
                 <template v-else>
                   {{ totalDownloads !== null ? totalDownloads : '—' }}

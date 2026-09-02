@@ -23,6 +23,7 @@ onMounted(async () => {
   spaces.value.push(await getSpace("fd"));
   spaces.value.push(await getSpace("MX6Cna3z"));
   spaces.value.push(await getSpace("s1gGcHj5"));
+  spaces.value.push(await getSpace("5XepASJZ"));
 });
 </script>
 
@@ -35,7 +36,7 @@ onMounted(async () => {
     </v-row>
 
     <v-row v-for="space in spaces" :key="space.id" justify="center">
-      <v-col class="mb-4" md="5">
+      <v-col class="mb-4" md="6">
         <SpaceCard
           :space="space"
           :with-badge="true"
