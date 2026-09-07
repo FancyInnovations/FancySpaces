@@ -1,12 +1,12 @@
 module github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk
 
-go 1.26
+go 1.26.0
 
 require (
 	github.com/OliverSchlueter/goutils v0.0.28
 	github.com/dgraph-io/ristretto/v2 v2.4.2
 	github.com/golang-jwt/jwt/v5 v5.3.1
-	golang.org/x/crypto v0.55.0
+	golang.org/x/crypto v0.56.0
 )
 
 require (
