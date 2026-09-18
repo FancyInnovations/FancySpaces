@@ -107,6 +107,8 @@ func (s *Service) syncGitHub(space spaces.Space) error {
 			fsIssue.FixVersion = existingIssue.FixVersion
 			fsIssue.AffectedVersions = existingIssue.AffectedVersions
 			fsIssue.ParentIssue = existingIssue.ParentIssue
+			fsIssue.Labels = existingIssue.Labels
+			fsIssue.Relationships = existingIssue.Relationships
 			fsIssue.ExtraFields = existingIssue.ExtraFields
 			if hasIssueChange(&existingIssue, &fsIssue) {
 				slog.Debug(

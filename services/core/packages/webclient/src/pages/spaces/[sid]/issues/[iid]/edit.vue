@@ -5,6 +5,7 @@
   import { useHead } from '@vueuse/head'
   import { deleteIssue, getIssue, updateIssue } from '@/api/issues/issues'
   import { getSpace } from '@/api/spaces/spaces'
+  import IssueForm from '@/components/issues/IssueForm.vue'
   import SpaceHeader from '@/components/SpaceHeader.vue'
   import SpaceSidebar from '@/components/SpaceSidebar.vue'
   import { useNotificationStore } from '@/stores/notifications'
@@ -19,6 +20,12 @@
   const saving = ref(false)
   const userStore = useUserStore()
   const notificationStore = useNotificationStore()
+  const issueForm = computed<Partial<Issue>>({
+    get: () => issue.value || {},
+    set: value => {
+      if (issue.value) Object.assign(issue.value, value)
+    },
+  })
 
   const canWrite = computed(() => {
     const userID = userStore.user?.id
@@ -107,129 +114,16 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center">
-      <v-col md="6">
-        <v-text-field
-          v-model="issue!.title"
-          color="primary"
-          hide-details
-          label="Title"
-          required
-        />
-      </v-col>
-    </v-row>
-
-    <v-row justify="center">
-      <v-col md="6">
-        <v-textarea
-          v-model="issue!.description"
-          color="primary"
-          hide-details
-          label="Description"
-          rows="8"
-        />
-      </v-col>
-    </v-row>
-
-    <v-row justify="center">
-      <v-col md="6">
-        <v-text-field
-          v-model="issue!.parent_issue"
-          color="primary"
-          hide-details
-          label="Parent Issue"
-          required
-        />
-      </v-col>
-    </v-row>
-
-    <v-row justify="center">
-      <v-col md="6">
-        <v-select
-          v-model="issue!.status"
-          color="primary"
-          hide-details
-          :items="[
-            { title: 'Backlog', value: 'backlog' },
-            { title: 'Planned', value: 'planned' },
-            { title: 'In Progress', value: 'in_progress' },
-            { title: 'Done', value: 'done' },
-            { title: 'Closed', value: 'closed' },
-          ]"
-          label="Status"
-          required
-        />
-      </v-col>
-    </v-row>
-
-    <v-row justify="center">
-      <v-col md="3">
-        <v-select
-          v-model="issue!.type"
-          color="primary"
-          hide-details
-          :items="[
-            { title: 'Epic', value: 'epic' },
-            { title: 'Bug', value: 'bug' },
-            { title: 'Task', value: 'task' },
-            { title: 'Story', value: 'story' },
-            { title: 'Idea', value: 'idea' },
-
-          ]"
-          label="Type"
-          required
-        />
-      </v-col>
-
-      <v-col md="3">
-        <v-select
-          v-model="issue!.priority"
-          color="primary"
-          hide-details
-          :items="[
-            { title: 'Low', value: 'low' },
-            { title: 'Medium', value: 'medium' },
-            { title: 'High', value: 'high' },
-            { title: 'Critical', value: 'critical' },
-          ]"
-          label="Priority"
-          required
-        />
-      </v-col>
-    </v-row>
-
-    <v-row justify="center">
-      <v-col md="6">
-        <v-text-field
-          v-model="issue!.assignee"
-          color="primary"
-          hide-details
-          label="Issue Assignee"
-          required
-        />
-      </v-col>
-    </v-row>
-
-    <v-row justify="center">
-      <v-col md="6">
-        <v-text-field
-          v-model="issue!.fix_version"
-          color="primary"
-          hide-details
-          label="Fix Version"
-          required
-        />
-      </v-col>
-    </v-row>
+    <v-row justify="center"><v-col md="6"><IssueForm v-model="issueForm" /></v-col></v-row>
 
     <v-row justify="center">
       <v-col md="6">
         <v-btn
           class="mr-4"
           color="primary"
-          variant="tonal"
           :disabled="saving"
           :loading="saving"
+          variant="tonal"
           @click="editIssueReq"
         >
           Edit Issue
@@ -245,7 +139,10 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-container v-else class="text-center">{{ loadError || 'You do not have permission to edit this issue.' }}</v-container>
+
+  <v-container v-else class="text-center">
+    {{ loadError || 'You do not have permission to edit this issue.' }}
+  </v-container>
 </template>
 
 <style scoped>

@@ -11,6 +11,7 @@
     space: Space
     issues: Issue[]
   }>()
+  const selected = defineModel<string[]>('selected', { default: () => [] })
 
   const sortedIssues = computed(() => {
     return props.issues.slice().sort((a, b) => b.updated_at.getTime() - a.updated_at.getTime())
@@ -39,12 +40,15 @@
   >
     <v-card-text>
       <v-data-table
+        v-model="selected"
         class="bg-transparent"
         :headers="tableHeaders"
         hover
         item-key="id"
+        item-value="id"
         :items="sortedIssues"
         items-per-page="25"
+        show-select
         @click:row="onRowClick"
       >
         <template #item.id="{ item }">

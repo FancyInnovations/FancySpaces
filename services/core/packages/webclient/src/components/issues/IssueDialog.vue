@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 
   import type { IssueComment } from '@/api/issues/types'
+  import type { Space } from '@/api/spaces/types'
   import { addIssueComment, getIssueComments, updateIssue } from '@/api/issues/issues'
   import { getSpace } from '@/api/spaces/spaces'
-  import type { Space } from '@/api/spaces/types'
   import Card from '@/components/common/Card.vue'
   import Dialog from '@/components/common/Dialog.vue'
   import IssueDialogSidebar from '@/components/issues/IssueDialogSidebar.vue'
@@ -105,6 +105,7 @@
     <div class="rounded-xl">
       <div class="py-2 border-b d-flex align-center px-4">
         <h1 class="ml-2 text-h4 text-secondary">{{ issueDialogStore.issue?.title }}</h1>
+
         <div class="flex-grow-1 d-flex justify-end align-center">
           <v-select
             v-if="issueDialogStore.issue && canWrite"
@@ -124,13 +125,23 @@
             variant="solo"
             @update:model-value="statusChanged"
           />
-          <v-btn class="mr-2" color="secondary" :href="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`" icon="mdi-open-in-new" target="_blank" variant="text" />
+
+          <v-btn
+            class="mr-2"
+            color="secondary"
+            :href="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`"
+            icon="mdi-open-in-new"
+            target="_blank"
+            variant="text"
+          />
+
           <v-btn color="secondary" icon="mdi-close" variant="text" @click="issueDialogStore.close()" />
         </div>
       </div>
 
       <div class="issue-dialog-inner d-flex">
         <IssueDialogSidebar class="ma-4" :comments="comments" :issue="issueDialogStore.issue!" />
+
         <div class="issue-dialog-inner pr-4 flex-grow-1">
           <Card class="mt-4 bg-transparent" color="#150D1950">
             <v-card-title class="mt-2">Description</v-card-title>
@@ -139,9 +150,11 @@
 
           <Card class="my-4 bg-transparent" color="#150D1950">
             <v-card-title class="mt-2">Comments ({{ comments.length }})</v-card-title>
+
             <v-card-text>
               <p v-if="loadingComments">Loading comments…</p>
               <p v-else-if="comments.length === 0">No comments yet.</p>
+
               <template v-else>
                 <Card v-for="comment in comments" :key="comment.id" class="bg-transparent mb-3" elevation="6">
                   <v-card-text>
@@ -150,8 +163,16 @@
                   </v-card-text>
                 </Card>
               </template>
+
               <div v-if="canWrite" class="mt-4">
-                <v-textarea v-model="commentText" auto-grow color="primary" label="Add a comment" rows="3" />
+                <v-textarea
+                  v-model="commentText"
+                  auto-grow
+                  color="primary"
+                  label="Add a comment"
+                  rows="3"
+                />
+
                 <v-btn color="primary" :disabled="!commentText.trim() || submittingComment" :loading="submittingComment" @click="addComment">Add Comment</v-btn>
               </div>
             </v-card-text>
@@ -162,7 +183,14 @@
       <div class="d-flex justify-end pa-2 border-t">
         <v-btn class="mr-2" variant="text" @click="copyLink">Copy Link</v-btn>
         <v-btn class="mr-2" variant="text" @click="copyID">Copy ID</v-btn>
-        <v-btn v-if="canWrite" class="mr-2" :to="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}/edit`" variant="text" @click="issueDialogStore.close()">Edit</v-btn>
+
+        <v-btn
+          v-if="canWrite"
+          class="mr-2"
+          :to="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}/edit`"
+          variant="text"
+          @click="issueDialogStore.close()"
+        >Edit</v-btn>
       </div>
     </div>
   </Dialog>

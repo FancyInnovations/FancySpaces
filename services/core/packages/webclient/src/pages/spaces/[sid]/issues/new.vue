@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 
+  import type { Issue } from '@/api/issues/types'
   import type { Space } from '@/api/spaces/types'
   import { useHead } from '@vueuse/head'
-  import { createIssue } from '@/api/issues/issues'
+  import { createIssue, getIssues } from '@/api/issues/issues'
   import { getSpace } from '@/api/spaces/spaces'
+  import IssueForm from '@/components/issues/IssueForm.vue'
   import SpaceHeader from '@/components/SpaceHeader.vue'
   import SpaceSidebar from '@/components/SpaceSidebar.vue'
   import { useNotificationStore } from '@/stores/notifications'
@@ -16,12 +18,11 @@
 
   const space = ref<Space>()
 
-  const title = ref('')
-  const description = ref('')
-  const type = ref('task')
-  const priority = ref('medium')
+  const draft = ref<Partial<Issue>>({ title: '', description: '', type: 'task', priority: 'medium', labels: [] })
   const submitting = ref(false)
   const loadError = ref('')
+  const templates = ref<Array<{ name: string, issue: Partial<Issue> }>>([])
+  const templateName = ref('')
 
   const canWrite = computed(() => {
     const userID = userStore.user?.id
@@ -38,6 +39,7 @@
         await router.push(`/spaces/${space.value.slug}`)
         return
       }
+      templates.value = JSON.parse(localStorage.getItem(`issue_templates_${space.value.id}`) || '[]')
       useHead({
         title: `${space.value.title} - FancySpaces`,
         meta: [{ name: 'description', content: space.value.summary || 'Create a new issue in this space on FancySpaces.' }],
@@ -50,34 +52,30 @@
   async function createNewIssue () {
     if (!space.value || !canWrite.value || submitting.value) return
 
-    if (!title.value.trim()) {
+    if (!draft.value.title?.trim()) {
       notifications.error('Title is required.')
       return
     }
 
-    if (!type.value) {
+    if (!draft.value.type) {
       notifications.error('Type is required.')
       return
     }
 
-    if (!priority.value) {
+    if (!draft.value.priority) {
       notifications.error('Priority is required.')
       return
     }
 
     submitting.value = true
     try {
-      const issue = await createIssue(space.value.id, {
-        title: title.value,
-        description: description.value,
-        type: type.value as any,
-        priority: priority.value as any,
-      })
-
-      title.value = ''
-      description.value = ''
-      type.value = 'task'
-      priority.value = 'medium'
+      const similar = await getIssues(space.value.id, { q: draft.value.title, limit: 5 })
+      if (similar.items.some(item => item.title.trim().toLowerCase() === draft.value.title!.trim().toLowerCase())) {
+        notifications.error('A similarly named issue already exists. Review it before creating a duplicate.')
+        return
+      }
+      const issue = await createIssue(space.value.id, draft.value)
+      draft.value = { title: '', description: '', type: 'task', priority: 'medium', labels: [] }
 
       await router.push(`/spaces/${space.value.slug}/issues/${issue.id}`)
     } catch (error) {
@@ -85,6 +83,20 @@
     } finally {
       submitting.value = false
     }
+  }
+
+  function applyTemplate (name: string | null) {
+    if (!name) return
+    const template = templates.value.find(item => item.name === name)
+    if (template) draft.value = { ...template.issue, labels: [...(template.issue.labels || [])] }
+  }
+
+  function saveTemplate () {
+    if (!space.value || !templateName.value.trim()) return
+    const issue = { ...draft.value, title: '', description: '', labels: [...(draft.value.labels || [])] }
+    templates.value = [...templates.value.filter(item => item.name !== templateName.value.trim()), { name: templateName.value.trim(), issue }]
+    localStorage.setItem(`issue_templates_${space.value.id}`, JSON.stringify(templates.value))
+    templateName.value = ''
   }
 
 </script>
@@ -126,57 +138,21 @@
           </v-card-title>
 
           <v-card-text>
-            <v-text-field
-              v-model="title"
-              class="mb-4"
-              color="primary"
-              hide-details
-              label="Title"
-              required
-            />
-
-            <v-textarea
-              v-model="description"
-              class="mb-4"
-              color="primary"
-              hide-details
-              label="Description"
-              rows="8"
-            />
-
-            <div class="d-flex mb-4">
+            <div class="d-flex ga-2 mb-4 flex-wrap">
               <v-select
-                v-model="type"
-                class="mr-2"
-                color="primary"
+                v-if="templates.length > 0"
+                density="compact"
                 hide-details
-                :items="[
-                  { title: 'Epic', value: 'epic' },
-                  { title: 'Bug', value: 'bug' },
-                  { title: 'Task', value: 'task' },
-                  { title: 'Story', value: 'story' },
-                  { title: 'Idea', value: 'idea' },
-
-                ]"
-                label="Type"
-                required
+                :items="templates.map(template => template.name)"
+                label="Start from template"
+                @update:model-value="applyTemplate"
               />
 
-              <v-select
-                v-model="priority"
-                class="ml-2"
-                color="primary"
-                hide-details
-                :items="[
-                  { title: 'Low', value: 'low' },
-                  { title: 'Medium', value: 'medium' },
-                  { title: 'High', value: 'high' },
-                  { title: 'Critical', value: 'critical' },
-                ]"
-                label="Priority"
-                required
-              />
+              <v-text-field v-model="templateName" density="compact" hide-details label="Save as template" />
+              <v-btn size="small" variant="tonal" @click="saveTemplate">Save template</v-btn>
             </div>
+
+            <IssueForm v-model="draft" />
 
             <v-btn
               class="mt-4"
@@ -192,6 +168,7 @@
       </v-col>
     </v-row>
   </v-container>
+
   <v-container v-else class="text-center">{{ loadError }}</v-container>
 </template>
 

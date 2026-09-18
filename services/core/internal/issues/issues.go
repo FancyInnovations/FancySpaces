@@ -18,6 +18,9 @@ type DB interface {
 	AddComment(comment *Comment) error
 	UpdateComment(comment *Comment) error
 	DeleteComment(space, issue, id string) error
+
+	GetActivities(space, issue string) ([]Activity, error)
+	AddActivity(activity *Activity) error
 }
 
 type ListOptions struct {
@@ -27,6 +30,7 @@ type ListOptions struct {
 	Priority       Priority
 	Assignee       string
 	ExternalSource ExternalSource
+	Label          string
 	Offset         int
 	Limit          int
 }
@@ -90,6 +94,16 @@ func (s *Store) UpdateIssue(issue *Issue) error {
 	}
 
 	return s.db.UpdateIssue(issue)
+}
+
+func (s *Store) GetActivities(space, issue string) ([]Activity, error) {
+	return s.db.GetActivities(space, issue)
+}
+
+func (s *Store) AddActivity(activity *Activity) error {
+	activity.ID = idgen.GenerateID(8)
+	activity.CreatedAt = time.Now()
+	return s.db.AddActivity(activity)
 }
 
 func (s *Store) ForceUpdateIssue(issue *Issue) error {

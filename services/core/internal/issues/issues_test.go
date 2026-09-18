@@ -70,3 +70,32 @@ func TestListIssuesFiltersAndPaginates(t *testing.T) {
 		t.Fatalf("unexpected list result: items=%d total=%d err=%v", len(items), total, err)
 	}
 }
+
+func TestIssueNormalizesLabelsAndValidatesRelationships(t *testing.T) {
+	issue := issues.Issue{ID: "one", Space: "space-1", Title: "Labels", Type: issues.TypeTask, Status: issues.StatusBacklog, Priority: issues.PriorityMedium, Labels: []string{"  Product ", "product"}}
+	if err := issue.Validate(); err != nil {
+		t.Fatalf("validate labels: %v", err)
+	}
+	if len(issue.Labels) != 1 || issue.Labels[0] != "Product" {
+		t.Fatalf("labels were not normalized: %#v", issue.Labels)
+	}
+	issue.Relationships = []issues.Relationship{{Issue: "one", Type: issues.RelationshipRelated}}
+	if !errors.Is(issue.Validate(), issues.ErrInvalidRelationship) {
+		t.Fatalf("expected invalid relationship, got %v", issue.Validate())
+	}
+}
+
+func TestActivitiesAreScopedAndChronological(t *testing.T) {
+	store := newStore()
+	issue := &issues.Issue{Space: "space-1", Title: "Audit me", Type: issues.TypeTask, Status: issues.StatusBacklog, Priority: issues.PriorityMedium}
+	if err := store.CreateIssue(issue); err != nil {
+		t.Fatal(err)
+	}
+	if err := store.AddActivity(&issues.Activity{Space: issue.Space, Issue: issue.ID, Actor: "user-1", Kind: "created"}); err != nil {
+		t.Fatal(err)
+	}
+	activity, err := store.GetActivities(issue.Space, issue.ID)
+	if err != nil || len(activity) != 1 || activity[0].ID == "" || activity[0].CreatedAt.IsZero() {
+		t.Fatalf("unexpected activity: %#v, %v", activity, err)
+	}
+}

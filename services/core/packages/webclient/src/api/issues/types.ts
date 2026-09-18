@@ -17,8 +17,27 @@ export interface Issue {
   affected_versions?: string[]
   resolved_at?: Date
   parent_issue?: string
+  labels?: string[]
+  relationships?: IssueRelationship[]
   extra_fields?: Record<string, any>
   archived_at?: Date
+}
+
+export interface IssueRelationship {
+  issue: string
+  type: 'blocks' | 'duplicates' | 'related'
+}
+
+export interface IssueActivity {
+  id: string
+  space: string
+  issue: string
+  actor: string
+  kind: string
+  field?: string
+  old_value?: string
+  new_value?: string
+  created_at: Date
 }
 
 export interface IssueListResponse {
@@ -35,6 +54,7 @@ export interface IssueQuery {
   priority?: Issue['priority']
   assignee?: string
   external_source?: NonNullable<Issue['external_source']>
+  label?: string
   offset?: number
   limit?: number
 }

@@ -27,6 +27,7 @@ declare module 'vue' {
     IssueDialog: typeof import('./components/issues/IssueDialog.vue')['default']
     IssueDialogSidebar: typeof import('./components/issues/IssueDialogSidebar.vue')['default']
     IssueExternalSourceChip: typeof import('./components/issues/IssueExternalSourceChip.vue')['default']
+    IssueForm: typeof import('./components/issues/IssueForm.vue')['default']
     IssueIDChip: typeof import('./components/issues/IssueIDChip.vue')['default']
     IssuePriorityChip: typeof import('./components/issues/IssuePriorityChip.vue')['default']
     IssueStatusChip: typeof import('./components/issues/IssueStatusChip.vue')['default']

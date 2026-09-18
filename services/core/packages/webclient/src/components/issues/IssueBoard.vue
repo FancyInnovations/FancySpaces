@@ -68,8 +68,8 @@
         cols="12"
         lg="auto"
         md="6"
-        @dragover="dragOver($event, column.status)"
         @dragleave="dropStatus = null"
+        @dragover="dragOver($event, column.status)"
         @drop="drop(column.status)"
       >
         <Card

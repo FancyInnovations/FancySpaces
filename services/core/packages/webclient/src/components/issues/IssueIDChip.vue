@@ -60,10 +60,10 @@
   >
     <template #activator="{ props: menuProps }">
       <v-chip
-        :density="props.density || 'default'"
         color="primary"
-        prepend-icon="mdi-sign-text"
+        :density="props.density || 'default'"
         :loading="loading"
+        prepend-icon="mdi-sign-text"
         rounded
         v-bind="menuProps"
         variant="tonal"

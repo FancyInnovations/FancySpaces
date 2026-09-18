@@ -16,6 +16,7 @@ import (
 type DB struct {
 	icoll *mongo.Collection
 	ccoll *mongo.Collection
+	acoll *mongo.Collection
 }
 
 type Configuration struct {
@@ -25,6 +26,7 @@ type Configuration struct {
 func NewDB(config *Configuration) *DB {
 	icoll := config.Mongo.Collection("issues")
 	ccoll := config.Mongo.Collection("comments")
+	acoll := config.Mongo.Collection("issue_activities")
 	ctx := context.Background()
 	_, err := icoll.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "space", Value: 1}, {Key: "id", Value: 1}}, Options: options.Index().SetUnique(true)},
@@ -33,6 +35,10 @@ func NewDB(config *Configuration) *DB {
 	})
 	if err != nil {
 		slog.Error("failed to create issue indexes", "error", err)
+	}
+	_, err = acoll.Indexes().CreateOne(ctx, mongo.IndexModel{Keys: bson.D{{Key: "space", Value: 1}, {Key: "issue", Value: 1}, {Key: "created_at", Value: 1}}})
+	if err != nil {
+		slog.Error("failed to create issue activity indexes", "error", err)
 	}
 	_, err = ccoll.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "space", Value: 1}, {Key: "issue", Value: 1}, {Key: "created_at", Value: 1}}},
@@ -45,6 +51,7 @@ func NewDB(config *Configuration) *DB {
 	return &DB{
 		icoll: icoll,
 		ccoll: ccoll,
+		acoll: acoll,
 	}
 }
 
@@ -86,6 +93,9 @@ func (db *DB) ListIssues(space string, opts issues.ListOptions) ([]issues.Issue,
 	}
 	if opts.ExternalSource != "" {
 		filter = append(filter, bson.E{Key: "external_source", Value: opts.ExternalSource})
+	}
+	if opts.Label != "" {
+		filter = append(filter, bson.E{Key: "labels", Value: bson.Regex{Pattern: "^" + regexp.QuoteMeta(opts.Label) + "$", Options: "i"}})
 	}
 	if query := strings.TrimSpace(opts.Query); query != "" {
 		pattern := bson.Regex{Pattern: regexp.QuoteMeta(query), Options: "i"}
@@ -240,5 +250,28 @@ func (db *DB) DeleteComment(space, issue, id string) error {
 	}
 
 	_, err := db.ccoll.DeleteOne(context.Background(), filter)
+	return err
+}
+
+func (db *DB) GetActivities(space, issue string) ([]issues.Activity, error) {
+	ctx := context.Background()
+	cur, err := db.acoll.Find(ctx, bson.D{{Key: "space", Value: space}, {Key: "issue", Value: issue}}, options.Find().SetSort(bson.D{{Key: "created_at", Value: 1}}))
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+	result := make([]issues.Activity, 0)
+	for cur.Next(ctx) {
+		var activity issues.Activity
+		if err := cur.Decode(&activity); err != nil {
+			return nil, err
+		}
+		result = append(result, activity)
+	}
+	return result, cur.Err()
+}
+
+func (db *DB) AddActivity(activity *issues.Activity) error {
+	_, err := db.acoll.InsertOne(context.Background(), activity)
 	return err
 }

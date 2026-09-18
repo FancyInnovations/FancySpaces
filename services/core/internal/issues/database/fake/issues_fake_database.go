@@ -9,16 +9,18 @@ import (
 )
 
 type DB struct {
-	Issues   []issues.Issue
-	Comments []issues.Comment
-	Mu       *sync.Mutex
+	Issues     []issues.Issue
+	Comments   []issues.Comment
+	Activities []issues.Activity
+	Mu         *sync.Mutex
 }
 
 func New() *DB {
 	return &DB{
-		Issues:   []issues.Issue{},
-		Comments: []issues.Comment{},
-		Mu:       &sync.Mutex{},
+		Issues:     []issues.Issue{},
+		Comments:   []issues.Comment{},
+		Activities: []issues.Activity{},
+		Mu:         &sync.Mutex{},
 	}
 }
 
@@ -51,6 +53,18 @@ func (db *DB) ListIssues(space string, opts issues.ListOptions) ([]issues.Issue,
 		}
 		if opts.Type != "" && issue.Type != opts.Type || opts.Status != "" && issue.Status != opts.Status || opts.Priority != "" && issue.Priority != opts.Priority || opts.Assignee != "" && issue.Assignee != opts.Assignee || opts.ExternalSource != "" && issue.ExternalSource != opts.ExternalSource {
 			continue
+		}
+		if opts.Label != "" {
+			matched := false
+			for _, label := range issue.Labels {
+				if strings.EqualFold(label, opts.Label) {
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				continue
+			}
 		}
 		result = append(result, issue)
 	}
@@ -176,4 +190,24 @@ func (db *DB) DeleteComment(space, issue, id string) error {
 	}
 
 	return issues.ErrCommentNotFound
+}
+
+func (db *DB) GetActivities(space, issue string) ([]issues.Activity, error) {
+	db.Mu.Lock()
+	defer db.Mu.Unlock()
+	result := make([]issues.Activity, 0)
+	for _, activity := range db.Activities {
+		if activity.Space == space && activity.Issue == issue {
+			result = append(result, activity)
+		}
+	}
+	sort.Slice(result, func(i, j int) bool { return result[i].CreatedAt.Before(result[j].CreatedAt) })
+	return result, nil
+}
+
+func (db *DB) AddActivity(activity *issues.Activity) error {
+	db.Mu.Lock()
+	defer db.Mu.Unlock()
+	db.Activities = append(db.Activities, *activity)
+	return nil
 }

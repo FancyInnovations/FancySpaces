@@ -31,36 +31,44 @@ type Configuration struct {
 }
 
 type issueWriteRequest struct {
-	Title            string                 `json:"title"`
-	Description      string                 `json:"description"`
-	Type             issues.Type            `json:"type"`
-	Status           issues.Status          `json:"status"`
-	Priority         issues.Priority        `json:"priority"`
-	Assignee         string                 `json:"assignee"`
-	FixVersion       string                 `json:"fix_version"`
-	AffectedVersions []string               `json:"affected_versions"`
-	ParentIssue      string                 `json:"parent_issue"`
-	ExtraFields      map[string]interface{} `json:"extra_fields"`
+	Title            string                `json:"title"`
+	Description      string                `json:"description"`
+	Type             issues.Type           `json:"type"`
+	Status           issues.Status         `json:"status"`
+	Priority         issues.Priority       `json:"priority"`
+	Assignee         string                `json:"assignee"`
+	FixVersion       string                `json:"fix_version"`
+	AffectedVersions []string              `json:"affected_versions"`
+	ParentIssue      string                `json:"parent_issue"`
+	Labels           []string              `json:"labels"`
+	Relationships    []issues.Relationship `json:"relationships"`
 }
 
 type issuePatchRequest struct {
-	Title            *string                 `json:"title"`
-	Description      *string                 `json:"description"`
-	Type             *issues.Type            `json:"type"`
-	Status           *issues.Status          `json:"status"`
-	Priority         *issues.Priority        `json:"priority"`
-	Assignee         *string                 `json:"assignee"`
-	FixVersion       *string                 `json:"fix_version"`
-	AffectedVersions *[]string               `json:"affected_versions"`
-	ParentIssue      *string                 `json:"parent_issue"`
-	ExtraFields      *map[string]interface{} `json:"extra_fields"`
+	Title            *string                `json:"title"`
+	Description      *string                `json:"description"`
+	Type             *issues.Type           `json:"type"`
+	Status           *issues.Status         `json:"status"`
+	Priority         *issues.Priority       `json:"priority"`
+	Assignee         *string                `json:"assignee"`
+	FixVersion       *string                `json:"fix_version"`
+	AffectedVersions *[]string              `json:"affected_versions"`
+	ParentIssue      *string                `json:"parent_issue"`
+	Labels           *[]string              `json:"labels"`
+	Relationships    *[]issues.Relationship `json:"relationships"`
 }
 
 type issueListResponse struct {
-	Items  []issues.Issue `json:"items"`
-	Total  int            `json:"total"`
-	Offset int            `json:"offset"`
-	Limit  int            `json:"limit"`
+	Items       []issues.Issue   `json:"items"`
+	Total       int              `json:"total"`
+	Offset      int              `json:"offset"`
+	Limit       int              `json:"limit"`
+	Permissions issuePermissions `json:"permissions"`
+}
+
+type issuePermissions struct {
+	CanWrite   bool `json:"can_write"`
+	CanArchive bool `json:"can_archive"`
 }
 
 func New(cfg Configuration) *Handler {
@@ -72,6 +80,8 @@ func (h *Handler) Register(prefix string, mux *http.ServeMux) {
 	mux.HandleFunc(prefix+"/spaces/{space_id}/issues/{issue_id}", h.handleIssue)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/issues/{issue_id}/comments", h.handleComments)
 	mux.HandleFunc(prefix+"/spaces/{space_id}/issues/{issue_id}/comments/{comment_id}", h.handleComment)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/issues/{issue_id}/activity", h.handleActivity)
+	mux.HandleFunc(prefix+"/spaces/{space_id}/issues/bulk", h.handleBulkUpdate)
 }
 
 func (h *Handler) loadSpace(w http.ResponseWriter, r *http.Request) (*spaces.Space, bool) {
@@ -159,7 +169,11 @@ func (h *Handler) handleListIssues(w http.ResponseWriter, r *http.Request, space
 	opts := issues.ListOptions{
 		Query: q.Get("q"), Type: issues.Type(q.Get("type")), Status: issues.Status(q.Get("status")),
 		Priority: issues.Priority(q.Get("priority")), Assignee: q.Get("assignee"),
-		ExternalSource: issues.ExternalSource(q.Get("external_source")), Offset: offset, Limit: limit,
+		ExternalSource: issues.ExternalSource(q.Get("external_source")), Label: q.Get("label"), Offset: offset, Limit: limit,
+	}
+	if opts.Type != "" && !issues.ValidType(opts.Type) || opts.Status != "" && !issues.ValidStatus(opts.Status) || opts.Priority != "" && !issues.ValidPriority(opts.Priority) {
+		problems.ValidationError("filter", "Invalid issue filter").WriteToHTTP(w)
+		return
 	}
 	list, total, err := h.store.ListIssues(space.ID, opts)
 	if err != nil {
@@ -167,7 +181,9 @@ func (h *Handler) handleListIssues(w http.ResponseWriter, r *http.Request, space
 		problems.InternalServerError("").WriteToHTTP(w)
 		return
 	}
-	h.writeJSON(w, http.StatusOK, issueListResponse{Items: list, Total: total, Offset: offset, Limit: limit})
+	u := h.userFromCtx(r.Context())
+	canWrite := u != nil && u.Verified && u.IsActive && space.HasWriteAccess(u)
+	h.writeJSON(w, http.StatusOK, issueListResponse{Items: list, Total: total, Offset: offset, Limit: limit, Permissions: issuePermissions{CanWrite: canWrite, CanArchive: canWrite}})
 }
 
 func parsePagination(limitValue, offsetValue string) (int, int, error) {
@@ -206,7 +222,7 @@ func (h *Handler) handleCreateIssue(w http.ResponseWriter, r *http.Request, spac
 	}
 	issue := issues.Issue{Space: space.ID, Reporter: u.ID, Title: req.Title, Description: req.Description,
 		Type: req.Type, Status: issues.StatusBacklog, Priority: req.Priority, Assignee: req.Assignee,
-		FixVersion: req.FixVersion, AffectedVersions: req.AffectedVersions, ParentIssue: req.ParentIssue, ExtraFields: req.ExtraFields}
+		FixVersion: req.FixVersion, AffectedVersions: req.AffectedVersions, ParentIssue: req.ParentIssue, Labels: req.Labels, Relationships: req.Relationships}
 	if err := h.validateIssueWrite(space, &issue); err != nil {
 		h.writeIssueValidationError(w, err)
 		return
@@ -215,6 +231,7 @@ func (h *Handler) handleCreateIssue(w http.ResponseWriter, r *http.Request, spac
 		h.writeIssueValidationError(w, err)
 		return
 	}
+	h.recordActivity(&issue, u.ID, "created", "", "", "")
 	h.writeJSON(w, http.StatusCreated, issue)
 }
 
@@ -244,7 +261,7 @@ func (h *Handler) handleUpdateIssue(w http.ResponseWriter, r *http.Request, spac
 			return
 		}
 		updated.Title, updated.Description, updated.Type, updated.Status, updated.Priority = req.Title, req.Description, req.Type, req.Status, req.Priority
-		updated.Assignee, updated.FixVersion, updated.AffectedVersions, updated.ParentIssue, updated.ExtraFields = req.Assignee, req.FixVersion, req.AffectedVersions, req.ParentIssue, req.ExtraFields
+		updated.Assignee, updated.FixVersion, updated.AffectedVersions, updated.ParentIssue, updated.Labels, updated.Relationships = req.Assignee, req.FixVersion, req.AffectedVersions, req.ParentIssue, req.Labels, req.Relationships
 	}
 	if updated.Status != issue.Status && (updated.Status == issues.StatusDone || updated.Status == issues.StatusClosed) {
 		now := time.Now()
@@ -260,6 +277,7 @@ func (h *Handler) handleUpdateIssue(w http.ResponseWriter, r *http.Request, spac
 		h.writeIssueValidationError(w, err)
 		return
 	}
+	h.recordChanges(issue, &updated, u.ID)
 	h.writeJSON(w, http.StatusOK, updated)
 }
 
@@ -291,8 +309,11 @@ func applyPatch(issue *issues.Issue, req issuePatchRequest) {
 	if req.ParentIssue != nil {
 		issue.ParentIssue = *req.ParentIssue
 	}
-	if req.ExtraFields != nil {
-		issue.ExtraFields = *req.ExtraFields
+	if req.Labels != nil {
+		issue.Labels = *req.Labels
+	}
+	if req.Relationships != nil {
+		issue.Relationships = *req.Relationships
 	}
 }
 
@@ -304,12 +325,49 @@ func (h *Handler) validateIssueWrite(space *spaces.Space, issue *issues.Issue) e
 		if issue.ParentIssue == issue.ID {
 			return issues.ErrInvalidParent
 		}
-		parent, err := h.store.GetIssue(space.ID, issue.ParentIssue)
-		if err != nil || parent.ID == issue.ID {
+		parentID := issue.ParentIssue
+		seen := map[string]struct{}{issue.ID: {}}
+		for depth := 0; depth < 50 && parentID != ""; depth++ {
+			if _, cycle := seen[parentID]; cycle {
+				return issues.ErrInvalidParent
+			}
+			seen[parentID] = struct{}{}
+			parent, err := h.store.GetIssue(space.ID, parentID)
+			if err != nil {
+				return issues.ErrInvalidParent
+			}
+			parentID = parent.ParentIssue
+		}
+		if parentID != "" {
 			return issues.ErrInvalidParent
 		}
 	}
+	for _, relationship := range issue.Relationships {
+		if _, err := h.store.GetIssue(space.ID, relationship.Issue); err != nil {
+			return issues.ErrInvalidRelationship
+		}
+	}
 	return nil
+}
+
+func (h *Handler) recordActivity(issue *issues.Issue, actor, kind, field, oldValue, newValue string) {
+	if err := h.store.AddActivity(&issues.Activity{Space: issue.Space, Issue: issue.ID, Actor: actor, Kind: kind, Field: field, OldValue: oldValue, NewValue: newValue}); err != nil {
+		slog.Warn("failed to record issue activity", sloki.WrapError(err))
+	}
+}
+
+func (h *Handler) recordChanges(before, after *issues.Issue, actor string) {
+	changes := []struct{ field, old, new string }{
+		{"title", before.Title, after.Title}, {"status", string(before.Status), string(after.Status)},
+		{"priority", string(before.Priority), string(after.Priority)}, {"assignee", before.Assignee, after.Assignee},
+		{"parent_issue", before.ParentIssue, after.ParentIssue},
+		{"labels", strings.Join(before.Labels, ", "), strings.Join(after.Labels, ", ")},
+	}
+	for _, change := range changes {
+		if change.old != change.new {
+			h.recordActivity(after, actor, "changed", change.field, change.old, change.new)
+		}
+	}
 }
 
 func (h *Handler) handleDeleteIssue(w http.ResponseWriter, r *http.Request, space *spaces.Space, issue *issues.Issue) {
@@ -374,6 +432,7 @@ func (h *Handler) handleComments(w http.ResponseWriter, r *http.Request) {
 		h.writeIssueValidationError(w, err)
 		return
 	}
+	h.recordActivity(issue, u.ID, "commented", "", "", "")
 	h.writeJSON(w, http.StatusCreated, comment)
 }
 
@@ -421,6 +480,7 @@ func (h *Handler) handleComment(w http.ResponseWriter, r *http.Request) {
 			h.writeStoreError(w, "Comment", commentID, err)
 			return
 		}
+		h.recordActivity(&issues.Issue{ID: issueID, Space: space.ID}, u.ID, "deleted_comment", "", "", "")
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
@@ -440,7 +500,96 @@ func (h *Handler) handleComment(w http.ResponseWriter, r *http.Request) {
 		h.writeStoreError(w, "Comment", commentID, err)
 		return
 	}
+	h.recordActivity(&issues.Issue{ID: issueID, Space: space.ID}, u.ID, "edited_comment", "", "", "")
 	h.writeJSON(w, http.StatusOK, current)
+}
+
+func (h *Handler) handleActivity(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		problems.MethodNotAllowed(r.Method, []string{http.MethodGet}).WriteToHTTP(w)
+		return
+	}
+	space, ok := h.loadSpace(w, r)
+	if !ok {
+		return
+	}
+	issueID := r.PathValue("issue_id")
+	if _, err := h.store.GetIssue(space.ID, issueID); err != nil {
+		h.writeStoreError(w, "Issue", issueID, err)
+		return
+	}
+	activities, err := h.store.GetActivities(space.ID, issueID)
+	if err != nil {
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	h.writeJSON(w, http.StatusOK, activities)
+}
+
+// handleBulkUpdate intentionally only accepts the same controlled fields as PATCH.
+// This keeps bulk triage from becoming a way to overwrite reporter or external-sync data.
+func (h *Handler) handleBulkUpdate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPatch {
+		problems.MethodNotAllowed(r.Method, []string{http.MethodPatch}).WriteToHTTP(w)
+		return
+	}
+	space, ok := h.loadSpace(w, r)
+	if !ok {
+		return
+	}
+	u := h.userFromCtx(r.Context())
+	if u == nil || !u.Verified || !u.IsActive {
+		problems.Unauthorized().WriteToHTTP(w)
+		return
+	}
+	if !space.HasWriteAccess(u) {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+	var req struct {
+		IDs     []string          `json:"ids"`
+		Changes issuePatchRequest `json:"changes"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
+		return
+	}
+	if len(req.IDs) == 0 || len(req.IDs) > 100 {
+		problems.ValidationError("ids", "Select between 1 and 100 issues").WriteToHTTP(w)
+		return
+	}
+	type pendingUpdate struct{ before, after *issues.Issue }
+	pending := make([]pendingUpdate, 0, len(req.IDs))
+	for _, id := range req.IDs {
+		issue, err := h.store.GetIssue(space.ID, id)
+		if err != nil {
+			h.writeStoreError(w, "Issue", id, err)
+			return
+		}
+		updated := *issue
+		applyPatch(&updated, req.Changes)
+		if updated.Status != issue.Status && (updated.Status == issues.StatusDone || updated.Status == issues.StatusClosed) {
+			now := time.Now()
+			updated.ResolvedAt = &now
+		} else if updated.Status != issues.StatusDone && updated.Status != issues.StatusClosed {
+			updated.ResolvedAt = nil
+		}
+		if err := h.validateIssueWrite(space, &updated); err != nil {
+			h.writeIssueValidationError(w, err)
+			return
+		}
+		pending = append(pending, pendingUpdate{before: issue, after: &updated})
+	}
+	updatedIssues := make([]issues.Issue, 0, len(pending))
+	for _, update := range pending {
+		if err := h.store.UpdateIssue(update.after); err != nil {
+			h.writeIssueValidationError(w, err)
+			return
+		}
+		h.recordChanges(update.before, update.after, u.ID)
+		updatedIssues = append(updatedIssues, *update.after)
+	}
+	h.writeJSON(w, http.StatusOK, updatedIssues)
 }
 
 func (h *Handler) writeIssueValidationError(w http.ResponseWriter, err error) {

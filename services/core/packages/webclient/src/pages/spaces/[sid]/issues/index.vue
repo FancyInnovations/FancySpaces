@@ -3,13 +3,13 @@
   import type { Issue } from '@/api/issues/types'
   import type { Space } from '@/api/spaces/types'
   import { useHead } from '@vueuse/head'
-  import { getIssues, updateIssue } from '@/api/issues/issues'
+  import { bulkUpdateIssues, getIssues, updateIssue } from '@/api/issues/issues'
   import { getSpace } from '@/api/spaces/spaces'
   import Card from '@/components/common/Card.vue'
   import SpaceHeader from '@/components/SpaceHeader.vue'
   import SpaceSidebar from '@/components/SpaceSidebar.vue'
-  import { useUserStore } from '@/stores/user'
   import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
   const router = useRouter()
   const route = useRoute()
@@ -20,6 +20,13 @@
   const issues = ref<Issue[]>([])
   const loading = ref(true)
   const errorMessage = ref('')
+  const total = ref(0)
+  const offset = ref(0)
+  const selected = ref<string[]>([])
+  const bulkStatus = ref<Issue['status']>()
+  const savedViews = ref<Array<{ name: string, filters: Record<string, string> }>>([])
+  const savedViewName = ref('')
+  const searchField = ref<any>()
 
   const openIssues = computed(() => {
     return issues.value.filter(issue => issue.status !== 'closed')
@@ -29,25 +36,14 @@
     return issues.value.filter(issue => issue.status === 'done' || issue.status === 'closed')
   })
 
-  const filteredIssues = computed(() => {
-    return issues.value.filter(issue => {
-      const matchesSearch = searchQuery.value
-        ? issue.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || issue.id.toLowerCase().includes(searchQuery.value.toLowerCase())
-        : true
-
-      const matchesType = typeFilter.value ? issue.type === typeFilter.value : true
-      const matchesPriority = priorityFilter.value ? issue.priority === priorityFilter.value : true
-      const matchesStatus = statusFilter.value ? issue.status === statusFilter.value : true
-
-      return matchesSearch && matchesType && matchesPriority && matchesStatus
-    })
-  })
+  const filteredIssues = computed(() => issues.value)
 
   const displayType = ref<'board' | 'list'>('board')
   const searchQuery = ref('')
   const typeFilter = ref()
   const priorityFilter = ref()
   const statusFilter = ref()
+  const labelFilter = ref('')
 
   const canWrite = computed(() => {
     const userID = userStore.user?.id
@@ -68,9 +64,17 @@
         return
       }
 
-      issues.value = (await getIssues(space.value.id, { limit: 200 })).items
+      searchQuery.value = String(route.query.q || '')
+      typeFilter.value = route.query.type || undefined
+      priorityFilter.value = route.query.priority || undefined
+      statusFilter.value = route.query.status || undefined
+      labelFilter.value = String(route.query.label || '')
+      const result = await getIssues(space.value.id, { limit: 50, offset: offset.value, q: searchQuery.value, type: typeFilter.value, priority: priorityFilter.value, status: statusFilter.value, label: labelFilter.value })
+      issues.value = result.items
+      total.value = result.total
       const savedDisplayType = localStorage.getItem(`issues_display_type_${space.value.id}`)
       if (savedDisplayType === 'board' || savedDisplayType === 'list') displayType.value = savedDisplayType
+      savedViews.value = JSON.parse(localStorage.getItem(`issues_saved_views_${space.value.id}`) || '[]')
 
       useHead({
         title: `${space.value.title} issues - FancySpaces`,
@@ -84,6 +88,16 @@
   }
 
   onMounted(load)
+  function keyboardShortcut (event: KeyboardEvent) {
+    const target = event.target as HTMLElement | null
+    if (target?.matches('input, textarea, [contenteditable="true"]')) return
+    if (event.key === '/' && searchField.value) {
+      event.preventDefault(); searchField.value.focus?.()
+    }
+    if (event.key.toLowerCase() === 'c' && canWrite.value && space.value) router.push(`/spaces/${space.value.slug}/issues/new`)
+  }
+  onMounted(() => window.addEventListener('keydown', keyboardShortcut))
+  onBeforeUnmount(() => window.removeEventListener('keydown', keyboardShortcut))
 
   // Watch for changes in displayType and save to localStorage
   watch(displayType, newType => {
@@ -91,6 +105,53 @@
       localStorage.setItem(`issues_display_type_${space.value.id}`, newType)
     }
   })
+
+  let filterTimer: ReturnType<typeof setTimeout> | undefined
+  watch([searchQuery, typeFilter, priorityFilter, statusFilter, labelFilter], () => {
+    if (!space.value) return
+    clearTimeout(filterTimer)
+    filterTimer = setTimeout(async () => {
+      offset.value = 0
+      await router.replace({ query: { q: searchQuery.value || undefined, type: typeFilter.value || undefined, priority: priorityFilter.value || undefined, status: statusFilter.value || undefined, label: labelFilter.value || undefined } })
+      await loadPage()
+    }, 250)
+  })
+
+  async function loadPage () {
+    if (!space.value) return
+    try {
+      const result = await getIssues(space.value.id, { limit: 50, offset: offset.value, q: searchQuery.value, type: typeFilter.value, priority: priorityFilter.value, status: statusFilter.value, label: labelFilter.value })
+      issues.value = result.items
+      total.value = result.total
+      selected.value = []
+    } catch (error) {
+      notificationStore.error(error instanceof Error ? error.message : 'Failed to load issues.')
+    }
+  }
+
+  function saveView () {
+    if (!space.value || !savedViewName.value.trim()) return
+    savedViews.value = [...savedViews.value.filter(view => view.name !== savedViewName.value.trim()), { name: savedViewName.value.trim(), filters: { q: searchQuery.value, type: typeFilter.value || '', priority: priorityFilter.value || '', status: statusFilter.value || '', label: labelFilter.value } }]
+    localStorage.setItem(`issues_saved_views_${space.value.id}`, JSON.stringify(savedViews.value))
+    savedViewName.value = ''
+  }
+
+  function applyView (view: { filters: Record<string, string> }) {
+    searchQuery.value = view.filters.q || ''; typeFilter.value = view.filters.type || undefined; priorityFilter.value = view.filters.priority || undefined; statusFilter.value = view.filters.status || undefined; labelFilter.value = view.filters.label || ''
+  }
+
+  async function applyBulkStatus () {
+    if (!space.value || !bulkStatus.value || selected.value.length === 0) return
+    try {
+      const updated = await bulkUpdateIssues(space.value.id, selected.value, { status: bulkStatus.value })
+      const byID = new Map(updated.map(issue => [issue.id, issue]))
+      issues.value = issues.value.map(issue => byID.get(issue.id) || issue)
+      selected.value = []
+      notificationStore.info('Issues updated successfully')
+    } catch (error) {
+      notificationStore.error(error instanceof Error ? error.message : 'Failed to update issues.')
+    }
+  }
 
   async function statusChanged (issue: Issue, newStatus: Issue['status']) {
     const previousStatus = issue.status
@@ -170,6 +231,7 @@
             <div class="d-flex align-center justify-space-between">
               <div class="d-flex align-center flex-wrap">
                 <v-text-field
+                  ref="searchField"
                   v-model="searchQuery"
                   class="ma-2"
                   clearable
@@ -198,6 +260,18 @@
                   ]"
                   label="Type"
                   min-width="200"
+                />
+
+                <v-text-field
+                  v-model="labelFilter"
+                  class="ma-2"
+                  clearable
+                  color="primary"
+                  density="compact"
+                  hide-details
+                  label="Label"
+                  min-width="160"
+                  prepend-inner-icon="mdi-tag"
                 />
 
                 <v-select
@@ -236,6 +310,21 @@
                   min-width="200"
                 />
               </div>
+
+              <div class="d-flex align-center flex-wrap ga-2 mt-2">
+                <v-select
+                  v-if="savedViews.length > 0"
+                  class="ma-2"
+                  density="compact"
+                  hide-details
+                  :items="savedViews.map(view => ({ title: view.name, value: view.name }))"
+                  label="Saved views"
+                  @update:model-value="name => applyView(savedViews.find(view => view.name === name)!)"
+                />
+
+                <v-text-field v-model="savedViewName" density="compact" hide-details label="Save current view" />
+                <v-btn size="small" variant="tonal" @click="saveView">Save view</v-btn>
+              </div>
             </div>
           </v-card-text>
         </Card>
@@ -273,6 +362,18 @@
 
     <v-row v-if="!loading && !errorMessage && space">
       <v-col>
+        <Card v-if="selected.length > 0 && canWrite" class="mb-4"><v-card-text class="d-flex align-center ga-3"><span>{{ selected.length }} selected</span>
+
+          <v-select
+            v-model="bulkStatus"
+            density="compact"
+            hide-details
+            :items="['backlog', 'planned', 'in_progress', 'done', 'closed']"
+            label="Set status"
+          />
+
+          <v-btn color="primary" @click="applyBulkStatus">Apply</v-btn></v-card-text></Card>
+
         <IssueBoard
           v-if="displayType === 'board'"
           :issues="filteredIssues"
@@ -282,9 +383,12 @@
 
         <IssueTable
           v-else
+          v-model:selected="selected"
           :issues="filteredIssues"
           :space="space!"
         />
+
+        <div class="d-flex justify-space-between mt-4"><v-btn :disabled="offset === 0" @click="offset = Math.max(0, offset - 50); loadPage()">Previous</v-btn><span>{{ Math.min(offset + 1, total) }}–{{ Math.min(offset + issues.length, total) }} of {{ total }}</span><v-btn :disabled="offset + issues.length >= total" @click="offset += 50; loadPage()">Next</v-btn></div>
       </v-col>
     </v-row>
   </v-container>
