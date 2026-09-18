@@ -137,10 +137,12 @@ func (h *Handler) handleVersion(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		h.handleGetVersion(w, r, space.ID, vid)
+	case http.MethodPut:
+		h.handleUpdateVersion(w, r, space.ID, vid)
 	case http.MethodDelete:
 		h.handleDeleteVersion(w, r, space.ID, vid)
 	default:
-		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodDelete}).WriteToHTTP(w)
+		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodPut, http.MethodDelete}).WriteToHTTP(w)
 	}
 }
 
@@ -245,7 +247,63 @@ func (h *Handler) handleCreateVersion(w http.ResponseWriter, r *http.Request, sp
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(req)
+	json.NewEncoder(w).Encode(ver)
+}
+
+func (h *Handler) handleUpdateVersion(w http.ResponseWriter, r *http.Request, spaceID, versionID string) {
+	u := h.userFromCtx(r.Context())
+	if u == nil || !u.Verified || !u.IsActive {
+		problems.Unauthorized().WriteToHTTP(w)
+		return
+	}
+
+	space, err := h.spaces.Get(spaceID)
+	if err != nil {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
+			problems.NotFound("Space", spaceID).WriteToHTTP(w)
+			return
+		}
+		slog.Error("Failed to get space by id", sloki.WrapError(err))
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	if !space.HasWriteAccess(u) {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+
+	current, err := h.store.Get(r.Context(), spaceID, versionID)
+	if err != nil {
+		if errors.Is(err, versions.ErrVersionNotFound) {
+			problems.NotFound("Version", versionID).WriteToHTTP(w)
+			return
+		}
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	var req UpdateVersionReq
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		problems.ValidationError("body", "Invalid JSON").WriteToHTTP(w)
+		return
+	}
+
+	current.Name = req.Name
+	current.Platform = req.Platform
+	current.Channel = req.Channel
+	current.Changelog = req.Changelog
+	current.SupportedPlatformVersions = req.SupportedPlatformVersions
+	if err := h.store.Update(r.Context(), spaceID, current.ID, current); err != nil {
+		if errors.Is(err, versions.ErrVersionNotFound) {
+			problems.NotFound("Version", versionID).WriteToHTTP(w)
+			return
+		}
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(current)
 }
 
 func (h *Handler) handleDeleteVersion(w http.ResponseWriter, r *http.Request, spaceID, versionID string) {

@@ -10,6 +10,8 @@ type CreateVersionReq struct {
 	SupportedPlatformVersions []string          `json:"supported_platform_versions"`
 }
 
+type UpdateVersionReq = CreateVersionReq
+
 type VersionDownloadsResp struct {
 	Downloads uint64 `json:"downloads"`
 }

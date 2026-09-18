@@ -303,6 +303,20 @@ declare module 'vue-router/auto-routes' {
       { sid: ParamValue<false>, vid: ParamValue<false> },
       | never
     >,
+    '/spaces/[sid]/versions/[vid]/edit': RouteRecordInfo<
+      '/spaces/[sid]/versions/[vid]/edit',
+      '/spaces/:sid/versions/:vid/edit',
+      { sid: ParamValue<true>, vid: ParamValue<true> },
+      { sid: ParamValue<false>, vid: ParamValue<false> },
+      | never
+    >,
+    '/spaces/[sid]/versions/new': RouteRecordInfo<
+      '/spaces/[sid]/versions/new',
+      '/spaces/:sid/versions/new',
+      { sid: ParamValue<true> },
+      { sid: ParamValue<false> },
+      | never
+    >,
     '/spaces/new': RouteRecordInfo<
       '/spaces/new',
       '/spaces/new',
@@ -581,6 +595,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/spaces/[sid]/versions/[vid]/index.vue': {
       routes:
         | '/spaces/[sid]/versions/[vid]/'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/versions/[vid]/edit.vue': {
+      routes:
+        | '/spaces/[sid]/versions/[vid]/edit'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/versions/new.vue': {
+      routes:
+        | '/spaces/[sid]/versions/new'
       views:
         | never
     }

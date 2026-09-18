@@ -43,6 +43,7 @@ declare module 'vue' {
     UserHeader: typeof import('./components/users/UserHeader.vue')['default']
     VersionChannelChip: typeof import('./components/versions/VersionChannelChip.vue')['default']
     VersionChip: typeof import('./components/VersionChip.vue')['default']
+    VersionForm: typeof import('./components/versions/VersionForm.vue')['default']
     VersionPlatformChip: typeof import('./components/versions/VersionPlatformChip.vue')['default']
   }
 }

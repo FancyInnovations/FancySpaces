@@ -113,7 +113,14 @@ func (s *Store) UploadVersionFile(ctx context.Context, version *Version, fileNam
 		Size: int64(len(data)),
 	}
 
-	version.Files = append(version.Files, *verFile)
+	updatedFiles := make([]VersionFile, 0, len(version.Files)+1)
+	for _, existing := range version.Files {
+		if existing.Name != fileName {
+			updatedFiles = append(updatedFiles, existing)
+		}
+	}
+	updatedFiles = append(updatedFiles, *verFile)
+	version.Files = updatedFiles
 	if err := s.Update(ctx, version.SpaceID, version.ID, version); err != nil {
 		return err
 	}
@@ -125,6 +132,31 @@ func (s *Store) UploadVersionFile(ctx context.Context, version *Version, fileNam
 
 	// cache file
 	return s.fileCache.Upload(ctx, version, verFile, data)
+}
+
+func (s *Store) DeleteVersionFile(ctx context.Context, version *Version, fileName string) error {
+	found := false
+	updatedFiles := make([]VersionFile, 0, len(version.Files))
+	for _, file := range version.Files {
+		if file.Name == fileName {
+			found = true
+			continue
+		}
+		updatedFiles = append(updatedFiles, file)
+	}
+	if !found {
+		return ErrVersionNotFound
+	}
+
+	if err := s.fileStorage.Delete(ctx, version.SpaceID, version.ID, fileName); err != nil {
+		return err
+	}
+	if err := s.fileCache.Delete(ctx, version.SpaceID, version.ID, fileName); err != nil {
+		return err
+	}
+
+	version.Files = updatedFiles
+	return s.Update(ctx, version.SpaceID, version.ID, version)
 }
 
 func (s *Store) DownloadVersionFile(ctx context.Context, r *http.Request, spaceID, versionID, fileName string) ([]byte, error) {

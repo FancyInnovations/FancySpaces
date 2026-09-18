@@ -62,9 +62,50 @@ func (h *Handler) handleVersionFile(w http.ResponseWriter, r *http.Request) {
 		h.handleDownloadVersionFile(w, r, space.ID, vid, fileName)
 	case http.MethodPost:
 		h.handleUploadVersionFile(w, r, space.ID, vid, fileName)
+	case http.MethodDelete:
+		h.handleDeleteVersionFile(w, r, space.ID, vid, fileName)
 	default:
-		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodPost}).WriteToHTTP(w)
+		problems.MethodNotAllowed(r.Method, []string{http.MethodGet, http.MethodPost, http.MethodDelete}).WriteToHTTP(w)
 	}
+}
+
+func (h *Handler) handleDeleteVersionFile(w http.ResponseWriter, r *http.Request, spaceID, versionID, fileName string) {
+	u := h.userFromCtx(r.Context())
+	if u == nil || !u.Verified || !u.IsActive {
+		problems.Unauthorized().WriteToHTTP(w)
+		return
+	}
+	space, err := h.spaces.Get(spaceID)
+	if err != nil {
+		if errors.Is(err, spaces.ErrSpaceNotFound) {
+			problems.NotFound("Space", spaceID).WriteToHTTP(w)
+			return
+		}
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	if !space.HasWriteAccess(u) {
+		problems.Forbidden().WriteToHTTP(w)
+		return
+	}
+	version, err := h.store.Get(r.Context(), spaceID, versionID)
+	if err != nil {
+		if errors.Is(err, versions.ErrVersionNotFound) {
+			problems.NotFound("Version", versionID).WriteToHTTP(w)
+			return
+		}
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	if err := h.store.DeleteVersionFile(r.Context(), version, fileName); err != nil {
+		if errors.Is(err, versions.ErrVersionNotFound) {
+			problems.NotFound("File", fileName).WriteToHTTP(w)
+			return
+		}
+		problems.InternalServerError("").WriteToHTTP(w)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) handleUploadVersionFile(w http.ResponseWriter, r *http.Request, spaceID, versionID, fileName string) {

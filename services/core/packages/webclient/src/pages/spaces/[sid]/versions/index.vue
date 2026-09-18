@@ -32,6 +32,8 @@ const latestVersion = ref<SpaceVersion>();
 const versions = ref<SpaceVersion[]>();
 const downloadCount = ref<number>(0);
 const downloadCounts = ref<Record<string, number>>({});
+const loading = ref(true);
+const loadError = ref('');
 
 const possiblePlatforms = computed(() => {
   const platforms = new Set<string>();
@@ -62,32 +64,34 @@ const tableHeaders = [
 ]
 
 onMounted(async () => {
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+  try {
+    const spaceID = (route.params as any).sid as string;
+    space.value = await getSpace(spaceID);
 
-  if (!space.value.release_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
+    if (!space.value.release_settings.enabled) {
+      await router.push(`/spaces/${space.value.slug}`);
+      return;
+    }
+
+    latestVersion.value = await getLatestVersion(space.value.id).catch(() => undefined);
+    versions.value = await getAllVersions(space.value.id);
+    downloadCount.value = await getDownloadCountForSpace(space.value.id);
+    downloadCounts.value = await getDownloadCountForSpacePerVersion(space.value.id);
+
+    useHead({
+      title: `${space.value.title} versions - FancySpaces`,
+      meta: [{ name: 'description', content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.` }]
+    });
+  } catch (error) {
+    loadError.value = error instanceof Error ? error.message : 'Unable to load versions.';
+    notificationStore.error(loadError.value);
+  } finally {
+    loading.value = false;
   }
-
-  latestVersion.value = await getLatestVersion(space.value.id);
-  versions.value = await getAllVersions(space.value.id);
-
-  downloadCount.value = await getDownloadCountForSpace(space.value.id);
-  downloadCounts.value = await getDownloadCountForSpacePerVersion(space.value.id);
-
-  useHead({
-    title: `${space.value.title} versions - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
-      }
-    ]
-  });
 });
 
 function onRowClick(event: any, { item }: any) {
+  if (event?.target?.closest?.('a, button')) return;
   router.push(`/spaces/${space.value?.slug}/versions/${item.name}`);
 }
 
@@ -135,7 +139,7 @@ function deleteVersionReq(evt: any, v: SpaceVersion) {
 
           <template #quick-actions>
             <v-btn
-              v-if="latestVersion?.files.length != 1"
+              v-if="latestVersion && latestVersion.files.length != 1"
               :to="`/spaces/${space?.slug}/versions/latest`"
               class="sidebar__mobile"
               color="primary"
@@ -154,7 +158,7 @@ function deleteVersionReq(evt: any, v: SpaceVersion) {
               size="large"
               variant="tonal"
             >
-              latest
+              Latest
             </v-btn>
 
             <v-btn
@@ -162,12 +166,11 @@ function deleteVersionReq(evt: any, v: SpaceVersion) {
               :to="`/spaces/${space?.slug}/versions/new`"
               class="sidebar__mobile mt-4"
               color="primary"
-              disabled
               prepend-icon="mdi-plus"
               size="large"
               variant="tonal"
             >
-              new version
+              New version
             </v-btn>
           </template>
         </SpaceHeader>
@@ -229,10 +232,14 @@ function deleteVersionReq(evt: any, v: SpaceVersion) {
             <v-data-table
               :headers="tableHeaders"
               :items="filteredVersions"
+              :loading="loading"
               class="bg-transparent"
               hover
               @click:row="onRowClick"
             >
+              <template #no-data>
+                <div class="pa-6 text-medium-emphasis">{{ loadError || 'No versions match the selected filters.' }}</div>
+              </template>
               <template v-slot:item.name="{ item }">
                   <VersionChip
                     :spaceID="item.space_id"
@@ -273,7 +280,6 @@ function deleteVersionReq(evt: any, v: SpaceVersion) {
                     v-if="isMember"
                     :to="`/spaces/${space?.slug}/versions/${item.name}/edit`"
                     class="ml-4 my-1"
-                    disabled
                     icon="mdi-pencil"
                     variant="text"
                   />

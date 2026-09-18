@@ -95,3 +95,60 @@ export async function deleteVersion(spaceID: string, versionId: string): Promise
     throw new Error("Failed to delete version: " + await response.text());
   }
 }
+
+export interface VersionMutation {
+  name: string;
+  platform: string;
+  channel: string;
+  changelog: string;
+  supported_platform_versions: string[];
+}
+
+export async function createVersion(spaceId: string, data: VersionMutation): Promise<SpaceVersion> {
+  const userStore = useUserStore();
+  if (!(await userStore.isAuthenticated)) throw new Error("User is not logged in");
+  const response = await fetch(`/api/v1/spaces/${spaceId}/versions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${userStore.token}` },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create version: " + await response.text());
+  const version = await response.json();
+  version.published_at = new Date(version.published_at);
+  return version as SpaceVersion;
+}
+
+export async function updateVersion(spaceId: string, versionId: string, data: VersionMutation): Promise<SpaceVersion> {
+  const userStore = useUserStore();
+  if (!(await userStore.isAuthenticated)) throw new Error("User is not logged in");
+  const response = await fetch(`/api/v1/spaces/${spaceId}/versions/${encodeURIComponent(versionId)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${userStore.token}` },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to update version: " + await response.text());
+  const version = await response.json();
+  version.published_at = new Date(version.published_at);
+  return version as SpaceVersion;
+}
+
+export async function uploadVersionFile(spaceId: string, versionId: string, file: File): Promise<void> {
+  const userStore = useUserStore();
+  if (!(await userStore.isAuthenticated)) throw new Error("User is not logged in");
+  const response = await fetch(`/api/v1/spaces/${spaceId}/versions/${encodeURIComponent(versionId)}/files/${encodeURIComponent(file.name)}`, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${userStore.token}` },
+    body: file,
+  });
+  if (!response.ok) throw new Error("Failed to upload file: " + await response.text());
+}
+
+export async function deleteVersionFile(spaceId: string, versionId: string, fileName: string): Promise<void> {
+  const userStore = useUserStore();
+  if (!(await userStore.isAuthenticated)) throw new Error("User is not logged in");
+  const response = await fetch(`/api/v1/spaces/${spaceId}/versions/${encodeURIComponent(versionId)}/files/${encodeURIComponent(fileName)}`, {
+    method: "DELETE",
+    headers: { "Authorization": `Bearer ${userStore.token}` },
+  });
+  if (!response.ok) throw new Error("Failed to delete file: " + await response.text());
+}

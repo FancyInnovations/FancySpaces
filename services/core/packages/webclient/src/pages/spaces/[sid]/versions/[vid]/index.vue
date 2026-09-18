@@ -8,9 +8,19 @@ import SpaceSidebar from "@/components/SpaceSidebar.vue";
 import SpaceHeader from "@/components/SpaceHeader.vue";
 import {useHead} from "@vueuse/head";
 import Card from "@/components/common/Card.vue";
+import {useUserStore} from "@/stores/user";
 
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore();
+
+const isMember = computed(() => {
+  if (!space.value) return false;
+  if (!userStore.isAuthenticated) return false;
+
+  const userID =  userStore.user?.id;
+  return space.value?.creator == userID || space.value?.members.some(member => member.user_id === userID);
+});
 
 const space = ref<Space>();
 const spaceDownloadCount = ref<number>(0);
@@ -81,7 +91,7 @@ function formatSize(sizeInBytes: number): string {
 
           <template #quick-actions>
             <v-btn
-              v-if="latestVersion?.files.length != 1"
+              v-if="latestVersion && latestVersion.files.length != 1"
               :to="`/spaces/${space?.slug}/versions/latest`"
               class="sidebar__mobile"
               color="primary"
@@ -100,7 +110,19 @@ function formatSize(sizeInBytes: number): string {
               size="large"
               variant="tonal"
             >
-              latest
+              Latest
+            </v-btn>
+
+            <v-btn
+              v-if="isMember"
+              :to="`/spaces/${space?.slug}/versions/${currentVersion?.id}/edit`"
+              class="sidebar__mobile mt-4"
+              color="primary"
+              prepend-icon="mdi-pencil"
+              size="large"
+              variant="tonal"
+            >
+              Edit version
             </v-btn>
           </template>
         </SpaceHeader>

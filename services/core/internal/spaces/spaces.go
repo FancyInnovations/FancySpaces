@@ -100,19 +100,19 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*spaces.
 		Categories:  req.Categories,
 		Links:       []spaces.Link{},
 		IconURL:     req.IconURL,
-		Status:      spaces.StatusDraft,
+		Status:      spaces.StatusApproved,
 		CreatedAt:   time.Now(),
 		Creator:     creator.ID,
 		Members:     []spaces.Member{},
 
 		IssueSettings: spaces.IssueSettings{
-			Enabled: false,
+			Enabled: true,
 		},
 		ReleaseSettings: spaces.ReleaseSettings{
-			Enabled: false,
+			Enabled: true,
 		},
 		MavenRepositorySettings: spaces.MavenRepositorySettings{
-			Enabled: false,
+			Enabled: true,
 		},
 		StorageSettings: spaces.StorageSettings{
 			Enabled: false,
