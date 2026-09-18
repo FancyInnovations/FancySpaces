@@ -1,47 +1,47 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {useHead} from "@vueuse/head";
-import type {SpaceMavenRepository} from "@/api/maven/types";
-import {getAllMavenRepositories} from "@/api/maven/maven";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useUserStore} from "@/stores/user";
-import Card from "@/components/common/Card.vue";
+  import type { SpaceMavenRepository } from '@/api/maven/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getAllMavenRepositories } from '@/api/maven/maven'
+  import { getSpace } from '@/api/spaces/spaces'
+  import Card from '@/components/common/Card.vue'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const route = useRoute();
-const userStore = useUserStore();
+  const router = useRouter()
+  const route = useRoute()
+  const userStore = useUserStore()
 
-const isLoggedIn = ref(false);
+  const isLoggedIn = ref(false)
 
-const space = ref<Space>();
-const repos = ref<SpaceMavenRepository[]>();
+  const space = ref<Space>()
+  const repos = ref<SpaceMavenRepository[]>()
 
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
 
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!space.value.maven_repository_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
-  }
+    if (!space.value.maven_repository_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
 
-  repos.value = await getAllMavenRepositories(space.value.id);
+    repos.value = await getAllMavenRepositories(space.value.id)
 
-  useHead({
-    title: `${space.value.title} maven repositories - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
-      }
-    ]
-  });
-});
+    useHead({
+      title: `${space.value.title} maven repositories - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`,
+        },
+      ],
+    })
+  })
 </script>
 
 <template>
@@ -63,10 +63,10 @@ onMounted(async () => {
           <template #quick-actions>
             <v-btn
               v-if="isLoggedIn"
-              :to="`/spaces/${space?.slug}/maven-repos/new`"
               color="primary"
               disabled
               size="large"
+              :to="`/spaces/${space?.slug}/maven-repos/new`"
               variant="tonal"
             >
               New Repo
@@ -76,7 +76,7 @@ onMounted(async () => {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
@@ -95,15 +95,17 @@ onMounted(async () => {
           <v-card-text>
             <p><strong>Public:</strong> {{ repo.public ? 'Yes' : 'No' }}</p>
             <p><strong>Created at:</strong> {{ repo.created_at.toLocaleString() }}</p>
+
             <template v-if="repo.internal_mirror">
-              <p><strong>Internal Mirror:</strong> {{ repo.internal_mirror?.space_id }} / {{ repo.internal_mirror?.repository }}</p>
+              <p><strong>Internal Mirror:</strong> {{ repo.internal_mirror?.space_id }} /
+                {{ repo.internal_mirror?.repository }}</p>
             </template>
           </v-card-text>
 
           <v-card-actions>
             <v-btn
-              :to="`/spaces/${space?.slug}/maven-repos/${repo.name}`"
               color="primary"
+              :to="`/spaces/${space?.slug}/maven-repos/${repo.name}`"
               variant="text"
             >
               View Repository
@@ -111,6 +113,7 @@ onMounted(async () => {
           </v-card-actions>
         </Card>
       </v-col>
+
       <v-col
         v-else
         class="text-center"

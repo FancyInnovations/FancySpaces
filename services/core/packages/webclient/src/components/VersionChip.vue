@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 
-const props = defineProps<{
-  version: string,
-  spaceID: string,
-  density?: null | 'default' | 'comfortable' | 'compact'
-}>();
+  const props = defineProps<{
+    version: string
+    spaceID: string
+    density?: null | 'default' | 'comfortable' | 'compact'
+  }>()
 
 </script>
 
@@ -18,12 +18,12 @@ const props = defineProps<{
   >
     <template #activator="{ props: menuProps }">
       <v-chip
-        :density="props.density || 'default'"
-        :to="`/spaces/${props.spaceID}/versions/${encodeURIComponent(props.version)}`"
         class="ma-1"
         color="primary"
+        :density="props.density || 'default'"
         prepend-icon="mdi-tag-outline"
         rounded
+        :to="`/spaces/${props.spaceID}/versions/${encodeURIComponent(props.version)}`"
         v-bind="menuProps"
         variant="tonal"
       >
@@ -33,7 +33,7 @@ const props = defineProps<{
 
     <v-card min-width="220">
       <v-card-text>
-        <strong>Space:</strong> {{ props.spaceID }}<br />
+        <strong>Space:</strong> {{ props.spaceID }}<br>
         <strong>Version:</strong> {{ props.version }}
       </v-card-text>
     </v-card>

@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 
-const props = defineProps<{
-  user: string,
-  density?: null | 'default' | 'comfortable' | 'compact'
-}>();
+  const props = defineProps<{
+    user: string
+    density?: null | 'default' | 'comfortable' | 'compact'
+  }>()
 
 </script>
 
 <template>
   <v-chip
-    :density="props.density || 'default'"
-    :to="`/users/${props.user}`"
     color="secondary"
+    :density="props.density || 'default'"
     prepend-icon="mdi-account"
     rounded
+    :to="`/users/${props.user}`"
     variant="tonal"
   >
     {{ props.user }}

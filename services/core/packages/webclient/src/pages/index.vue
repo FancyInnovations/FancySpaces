@@ -1,63 +1,63 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getAllSpaces, getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces";
-import {getAllVersions} from "@/api/versions/versions";
-import Card from "@/components/common/Card.vue";
+  import type { Space } from '@/api/spaces/types'
+  import { getAllSpaces, getDownloadCountForSpace, getSpace } from '@/api/spaces/spaces'
+  import { getAllVersions } from '@/api/versions/versions'
+  import Card from '@/components/common/Card.vue'
 
-const spaces = ref<Space[]>();
+  const spaces = ref<Space[]>()
 
-const totalSpaces = ref<number | null>(null);
-const totalVersions = ref<number | null>(null);
-const totalDownloads = ref<number | null>(null);
-const statsLoading = ref(false);
+  const totalSpaces = ref<number | null>(null)
+  const totalVersions = ref<number | null>(null)
+  const totalDownloads = ref<number | null>(null)
+  const statsLoading = ref(false)
 
-onMounted(async () => {
-  spaces.value = [];
-  spaces.value.push(await getSpace("fn"));
-  spaces.value.push(await getSpace("fc"));
-  spaces.value.push(await getSpace("fh"));
-  spaces.value.push(await getSpace("fa"));
+  onMounted(async () => {
+    spaces.value = []
+    spaces.value.push(await getSpace('fn'))
+    spaces.value.push(await getSpace('fc'))
+    spaces.value.push(await getSpace('fh'))
+    spaces.value.push(await getSpace('fa'))
 
-  void fetchStats();
-});
+    void fetchStats()
+  })
 
-async function fetchStats() {
-  statsLoading.value = true;
-  try {
-    const all = await getAllSpaces();
-    totalSpaces.value = all.length;
+  async function fetchStats () {
+    statsLoading.value = true
+    try {
+      const all = await getAllSpaces()
+      totalSpaces.value = all.length
 
-    // Parallel requests for versions count per space
-    const versionsPromises = all.map(s =>
-      getAllVersions(s.id)
-        .then(vs => vs.length)
-        .catch(err => {
-          console.error("Failed to fetch versions for", s.id, err);
-          return 0;
-        })
-    );
+      // Parallel requests for versions count per space
+      const versionsPromises = all.map(s =>
+        getAllVersions(s.id)
+          .then(vs => vs.length)
+          .catch(error => {
+            console.error('Failed to fetch versions for', s.id, error)
+            return 0
+          }),
+      )
 
-    // Parallel requests for download counts per space
-    const downloadsPromises = all.map(s =>
-      getDownloadCountForSpace(s.id)
-        .catch(err => {
-          console.error("Failed to fetch downloads for", s.id, err);
-          return 0;
-        })
-    );
+      // Parallel requests for download counts per space
+      const downloadsPromises = all.map(s =>
+        getDownloadCountForSpace(s.id)
+          .catch(error => {
+            console.error('Failed to fetch downloads for', s.id, error)
+            return 0
+          }),
+      )
 
-    const versionsCounts = await Promise.all(versionsPromises);
-    const downloadsCounts = await Promise.all(downloadsPromises);
+      const versionsCounts = await Promise.all(versionsPromises)
+      const downloadsCounts = await Promise.all(downloadsPromises)
 
-    totalVersions.value = versionsCounts.reduce((a, b) => a + b, 0);
-    totalDownloads.value = downloadsCounts.reduce((a, b) => a + b, 0);
-  } catch (e) {
-    console.error("Failed to fetch stats:", e);
-  } finally {
-    statsLoading.value = false;
+      totalVersions.value = versionsCounts.reduce((a, b) => a + b, 0)
+      totalDownloads.value = downloadsCounts.reduce((a, b) => a + b, 0)
+    } catch (error) {
+      console.error('Failed to fetch stats:', error)
+    } finally {
+      statsLoading.value = false
+    }
   }
-}
 </script>
 
 <template>
@@ -72,7 +72,8 @@ async function fetchStats() {
 
     <v-row justify="center">
       <v-col>
-        <p class="text-h5 text-center text-primary">Download and product management platform for products by FancyInnovations</p>
+        <p class="text-h5 text-center text-primary">Download and product management platform for products by
+          FancyInnovations</p>
       </v-col>
     </v-row>
 
@@ -83,8 +84,8 @@ async function fetchStats() {
           to="/explore/minecraft-plugins"
         >
           <v-card-title class="mt-2">
-              <v-icon class="mr-2" color="green-lighten-1">mdi-minecraft</v-icon>
-              Minecraft plugins
+            <v-icon class="mr-2" color="green-lighten-1">mdi-minecraft</v-icon>
+            Minecraft plugins
           </v-card-title>
 
           <v-card-text>
@@ -135,8 +136,10 @@ async function fetchStats() {
           <v-row>
             <v-col class="text-center">
               <div class="text-headline-small">Projects</div>
+
               <div class="text-headline-medium mt-2">
                 <v-skeleton-loader v-if="statsLoading" type="heading" />
+
                 <template v-else>
                   {{ totalSpaces !== null ? totalSpaces : '—' }}
                 </template>
@@ -145,8 +148,10 @@ async function fetchStats() {
 
             <v-col class="text-center">
               <div class="text-headline-small">Versions</div>
+
               <div class="text-headline-medium mt-2">
                 <v-skeleton-loader v-if="statsLoading" type="heading" />
+
                 <template v-else>
                   {{ totalVersions !== null ? totalVersions : '—' }}
                 </template>
@@ -155,8 +160,10 @@ async function fetchStats() {
 
             <v-col class="text-center">
               <div class="text-headline-small">Downloads</div>
+
               <div class="text-headline-medium mt-2">
                 <v-skeleton-loader v-if="statsLoading" type="heading" />
+
                 <template v-else>
                   {{ totalDownloads !== null ? totalDownloads : '—' }}
                 </template>
@@ -176,16 +183,16 @@ async function fetchStats() {
     <v-row v-if="spaces && spaces.length > 0" justify="center">
       <v-col md="6">
         <v-carousel
-          :show-arrows="false"
           cycle
           height="fit-content"
           interval="5000"
+          :show-arrows="false"
         >
           <v-carousel-item v-for="space in spaces" :key="space.id">
             <SpaceCard
+              class="pb-10"
               :space="space"
               :with-badge="true"
-              class="pb-10"
             />
           </v-carousel-item>
         </v-carousel>

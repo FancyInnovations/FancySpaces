@@ -1,81 +1,81 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import {useHead} from "@vueuse/head";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {getSecret, updateSecret} from "@/api/secrets/secrets";
-import type {SpaceSecret} from "@/api/secrets/types";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useNotificationStore} from "@/stores/notifications";
-import {useUserStore} from "@/stores/user";
+  import type { SpaceSecret } from '@/api/secrets/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getSecret, updateSecret } from '@/api/secrets/secrets'
+  import { getSpace } from '@/api/spaces/spaces'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const route = useRoute();
-const userStore = useUserStore();
-const notificationStore = useNotificationStore();
+  const router = useRouter()
+  const route = useRoute()
+  const userStore = useUserStore()
+  const notificationStore = useNotificationStore()
 
-const isLoggedIn = ref(false);
+  const isLoggedIn = ref(false)
 
-const space = ref<Space>();
-const secret = ref<SpaceSecret>();
+  const space = ref<Space>()
+  const secret = ref<SpaceSecret>()
 
-const key = computed(() => {
-  if (secret.value) {
-    return secret.value.key;
+  const key = computed(() => {
+    if (secret.value) {
+      return secret.value.key
+    }
+    return ''
+  })
+
+  const newValue = ref('')
+  const newDescription = ref('')
+
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
+
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
+
+    if (!isLoggedIn || !space.value.secrets_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
+
+    const secretKey = (route.params as any).secretid as string
+    secret.value = await getSecret(space.value.id, secretKey)
+
+    newDescription.value = secret.value.description
+
+    useHead({
+      title: `${space.value.title} - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || 'Create a new secret in this space on FancySpaces.',
+        },
+      ],
+    })
+  })
+
+  async function updateSecretReq () {
+    await updateSecret(
+      space.value!.id,
+      secret.value!.key,
+      newValue.value.length > 0 ? newValue.value : '',
+      newDescription.value === secret.value?.description ? '' : newDescription.value,
+    )
+
+    newValue.value = ''
+    newDescription.value = ''
+
+    notificationStore.info('Secret updated successfully')
+
+    await router.push(`/spaces/${space.value?.slug}/secrets`)
   }
-  return "";
-})
 
-const newValue = ref('');
-const newDescription = ref('');
-
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
-
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
-
-  if (!isLoggedIn || !space.value.secrets_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
-  }
-
-  const secretKey = (route.params as any).secretid as string;
-  secret.value = await getSecret(space.value.id, secretKey);
-
-  newDescription.value = secret.value.description;
-
-  useHead({
-    title: `${space.value.title} - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || 'Create a new secret in this space on FancySpaces.'
-      }
-    ]
-  });
-});
-
-async function updateSecretReq() {
-  await updateSecret(
-    space.value!.id,
-    secret.value!.key,
-    newValue.value.length > 0 ? newValue.value : "",
-    newDescription.value !== secret.value?.description ? newDescription.value : "",
-  );
-
-  newValue.value = '';
-  newDescription.value = '';
-
-  notificationStore.info("Secret updated successfully");
-
-  await router.push(`/spaces/${space.value?.slug}/secrets`);
-}
-
-const hasChanged = computed(() => {
-  return newValue.value.length > 0 || (newDescription.value.length > 0 && newDescription.value !== secret.value?.description);
-});
+  const hasChanged = computed(() => {
+    return newValue.value.length > 0 || (newDescription.value.length > 0 && newDescription.value !== secret.value?.description)
+  })
 
 </script>
 
@@ -92,10 +92,10 @@ const hasChanged = computed(() => {
         <SpaceHeader :space="space">
           <template #quick-actions>
             <v-btn
-              :to="`/spaces/${space?.slug}/secrets`"
               class="sidebar__mobile"
               color="primary"
               size="large"
+              :to="`/spaces/${space?.slug}/secrets`"
               variant="tonal"
             >
               View Secrets
@@ -105,7 +105,7 @@ const hasChanged = computed(() => {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
@@ -154,8 +154,8 @@ const hasChanged = computed(() => {
     <v-row justify="center">
       <v-col md="6">
         <v-btn
-          :disabled="!hasChanged"
           color="primary"
+          :disabled="!hasChanged"
           @click="updateSecretReq()"
         >
           Edit Secret

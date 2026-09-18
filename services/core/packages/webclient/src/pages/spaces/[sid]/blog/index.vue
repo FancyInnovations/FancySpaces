@@ -1,51 +1,51 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {useHead} from "@vueuse/head";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {getBlogArticlesForSpace} from "@/api/blogs/blogs";
-import type {BlogArticle} from "@/api/blogs/types";
-import BlogList from "@/components/blog/BlogList.vue";
-import {useUserStore} from "@/stores/user";
+  import type { BlogArticle } from '@/api/blogs/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getBlogArticlesForSpace } from '@/api/blogs/blogs'
+  import { getSpace } from '@/api/spaces/spaces'
+  import BlogList from '@/components/blog/BlogList.vue'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const route = useRoute();
-const userStore = useUserStore();
+  const router = useRouter()
+  const route = useRoute()
+  const userStore = useUserStore()
 
-const space = ref<Space>();
-const articles = ref<BlogArticle[]>([]);
+  const space = ref<Space>()
+  const articles = ref<BlogArticle[]>([])
 
-const isMember = computed(() => {
-  if (!space.value) return false;
-  if (!userStore.user) return false;
+  const isMember = computed(() => {
+    if (!space.value) return false
+    if (!userStore.user) return false
 
-  const userID =  userStore.user?.id;
-  return space.value.creator == userID || space.value.members.some(member => member.user_id === userID);
-});
+    const userID = userStore.user?.id
+    return space.value.creator == userID || space.value.members.some(member => member.user_id === userID)
+  })
 
-onMounted(async () => {
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+  onMounted(async () => {
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!space.value.blog_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
-  }
+    if (!space.value.blog_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
 
-  articles.value = await getBlogArticlesForSpace(space.value.id);
+    articles.value = await getBlogArticlesForSpace(space.value.id)
 
-  useHead({
-    title: `${space.value.title} Blog - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
-      }
-    ]
-  });
-});
+    useHead({
+      title: `${space.value.title} Blog - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`,
+        },
+      ],
+    })
+  })
 </script>
 
 <template>
@@ -67,9 +67,9 @@ onMounted(async () => {
           <template #quick-actions>
             <v-btn
               v-if="isMember"
-              :to="`/spaces/${space?.slug}/blog/new`"
               color="primary"
               size="large"
+              :to="`/spaces/${space?.slug}/blog/new`"
               variant="tonal"
             >
               New Article
@@ -79,7 +79,7 @@ onMounted(async () => {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
@@ -91,8 +91,8 @@ onMounted(async () => {
 
     <BlogList
       :articles="articles"
-      :space-slug="space?.slug"
       class="mt-8"
+      :space-slug="space?.slug"
     />
 
   </v-container>

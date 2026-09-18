@@ -1,57 +1,57 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import {useHead} from "@vueuse/head";
-import {deleteIssue, getIssue, updateIssue} from "@/api/issues/issues";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import type {Issue} from "@/api/issues/types";
-import SpaceHeader from "@/components/SpaceHeader.vue";
+  import type { Issue } from '@/api/issues/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { deleteIssue, getIssue, updateIssue } from '@/api/issues/issues'
+  import { getSpace } from '@/api/spaces/spaces'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
 
-const router = useRouter();
-const route = useRoute();
+  const router = useRouter()
+  const route = useRoute()
 
-const space = ref<Space>();
-const issue = ref<Issue>();
+  const space = ref<Space>()
+  const issue = ref<Issue>()
 
-onMounted(async () => {
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+  onMounted(async () => {
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!space.value.issue_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
+    if (!space.value.issue_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
+
+    const issueID = (route.params as any).iid as string
+    issue.value = await getIssue(spaceID, issueID)
+
+    useHead({
+      title: `${space.value.title} - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || 'Create a new issue in this space on FancySpaces.',
+        },
+      ],
+    })
+  })
+
+  async function editIssueReq () {
+    if (!space.value || !issue.value) return
+
+    await updateIssue(space.value!.id, issue.value.id, issue.value)
+
+    await router.push(`/spaces/${space.value?.slug}/issues/${issue.value.id}`)
   }
 
-  const issueID = (route.params as any).iid as string;
-  issue.value = await getIssue(spaceID, issueID);
+  async function deleteIssueReq () {
+    if (!space.value || !issue.value) return
 
-  useHead({
-    title: `${space.value.title} - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || 'Create a new issue in this space on FancySpaces.'
-      }
-    ]
-  });
-});
+    await deleteIssue(space.value!.id, issue.value.id)
 
-async function editIssueReq() {
-  if (!space.value || !issue.value) return;
-
-  await updateIssue(space.value!.id, issue.value.id, issue.value);
-
-  await router.push(`/spaces/${space.value?.slug}/issues/${issue.value.id}`);
-}
-
-async function deleteIssueReq() {
-  if (!space.value || !issue.value) return;
-
-  await deleteIssue(space.value!.id, issue.value.id);
-
-  await router.push(`/spaces/${space.value?.slug}/issues`);
-}
+    await router.push(`/spaces/${space.value?.slug}/issues`)
+  }
 
 </script>
 
@@ -68,9 +68,9 @@ async function deleteIssueReq() {
         <SpaceHeader :space="space">
           <template #quick-actions>
             <v-btn
-              :to="`/spaces/${space?.slug}/issues`"
               color="primary"
               size="large"
+              :to="`/spaces/${space?.slug}/issues`"
               variant="tonal"
             >
               View Issues
@@ -80,13 +80,13 @@ async function deleteIssueReq() {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
     <v-row>
       <v-col>
-        <h1 class="text-center">Edit Issue #{{issue?.id}}</h1>
+        <h1 class="text-center">Edit Issue #{{ issue?.id }}</h1>
       </v-col>
     </v-row>
 
@@ -128,20 +128,20 @@ async function deleteIssueReq() {
 
     <v-row justify="center">
       <v-col md="6">
-          <v-select
-            v-model="issue!.status"
-            :items="[
-                    { title: 'Backlog', value: 'backlog' },
-                    { title: 'Planned', value: 'planned' },
-                    { title: 'In Progress', value: 'in_progress' },
-                    { title: 'Done', value: 'done' },
-                    { title: 'Closed', value: 'closed' },
-                  ]"
-            color="primary"
-            hide-details
-            label="Status"
-            required
-          />
+        <v-select
+          v-model="issue!.status"
+          color="primary"
+          hide-details
+          :items="[
+            { title: 'Backlog', value: 'backlog' },
+            { title: 'Planned', value: 'planned' },
+            { title: 'In Progress', value: 'in_progress' },
+            { title: 'Done', value: 'done' },
+            { title: 'Closed', value: 'closed' },
+          ]"
+          label="Status"
+          required
+        />
       </v-col>
     </v-row>
 
@@ -149,16 +149,16 @@ async function deleteIssueReq() {
       <v-col md="3">
         <v-select
           v-model="issue!.type"
-          :items="[
-                    { title: 'Epic', value: 'epic' },
-                    { title: 'Bug', value: 'bug' },
-                    { title: 'Task', value: 'task' },
-                    { title: 'Story', value: 'story' },
-                    { title: 'Idea', value: 'idea' },
-
-                  ]"
           color="primary"
           hide-details
+          :items="[
+            { title: 'Epic', value: 'epic' },
+            { title: 'Bug', value: 'bug' },
+            { title: 'Task', value: 'task' },
+            { title: 'Story', value: 'story' },
+            { title: 'Idea', value: 'idea' },
+
+          ]"
           label="Type"
           required
         />
@@ -167,14 +167,14 @@ async function deleteIssueReq() {
       <v-col md="3">
         <v-select
           v-model="issue!.priority"
-          :items="[
-                    { title: 'Low', value: 'low' },
-                    { title: 'Medium', value: 'medium' },
-                    { title: 'High', value: 'high' },
-                    { title: 'Critical', value: 'critical' },
-                  ]"
           color="primary"
           hide-details
+          :items="[
+            { title: 'Low', value: 'low' },
+            { title: 'Medium', value: 'medium' },
+            { title: 'High', value: 'high' },
+            { title: 'Critical', value: 'critical' },
+          ]"
           label="Priority"
           required
         />

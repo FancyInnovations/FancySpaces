@@ -1,49 +1,49 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import {useHead} from "@vueuse/head";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useUserStore} from "@/stores/user";
-import AnalyticsSidebar from "@/components/analytics/AnalyticsSidebar.vue";
-import type {Dashboard} from "@/api/analytics/dashboards/types";
-import {getDashboards} from "@/api/analytics/dashboards/dashboards";
+  import type { Dashboard } from '@/api/analytics/dashboards/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getDashboards } from '@/api/analytics/dashboards/dashboards'
+  import { getSpace } from '@/api/spaces/spaces'
+  import AnalyticsSidebar from '@/components/analytics/AnalyticsSidebar.vue'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const route = useRoute();
-const userStore = useUserStore();
+  const router = useRouter()
+  const route = useRoute()
+  const userStore = useUserStore()
 
-const isLoggedIn = ref(false);
-const isMember = ref(false);
+  const isLoggedIn = ref(false)
+  const isMember = ref(false)
 
-const space = ref<Space>();
-const dashboards = ref<Dashboard[]>();
+  const space = ref<Space>()
+  const dashboards = ref<Dashboard[]>()
 
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
 
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!space.value.analytics_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
-  }
+    if (!space.value.analytics_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
 
-  isMember.value = (await userStore.isAuthenticated) && (space.value.creator == userStore.user?.id || space.value.members.some(member => member.user_id === userStore.user?.id));
+    isMember.value = (await userStore.isAuthenticated) && (space.value.creator == userStore.user?.id || space.value.members.some(member => member.user_id === userStore.user?.id))
 
-  dashboards.value = await getDashboards(space.value.id);
+    dashboards.value = await getDashboards(space.value.id)
 
-  useHead({
-    title: `${space.value.title} analytics portal - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
-      }
-    ]
-  });
-});
+    useHead({
+      title: `${space.value.title} analytics portal - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`,
+        },
+      ],
+    })
+  })
 </script>
 
 <template>
@@ -57,11 +57,11 @@ onMounted(async () => {
       </v-col>
 
       <v-col>
-        <SpaceHeader :space="space"></SpaceHeader>
+        <SpaceHeader :space="space" />
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
@@ -80,11 +80,11 @@ onMounted(async () => {
         md="3"
       >
         <Card
-          :appendIcon="d.public ? 'mdi-lock-open-variant-outline' : 'mdi-lock-outline'"
+          :append-icon="d.public ? 'mdi-lock-open-variant-outline' : 'mdi-lock-outline'"
+          height="100%"
           :subtitle="'Created at ' + new Date(d.created_at).toLocaleDateString()"
           :title="d.name"
           :to="`/spaces/${space?.id}/analytics/dashboards/${d.dashboard_id}`"
-          height="100%"
         >
           <v-card-text>{{ d.summary }}</v-card-text>
         </Card>
@@ -92,10 +92,10 @@ onMounted(async () => {
 
       <v-col v-if="isMember" md="3">
         <Card
-          :to="`/spaces/${space?.id}/analytics/dashboards/new`"
           class="d-flex align-center justify-center"
           height="100%"
           min-height="120px"
+          :to="`/spaces/${space?.id}/analytics/dashboards/new`"
         >
           <v-icon size="48">mdi-plus</v-icon>
         </Card>

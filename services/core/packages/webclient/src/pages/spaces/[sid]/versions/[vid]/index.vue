@@ -1,72 +1,72 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces";
-import {mapPlatformToDisplayname, type SpaceVersion} from "@/api/versions/types";
-import {getDownloadCountForVersion, getLatestVersion, getVersion} from "@/api/versions/versions";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useHead} from "@vueuse/head";
-import Card from "@/components/common/Card.vue";
-import {useUserStore} from "@/stores/user";
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getDownloadCountForSpace, getSpace } from '@/api/spaces/spaces'
+  import { mapPlatformToDisplayname, type SpaceVersion } from '@/api/versions/types'
+  import { getDownloadCountForVersion, getLatestVersion, getVersion } from '@/api/versions/versions'
+  import Card from '@/components/common/Card.vue'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useUserStore } from '@/stores/user'
 
-const route = useRoute();
-const router = useRouter();
-const userStore = useUserStore();
+  const route = useRoute()
+  const router = useRouter()
+  const userStore = useUserStore()
 
-const isMember = computed(() => {
-  if (!space.value) return false;
-  if (!userStore.isAuthenticated) return false;
+  const isMember = computed(() => {
+    if (!space.value) return false
+    if (!userStore.isAuthenticated) return false
 
-  const userID =  userStore.user?.id;
-  return space.value?.creator == userID || space.value?.members.some(member => member.user_id === userID);
-});
+    const userID = userStore.user?.id
+    return space.value?.creator == userID || space.value?.members.some(member => member.user_id === userID)
+  })
 
-const space = ref<Space>();
-const spaceDownloadCount = ref<number>(0);
-const latestVersion = ref<SpaceVersion>();
+  const space = ref<Space>()
+  const spaceDownloadCount = ref<number>(0)
+  const latestVersion = ref<SpaceVersion>()
 
-const currentVersion = ref<SpaceVersion>();
-const currentVersionDownloadCount = ref<number>(0);
+  const currentVersion = ref<SpaceVersion>()
+  const currentVersionDownloadCount = ref<number>(0)
 
-onMounted(async () => {
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+  onMounted(async () => {
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!space.value.release_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
+    if (!space.value.release_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
+
+    const versionID = (route.params as any).vid as string
+    currentVersion.value = await getVersion(space.value.id, versionID)
+    currentVersionDownloadCount.value = await getDownloadCountForVersion(space.value.id, currentVersion.value.id)
+
+    spaceDownloadCount.value = await getDownloadCountForSpace(space.value.id)
+    latestVersion.value = await getLatestVersion(space.value.id)
+
+    useHead({
+      title: `${space.value.title} ${currentVersion.value.name} - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`,
+        },
+      ],
+    })
+  })
+
+  function formatSize (sizeInBytes: number): string {
+    if (sizeInBytes < 1024) {
+      return `${sizeInBytes} B`
+    } else if (sizeInBytes < 1024 * 1024) {
+      return `${(sizeInBytes / 1024).toFixed(2)} KB`
+    } else if (sizeInBytes < 1024 * 1024 * 1024) {
+      return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`
+    } else {
+      return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
+    }
   }
-
-  const versionID = (route.params as any).vid as string;
-  currentVersion.value = await getVersion(space.value.id, versionID);
-  currentVersionDownloadCount.value = await getDownloadCountForVersion(space.value.id, currentVersion.value.id);
-
-  spaceDownloadCount.value = await getDownloadCountForSpace(space.value.id);
-  latestVersion.value = await getLatestVersion(space.value.id);
-
-  useHead({
-    title: `${space.value.title} ${currentVersion.value.name} - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
-      }
-    ]
-  });
-});
-
-function formatSize(sizeInBytes: number): string {
-  if (sizeInBytes < 1024) {
-    return `${sizeInBytes} B`;
-  } else if (sizeInBytes < 1024 * 1024) {
-    return `${(sizeInBytes / 1024).toFixed(2)} KB`;
-  } else if (sizeInBytes < 1024 * 1024 * 1024) {
-    return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
-  } else {
-    return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-  }
-}
 
 </script>
 
@@ -92,20 +92,21 @@ function formatSize(sizeInBytes: number): string {
           <template #quick-actions>
             <v-btn
               v-if="latestVersion && latestVersion.files.length != 1"
-              :to="`/spaces/${space?.slug}/versions/latest`"
               class="sidebar__mobile"
               color="primary"
               prepend-icon="mdi-download"
               size="large"
+              :to="`/spaces/${space?.slug}/versions/latest`"
               variant="tonal"
             >
               latest
             </v-btn>
+
             <v-btn
               v-else
-              :href="latestVersion?.files[0]?.url"
               class="sidebar__mobile"
               color="primary"
+              :href="latestVersion?.files[0]?.url"
               prepend-icon="mdi-download"
               size="large"
               variant="tonal"
@@ -115,11 +116,11 @@ function formatSize(sizeInBytes: number): string {
 
             <v-btn
               v-if="isMember"
-              :to="`/spaces/${space?.slug}/versions/${currentVersion?.id}/edit`"
               class="sidebar__mobile mt-4"
               color="primary"
               prepend-icon="mdi-pencil"
               size="large"
+              :to="`/spaces/${space?.slug}/versions/${currentVersion?.id}/edit`"
               variant="tonal"
             >
               Edit version
@@ -129,7 +130,7 @@ function formatSize(sizeInBytes: number): string {
 
         <hr
           class="mt-4 grey-border-color"
-        />
+        >
       </v-col>
     </v-row>
 
@@ -154,7 +155,7 @@ function formatSize(sizeInBytes: number): string {
                 <tr>
                   <th class="text-left">Name</th>
                   <th class="text-left">Size</th>
-                  <th class="text-right"></th>
+                  <th class="text-right" />
                 </tr>
               </thead>
 
@@ -165,10 +166,11 @@ function formatSize(sizeInBytes: number): string {
                 >
                   <td>{{ file.name }}</td>
                   <td>{{ formatSize(file.size) }}</td>
+
                   <td class="text-right">
                     <v-btn
-                      :href="file.url"
                       color="primary"
+                      :href="file.url"
                       icon="mdi-download"
                       small
                       target="_blank"
@@ -190,8 +192,13 @@ function formatSize(sizeInBytes: number): string {
             <p class="text-body-1"><strong>Version:</strong> {{ currentVersion?.name }}</p>
             <p class="text-body-1"><strong>ID:</strong> {{ currentVersion?.id }}</p>
             <p class="text-body-1"><strong>Channel:</strong> {{ currentVersion?.channel.toUpperCase() }}</p>
-            <p class="text-body-1"><strong>Platform:</strong> {{ mapPlatformToDisplayname(currentVersion?.platform) }}</p>
-            <p class="text-body-1"><strong>Platform versions:</strong> {{ currentVersion?.supported_platform_versions.join(", ") }}</p>
+
+            <p class="text-body-1"><strong>Platform:</strong> {{ mapPlatformToDisplayname(currentVersion?.platform) }}
+            </p>
+
+            <p class="text-body-1"><strong>Platform versions:</strong>
+              {{ currentVersion?.supported_platform_versions.join(", ") }}</p>
+
             <p class="text-body-1"><strong>Released at:</strong> {{ currentVersion?.published_at.toLocaleString() }}</p>
             <p class="text-body-1"><strong>Downloads:</strong> {{ currentVersionDownloadCount }}</p>
           </v-card-text>

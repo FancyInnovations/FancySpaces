@@ -4,17 +4,16 @@
  * Automatically included in `./src/main.ts`
  */
 
+// Types
+import type { App } from 'vue'
+import { createHead } from '@vueuse/head'
+import router from '../router'
+import pinia from '../stores'
 // Plugins
 import vuetify from './vuetify'
-import pinia from '../stores'
-import router from '../router'
-import {createHead} from '@vueuse/head'
-
-// Types
-import type {App} from 'vue'
 
 export function registerPlugins (app: App) {
-  const head = createHead();
+  const head = createHead()
 
   app
     .use(vuetify)

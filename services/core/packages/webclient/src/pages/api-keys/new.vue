@@ -1,38 +1,38 @@
 <script lang="ts" setup>
 
-import {onMounted} from "vue";
-import {useHead} from "@vueuse/head";
-import router from "@/router";
-import {useUserStore} from "@/stores/user";
-import {useNotificationStore} from "@/stores/notifications";
-import {createApiKey} from "@/api/auth/api-keys";
+  import { useHead } from '@vueuse/head'
+  import { onMounted } from 'vue'
+  import { createApiKey } from '@/api/auth/api-keys'
+  import router from '@/router'
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
-const userStore = useUserStore();
-const notificationStore = useNotificationStore();
+  const userStore = useUserStore()
+  const notificationStore = useNotificationStore()
 
-const description = ref('');
-const key = ref('');
+  const description = ref('')
+  const key = ref('')
 
-onMounted(async () => {
-  useHead({
-    title: `FancySpaces - API Keys`,
-    meta: [
-      {
-        name: 'description',
-        content: 'Manage your API keys for accessing the FancySpaces API. Create, view, and revoke API keys to control access to your account.'
-      }
-    ]
-  });
+  onMounted(async () => {
+    useHead({
+      title: `FancySpaces - API Keys`,
+      meta: [
+        {
+          name: 'description',
+          content: 'Manage your API keys for accessing the FancySpaces API. Create, view, and revoke API keys to control access to your account.',
+        },
+      ],
+    })
 
-  if (!(await userStore.isAuthenticated)) {
-    await router.push("/");
+    if (!(await userStore.isAuthenticated)) {
+      await router.push('/')
+    }
+  })
+
+  async function createApiKeyReq () {
+    key.value = await createApiKey(description.value)
+    notificationStore.info('API key created. Make sure to copy the API key now, as it will not be shown again for security reasons.')
   }
-});
-
-async function createApiKeyReq() {
-  key.value = await createApiKey(description.value);
-  notificationStore.info("API key created. Make sure to copy the API key now, as it will not be shown again for security reasons.");
-}
 
 </script>
 
@@ -41,11 +41,13 @@ async function createApiKeyReq() {
     <v-row>
       <v-col cols="12">
         <h1>API Keys</h1>
-        <p>Create a new API key to access the FancySpaces API. Provide a description for your API key to easily identify its purpose.</p>
+
+        <p>Create a new API key to access the FancySpaces API. Provide a description for your API key to easily identify
+          its purpose.</p>
       </v-col>
     </v-row>
 
-    <v-row v-if="key.length == 0">
+    <v-row v-if="key.length === 0">
       <v-col cols="12">
         <Card>
           <v-card-text>
@@ -69,6 +71,7 @@ async function createApiKeyReq() {
         </Card>
       </v-col>
     </v-row>
+
     <v-row v-if="key.length > 0">
       <v-col cols="12">
         <Card>
@@ -78,7 +81,8 @@ async function createApiKeyReq() {
               <span class="api-key ml-2">{{ key }}</span>
             </p>
 
-            <p class="mt-4 text-red">Make sure to copy the API key now, as it will not be shown again for security reasons.</p>
+            <p class="mt-4 text-red">Make sure to copy the API key now, as it will not be shown again for security
+              reasons.</p>
           </v-card-text>
         </Card>
       </v-col>

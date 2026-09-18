@@ -1,23 +1,23 @@
 <script lang="ts" setup>
 
-import {type Space} from "@/api/spaces/types";
-import {useUserStore} from "@/stores/user";
-import type {Dashboard} from "@/api/analytics/dashboards/types";
+  import type { Dashboard } from '@/api/analytics/dashboards/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useUserStore } from '@/stores/user'
 
-const userStore = useUserStore();
+  const userStore = useUserStore()
 
-const props = defineProps<{
-  space?: Space;
-  dashboards?: Dashboard[];
-}>();
+  const props = defineProps<{
+    space?: Space
+    dashboards?: Dashboard[]
+  }>()
 
-const isMember = computed(() => {
-  if (!props.space) return false;
-  if (!userStore.isAuthenticated) return false;
+  const isMember = computed(() => {
+    if (!props.space) return false
+    if (!userStore.isAuthenticated) return false
 
-  const userID =  userStore.user?.id;
-  return props.space.creator == userID || props.space.members.some(member => member.user_id === userID);
-});
+    const userID = userStore.user?.id
+    return props.space.creator == userID || props.space.members.some(member => member.user_id === userID)
+  })
 
 </script>
 
@@ -33,39 +33,41 @@ const isMember = computed(() => {
         <v-list-item-subtitle>Analytics Portal</v-list-item-subtitle>
       </v-list-item>
 
-      <v-divider class="mt-2"/>
+      <v-divider class="mt-2" />
 
       <v-list-item
         v-if="isMember"
-        :to="`/spaces/${space?.slug}/analytics/metrics`"
         link
         prepend-icon="mdi-chart-timeline-variant"
         title="Metrics"
-      />
-      <v-list-item
-        v-if="isMember"
-        :to="`/spaces/${space?.slug}/analytics/events`"
-        link
-        prepend-icon="mdi-radar"
-        title="Events"
-      />
-      <v-list-item
-        v-if="isMember"
-        :to="`/spaces/${space?.slug}/analytics/logs`"
-        link
-        prepend-icon="mdi-script-text"
-        title="Logs"
+        :to="`/spaces/${space?.slug}/analytics/metrics`"
       />
 
       <v-list-item
         v-if="isMember"
-        :to="`/spaces/${space?.slug}/analytics/exceptions`"
+        link
+        prepend-icon="mdi-radar"
+        title="Events"
+        :to="`/spaces/${space?.slug}/analytics/events`"
+      />
+
+      <v-list-item
+        v-if="isMember"
+        link
+        prepend-icon="mdi-script-text"
+        title="Logs"
+        :to="`/spaces/${space?.slug}/analytics/logs`"
+      />
+
+      <v-list-item
+        v-if="isMember"
         disabled
         link
         prepend-icon="mdi-bug"
         title="Exceptions"
+        :to="`/spaces/${space?.slug}/analytics/exceptions`"
       >
-        <template v-slot:append>
+        <template #append>
           <v-badge
             color="error"
             content="SOON"
@@ -76,13 +78,13 @@ const isMember = computed(() => {
 
       <v-list-item
         v-if="isMember"
-        :to="`/spaces/${space?.slug}/analytics/alerts`"
         disabled
         link
         prepend-icon="mdi-bell-ring"
         title="Alerts"
+        :to="`/spaces/${space?.slug}/analytics/alerts`"
       >
-        <template v-slot:append>
+        <template #append>
           <v-badge
             color="error"
             content="SOON"
@@ -91,16 +93,16 @@ const isMember = computed(() => {
         </template>
       </v-list-item>
 
-      <v-divider class="mx-2"/>
+      <v-divider class="mx-2" />
       <v-list-subheader>Dashboards</v-list-subheader>
 
       <v-list-item
-        :to="`/spaces/${space?.slug}/analytics/dashboards/`"
         class="mb-4"
         exact
         link
         prepend-icon="mdi-view-list"
         title="Dashboard Overview"
+        :to="`/spaces/${space?.slug}/analytics/dashboards/`"
       />
 
       <template
@@ -110,31 +112,31 @@ const isMember = computed(() => {
       >
         <v-list-item
           v-if="dashboard.public || isMember"
-          :title="dashboard.name"
-          :to="`/spaces/${space?.slug}/analytics/dashboards/${dashboard.dashboard_id}`"
           link
           prepend-icon="mdi-view-dashboard-variant"
+          :title="dashboard.name"
+          :to="`/spaces/${space?.slug}/analytics/dashboards/${dashboard.dashboard_id}`"
         />
 
       </template>
 
-      <v-divider class="mx-2"/>
+      <v-divider class="mx-2" />
       <v-list-subheader>Space</v-list-subheader>
 
       <v-list-item
-        :to="`/spaces/${space?.slug}`"
         exact
         link
         prepend-icon="mdi-home"
         title="Back to Space"
+        :to="`/spaces/${space?.slug}`"
       />
 
       <v-list-item
         v-if="isMember"
-        :to="`/spaces/${space?.slug}/settings`"
         link
         prepend-icon="mdi-cog-outline"
         title="Settings"
+        :to="`/spaces/${space?.slug}/settings`"
       />
 
     </v-list>

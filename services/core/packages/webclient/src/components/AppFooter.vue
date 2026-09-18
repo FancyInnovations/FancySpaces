@@ -13,14 +13,17 @@
         <v-col class="mr-16" md="auto">
           <h1 class="text-h3 mb-2">FancySpaces</h1>
           <p class="mb-4">A platform every project needs.<br>Tasks, releases, analytics and more.</p>
+
           <p>&copy; 2025-{{ (new Date()).getFullYear() }} <span class="d-none d-sm-inline-block">FancyInnovations</span>
           </p>
         </v-col>
 
         <v-col md="auto">
           <h3 class="mb-2">Links</h3>
+
           <a class="hide-link" href="https://github.com/fancyinnovations/fancyspaces" target="_blank"><p>
             GitHub</p></a>
+
           <a class="hide-link" href="https://discord.gg/ZUgYCEJUEx" target="_blank"><p>Discord</p></a>
         </v-col>
 
@@ -28,7 +31,9 @@
           <h3 class="mb-2">Resources</h3>
           <a class="hide-link" href="https://discord.gg/ZUgYCEJUEx" target="_blank"><p>Help Center</p></a>
           <a class="hide-link" href="https://discord.gg/ZUgYCEJUEx" target="_blank"><p>Report issues</p></a>
-          <a class="hide-link" href="https://github.com/fancyinnovations/fancyspaces" target="_blank"><p>Documentation</p></a>
+
+          <a class="hide-link" href="https://github.com/fancyinnovations/fancyspaces" target="_blank"><p>
+            Documentation</p></a>
         </v-col>
 
         <v-col md="auto">

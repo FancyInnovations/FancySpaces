@@ -1,76 +1,76 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import {useHead} from "@vueuse/head";
-import {createIssue} from "@/api/issues/issues";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useNotificationStore} from "@/stores/notifications";
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { createIssue } from '@/api/issues/issues'
+  import { getSpace } from '@/api/spaces/spaces'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useNotificationStore } from '@/stores/notifications'
 
-const router = useRouter();
-const route = useRoute();
-const notifications = useNotificationStore();
+  const router = useRouter()
+  const route = useRoute()
+  const notifications = useNotificationStore()
 
-const space = ref<Space>();
+  const space = ref<Space>()
 
-const title = ref('');
-const description = ref('');
-const type = ref('task');
-const priority = ref('medium');
+  const title = ref('')
+  const description = ref('')
+  const type = ref('task')
+  const priority = ref('medium')
 
-onMounted(async () => {
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+  onMounted(async () => {
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!space.value.issue_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
+    if (!space.value.issue_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
+
+    useHead({
+      title: `${space.value.title} - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || 'Create a new issue in this space on FancySpaces.',
+        },
+      ],
+    })
+  })
+
+  async function createNewIssue () {
+    if (!space.value) return
+
+    if (!title.value.trim()) {
+      notifications.error('Title is required.')
+      return
+    }
+
+    if (!type.value) {
+      notifications.error('Type is required.')
+      return
+    }
+
+    if (!priority.value) {
+      notifications.error('Priority is required.')
+      return
+    }
+
+    const issue = await createIssue(space.value!.id, {
+      title: title.value,
+      description: description.value,
+      type: type.value as any,
+      priority: priority.value as any,
+    })
+
+    title.value = ''
+    description.value = ''
+    type.value = 'task'
+    priority.value = 'medium'
+
+    await router.push(`/spaces/${space.value?.slug}/issues/${issue.id}`)
   }
-
-  useHead({
-    title: `${space.value.title} - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || 'Create a new issue in this space on FancySpaces.'
-      }
-    ]
-  });
-});
-
-async function createNewIssue() {
-  if (!space.value) return;
-
-  if (!title.value.trim()) {
-    notifications.error("Title is required.");
-    return;
-  }
-
-  if (!type.value) {
-    notifications.error("Type is required.");
-    return;
-  }
-
-  if (!priority.value) {
-    notifications.error("Priority is required.");
-    return;
-  }
-
-  const issue = await createIssue(space.value!.id, {
-    title: title.value,
-    description: description.value,
-    type: type.value as any,
-    priority: priority.value as any
-  });
-
-  title.value = '';
-  description.value = '';
-  type.value = 'task';
-  priority.value = 'medium';
-
-  await router.push(`/spaces/${space.value?.slug}/issues/${issue.id}`);
-}
 
 </script>
 
@@ -87,9 +87,9 @@ async function createNewIssue() {
         <SpaceHeader :space="space">
           <template #quick-actions>
             <v-btn
-              :to="`/spaces/${space?.slug}/issues`"
               color="primary"
               size="large"
+              :to="`/spaces/${space?.slug}/issues`"
               variant="tonal"
             >
               View Issues
@@ -99,7 +99,7 @@ async function createNewIssue() {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
@@ -132,32 +132,32 @@ async function createNewIssue() {
             <div class="d-flex mb-4">
               <v-select
                 v-model="type"
-                :items="[
-                      { title: 'Epic', value: 'epic' },
-                      { title: 'Bug', value: 'bug' },
-                      { title: 'Task', value: 'task' },
-                      { title: 'Story', value: 'story' },
-                      { title: 'Idea', value: 'idea' },
-
-                    ]"
                 class="mr-2"
                 color="primary"
                 hide-details
+                :items="[
+                  { title: 'Epic', value: 'epic' },
+                  { title: 'Bug', value: 'bug' },
+                  { title: 'Task', value: 'task' },
+                  { title: 'Story', value: 'story' },
+                  { title: 'Idea', value: 'idea' },
+
+                ]"
                 label="Type"
                 required
               />
 
               <v-select
                 v-model="priority"
-                :items="[
-                      { title: 'Low', value: 'low' },
-                      { title: 'Medium', value: 'medium' },
-                      { title: 'High', value: 'high' },
-                      { title: 'Critical', value: 'critical' },
-                    ]"
                 class="ml-2"
                 color="primary"
                 hide-details
+                :items="[
+                  { title: 'Low', value: 'low' },
+                  { title: 'Medium', value: 'medium' },
+                  { title: 'High', value: 'high' },
+                  { title: 'Critical', value: 'critical' },
+                ]"
                 label="Priority"
                 required
               />

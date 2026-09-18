@@ -1,43 +1,43 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import {useHead} from "@vueuse/head";
-import {useUserStore} from "@/stores/user";
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getSpace } from '@/api/spaces/spaces'
+  import { useUserStore } from '@/stores/user'
 
-const userStore = useUserStore();
+  const userStore = useUserStore()
 
-const isLoggedIn = ref(false);
+  const isLoggedIn = ref(false)
 
-useHead({
-  title: 'Explore Hytale Plugins - FancySpaces',
-  meta: [
-    {
-      name: 'description',
-      content: 'Discover and explore Hytale plugin project spaces on FancySpaces, your hub for innovative Hytale creations.'
+  useHead({
+    title: 'Explore Hytale Plugins - FancySpaces',
+    meta: [
+      {
+        name: 'description',
+        content: 'Discover and explore Hytale plugin project spaces on FancySpaces, your hub for innovative Hytale creations.',
+      },
+    ],
+  })
+
+  const spaces = ref<Space[]>()
+
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
+
+    spaces.value = []
+    spaces.value.push(await getSpace('fc'))
+
+    if (isLoggedIn.value) {
+      spaces.value.push(await getSpace('fancyplots'))
+      spaces.value.push(await getSpace('fancyconnect'))
+      spaces.value.push(await getSpace('fancyaudits'))
+      spaces.value.push(await getSpace('fancycorewebsite'))
+      spaces.value.push(await getSpace('fancyshops'))
+      spaces.value.push(await getSpace('citypass'))
+      spaces.value.push(await getSpace('cityquests'))
+      spaces.value.push(await getSpace('cityshops'))
     }
-  ]
-});
-
-const spaces = ref<Space[]>();
-
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
-
-  spaces.value = [];
-  spaces.value.push(await getSpace("fc"));
-
-  if (isLoggedIn.value) {
-    spaces.value.push(await getSpace("fancyplots"));
-    spaces.value.push(await getSpace("fancyconnect"));
-    spaces.value.push(await getSpace("fancyaudits"));
-    spaces.value.push(await getSpace("fancycorewebsite"));
-    spaces.value.push(await getSpace("fancyshops"));
-    spaces.value.push(await getSpace("citypass"));
-    spaces.value.push(await getSpace("cityquests"));
-    spaces.value.push(await getSpace("cityshops"));
-  }
-});
+  })
 
 </script>
 

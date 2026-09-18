@@ -1,23 +1,23 @@
 <script lang="ts" setup>
 
-import {useUserStore} from "@/stores/user";
-import {useNotificationStore} from "@/stores/notifications";
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const userStore = useUserStore();
-const notificationStore = useNotificationStore();
+  const router = useRouter()
+  const userStore = useUserStore()
+  const notificationStore = useNotificationStore()
 
-const isLoggedIn = ref(false);
+  const isLoggedIn = ref(false)
 
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
-});
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
+  })
 
-async function logoutReq() {
-  userStore.clearUser();
-  notificationStore.info("You have been logged out.");
-  window.location.href = "/"; // Use full page reload to clear all user data from the app
-}
+  async function logoutReq () {
+    userStore.clearUser()
+    notificationStore.info('You have been logged out.')
+    window.location.href = '/' // Use full page reload to clear all user data from the app
+  }
 
 </script>
 
@@ -41,7 +41,7 @@ async function logoutReq() {
           open-delay="0"
           open-on-hover
         >
-          <template v-slot:activator="{ props }">
+          <template #activator="{ props }">
             <v-btn
               append-icon="mdi-menu-down"
               color="secondary"
@@ -105,7 +105,7 @@ async function logoutReq() {
           open-delay="0"
           open-on-hover
         >
-          <template v-slot:activator="{ props }">
+          <template #activator="{ props }">
             <v-btn
               append-icon="mdi-menu-down"
               class="ml-4"
@@ -166,10 +166,10 @@ async function logoutReq() {
       <div>
         <v-btn
           v-if="isLoggedIn"
-          :href="`/users/${userStore.user?.name}`"
           class="mr-4"
           color="secondary"
           exact
+          :href="`/users/${userStore.user?.name}`"
           prepend-icon="mdi-view-dashboard-outline"
         >
           My Spaces
@@ -187,15 +187,16 @@ async function logoutReq() {
         </v-btn>
 
         <v-menu>
-          <template v-slot:activator="{ props }">
+          <template #activator="{ props }">
             <v-btn
               class="mr-4"
               icon="mdi-dots-vertical"
               v-bind="props"
             />
           </template>
+
           <v-list>
-            <v-list-subheader title="Account"/>
+            <v-list-subheader title="Account" />
 
             <v-list-item
               v-if="!isLoggedIn"
@@ -232,22 +233,25 @@ async function logoutReq() {
               @click="logoutReq()"
             />
 
-            <v-list-subheader title="Links"/>
+            <v-list-subheader title="Links" />
 
             <v-list-item
               href="https://github.com/fancyinnovations"
               prepend-icon="mdi-github"
-              title="GitHub"/>
+              title="GitHub"
+            />
 
             <v-list-item
               href="https://fancyinnovations.com/docs/general"
               prepend-icon="mdi-script-text-outline"
-              title="Documentation"/>
+              title="Documentation"
+            />
 
             <v-list-item
               href="https://discord.gg/ZUgYCEJUEx"
               prepend-icon="mdi-message"
-              title="Discord"/>
+              title="Discord"
+            />
 
           </v-list>
         </v-menu>

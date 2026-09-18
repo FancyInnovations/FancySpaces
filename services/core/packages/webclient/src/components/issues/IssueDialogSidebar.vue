@@ -1,70 +1,66 @@
 <script lang="ts" setup>
 
-import type {Issue, IssueComment} from "@/api/issues/types";
-import IssueIDChip from "@/components/issues/IssueIDChip.vue";
-import IssueStatusChip from "@/components/issues/IssueStatusChip.vue";
-import IssuePriorityChip from "@/components/issues/IssuePriorityChip.vue";
-import IssueTypeChip from "@/components/issues/IssueTypeChip.vue";
-import IssueExternalSourceChip from "@/components/issues/IssueExternalSourceChip.vue";
-import VersionChip from "@/components/VersionChip.vue";
+  import type { Issue, IssueComment } from '@/api/issues/types'
+  import IssueExternalSourceChip from '@/components/issues/IssueExternalSourceChip.vue'
+  import IssueIDChip from '@/components/issues/IssueIDChip.vue'
+  import IssuePriorityChip from '@/components/issues/IssuePriorityChip.vue'
+  import IssueStatusChip from '@/components/issues/IssueStatusChip.vue'
+  import IssueTypeChip from '@/components/issues/IssueTypeChip.vue'
+  import VersionChip from '@/components/VersionChip.vue'
 
-const props = defineProps<{
-  issue?: Issue,
-  comments: IssueComment[]
-}>();
+  const props = defineProps<{
+    issue?: Issue
+    comments: IssueComment[]
+  }>()
 
-const formattedCreatedAt = ref('');
-const formattedUpdatedAt = ref('');
-const formattedResolvedAt = ref('');
+  const formattedCreatedAt = ref('')
+  const formattedUpdatedAt = ref('')
+  const formattedResolvedAt = ref('')
 
-function formatDate(date: Date): string {
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const diffInHours = diff / (1000 * 60 * 60);
-  if (diffInHours < 12) {
-    if (diffInHours < 1) {
-      const diffInMinutes = diff / (1000 * 60);
-      if (diffInMinutes < 1) {
-        return `${Math.floor(diff / 1000)}s ago`;
+  function formatDate (date: Date): string {
+    const now = new Date()
+    const diff = now.getTime() - date.getTime()
+    const diffInHours = diff / (1000 * 60 * 60)
+    if (diffInHours < 12) {
+      if (diffInHours < 1) {
+        const diffInMinutes = diff / (1000 * 60)
+        return diffInMinutes < 1 ? `${Math.floor(diff / 1000)}s ago` : `${Math.floor(diffInMinutes)}min ago`
       } else {
-        return `${Math.floor(diffInMinutes)}min ago`;
+        return `${Math.floor(diffInHours)}h ago`
       }
     } else {
-      return `${Math.floor(diffInHours)}h ago`;
-    }
-  } else {
-    const createdAtDate = date.getDate();
-    const nowDate = now.getDate();
-    const createdAtMonth = date.getMonth();
-    const nowMonth = now.getMonth();
-    const createdAtYear = date.getFullYear();
-    const nowYear = now.getFullYear();
+      const createdAtDate = date.getDate()
+      const nowDate = now.getDate()
+      const createdAtMonth = date.getMonth()
+      const nowMonth = now.getMonth()
+      const createdAtYear = date.getFullYear()
+      const nowYear = now.getFullYear()
 
-    if (createdAtYear === nowYear && createdAtMonth === nowMonth && createdAtDate === nowDate - 1) {
-      return 'Yesterday';
-    } else if (createdAtYear === nowYear && createdAtMonth === nowMonth && createdAtDate === nowDate) {
-      return 'Today';
-    } else {
-      return date.toLocaleDateString();
+      if (createdAtYear === nowYear && createdAtMonth === nowMonth && createdAtDate === nowDate - 1) {
+        return 'Yesterday'
+      } else if (createdAtYear === nowYear && createdAtMonth === nowMonth && createdAtDate === nowDate) {
+        return 'Today'
+      } else {
+        return date.toLocaleDateString()
+      }
     }
   }
-}
 
-onMounted(() => {
-  formattedCreatedAt.value = formatDate(new Date(props.issue?.created_at || ''));
-  formattedUpdatedAt.value = formatDate(new Date(props.issue?.updated_at || ''));
-  formattedResolvedAt.value = props.issue?.resolved_at
-    ? formatDate(new Date(props.issue?.resolved_at))
-    : 'Unresolved';
-
-  setInterval(() => {
-    formattedCreatedAt.value = formatDate(new Date(props.issue?.created_at || ''));
-    formattedUpdatedAt.value = formatDate(new Date(props.issue?.updated_at || ''));
+  onMounted(() => {
+    formattedCreatedAt.value = formatDate(new Date(props.issue?.created_at || ''))
+    formattedUpdatedAt.value = formatDate(new Date(props.issue?.updated_at || ''))
     formattedResolvedAt.value = props.issue?.resolved_at
       ? formatDate(new Date(props.issue?.resolved_at))
-      : 'Unresolved';
-  }, 1000);
-});
+      : 'Unresolved'
+
+    setInterval(() => {
+      formattedCreatedAt.value = formatDate(new Date(props.issue?.created_at || ''))
+      formattedUpdatedAt.value = formatDate(new Date(props.issue?.updated_at || ''))
+      formattedResolvedAt.value = props.issue?.resolved_at
+        ? formatDate(new Date(props.issue?.resolved_at))
+        : 'Unresolved'
+    }, 1000)
+  })
 
 </script>
 
@@ -81,9 +77,9 @@ onMounted(() => {
       <v-list-item-title>
         ID:
         <IssueIDChip
-          :issue="props.issue"
           class="ml-2"
           density="compact"
+          :issue="props.issue"
         />
       </v-list-item-title>
     </v-list-item>
@@ -92,9 +88,9 @@ onMounted(() => {
       <v-list-item-title>
         Parent:
         <IssueIDChip
-          :issueName="props.issue?.parent_issue"
           class="ml-2"
           density="compact"
+          :issue-name="props.issue?.parent_issue"
         />
       </v-list-item-title>
     </v-list-item>
@@ -103,9 +99,9 @@ onMounted(() => {
       <v-list-item-title>
         Source:
         <IssueExternalSourceChip
-          :issue="props.issue!"
           class="ml-2"
           density="compact"
+          :issue="props.issue!"
         />
       </v-list-item-title>
     </v-list-item>
@@ -114,9 +110,9 @@ onMounted(() => {
       <v-list-item-title>
         Type:
         <IssueTypeChip
-          :issue="props.issue!"
           class="ml-2"
           density="compact"
+          :issue="props.issue!"
         />
       </v-list-item-title>
     </v-list-item>
@@ -125,9 +121,9 @@ onMounted(() => {
       <v-list-item-title>
         Status:
         <IssueStatusChip
-          :issue="props.issue!"
           class="ml-2"
           density="compact"
+          :issue="props.issue!"
         />
       </v-list-item-title>
     </v-list-item>
@@ -136,9 +132,9 @@ onMounted(() => {
       <v-list-item-title>
         Priority:
         <IssuePriorityChip
-          :issue="props.issue!"
           class="ml-2"
           density="compact"
+          :issue="props.issue!"
         />
       </v-list-item-title>
     </v-list-item>
@@ -156,9 +152,9 @@ onMounted(() => {
       <VersionChip
         v-for="version in props.issue.affected_versions"
         :key="version"
-        :spaceID="issue!.space"
-        :version="version"
         density="compact"
+        :space-i-d="issue!.space"
+        :version="version"
       />
     </div>
 
@@ -166,10 +162,10 @@ onMounted(() => {
       <v-list-item-title>
         Fix version:
         <VersionChip
-          :spaceID="issue!.space"
-          :version="props.issue.fix_version"
           class="ml-2"
           density="compact"
+          :space-i-d="issue!.space"
+          :version="props.issue.fix_version"
         />
       </v-list-item-title>
     </v-list-item>
@@ -183,9 +179,9 @@ onMounted(() => {
       <v-list-item-title>
         Reporter:
         <UserChip
-          :user="props.issue!.reporter"
           class="ml-2"
           density="compact"
+          :user="props.issue!.reporter"
         />
       </v-list-item-title>
     </v-list-item>
@@ -194,9 +190,9 @@ onMounted(() => {
       <v-list-item-title>
         Assignee:
         <UserChip
-          :user="props.issue!.assignee"
           class="ml-2"
           density="compact"
+          :user="props.issue!.assignee"
         />
       </v-list-item-title>
     </v-list-item>

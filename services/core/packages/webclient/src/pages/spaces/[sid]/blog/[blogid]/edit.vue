@@ -1,43 +1,43 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {useHead} from "@vueuse/head";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {getBlogArticle, getBlogArticleContent} from "@/api/blogs/blogs";
-import BlogEdit from "@/components/blog/BlogEdit.vue";
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getBlogArticle, getBlogArticleContent } from '@/api/blogs/blogs'
+  import { getSpace } from '@/api/spaces/spaces'
+  import BlogEdit from '@/components/blog/BlogEdit.vue'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
 
-const router = useRouter();
-const route = useRoute();
+  const router = useRouter()
+  const route = useRoute()
 
-const space = ref<Space>();
-const article = ref();
-const content = ref<string>('');
+  const space = ref<Space>()
+  const article = ref()
+  const content = ref<string>('')
 
-onMounted(async () => {
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+  onMounted(async () => {
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!space.value.blog_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
-  }
+    if (!space.value.blog_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
 
-  const articleID = (route.params as any).blogid as string;
-  article.value = await getBlogArticle(articleID);
-  content.value = await getBlogArticleContent(articleID);
+    const articleID = (route.params as any).blogid as string
+    article.value = await getBlogArticle(articleID)
+    content.value = await getBlogArticleContent(articleID)
 
-  useHead({
-    title: `${space.value.title} Blog - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
-      }
-    ]
-  });
-});
+    useHead({
+      title: `${space.value.title} Blog - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`,
+        },
+      ],
+    })
+  })
 </script>
 
 <template>
@@ -53,10 +53,10 @@ onMounted(async () => {
         <SpaceHeader :space="space">
           <template #quick-actions>
             <v-btn
-              :to="`/spaces/${space?.slug}/blog`"
               color="primary"
               exact
               size="large"
+              :to="`/spaces/${space?.slug}/blog`"
               variant="tonal"
             >
               Back to Blog
@@ -66,14 +66,14 @@ onMounted(async () => {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
     <BlogEdit
       :article="article"
-      :content="content"
       class="mt-8"
+      :content="content"
     />
 
   </v-container>

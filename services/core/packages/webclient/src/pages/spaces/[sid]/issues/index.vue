@@ -1,88 +1,88 @@
 <script lang="ts" setup>
 
-import {type Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {useHead} from "@vueuse/head";
-import {getAllIssues} from "@/api/issues/issues";
-import type {Issue} from "@/api/issues/types";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useUserStore} from "@/stores/user";
-import Card from "@/components/common/Card.vue";
+  import type { Issue } from '@/api/issues/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getAllIssues } from '@/api/issues/issues'
+  import { getSpace } from '@/api/spaces/spaces'
+  import Card from '@/components/common/Card.vue'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const route = useRoute();
-const userStore = useUserStore();
+  const router = useRouter()
+  const route = useRoute()
+  const userStore = useUserStore()
 
-const isLoggedIn = ref(false);
+  const isLoggedIn = ref(false)
 
-const space = ref<Space>();
-const issues = ref<Issue[]>([]);
+  const space = ref<Space>()
+  const issues = ref<Issue[]>([])
 
-const openIssues = computed(() => {
-  return issues.value.filter(issue => issue.status !== 'closed');
-});
+  const openIssues = computed(() => {
+    return issues.value.filter(issue => issue.status !== 'closed')
+  })
 
-const closedIssues = computed(() => {
-  return issues.value.filter(issue => issue.status === 'closed');
-});
+  const closedIssues = computed(() => {
+    return issues.value.filter(issue => issue.status === 'closed')
+  })
 
-const filteredIssues = computed(() => {
-  return issues.value.filter(issue => {
-    const matchesSearch = searchQuery.value ?
-      issue.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || issue.id.toLowerCase().includes(searchQuery.value.toLowerCase()) :
-      true;
+  const filteredIssues = computed(() => {
+    return issues.value.filter(issue => {
+      const matchesSearch = searchQuery.value
+        ? issue.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || issue.id.toLowerCase().includes(searchQuery.value.toLowerCase())
+        : true
 
-    const matchesType = typeFilter.value ? issue.type === typeFilter.value : true;
-    const matchesPriority = priorityFilter.value ? issue.priority === priorityFilter.value : true;
-    const matchesStatus = statusFilter.value ? issue.status === statusFilter.value : true;
+      const matchesType = typeFilter.value ? issue.type === typeFilter.value : true
+      const matchesPriority = priorityFilter.value ? issue.priority === priorityFilter.value : true
+      const matchesStatus = statusFilter.value ? issue.status === statusFilter.value : true
 
-    return matchesSearch && matchesType && matchesPriority && matchesStatus;
-  });
-});
+      return matchesSearch && matchesType && matchesPriority && matchesStatus
+    })
+  })
 
-const displayType = ref<'board' | 'list'>('board');
-const searchQuery = ref('');
-const typeFilter = ref();
-const priorityFilter = ref();
-const statusFilter = ref();
+  const displayType = ref<'board' | 'list'>('board')
+  const searchQuery = ref('')
+  const typeFilter = ref()
+  const priorityFilter = ref()
+  const statusFilter = ref()
 
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
 
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!space.value.issue_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
-  }
+    if (!space.value.issue_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
 
-  issues.value = await getAllIssues(space.value.id);
+    issues.value = await getAllIssues(space.value.id)
 
-  // load displayType from localStorage
-  const savedDisplayType = localStorage.getItem(`issues_display_type`);
-  if (savedDisplayType === 'board' || savedDisplayType === 'list') {
-    displayType.value = savedDisplayType;
-  }
+    // load displayType from localStorage
+    const savedDisplayType = localStorage.getItem(`issues_display_type`)
+    if (savedDisplayType === 'board' || savedDisplayType === 'list') {
+      displayType.value = savedDisplayType
+    }
 
-  useHead({
-    title: `${space.value.title} issues - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || 'View issues for this space on FancySpaces.'
-      }
-    ]
-  });
-});
+    useHead({
+      title: `${space.value.title} issues - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || 'View issues for this space on FancySpaces.',
+        },
+      ],
+    })
+  })
 
-// Watch for changes in displayType and save to localStorage
-watch(displayType, (newType) => {
-  if (space.value) {
-    localStorage.setItem(`issues_display_type`, newType);
-  }
-});
+  // Watch for changes in displayType and save to localStorage
+  watch(displayType, newType => {
+    if (space.value) {
+      localStorage.setItem(`issues_display_type`, newType)
+    }
+  })
 
 </script>
 
@@ -107,9 +107,9 @@ watch(displayType, (newType) => {
           <template #quick-actions>
             <v-btn
               v-if="isLoggedIn"
-              :to="`/spaces/${space?.slug}/issues/new`"
               color="primary"
               size="large"
+              :to="`/spaces/${space?.slug}/issues/new`"
               variant="tonal"
             >
               New Issue
@@ -119,7 +119,7 @@ watch(displayType, (newType) => {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
@@ -145,6 +145,11 @@ watch(displayType, (newType) => {
 
                 <v-select
                   v-model="typeFilter"
+                  class="ma-2"
+                  clearable
+                  color="primary"
+                  density="compact"
+                  hide-details
                   :items="[
                     { title: 'Epic', value: 'epic' },
                     { title: 'Bug', value: 'bug' },
@@ -153,34 +158,34 @@ watch(displayType, (newType) => {
                     { title: 'Idea', value: 'idea' },
 
                   ]"
-                  class="ma-2"
-                  clearable
-                  color="primary"
-                  density="compact"
-                  hide-details
                   label="Type"
                   min-width="200"
                 />
 
                 <v-select
                   v-model="priorityFilter"
+                  class="ma-2"
+                  clearable
+                  color="primary"
+                  density="compact"
+                  hide-details
                   :items="[
                     { title: 'Low', value: 'low' },
                     { title: 'Medium', value: 'medium' },
                     { title: 'High', value: 'high' },
                     { title: 'Critical', value: 'critical' },
                   ]"
-                  class="ma-2"
-                  clearable
-                  color="primary"
-                  density="compact"
-                  hide-details
                   label="Priority"
                   min-width="200"
                 />
 
                 <v-select
                   v-model="statusFilter"
+                  class="ma-2"
+                  clearable
+                  color="primary"
+                  density="compact"
+                  hide-details
                   :items="[
                     { title: 'Backlog', value: 'backlog' },
                     { title: 'Planned', value: 'planned' },
@@ -189,11 +194,6 @@ watch(displayType, (newType) => {
                     { title: 'Closed', value: 'closed' },
 
                   ]"
-                  class="ma-2"
-                  clearable
-                  color="primary"
-                  density="compact"
-                  hide-details
                   label="Status"
                   min-width="200"
                 />
@@ -211,18 +211,18 @@ watch(displayType, (newType) => {
               density="compact"
             >
               <v-btn
-                :variant="displayType === 'board' ? 'tonal' : 'outlined'"
                 color="primary"
                 prepend-icon="mdi-view-dashboard"
+                :variant="displayType === 'board' ? 'tonal' : 'outlined'"
                 @click="displayType = 'board'"
               >
                 Board
               </v-btn>
 
               <v-btn
-                :variant="displayType === 'list' ? 'tonal' : 'outlined'"
                 color="primary"
                 prepend-icon="mdi-format-list-bulleted"
+                :variant="displayType === 'list' ? 'tonal' : 'outlined'"
                 @click="displayType = 'list'"
               >
                 List
@@ -240,6 +240,7 @@ watch(displayType, (newType) => {
           :issues="filteredIssues"
           :space="space!"
         />
+
         <IssueTable
           v-else
           :issues="filteredIssues"

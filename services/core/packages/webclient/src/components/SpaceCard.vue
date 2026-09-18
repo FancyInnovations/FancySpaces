@@ -1,36 +1,36 @@
 <script lang="ts" setup>
 
-import {mapCategoryToDisplayname, type Space} from "@/api/spaces/types";
-import {getLatestVersion} from "@/api/versions/versions";
-import type {SpaceVersion} from "@/api/versions/types";
-import {getDownloadCountForSpace} from "@/api/spaces/spaces";
-import Card from "@/components/common/Card.vue";
-import type {User} from "@/api/auth/types";
-import {getPublicUser} from "@/api/auth/users";
+  import type { User } from '@/api/auth/types'
+  import type { SpaceVersion } from '@/api/versions/types'
+  import { getPublicUser } from '@/api/auth/users'
+  import { getDownloadCountForSpace } from '@/api/spaces/spaces'
+  import { mapCategoryToDisplayname, type Space } from '@/api/spaces/types'
+  import { getLatestVersion } from '@/api/versions/versions'
+  import Card from '@/components/common/Card.vue'
 
-const props = defineProps<{
-  space?: Space
-  withBadge?: boolean
-  withAuthor?: boolean
-  soon?: boolean
-}>();
+  const props = defineProps<{
+    space?: Space
+    withBadge?: boolean
+    withAuthor?: boolean
+    soon?: boolean
+  }>()
 
-const latestVersion = ref<SpaceVersion>();
-const downloadCount = ref<number>(0);
+  const latestVersion = ref<SpaceVersion>()
+  const downloadCount = ref<number>(0)
 
-const creator = ref<User>();
-watch(() => props.space, async (newSpace) => {
-  if (newSpace) {
-    creator.value = await getPublicUser(newSpace.creator)
-  }
-}, {immediate: true});
-
-onMounted(async () => {
-    if (props.space) {
-      latestVersion.value = await getLatestVersion(props.space.id);
-      downloadCount.value = await getDownloadCountForSpace(props.space.id);
+  const creator = ref<User>()
+  watch(() => props.space, async newSpace => {
+    if (newSpace) {
+      creator.value = await getPublicUser(newSpace.creator)
     }
-})
+  }, { immediate: true })
+
+  onMounted(async () => {
+    if (props.space) {
+      latestVersion.value = await getLatestVersion(props.space.id)
+      downloadCount.value = await getDownloadCountForSpace(props.space.id)
+    }
+  })
 
 </script>
 
@@ -45,14 +45,14 @@ onMounted(async () => {
         <div class="d-flex flex-column justify-center">
           <RouterLink :to="`/spaces/${space?.slug}`">
             <v-img
-              :href="`/spaces/${space?.slug}`"
-              :src="space?.icon_url || '/na-logo.png'"
               alt="Space Icon"
               height="100"
+              :href="`/spaces/${space?.slug}`"
               max-height="100"
               max-width="100"
               min-height="100"
               min-width="100"
+              :src="space?.icon_url || '/na-logo.png'"
               width="100"
             />
           </RouterLink>
@@ -80,9 +80,16 @@ onMounted(async () => {
 
           <div class="d-flex justify-space-between mt-2 text-grey-lighten-1">
             <p v-if="withAuthor" class="text-body-2">By {{ space?.creator }}</p>
-            <p v-if="creator" class="text-body-2 link--hover"><RouterLink :to="'/users/'+creator.name">By: {{ creator?.name }}</RouterLink></p>
+
+            <p v-if="creator" class="text-body-2 link--hover">
+              <RouterLink :to="'/users/'+creator.name">By: {{ creator?.name }}</RouterLink>
+            </p>
+
             <p class="text-body-2">Created {{ space?.created_at.toLocaleDateString() }}</p>
-            <p class="text-body-2">Updated {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
+
+            <p class="text-body-2">Updated
+              {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
+
             <p v-if="downloadCount > 0" class="text-body-2">{{ downloadCount }} downloads</p>
           </div>
         </div>
@@ -90,9 +97,9 @@ onMounted(async () => {
         <div class="d-flex flex-column justify-center">
           <v-btn
             v-if="!soon && space?.release_settings.enabled"
-            :to="`/spaces/${space?.slug}/versions`"
             color="primary"
             icon="mdi-download"
+            :to="`/spaces/${space?.slug}/versions`"
             variant="tonal"
           />
         </div>

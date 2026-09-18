@@ -1,60 +1,60 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import {useHead} from "@vueuse/head";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {createSecret} from "@/api/secrets/secrets";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useNotificationStore} from "@/stores/notifications";
-import {useUserStore} from "@/stores/user";
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { createSecret } from '@/api/secrets/secrets'
+  import { getSpace } from '@/api/spaces/spaces'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const route = useRoute();
-const notificationStore = useNotificationStore();
-const userStore = useUserStore();
+  const router = useRouter()
+  const route = useRoute()
+  const notificationStore = useNotificationStore()
+  const userStore = useUserStore()
 
-const isLoggedIn = ref(false);
+  const isLoggedIn = ref(false)
 
-const space = ref<Space>();
+  const space = ref<Space>()
 
-const key = ref('');
-const value = ref('');
-const description = ref('');
+  const key = ref('')
+  const value = ref('')
+  const description = ref('')
 
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
 
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!isLoggedIn || !space.value.secrets_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
+    if (!isLoggedIn || !space.value.secrets_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
+
+    useHead({
+      title: `${space.value.title} - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || 'Create a new secret in this space on FancySpaces.',
+        },
+      ],
+    })
+  })
+
+  async function createNewSecret () {
+    await createSecret(space.value!.id, key.value, value.value, description.value)
+
+    key.value = ''
+    value.value = ''
+    description.value = ''
+
+    notificationStore.info('Secret created successfully')
+
+    await router.push(`/spaces/${space.value?.slug}/secrets`)
   }
-
-  useHead({
-    title: `${space.value.title} - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || 'Create a new secret in this space on FancySpaces.'
-      }
-    ]
-  });
-});
-
-async function createNewSecret() {
-  await createSecret(space.value!.id, key.value, value.value, description.value);
-
-  key.value = '';
-  value.value = '';
-  description.value = '';
-
-  notificationStore.info("Secret created successfully");
-
-  await router.push(`/spaces/${space.value?.slug}/secrets`);
-}
 
 </script>
 
@@ -71,10 +71,10 @@ async function createNewSecret() {
         <SpaceHeader :space="space">
           <template #quick-actions>
             <v-btn
-              :to="`/spaces/${space?.slug}/secrets`"
               class="sidebar__mobile"
               color="primary"
               size="large"
+              :to="`/spaces/${space?.slug}/secrets`"
               variant="tonal"
             >
               View Secrets
@@ -84,7 +84,7 @@ async function createNewSecret() {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 

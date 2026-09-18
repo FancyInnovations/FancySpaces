@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 
-const props = defineProps<{
-  shown: boolean;
-  persistent?: boolean;
-  width?: string;
-  height?: string;
-}>();
+  const props = defineProps<{
+    shown: boolean
+    persistent?: boolean
+    width?: string
+    height?: string
+  }>()
 
 </script>
 
@@ -13,17 +13,16 @@ const props = defineProps<{
   <v-dialog
     v-model="props.shown"
     :height="props.height ?? 'max-content'"
-    :persistent="props.persistent ?? false"
-    :width="props.width ?? 'max-content'"
     opacity="0.7"
+    :persistent="props.persistent ?? false"
     transition="dialog-transition"
+    :width="props.width ?? 'max-content'"
   >
     <div class="dialog__background">
-      <slot></slot>
+      <slot />
     </div>
   </v-dialog>
 </template>
-
 
 <style scoped>
 .dialog__background {

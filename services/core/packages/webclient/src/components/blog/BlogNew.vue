@@ -1,37 +1,37 @@
 <script lang="ts" setup>
 
-import {useUserStore} from "@/stores/user";
-import {useNotificationStore} from "@/stores/notifications";
-import {createBlogArticle} from "@/api/blogs/blogs";
+  import { createBlogArticle } from '@/api/blogs/blogs'
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const userStore = useUserStore();
-const notificationStore = useNotificationStore();
+  const router = useRouter()
+  const userStore = useUserStore()
+  const notificationStore = useNotificationStore()
 
-const props = defineProps<{
-  spaceID?: string;
-}>();
+  const props = defineProps<{
+    spaceID?: string
+  }>()
 
-const title = ref("");
-const summary = ref("");
-const content = ref("");
+  const title = ref('')
+  const summary = ref('')
+  const content = ref('')
 
-async function publishArticle() {
-  if (!(await userStore.isAuthenticated)) {
-    return;
+  async function publishArticle () {
+    if (!(await userStore.isAuthenticated)) {
+      return
+    }
+
+    if (title.value.trim() === '' || content.value.trim() === '' || summary.value.trim() === '') {
+      notificationStore.error('Please fill in all fields before publishing.')
+      return
+    }
+
+    await createBlogArticle(props.spaceID!, title.value, summary.value, content.value)
+
+    notificationStore.info('Article published successfully!')
+
+    await router.push(props.spaceID ? `/spaces/${props.spaceID}/blog` : `/users/${userStore.user?.name}/blog`)
   }
-
-  if (title.value.trim() === "" || content.value.trim() === "" || summary.value.trim() === "") {
-    notificationStore.error("Please fill in all fields before publishing.");
-    return;
-  }
-
-  await createBlogArticle(props.spaceID!, title.value, summary.value, content.value);
-
-  notificationStore.info("Article published successfully!");
-
-  await router.push(props.spaceID ? `/spaces/${props.spaceID}/blog` : `/users/${userStore.user?.name}/blog`);
-}
 
 </script>
 
@@ -65,9 +65,9 @@ async function publishArticle() {
           />
 
           <v-btn
-            :disabled="title.trim() === '' || summary.trim() === '' || content.trim() === ''"
             class="my-2"
             color="primary"
+            :disabled="title.trim() === '' || summary.trim() === '' || content.trim() === ''"
             @click="publishArticle()"
           >
             Publish

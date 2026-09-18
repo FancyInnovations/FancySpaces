@@ -1,24 +1,28 @@
 <script lang="ts" setup>
 
-import type {SpaceVersion} from "@/api/versions/types";
+  import type { SpaceVersion } from '@/api/versions/types'
 
-const props = defineProps<{
-  version: SpaceVersion,
-  density?: null | 'default' | 'comfortable' | 'compact'
-}>();
+  const props = defineProps<{
+    version: SpaceVersion
+    density?: null | 'default' | 'comfortable' | 'compact'
+  }>()
 
-const color = computed(() => {
-  switch (props.version.channel.toLowerCase()) {
-    case 'alpha':
-      return 'deep-orange-accent-3';
-    case 'beta':
-      return 'yellow-accent-4';
-    case 'release':
-      return 'light-green-accent-3';
-    default:
-      return 'primary';
-  }
-});
+  const color = computed(() => {
+    switch (props.version.channel.toLowerCase()) {
+      case 'alpha': {
+        return 'deep-orange-accent-3'
+      }
+      case 'beta': {
+        return 'yellow-accent-4'
+      }
+      case 'release': {
+        return 'light-green-accent-3'
+      }
+      default: {
+        return 'primary'
+      }
+    }
+  })
 
 </script>
 

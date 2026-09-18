@@ -1,147 +1,147 @@
-import type {Issue} from "@/api/issues/types";
-import {useUserStore} from "@/stores/user";
+import type { Issue } from '@/api/issues/types'
+import { useUserStore } from '@/stores/user'
 
-export async function getIssue(spaceId: string, issueId: string): Promise<Issue> {
-  const userStore = useUserStore();
+export async function getIssue (spaceId: string, issueId: string): Promise<Issue> {
+  const userStore = useUserStore()
 
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues/${issueId}`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Accept": "application/json",
-        "Authorization": `Bearer ${userStore.token}`,
-      }
+        Accept: 'application/json',
+        Authorization: `Bearer ${userStore.token}`,
+      },
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error("Failed to fetch issue: " + await response.text());
+    throw new Error('Failed to fetch issue: ' + await response.text())
   }
 
-  const issue = await response.json();
-  issue.created_at = new Date(issue.created_at);
-  issue.updated_at = new Date(issue.updated_at);
+  const issue = await response.json()
+  issue.created_at = new Date(issue.created_at)
+  issue.updated_at = new Date(issue.updated_at)
   if (issue.resolved_at) {
-    issue.resolved_at = new Date(issue.resolved_at);
+    issue.resolved_at = new Date(issue.resolved_at)
   }
 
-  return issue as Issue;
+  return issue as Issue
 }
 
-export async function getAllIssues(spaceId: string): Promise<Issue[]> {
-  const userStore = useUserStore();
+export async function getAllIssues (spaceId: string): Promise<Issue[]> {
+  const userStore = useUserStore()
 
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Accept": "application/json",
-        "Authorization": `Bearer ${userStore.token}`,
-      }
+        Accept: 'application/json',
+        Authorization: `Bearer ${userStore.token}`,
+      },
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error("Failed to all issues: " + await response.text());
+    throw new Error('Failed to all issues: ' + await response.text())
   }
 
-  const issues = await response.json();
+  const issues = await response.json()
   issues.forEach((issue: Issue) => {
-    issue.created_at = new Date(issue.created_at);
-    issue.updated_at = new Date(issue.updated_at);
+    issue.created_at = new Date(issue.created_at)
+    issue.updated_at = new Date(issue.updated_at)
     if (issue.resolved_at) {
-      issue.resolved_at = new Date(issue.resolved_at);
+      issue.resolved_at = new Date(issue.resolved_at)
     }
-  });
+  })
 
-  return issues as Issue[];
+  return issues as Issue[]
 }
 
-export async function createIssue(spaceId: string, issueData: Partial<Issue>): Promise<Issue> {
-  const userStore = useUserStore();
+export async function createIssue (spaceId: string, issueData: Partial<Issue>): Promise<Issue> {
+  const userStore = useUserStore()
   if (!(await userStore.isAuthenticated)) {
-    throw new Error("User is not logged in");
+    throw new Error('User is not logged in')
   }
 
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues`,
     {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${userStore.token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${userStore.token}`,
       },
       body: JSON.stringify(issueData),
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error("Failed to create issue: " + await response.text());
+    throw new Error('Failed to create issue: ' + await response.text())
   }
 
-  const issue = await response.json();
-  issue.created_at = new Date(issue.created_at);
-  issue.updated_at = new Date(issue.updated_at);
+  const issue = await response.json()
+  issue.created_at = new Date(issue.created_at)
+  issue.updated_at = new Date(issue.updated_at)
   if (issue.resolved_at) {
-    issue.resolved_at = new Date(issue.resolved_at);
+    issue.resolved_at = new Date(issue.resolved_at)
   }
 
-  return issue as Issue;
+  return issue as Issue
 }
 
-export async function updateIssue(spaceId: string, issueID: string, issueData: Partial<Issue>): Promise<Issue> {
-  const userStore = useUserStore();
+export async function updateIssue (spaceId: string, issueID: string, issueData: Partial<Issue>): Promise<Issue> {
+  const userStore = useUserStore()
   if (!(await userStore.isAuthenticated)) {
-    throw new Error("User is not logged in");
+    throw new Error('User is not logged in')
   }
 
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues/${issueID}`,
     {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${userStore.token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${userStore.token}`,
       },
       body: JSON.stringify(issueData),
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error("Failed to update issue: " + await response.text());
+    throw new Error('Failed to update issue: ' + await response.text())
   }
 
-  const issue = await response.json();
-  issue.created_at = new Date(issue.created_at);
-  issue.updated_at = new Date(issue.updated_at);
+  const issue = await response.json()
+  issue.created_at = new Date(issue.created_at)
+  issue.updated_at = new Date(issue.updated_at)
   if (issue.resolved_at) {
-    issue.resolved_at = new Date(issue.resolved_at);
+    issue.resolved_at = new Date(issue.resolved_at)
   }
 
-  return issue as Issue;
+  return issue as Issue
 }
 
-export async function deleteIssue(spaceId: string, issueID: string): Promise<void> {
-  const userStore = useUserStore();
+export async function deleteIssue (spaceId: string, issueID: string): Promise<void> {
+  const userStore = useUserStore()
   if (!(await userStore.isAuthenticated)) {
-    throw new Error("User is not logged in");
+    throw new Error('User is not logged in')
   }
 
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/issues/${issueID}`,
     {
-      method: "DELETE",
+      method: 'DELETE',
       headers: {
-        "Authorization": `Bearer ${userStore.token}`,
-      }
+        Authorization: `Bearer ${userStore.token}`,
+      },
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error("Failed to delete issue: " + await response.text());
+    throw new Error('Failed to delete issue: ' + await response.text())
   }
 }

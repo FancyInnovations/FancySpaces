@@ -1,77 +1,77 @@
-import {useUserStore} from "@/stores/user";
-import {type ApiKey, IDP_API_BASE_URL} from "@/api/auth/types";
+import { type ApiKey, IDP_API_BASE_URL } from '@/api/auth/types'
+import { useUserStore } from '@/stores/user'
 
-export async function getApiKeys(userid: string): Promise<ApiKey[]> {
-  const userStore = useUserStore();
+export async function getApiKeys (userid: string): Promise<ApiKey[]> {
+  const userStore = useUserStore()
   if (!(await userStore.isAuthenticated)) {
-    throw new Error("User is not logged in");
+    throw new Error('User is not logged in')
   }
 
   const resp = await fetch(`${IDP_API_BASE_URL}/api-keys`, {
-    method: "GET",
+    method: 'GET',
     headers: {
-      "Accept": "application/json",
-      "Authorization": `Bearer ${userStore.token}`,
+      Accept: 'application/json',
+      Authorization: `Bearer ${userStore.token}`,
     },
-  });
+  })
 
   if (resp.status !== 200) {
-    throw new Error(`Failed to get api keys (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
+    throw new Error(`Failed to get api keys (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`)
   }
 
-  const apiKeys = await resp.json();
+  const apiKeys = await resp.json()
 
   // replace created_at and last_used_at with Date objects
   for (const apiKey of apiKeys) {
-    apiKey.created_at = new Date(apiKey.created_at);
+    apiKey.created_at = new Date(apiKey.created_at)
     if (apiKey.last_used_at) {
-      apiKey.last_used_at = new Date(apiKey.last_used_at);
+      apiKey.last_used_at = new Date(apiKey.last_used_at)
     }
   }
 
-  return apiKeys as ApiKey[];
+  return apiKeys as ApiKey[]
 }
 
-export async function createApiKey(description: string): Promise<string> {
-  const userStore = useUserStore();
+export async function createApiKey (description: string): Promise<string> {
+  const userStore = useUserStore()
   if (!(await userStore.isAuthenticated)) {
-    throw new Error("User is not logged in");
+    throw new Error('User is not logged in')
   }
 
   const resp = await fetch(`${IDP_API_BASE_URL}/api-keys`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-      "Authorization": `Bearer ${userStore.token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${userStore.token}`,
     },
     body: JSON.stringify({
-      description: description,
+      description,
     }),
-  });
+  })
 
   if (resp.status !== 200) {
-    throw new Error(`Failed to create api key (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
+    throw new Error(`Failed to create api key (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`)
   }
 
   return resp.text()
 }
 
-export async function deleteApiKey(keyId: string): Promise<void> {
-  const userStore = useUserStore();
+export async function deleteApiKey (keyId: string): Promise<void> {
+  const userStore = useUserStore()
   if (!(await userStore.isAuthenticated)) {
-    throw new Error("User is not logged in");
+    throw new Error('User is not logged in')
   }
 
   const resp = await fetch(`${IDP_API_BASE_URL}/api-keys/${keyId}`, {
-    method: "DELETE",
+    method: 'DELETE',
     headers: {
-      "Accept": "application/json",
-      "Authorization": `Bearer ${userStore.token}`,
+      Accept: 'application/json',
+      Authorization: `Bearer ${userStore.token}`,
     },
-  });
+  })
 
   if (resp.status !== 204) {
-    throw new Error(`Failed to delete api key (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
+    throw new Error(`Failed to delete api key (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`)
   }
 }

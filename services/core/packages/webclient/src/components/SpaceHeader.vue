@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import type {User} from "@/api/auth/types";
-import {getPublicUser} from "@/api/auth/users";
+  import type { User } from '@/api/auth/types'
+  import type { Space } from '@/api/spaces/types'
+  import { getPublicUser } from '@/api/auth/users'
 
-const props = defineProps<{
-  space?: Space;
-}>();
+  const props = defineProps<{
+    space?: Space
+  }>()
 
-const creator = ref<User>();
-watch(() => props.space, async (newSpace) => {
-  if (newSpace) {
-    creator.value = await getPublicUser(newSpace.creator)
-  }
-}, {immediate: true});
+  const creator = ref<User>()
+  watch(() => props.space, async newSpace => {
+    if (newSpace) {
+      creator.value = await getPublicUser(newSpace.creator)
+    }
+  }, { immediate: true })
 
 </script>
 
@@ -26,14 +26,14 @@ watch(() => props.space, async (newSpace) => {
       <div class="d-flex justify-space-between">
         <div class="d-flex flex-column justify-center">
           <v-img
-            :href="`/spaces/${space?.slug}`"
-            :src="space?.icon_url || '/logo.png'"
             alt="Space Icon"
             height="100"
+            :href="`/spaces/${space?.slug}`"
             max-height="100"
             max-width="100"
             min-height="100"
             min-width="100"
+            :src="space?.icon_url || '/logo.png'"
             width="100"
           />
         </div>
@@ -45,17 +45,19 @@ watch(() => props.space, async (newSpace) => {
           </div>
 
           <div class="d-flex mt-2 text-grey-lighten-1">
-            <p class="text-body-2 link--hover">Creator: <RouterLink :to="'/users/'+creator?.name">{{ creator?.name }}</RouterLink></p>
+            <p class="text-body-2 link--hover">Creator:
+              <RouterLink :to="'/users/'+creator?.name">{{ creator?.name }}</RouterLink>
+            </p>
+
             <p class="text-body-2 mx-4">-</p>
             <p class="text-body-2">Created {{ space?.created_at.toLocaleDateString() }}</p>
-            <slot name="metadata">
-            </slot>
+
+            <slot name="metadata" />
           </div>
         </div>
 
         <div class="d-flex flex-column justify-center">
-          <slot name="quick-actions">
-          </slot>
+          <slot name="quick-actions" />
         </div>
       </div>
     </v-card-text>

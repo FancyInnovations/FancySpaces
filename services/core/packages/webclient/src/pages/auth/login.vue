@@ -1,20 +1,20 @@
 <script lang="ts" setup>
 
-import {useNotificationStore} from "@/stores/notifications";
+  import { useNotificationStore } from '@/stores/notifications'
 
-const notificationStore = useNotificationStore();
+  const notificationStore = useNotificationStore()
 
-const apiKey = ref('');
+  const apiKey = ref('')
 
-function login() {
-  localStorage.setItem('fs_api_key', apiKey.value);
-  notificationStore.info('Logged in successfully!');
-}
+  function login () {
+    localStorage.setItem('fs_api_key', apiKey.value)
+    notificationStore.info('Logged in successfully!')
+  }
 
-function logout() {
-  localStorage.removeItem('fs_api_key');
-  notificationStore.info('Logged out successfully!');
-}
+  function logout () {
+    localStorage.removeItem('fs_api_key')
+    notificationStore.info('Logged out successfully!')
+  }
 </script>
 
 <template>

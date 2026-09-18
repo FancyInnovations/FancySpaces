@@ -1,31 +1,30 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import {useHead} from "@vueuse/head";
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getSpace } from '@/api/spaces/spaces'
 
+  useHead({
+    title: 'Explore Spaces - FancySpaces',
+    meta: [
+      {
+        name: 'description',
+        content: 'Discover and explore a variety of project spaces on FancySpaces, your hub for innovative creations.',
+      },
+    ],
+  })
 
-useHead({
-  title: 'Explore Spaces - FancySpaces',
-  meta: [
-    {
-      name: 'description',
-      content: 'Discover and explore a variety of project spaces on FancySpaces, your hub for innovative creations.'
-    }
-  ]
-});
+  const spaces = ref<Space[]>()
 
-const spaces = ref<Space[]>();
-
-onMounted(async () => {
-  spaces.value = [];
-  spaces.value.push(await getSpace("fn"));
-  spaces.value.push(await getSpace("fh"));
-  spaces.value.push(await getSpace("fd"));
-  spaces.value.push(await getSpace("fc"));
-  spaces.value.push(await getSpace("fa"));
-  spaces.value.push(await getSpace("fv"));
-});
+  onMounted(async () => {
+    spaces.value = []
+    spaces.value.push(await getSpace('fn'))
+    spaces.value.push(await getSpace('fh'))
+    spaces.value.push(await getSpace('fd'))
+    spaces.value.push(await getSpace('fc'))
+    spaces.value.push(await getSpace('fa'))
+    spaces.value.push(await getSpace('fv'))
+  })
 
 </script>
 

@@ -1,26 +1,26 @@
 <script lang="ts" setup>
 
-import type {Issue} from "@/api/issues/types";
-import type {Space} from "@/api/spaces/types";
-import IssueCard from "@/components/issues/IssueCard.vue";
-import Card from "@/components/common/Card.vue";
+  import type { Issue } from '@/api/issues/types'
+  import type { Space } from '@/api/spaces/types'
+  import Card from '@/components/common/Card.vue'
+  import IssueCard from '@/components/issues/IssueCard.vue'
 
-const plannedIssues = computed(() => {
-  return props.issues.filter(issue => issue.status === 'planned');
-});
+  const plannedIssues = computed(() => {
+    return props.issues.filter(issue => issue.status === 'planned')
+  })
 
-const inProgressIssues = computed(() => {
-  return props.issues.filter(issue => issue.status === 'in_progress');
-});
+  const inProgressIssues = computed(() => {
+    return props.issues.filter(issue => issue.status === 'in_progress')
+  })
 
-const doneIssues = computed(() => {
-  return props.issues.filter(issue => issue.status === 'done');
-});
+  const doneIssues = computed(() => {
+    return props.issues.filter(issue => issue.status === 'done')
+  })
 
-const props = defineProps<{
-  space: Space,
-  issues: Issue[],
-}>();
+  const props = defineProps<{
+    space: Space
+    issues: Issue[]
+  }>()
 
 </script>
 
@@ -39,6 +39,7 @@ const props = defineProps<{
               :issue="issue"
               :space="space"
             />
+
             <p v-else class="text-center my-4">No planned issues.</p>
           </v-card-text>
         </Card>
@@ -56,6 +57,7 @@ const props = defineProps<{
               :issue="issue"
               :space="space"
             />
+
             <p v-else class="text-center my-4">No issues in progress.</p>
           </v-card-text>
         </Card>
@@ -73,6 +75,7 @@ const props = defineProps<{
               :issue="issue"
               :space="space"
             />
+
             <p v-else class="text-center my-4">No done issues.</p>
           </v-card-text>
         </Card>

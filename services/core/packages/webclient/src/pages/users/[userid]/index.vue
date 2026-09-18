@@ -1,44 +1,44 @@
 <script lang="ts" setup>
-import {useHead} from "@vueuse/head";
-import Card from "@/components/common/Card.vue";
-import UserHeader from "@/components/users/UserHeader.vue";
-import {getDownloadCountForSpace, getSpacesOfCreator} from "@/api/spaces/spaces";
-import {type Space} from "@/api/spaces/types";
-import {useUserStore} from "@/stores/user";
-import type {User} from "@/api/auth/types";
-import {getPublicUser} from "@/api/auth/users";
+  import type { User } from '@/api/auth/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getPublicUser } from '@/api/auth/users'
+  import { getDownloadCountForSpace, getSpacesOfCreator } from '@/api/spaces/spaces'
+  import Card from '@/components/common/Card.vue'
+  import UserHeader from '@/components/users/UserHeader.vue'
+  import { useUserStore } from '@/stores/user'
 
-const route = useRoute();
-const userStore = useUserStore();
+  const route = useRoute()
+  const userStore = useUserStore()
 
-const user = ref<User>();
-const spaces = ref<Space[]>([]);
-const sortedSpaces = computed(() => {
-  return spaces.value.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
-});
+  const user = ref<User>()
+  const spaces = ref<Space[]>([])
+  const sortedSpaces = computed(() => {
+    return spaces.value.sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+  })
 
-const totalDownloads = ref(0);
+  const totalDownloads = ref(0)
 
-onMounted(async () => {
-  const userID = (route.params as any).userid as string; // username
-  user.value = await getPublicUser(userID);
+  onMounted(async () => {
+    const userID = (route.params as any).userid as string // username
+    user.value = await getPublicUser(userID)
 
-  spaces.value = await getSpacesOfCreator(user.value.id);
+    spaces.value = await getSpacesOfCreator(user.value.id)
 
-  for (let sp of spaces.value) {
-    totalDownloads.value += await getDownloadCountForSpace(sp.id);
-  }
+    for (const sp of spaces.value) {
+      totalDownloads.value += await getDownloadCountForSpace(sp.id)
+    }
 
-  useHead({
-    title: `${user.value.name} - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: `Check out ${user.value.name}'s profile on FancySpaces, showcasing their spaces.`
-      }
-    ]
-  });
-});
+    useHead({
+      title: `${user.value.name} - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: `Check out ${user.value.name}'s profile on FancySpaces, showcasing their spaces.`,
+        },
+      ],
+    })
+  })
 
 </script>
 
@@ -50,10 +50,10 @@ onMounted(async () => {
           <template #quick-actions>
             <v-btn
               v-if="user?.id === userStore.user?.id"
-              :to="`/spaces/new`"
               class="sidebar__mobile"
               color="primary"
               size="large"
+              :to="`/spaces/new`"
               variant="tonal"
             >
               New Space
@@ -63,18 +63,18 @@ onMounted(async () => {
 
         <hr
           class="mt-4 grey-border-color"
-        />
+        >
       </v-col>
     </v-row>
 
     <v-row>
       <v-col md="8">
-        <template v-for="space in sortedSpaces" :key="space.id" >
-            <SpaceCard
-              :space="space"
-              :with-badge="true"
-              class="mb-4"
-            />
+        <template v-for="space in sortedSpaces" :key="space.id">
+          <SpaceCard
+            class="mb-4"
+            :space="space"
+            :with-badge="true"
+          />
         </template>
       </v-col>
 
@@ -97,6 +97,7 @@ onMounted(async () => {
       </v-col>
     </v-row>
   </v-container>
+
   <v-container v-else width="60%">
     <v-row>
       <v-col>

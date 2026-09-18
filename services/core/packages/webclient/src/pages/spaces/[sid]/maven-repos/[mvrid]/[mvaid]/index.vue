@@ -36,6 +36,7 @@ const sortedVersions = computed(() => {
 });
 
 const expanded = ref(<{ [key: string]: boolean }>({}));
+
 function toggleExpand(key: any) {
   expanded.value[key] = !expanded.value[key]
 }
@@ -78,7 +79,7 @@ function deleteArtifact() {
     text: "Are you sure you want to delete this artifact? This action cannot be undone.",
     yesText: "Delete",
     onConfirm: async () => {
-      await deleteMavenArtifact(space.value!.id, repo.value!.name, artifact.value?.group + ":" +artifact.value?.id)
+      await deleteMavenArtifact(space.value!.id, repo.value!.name, artifact.value?.group + ":" + artifact.value?.id)
       notifications.info(`Artifact ${artifact.value?.group}:${artifact.value?.id} deleted successfully!`);
 
       router.push(`/spaces/${space.value!.slug}/maven-repos/${repo.value!.name}`);
@@ -94,20 +95,20 @@ function deleteVersion(version: string) {
     text: "Are you sure you want to delete this artifact version? This action cannot be undone.",
     yesText: "Delete",
     onConfirm: async () => {
-      await deleteMavenArtifactVersion(space.value!.id, repo.value!.name, artifact.value?.group + ":" +artifact.value?.id, version)
+      await deleteMavenArtifactVersion(space.value!.id, repo.value!.name, artifact.value?.group + ":" + artifact.value?.id, version)
       notifications.info(`Version ${version} deleted successfully!`);
 
-      artifact.value = await getMavenArtifacts(space.value!.id, repo.value!.name, artifact.value?.group + ":" +artifact.value?.id);
+      artifact.value = await getMavenArtifacts(space.value!.id, repo.value!.name, artifact.value?.group + ":" + artifact.value?.id);
     }
   };
 }
 
 function filesWithoutChecksums(ver: string) {
   return artifact.value?.versions
-    .find(v => v.version === ver)?.files
-    .filter(
-      f => !f.name.endsWith('.md5') && !f.name.endsWith('.sha1') && !f.name.endsWith('.sha256') && !f.name.endsWith('.sha512')
-    )
+      .find(v => v.version === ver)?.files
+      .filter(
+        f => !f.name.endsWith('.md5') && !f.name.endsWith('.sha1') && !f.name.endsWith('.sha256') && !f.name.endsWith('.sha512')
+      )
     || [];
 }
 
@@ -341,8 +342,8 @@ dependencies {
     <v-row v-if="isLoggedIn" class="mt-4">
       <v-col md="12">
         <v-btn
-        color="red"
-        @click="deleteArtifact()"
+          color="red"
+          @click="deleteArtifact()"
         >
           DELETE ARTIFACT
         </v-btn>

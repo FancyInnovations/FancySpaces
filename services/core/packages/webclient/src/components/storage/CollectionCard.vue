@@ -1,37 +1,37 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {mapEngineKeyToName, type SpaceDatabaseCollection} from "@/api/storage/types";
-import {kvCount, kvSize} from "@/api/storage/kv/kv";
-import Card from "@/components/common/Card.vue";
+  import type { Space } from '@/api/spaces/types'
+  import { kvCount, kvSize } from '@/api/storage/kv/kv'
+  import { mapEngineKeyToName, type SpaceDatabaseCollection } from '@/api/storage/types'
+  import Card from '@/components/common/Card.vue'
 
-const props = defineProps<{
-  space?: Space,
-  coll: SpaceDatabaseCollection
-  withoutActions?: boolean
-}>();
+  const props = defineProps<{
+    space?: Space
+    coll: SpaceDatabaseCollection
+    withoutActions?: boolean
+  }>()
 
-const count = ref<number>(-1);
-const size = ref<number>(-1);
+  const count = ref<number>(-1)
+  const size = ref<number>(-1)
 
-onMounted(async () => {
-  if (props.coll.engine === "kv") {
-    count.value = await kvCount(props.coll.database, props.coll.name);
-    size.value = await kvSize(props.coll.database, props.coll.name);
+  onMounted(async () => {
+    if (props.coll.engine === 'kv') {
+      count.value = await kvCount(props.coll.database, props.coll.name)
+      size.value = await kvSize(props.coll.database, props.coll.name)
+    }
+  })
+
+  function formatSize (sizeInBytes: number): string {
+    if (sizeInBytes < 1024) {
+      return `${sizeInBytes} B`
+    } else if (sizeInBytes < 1024 * 1024) {
+      return `${(sizeInBytes / 1024).toFixed(2)} KB`
+    } else if (sizeInBytes < 1024 * 1024 * 1024) {
+      return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`
+    } else {
+      return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
+    }
   }
-});
-
-function formatSize(sizeInBytes: number): string {
-  if (sizeInBytes < 1024) {
-    return `${sizeInBytes} B`;
-  } else if (sizeInBytes < 1024 * 1024) {
-    return `${(sizeInBytes / 1024).toFixed(2)} KB`;
-  } else if (sizeInBytes < 1024 * 1024 * 1024) {
-    return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
-  } else {
-    return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-  }
-}
 
 </script>
 
@@ -52,16 +52,16 @@ function formatSize(sizeInBytes: number): string {
 
     <v-card-actions v-if="!withoutActions">
       <v-btn
-        :to="`/spaces/${space?.slug}/storage/${coll.database}/${coll.name}`"
         color="primary"
+        :to="`/spaces/${space?.slug}/storage/${coll.database}/${coll.name}`"
         variant="text"
       >
         View Data
       </v-btn>
 
       <v-btn
-        :to="`/spaces/${space?.slug}/storage/${coll.database}/${coll.name}/settings`"
         color="primary"
+        :to="`/spaces/${space?.slug}/storage/${coll.database}/${coll.name}/settings`"
         variant="text"
       >
         Settings

@@ -1,37 +1,34 @@
 <script lang="ts" setup>
-import AppHeader from "@/components/AppHeader.vue";
-import {useConfirmationStore} from "@/stores/confirmation";
-import {useNotificationStore} from "@/stores/notifications";
-import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
-import {useUserStore} from "@/stores/user";
-import {refreshToken} from "@/api/auth/tokens";
+  import { refreshToken } from '@/api/auth/tokens'
+  import AppHeader from '@/components/AppHeader.vue'
+  import ConfirmationDialog from '@/components/common/ConfirmationDialog.vue'
+  import { useConfirmationStore } from '@/stores/confirmation'
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
-const confirmationStore = useConfirmationStore();
-const notifications = useNotificationStore();
-const userStore = useUserStore();
+  const confirmationStore = useConfirmationStore()
+  const notifications = useNotificationStore()
+  const userStore = useUserStore()
 
-userStore.loadTokenFromStorage();
-userStore.loadUserFromStorage();
+  userStore.loadTokenFromStorage()
+  userStore.loadUserFromStorage()
 
-// Refresh token if it's about to expire
-if (userStore.token) {
-  if (userStore.tokenTTL < 1000 * 60 * 60 * 24) {
+  // Refresh token if it's about to expire
+  if (userStore.token && userStore.tokenTTL < 1000 * 60 * 60 * 24) {
     refreshToken(userStore.token).then(value => {
-      userStore.setToken(value);
+      userStore.setToken(value)
     }).catch(() => {
-      userStore.clearUser();
-      userStore.clearToken();
+      userStore.clearUser()
+      userStore.clearToken()
       // TODO send error message
     })
   }
-}
 
-function confirm() {
-  confirmationStore.confirmation.onConfirm();
-  confirmationStore.confirmation.shown = false;
-}
+  function confirm () {
+    confirmationStore.confirmation.onConfirm()
+    confirmationStore.confirmation.shown = false
+  }
 </script>
-
 
 <template>
   <v-app>
@@ -46,17 +43,17 @@ function confirm() {
       :shown="confirmationStore.confirmation.shown"
       :text="confirmationStore.confirmation.text"
       :title="confirmationStore.confirmation.title"
-      :yesText="confirmationStore.confirmation.yesText"
-      @clickedClose="confirmationStore.confirmation.shown = false"
-      @clickedYes="confirm()"
+      :yes-text="confirmationStore.confirmation.yesText"
+      @clicked-close="confirmationStore.confirmation.shown = false"
+      @clicked-yes="confirm()"
     />
 
-    <AppHeader/>
+    <AppHeader />
 
     <router-view />
 
-    <AppFooter/>
+    <AppFooter />
 
-    <IssueDialog/>
+    <IssueDialog />
   </v-app>
 </template>

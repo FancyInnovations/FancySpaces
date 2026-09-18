@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 
-import type {BlogArticle} from "@/api/blogs/types";
+  import type { BlogArticle } from '@/api/blogs/types'
 
-const props = defineProps<{
-  articles: BlogArticle[];
-  spaceSlug?: string;
-}>();
+  const props = defineProps<{
+    articles: BlogArticle[]
+    spaceSlug?: string
+  }>()
 
-const sortedArticles = computed(() => {
-  return props.articles.sort((a, b) => b.published_at.getTime() - a.published_at.getTime());
-});
+  const sortedArticles = computed(() => {
+    return props.articles.sort((a, b) => b.published_at.getTime() - a.published_at.getTime())
+  })
 
 </script>
 
@@ -20,6 +20,7 @@ const sortedArticles = computed(() => {
   >
     No blog articles found.
   </p>
+
   <div v-else>
     <v-row
       v-for="article in sortedArticles"
@@ -28,13 +29,15 @@ const sortedArticles = computed(() => {
     >
       <v-col md="5">
         <Card
-          :to="article.space_id ? `/spaces/${spaceSlug ? spaceSlug : article.space_id}/blog/${article.id}` : `/users/${article.author}/blog/${article.id}`"
           class="hoverable"
+          :to="article.space_id ? `/spaces/${spaceSlug ? spaceSlug : article.space_id}/blog/${article.id}` : `/users/${article.author}/blog/${article.id}`"
         >
           <v-card-title class="mt-2">{{ article.title }}</v-card-title>
+
           <v-card-subtitle>
             Published: {{ article.published_at.toLocaleString() }}
           </v-card-subtitle>
+
           <v-card-text>{{ article.summary }}</v-card-text>
         </Card>
       </v-col>

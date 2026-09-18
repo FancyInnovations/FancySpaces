@@ -1,78 +1,78 @@
 <script lang="ts" setup>
 
-import {createSpace} from "@/api/spaces/spaces";
-import {useHead} from "@vueuse/head";
-import {useNotificationStore} from "@/stores/notifications";
-import {useUserStore} from "@/stores/user";
-import {mapCategoryToDisplayname} from "@/api/spaces/types";
+  import { useHead } from '@vueuse/head'
+  import { createSpace } from '@/api/spaces/spaces'
+  import { mapCategoryToDisplayname } from '@/api/spaces/types'
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const route = useRoute();
-const notificationStore = useNotificationStore();
-const userStore = useUserStore();
+  const router = useRouter()
+  const route = useRoute()
+  const notificationStore = useNotificationStore()
+  const userStore = useUserStore()
 
-const isLoggedIn = ref(false);
+  const isLoggedIn = ref(false)
 
-const name = ref('');
-const slug = ref('');
-const categories = ref([]);
+  const name = ref('')
+  const slug = ref('')
+  const categories = ref([])
 
-const possibleCategories = [
-  "minecraft_plugin",
-  "minecraft_server",
-  "minecraft_mod",
-  "hytale_plugin",
-  "web_app",
-  "mobile_app",
-  "other"
-];
+  const possibleCategories = [
+    'minecraft_plugin',
+    'minecraft_server',
+    'minecraft_mod',
+    'hytale_plugin',
+    'web_app',
+    'mobile_app',
+    'other',
+  ]
 
-const nameRule = (value: string) => {
-  if (!value) return 'Space name is required';
+  function nameRule (value: string) {
+    if (!value) return 'Space name is required'
 
-  if (value.length < 3) return 'Space name must be at least 3 characters long';
+    if (value.length < 3) return 'Space name must be at least 3 characters long'
 
-  if (value.length > 100) return 'Space name must not exceed 100 characters';
-  return true;
-};
+    if (value.length > 100) return 'Space name must not exceed 100 characters'
+    return true
+  }
 
-const slugRule = (value: string) => {
-  if (!value) return 'Space slug is required';
+  function slugRule (value: string) {
+    if (!value) return 'Space slug is required'
 
-  if (value.length < 3) return 'Space slug must be at least 3 characters long';
+    if (value.length < 3) return 'Space slug must be at least 3 characters long'
 
-  if (value.length > 20) return 'Space slug must not exceed 20 characters';
+    if (value.length > 20) return 'Space slug must not exceed 20 characters'
 
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) return 'Space slug can only contain lowercase letters, numbers and hyphens, and must start and end with a letter or number';
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) return 'Space slug can only contain lowercase letters, numbers and hyphens, and must start and end with a letter or number'
 
-  return true;
-};
+    return true
+  }
 
-const isEverythingValid = computed(() => {
-  return nameRule(name.value) === true && slugRule(slug.value) === true;
-});
+  const isEverythingValid = computed(() => {
+    return nameRule(name.value) === true && slugRule(slug.value) === true
+  })
 
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
 
-  useHead({
-    title: `FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: 'Create a new space on FancySpaces.'
-      }
-    ]
-  });
-});
+    useHead({
+      title: `FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: 'Create a new space on FancySpaces.',
+        },
+      ],
+    })
+  })
 
-async function createNewSpace() {
-  await createSpace(slug.value, name.value, "", "", categories.value, "");
+  async function createNewSpace () {
+    await createSpace(slug.value, name.value, '', '', categories.value, '')
 
-  notificationStore.info("Space created successfully!");
+    notificationStore.info('Space created successfully!')
 
-  await router.push(`/spaces/${slug}`);
-}
+    await router.push(`/spaces/${slug}`)
+  }
 
 </script>
 
@@ -88,10 +88,10 @@ async function createNewSpace() {
       <v-col md="4">
         <v-text-field
           v-model="name"
-          :rules="[nameRule]"
           color="primary"
           label="Space Name"
           required
+          :rules="[nameRule]"
         />
       </v-col>
     </v-row>
@@ -100,10 +100,10 @@ async function createNewSpace() {
       <v-col md="4">
         <v-text-field
           v-model="slug"
-          :rules="[slugRule]"
           color="primary"
           label="Space Slug"
           required
+          :rules="[slugRule]"
         />
       </v-col>
     </v-row>
@@ -120,8 +120,8 @@ async function createNewSpace() {
           <v-chip
             v-for="category in possibleCategories"
             :key="category"
-            :value="category"
             color="primary"
+            :value="category"
           >
             {{ mapCategoryToDisplayname(category) }}
           </v-chip>
@@ -138,8 +138,8 @@ async function createNewSpace() {
     <v-row justify="center">
       <v-col md="4">
         <v-btn
-          :disabled="!isEverythingValid"
           color="primary"
+          :disabled="!isEverythingValid"
           size="large"
           @click="createNewSpace()"
         >

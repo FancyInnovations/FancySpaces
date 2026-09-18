@@ -1,52 +1,52 @@
 <script lang="ts" setup>
 
-import {mapCategoryToDisplayname, mapLinkToDisplayname, type Space} from "@/api/spaces/types";
-import {getDownloadCountForSpace, getSpace} from "@/api/spaces/spaces";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import type {SpaceVersion} from "@/api/versions/types";
-import {getLatestVersion} from "@/api/versions/versions";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {useHead} from "@vueuse/head";
-import Card from "@/components/common/Card.vue";
-import {getPublicUser} from "@/api/auth/users";
-import type {User} from "@/api/auth/types";
+  import type { User } from '@/api/auth/types'
+  import type { SpaceVersion } from '@/api/versions/types'
+  import { useHead } from '@vueuse/head'
+  import { getPublicUser } from '@/api/auth/users'
+  import { getDownloadCountForSpace, getSpace } from '@/api/spaces/spaces'
+  import { mapCategoryToDisplayname, mapLinkToDisplayname, type Space } from '@/api/spaces/types'
+  import { getLatestVersion } from '@/api/versions/versions'
+  import Card from '@/components/common/Card.vue'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
 
-const route = useRoute();
+  const route = useRoute()
 
-const space = ref<Space>();
-const creator = ref<User>();
-const members = ref<User[]>([]);
-const latestVersion = ref<SpaceVersion>();
-const downloadCount = ref<number>(0);
+  const space = ref<Space>()
+  const creator = ref<User>()
+  const members = ref<User[]>([])
+  const latestVersion = ref<SpaceVersion>()
+  const downloadCount = ref<number>(0)
 
-onMounted(async () => {
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+  onMounted(async () => {
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  try {
-    latestVersion.value = await getLatestVersion(space.value.id);
-  } catch (e) {
-    console.error("Error fetching latest version:", e);
-  }
+    try {
+      latestVersion.value = await getLatestVersion(space.value.id)
+    } catch (error) {
+      console.error('Error fetching latest version:', error)
+    }
 
-  downloadCount.value = await getDownloadCountForSpace(space.value.id);
+    downloadCount.value = await getDownloadCountForSpace(space.value.id)
 
-  creator.value = await getPublicUser(space.value.creator);
-   for (const member of space.value.members) {
-     const user = await getPublicUser(member.user_id);
-     members.value.push(user);
-   }
+    creator.value = await getPublicUser(space.value.creator)
+    for (const member of space.value.members) {
+      const user = await getPublicUser(member.user_id)
+      members.value.push(user)
+    }
 
-  useHead({
-    title: `${space.value.title} - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
-      }
-    ]
-  });
-});
+    useHead({
+      title: `${space.value.title} - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`,
+        },
+      ],
+    })
+  })
 
 </script>
 
@@ -60,32 +60,32 @@ onMounted(async () => {
       </v-col>
 
       <v-col>
-        <SpaceHeader :space="space"/>
+        <SpaceHeader :space="space" />
 
         <hr
           class="mt-4 grey-border-color"
-        />
+        >
       </v-col>
     </v-row>
 
     <v-row class="mobile-space-sidebar-buttons">
       <v-col>
         <v-btn
-          :to="`/spaces/${space?.id}`"
           class="mr-4"
           color="secondary"
           prepend-icon="mdi-information-slab-circle-outline"
           size="large"
+          :to="`/spaces/${space?.id}`"
           variant="tonal"
         >
           Information
         </v-btn>
 
         <v-btn
-          :to="`/spaces/${space?.id}/versions`"
           color="secondary"
           prepend-icon="mdi-file-download-outline"
           size="large"
+          :to="`/spaces/${space?.id}/versions`"
           variant="tonal"
         >
           Versions
@@ -115,7 +115,10 @@ onMounted(async () => {
             <p class="text-body-1"><strong>ID:</strong> {{ space?.id }}</p>
             <p class="text-body-1"><strong>Slug:</strong> {{ space?.slug }}</p>
             <p class="text-body-1"><strong>Status:</strong> {{ space?.status }}</p>
-            <p class="text-body-1"><strong>Updated at:</strong> {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
+
+            <p class="text-body-1"><strong>Updated at:</strong>
+              {{ latestVersion?.published_at.toLocaleDateString() || space?.created_at.toLocaleDateString() }}</p>
+
             <p class="text-body-1"><strong>Created at:</strong> {{ space?.created_at.toLocaleDateString() }}</p>
           </v-card-text>
         </Card>
@@ -157,6 +160,7 @@ onMounted(async () => {
                     class="me-2"
                     icon="mdi-link-variant"
                   />
+
                   <p class="text-body-1 link--hover">{{ mapLinkToDisplayname(link.name) }}</p>
                 </div>
               </a>
@@ -177,6 +181,7 @@ onMounted(async () => {
                   class="me-2"
                   icon="mdi-account-star-outline"
                 />
+
                 <p class="text-body-1 link--hover">{{ creator?.name }} (Creator)</p>
               </div>
             </RouterLink>
@@ -188,6 +193,7 @@ onMounted(async () => {
                     class="me-2"
                     icon="mdi-account-outline"
                   />
+
                   <p class="text-body-1 link--hover">{{ member.name }}</p>
                 </div>
               </RouterLink>
@@ -197,6 +203,7 @@ onMounted(async () => {
       </v-col>
     </v-row>
   </v-container>
+
   <v-container v-else width="60%">
     <v-row>
       <v-col>

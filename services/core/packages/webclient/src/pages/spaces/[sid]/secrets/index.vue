@@ -1,81 +1,81 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {useHead} from "@vueuse/head";
-import type {SpaceSecret} from "@/api/secrets/types";
-import {deleteSecret, getAllSecrets, getSecretDecrypted} from "@/api/secrets/secrets";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useConfirmationStore} from "@/stores/confirmation";
-import {useNotificationStore} from "@/stores/notifications";
-import {useUserStore} from "@/stores/user";
-import Card from "@/components/common/Card.vue";
+  import type { SpaceSecret } from '@/api/secrets/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { deleteSecret, getAllSecrets, getSecretDecrypted } from '@/api/secrets/secrets'
+  import { getSpace } from '@/api/spaces/spaces'
+  import Card from '@/components/common/Card.vue'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useConfirmationStore } from '@/stores/confirmation'
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const route = useRoute();
-const confirmationStore = useConfirmationStore();
-const notificationStore = useNotificationStore();
-const userStore = useUserStore();
+  const router = useRouter()
+  const route = useRoute()
+  const confirmationStore = useConfirmationStore()
+  const notificationStore = useNotificationStore()
+  const userStore = useUserStore()
 
-const space = ref<Space>();
-const secrets = ref<SpaceSecret[]>();
+  const space = ref<Space>()
+  const secrets = ref<SpaceSecret[]>()
 
-const isLoggedIn = ref(false);
+  const isLoggedIn = ref(false)
 
-const tableHeaders = [
-  { title: 'Key', key: 'key', sortable: true },
-  { title: 'Description', key: 'description', sortable: false },
-  { title: 'Created at', key: 'created_at', sortable: false, value: (s: SpaceSecret) => s.created_at.toLocaleString() },
-  { title: 'Updated at', key: 'updated_at', sortable: false, value: (s: SpaceSecret) => s.updated_at.toLocaleString() },
-  { title: '', key: 'actions', sortable: false, align: 'end' as any },
-]
+  const tableHeaders = [
+    { title: 'Key', key: 'key', sortable: true },
+    { title: 'Description', key: 'description', sortable: false },
+    { title: 'Created at', key: 'created_at', sortable: false, value: (s: SpaceSecret) => s.created_at.toLocaleString() },
+    { title: 'Updated at', key: 'updated_at', sortable: false, value: (s: SpaceSecret) => s.updated_at.toLocaleString() },
+    { title: '', key: 'actions', sortable: false, align: 'end' as any },
+  ]
 
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
 
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!isLoggedIn || !space.value.secrets_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
+    if (!isLoggedIn || !space.value.secrets_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
+
+    secrets.value = await getAllSecrets(spaceID)
+
+    useHead({
+      title: `${space.value.title} secrets - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`,
+        },
+      ],
+    })
+  })
+
+  async function copySecretToClipboard (secret: SpaceSecret) {
+    const decryptedValue = await getSecretDecrypted(secret.space_id, secret.key)
+
+    navigator.clipboard.writeText(decryptedValue)
+    notificationStore.info('Secret value copied to clipboard')
   }
 
-  secrets.value = await getAllSecrets(spaceID);
-
-  useHead({
-    title: `${space.value.title} secrets - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
-      }
-    ]
-  });
-});
-
-async function copySecretToClipboard(secret: SpaceSecret) {
-  const decryptedValue = await getSecretDecrypted(secret.space_id, secret.key);
-
-  navigator.clipboard.writeText(decryptedValue);
-  notificationStore.info("Secret value copied to clipboard");
-}
-
-async function deleteSecretReq(secret: SpaceSecret) {
-  confirmationStore.confirmation = {
-    shown: true,
-    persistent: true,
-    title: "Delete Secret",
-    text: `Are you sure you want to delete the secret "${secret.key}"? This action cannot be undone.`,
-    yesText: "Delete",
-    onConfirm: async () => {
-      await deleteSecret(secret.space_id, secret.key);
-      secrets.value = secrets.value?.filter(s => s.key !== secret.key);
-      notificationStore.info("Secret deleted successfully");
+  async function deleteSecretReq (secret: SpaceSecret) {
+    confirmationStore.confirmation = {
+      shown: true,
+      persistent: true,
+      title: 'Delete Secret',
+      text: `Are you sure you want to delete the secret "${secret.key}"? This action cannot be undone.`,
+      yesText: 'Delete',
+      onConfirm: async () => {
+        await deleteSecret(secret.space_id, secret.key)
+        secrets.value = secrets.value?.filter(s => s.key !== secret.key)
+        notificationStore.info('Secret deleted successfully')
+      },
     }
-  };
-}
+  }
 
 </script>
 
@@ -97,10 +97,10 @@ async function deleteSecretReq(secret: SpaceSecret) {
 
           <template #quick-actions>
             <v-btn
-              :to="`/spaces/${space?.slug}/secrets/new`"
               class="sidebar__mobile"
               color="primary"
               size="large"
+              :to="`/spaces/${space?.slug}/secrets/new`"
               variant="tonal"
             >
               New Secret
@@ -110,7 +110,7 @@ async function deleteSecretReq(secret: SpaceSecret) {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
@@ -119,11 +119,11 @@ async function deleteSecretReq(secret: SpaceSecret) {
         <Card>
           <v-card-text>
             <v-data-table
+              class="bg-transparent"
               :headers="tableHeaders"
               :items="secrets"
-              class="bg-transparent"
             >
-              <template v-slot:item.actions="{ item }">
+              <template #item.actions="{ item }">
                 <div class="actions__width">
                   <v-btn
                     class="mr-4"
@@ -133,9 +133,9 @@ async function deleteSecretReq(secret: SpaceSecret) {
                   />
 
                   <v-btn
-                    :to="`/spaces/${space?.slug}/secrets/${item.key}`"
                     class="mr-4"
                     icon="mdi-pencil"
+                    :to="`/spaces/${space?.slug}/secrets/${item.key}`"
                     variant="text"
                   />
 

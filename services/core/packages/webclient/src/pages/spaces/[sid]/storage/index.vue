@@ -1,185 +1,185 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {useHead} from "@vueuse/head";
-import {type SpaceDatabaseCollection} from "@/api/storage/types";
-import CollectionCard from "@/components/storage/CollectionCard.vue";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import {useUserStore} from "@/stores/user";
+  import type { Space } from '@/api/spaces/types'
+  import type { SpaceDatabaseCollection } from '@/api/storage/types'
+  import { useHead } from '@vueuse/head'
+  import { getSpace } from '@/api/spaces/spaces'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import CollectionCard from '@/components/storage/CollectionCard.vue'
+  import { useUserStore } from '@/stores/user'
 
-const router = useRouter();
-const route = useRoute();
-const userStore = useUserStore();
+  const router = useRouter()
+  const route = useRoute()
+  const userStore = useUserStore()
 
-const isLoggedIn = ref(false);
+  const isLoggedIn = ref(false)
 
-const space = ref<Space|undefined>();
-const collections = ref<SpaceDatabaseCollection[]>();
+  const space = ref<Space | undefined>()
+  const collections = ref<SpaceDatabaseCollection[]>()
 
-const collectionsByEngine = computed(() => {
-  const map: Record<string, SpaceDatabaseCollection[]> = {};
-  collections.value?.forEach(coll => {
-    if (!map[coll.engine]) {
-      map[coll.engine] = [];
-    }
-    map[coll.engine]!.push(coll);
-  });
-
-  return map;
-});
-
-onMounted(async () => {
-  isLoggedIn.value = await userStore.isAuthenticated;
-
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
-
-  if (!space.value.maven_repository_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
-  }
-
-  collections.value = [
-    {
-      database: "fancyanalytics",
-      name: "users",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "document"
-    },
-    {
-      database: "fancyanalytics",
-      name: "auth-tokens",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "document"
-    },
-    {
-      database: "fancyanalytics",
-      name: "auth-audits",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "document"
-    },
-    {
-      database: "fancyanalytics",
-      name: "projects",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "document"
-    },
-    {
-      database: "fancyanalytics",
-      name: "dashboards",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "document"
-    },
-    {
-      database: "fancyanalytics",
-      name: "metrics",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "document"
-    },
-    {
-      database: "fancyanalytics",
-      name: "templates",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "document"
-    },
-  ];
-
-  collections.value.push(
-    {
-      database: "system",
-      name: "kv_test",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "kv"
-    },
-    {
-      database: "fancyanalytics",
-      name: "metadata-cache",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "kv"
-    },
-    {
-      database: "fancyanalytics",
-      name: "auth-cache",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "kv"
-    },
-    {
-      database: "fancyanalytics",
-      name: "metric-records-cache",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "kv"
-    },
-    {
-      database: "fancyanalytics",
-      name: "logs-cache",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "kv"
-    },
-    {
-      database: "fancyanalytics",
-        name: "events-cache",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "kv"
-    },
-  );
-
-  collections.value.push(
-    {
-      database: "fancyanalytics",
-      name: "metric-records",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "analytical"
-    },
-    {
-      database: "fancyanalytics",
-      name: "event-records",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "analytical"
-    },
-    {
-      database: "fancyanalytics",
-      name: "log-records",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "analytical"
-    },
-  );
-
-  collections.value.push(
-    {
-      database: "fancyanalytics",
-      name: "ingest-queue",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "broker"
-    },
-    {
-      database: "fancyanalytics",
-      name: "internal-event-bus",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "broker"
-    },
-  );
-
-  collections.value.push(
-    {
-      database: "fancyanalytics",
-      name: "backups",
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      engine: "object"
-    },
-  );
-
-  useHead({
-    title: `${space.value.title} storage - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
+  const collectionsByEngine = computed(() => {
+    const map: Record<string, SpaceDatabaseCollection[]> = {}
+    if (collections.value) for (const coll of collections.value) {
+      if (!map[coll.engine]) {
+        map[coll.engine] = []
       }
+      map[coll.engine]!.push(coll)
+    }
+
+    return map
+  })
+
+  onMounted(async () => {
+    isLoggedIn.value = await userStore.isAuthenticated
+
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
+
+    if (!space.value.maven_repository_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
+
+    collections.value = [
+      {
+        database: 'fancyanalytics',
+        name: 'users',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'document',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'auth-tokens',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'document',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'auth-audits',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'document',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'projects',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'document',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'dashboards',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'document',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'metrics',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'document',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'templates',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'document',
+      },
     ]
-  });
-});
+
+    collections.value.push(
+      {
+        database: 'system',
+        name: 'kv_test',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'kv',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'metadata-cache',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'kv',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'auth-cache',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'kv',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'metric-records-cache',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'kv',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'logs-cache',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'kv',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'events-cache',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'kv',
+      },
+    )
+
+    collections.value.push(
+      {
+        database: 'fancyanalytics',
+        name: 'metric-records',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'analytical',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'event-records',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'analytical',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'log-records',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'analytical',
+      },
+    )
+
+    collections.value.push(
+      {
+        database: 'fancyanalytics',
+        name: 'ingest-queue',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'broker',
+      },
+      {
+        database: 'fancyanalytics',
+        name: 'internal-event-bus',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'broker',
+      },
+    )
+
+    collections.value.push(
+      {
+        database: 'fancyanalytics',
+        name: 'backups',
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        engine: 'object',
+      },
+    )
+
+    useHead({
+      title: `${space.value.title} storage - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`,
+        },
+      ],
+    })
+  })
 </script>
 
 <template>
@@ -196,10 +196,10 @@ onMounted(async () => {
           <template #quick-actions>
             <v-btn
               v-if="isLoggedIn"
-              :to="`/spaces/${space?.slug}/storage/new`"
               color="primary"
               disabled
               size="large"
+              :to="`/spaces/${space?.slug}/storage/new`"
               variant="tonal"
             >
               New collection
@@ -209,7 +209,7 @@ onMounted(async () => {
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 

@@ -1,154 +1,178 @@
-import type {SpaceVersion} from "@/api/versions/types";
-import {useUserStore} from "@/stores/user";
+import type { SpaceVersion } from '@/api/versions/types'
+import { useUserStore } from '@/stores/user'
 
-export async function getVersion(spaceId: string, versionId: string): Promise<SpaceVersion> {
-  const userStore = useUserStore();
+export async function getVersion (spaceId: string, versionId: string): Promise<SpaceVersion> {
+  const userStore = useUserStore()
 
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/versions/${versionId}`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Accept": "application/json",
-        "Authorization": `Bearer ${userStore.token}`,
-      }
+        Accept: 'application/json',
+        Authorization: `Bearer ${userStore.token}`,
+      },
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error("Failed to fetch version: " + await response.text());
+    throw new Error('Failed to fetch version: ' + await response.text())
   }
 
-  const ver = await response.json();
-  ver.published_at = new Date(ver.published_at);
+  const ver = await response.json()
+  ver.published_at = new Date(ver.published_at)
 
-  return ver as SpaceVersion;
+  return ver as SpaceVersion
 }
 
-export async function getLatestVersion(spaceId: string): Promise<SpaceVersion> {
-  return getVersion(spaceId, "latest");
+export async function getLatestVersion (spaceId: string): Promise<SpaceVersion> {
+  return getVersion(spaceId, 'latest')
 }
 
-export async function getAllVersions(spaceId: string): Promise<SpaceVersion[]> {
-  const userStore = useUserStore();
+export async function getAllVersions (spaceId: string): Promise<SpaceVersion[]> {
+  const userStore = useUserStore()
 
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/versions`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Accept": "application/json",
-        "Authorization": `Bearer ${userStore.token}`,
-      }
+        Accept: 'application/json',
+        Authorization: `Bearer ${userStore.token}`,
+      },
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error("Failed to fetch latest version: " + await response.text());
+    throw new Error('Failed to fetch latest version: ' + await response.text())
   }
 
-  const versions = await response.json();
+  const versions = await response.json()
   versions.forEach((ver: SpaceVersion) => {
-    ver.published_at = new Date(ver.published_at);
-  });
+    ver.published_at = new Date(ver.published_at)
+  })
 
-  return versions as SpaceVersion[];
+  return versions as SpaceVersion[]
 }
 
-export async function getDownloadCountForVersion(spaceId: string, versionId: string): Promise<number> {
-  const userStore = useUserStore();
+export async function getDownloadCountForVersion (spaceId: string, versionId: string): Promise<number> {
+  const userStore = useUserStore()
 
   const response = await fetch(
     `/api/v1/spaces/${spaceId}/versions/${versionId}/downloads`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Authorization": `Bearer ${userStore.token}`,
-      }
+        Authorization: `Bearer ${userStore.token}`,
+      },
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error("Failed to fetch download count for version: " + await response.text());
+    throw new Error('Failed to fetch download count for version: ' + await response.text())
   }
 
-  return (await response.json()).downloads as number;
+  return (await response.json()).downloads as number
 }
 
-export async function deleteVersion(spaceID: string, versionId: string): Promise<void> {
-  const userStore = useUserStore();
+export async function deleteVersion (spaceID: string, versionId: string): Promise<void> {
+  const userStore = useUserStore()
   if (!(await userStore.isAuthenticated)) {
-    throw new Error("User is not logged in");
+    throw new Error('User is not logged in')
   }
 
   const response = await fetch(
     `/api/v1/spaces/${spaceID}/versions/${versionId}`,
     {
-      method: "DELETE",
+      method: 'DELETE',
       headers: {
-        "Authorization": `Bearer ${userStore.token}`,
-      }
+        Authorization: `Bearer ${userStore.token}`,
+      },
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error("Failed to delete version: " + await response.text());
+    throw new Error('Failed to delete version: ' + await response.text())
   }
 }
 
 export interface VersionMutation {
-  name: string;
-  platform: string;
-  channel: string;
-  changelog: string;
-  supported_platform_versions: string[];
+  name: string
+  platform: string
+  channel: string
+  changelog: string
+  supported_platform_versions: string[]
 }
 
-export async function createVersion(spaceId: string, data: VersionMutation): Promise<SpaceVersion> {
-  const userStore = useUserStore();
-  if (!(await userStore.isAuthenticated)) throw new Error("User is not logged in");
+export async function createVersion (spaceId: string, data: VersionMutation): Promise<SpaceVersion> {
+  const userStore = useUserStore()
+  if (!(await userStore.isAuthenticated)) {
+    throw new Error('User is not logged in')
+  }
   const response = await fetch(`/api/v1/spaces/${spaceId}/versions`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${userStore.token}` },
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${userStore.token}`,
+    },
     body: JSON.stringify(data),
-  });
-  if (!response.ok) throw new Error("Failed to create version: " + await response.text());
-  const version = await response.json();
-  version.published_at = new Date(version.published_at);
-  return version as SpaceVersion;
+  })
+  if (!response.ok) {
+    throw new Error('Failed to create version: ' + await response.text())
+  }
+  const version = await response.json()
+  version.published_at = new Date(version.published_at)
+  return version as SpaceVersion
 }
 
-export async function updateVersion(spaceId: string, versionId: string, data: VersionMutation): Promise<SpaceVersion> {
-  const userStore = useUserStore();
-  if (!(await userStore.isAuthenticated)) throw new Error("User is not logged in");
+export async function updateVersion (spaceId: string, versionId: string, data: VersionMutation): Promise<SpaceVersion> {
+  const userStore = useUserStore()
+  if (!(await userStore.isAuthenticated)) {
+    throw new Error('User is not logged in')
+  }
   const response = await fetch(`/api/v1/spaces/${spaceId}/versions/${encodeURIComponent(versionId)}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": `Bearer ${userStore.token}` },
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${userStore.token}`,
+    },
     body: JSON.stringify(data),
-  });
-  if (!response.ok) throw new Error("Failed to update version: " + await response.text());
-  const version = await response.json();
-  version.published_at = new Date(version.published_at);
-  return version as SpaceVersion;
+  })
+  if (!response.ok) {
+    throw new Error('Failed to update version: ' + await response.text())
+  }
+  const version = await response.json()
+  version.published_at = new Date(version.published_at)
+  return version as SpaceVersion
 }
 
-export async function uploadVersionFile(spaceId: string, versionId: string, file: File): Promise<void> {
-  const userStore = useUserStore();
-  if (!(await userStore.isAuthenticated)) throw new Error("User is not logged in");
+export async function uploadVersionFile (spaceId: string, versionId: string, file: File): Promise<void> {
+  const userStore = useUserStore()
+  if (!(await userStore.isAuthenticated)) {
+    throw new Error('User is not logged in')
+  }
   const response = await fetch(`/api/v1/spaces/${spaceId}/versions/${encodeURIComponent(versionId)}/files/${encodeURIComponent(file.name)}`, {
-    method: "POST",
-    headers: { "Authorization": `Bearer ${userStore.token}` },
+    method: 'POST',
+    headers: { Authorization: `Bearer ${userStore.token}` },
     body: file,
-  });
-  if (!response.ok) throw new Error("Failed to upload file: " + await response.text());
+  })
+  if (!response.ok) {
+    throw new Error('Failed to upload file: ' + await response.text())
+  }
 }
 
-export async function deleteVersionFile(spaceId: string, versionId: string, fileName: string): Promise<void> {
-  const userStore = useUserStore();
-  if (!(await userStore.isAuthenticated)) throw new Error("User is not logged in");
+export async function deleteVersionFile (spaceId: string, versionId: string, fileName: string): Promise<void> {
+  const userStore = useUserStore()
+  if (!(await userStore.isAuthenticated)) {
+    throw new Error('User is not logged in')
+  }
   const response = await fetch(`/api/v1/spaces/${spaceId}/versions/${encodeURIComponent(versionId)}/files/${encodeURIComponent(fileName)}`, {
-    method: "DELETE",
-    headers: { "Authorization": `Bearer ${userStore.token}` },
-  });
-  if (!response.ok) throw new Error("Failed to delete file: " + await response.text());
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${userStore.token}` },
+  })
+  if (!response.ok) {
+    throw new Error('Failed to delete file: ' + await response.text())
+  }
 }

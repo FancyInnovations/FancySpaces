@@ -1,130 +1,130 @@
-import {IDP_API_BASE_URL, type User} from "@/api/auth/types";
-import {useUserStore} from "@/stores/user";
+import { IDP_API_BASE_URL, type User } from '@/api/auth/types'
+import { useUserStore } from '@/stores/user'
 
-export async function getPublicUser(username: string): Promise<User> {
-    const resp = await fetch(`${IDP_API_BASE_URL}/public-users/${username}`, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-        },
-    });
+export async function getPublicUser (username: string): Promise<User> {
+  const resp = await fetch(`${IDP_API_BASE_URL}/public-users/${username}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  })
 
-    if (resp.status !== 200) {
-        throw new Error(`Failed to get user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
-    }
+  if (resp.status !== 200) {
+    throw new Error(`Failed to get user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`)
+  }
 
-    const user = await resp.json();
-    user.created_at = new Date(user.created_at);
+  const user = await resp.json()
+  user.created_at = new Date(user.created_at)
 
-    return user as User;
+  return user as User
 }
 
-export async function registerUser(username: string, email: string, password: string): Promise<void> {
-    const resp = await fetch(`${IDP_API_BASE_URL}/users/register`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify({
-            provider: "basic",
-            name: username,
-            email: email,
-            password: password,
-        })
-    });
+export async function registerUser (username: string, email: string, password: string): Promise<void> {
+  const resp = await fetch(`${IDP_API_BASE_URL}/users/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      provider: 'basic',
+      name: username,
+      email,
+      password,
+    }),
+  })
 
-    if (resp.status !== 201) {
-        throw new Error(`Failed to register user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
-    }
+  if (resp.status !== 201) {
+    throw new Error(`Failed to register user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`)
+  }
 }
 
-export async function validateUser(email: string, password: string): Promise<User> {
-    const resp = await fetch(`${IDP_API_BASE_URL}/users/validate`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-        body: JSON.stringify({
-            user: email,
-            password: password,
-        })
-    });
+export async function validateUser (email: string, password: string): Promise<User> {
+  const resp = await fetch(`${IDP_API_BASE_URL}/users/validate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      user: email,
+      password,
+    }),
+  })
 
-    if (resp.status !== 200) {
-        throw new Error(`Failed to validate user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
-    }
+  if (resp.status !== 200) {
+    throw new Error(`Failed to validate user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`)
+  }
 
-    const user = await resp.json();
-    user.created_at = new Date(user.created_at);
+  const user = await resp.json()
+  user.created_at = new Date(user.created_at)
 
-    return user as User;
+  return user as User
 }
 
-export async function updateUser(userid: string, name: string, email: string, password: string): Promise<void> {
-    const userStore = useUserStore();
-    if (!(await userStore.isAuthenticated)) {
-        throw new Error("User is not logged in");
-    }
+export async function updateUser (userid: string, name: string, email: string, password: string): Promise<void> {
+  const userStore = useUserStore()
+  if (!(await userStore.isAuthenticated)) {
+    throw new Error('User is not logged in')
+  }
 
-    const resp = await fetch(`${IDP_API_BASE_URL}/users/${userid}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": `Bearer ${userStore.token}`,
-        },
-        body: JSON.stringify({
-            name: name,
-            email: email,
-            password: password,
-        })
-    });
+  const resp = await fetch(`${IDP_API_BASE_URL}/users/${userid}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${userStore.token}`,
+    },
+    body: JSON.stringify({
+      name,
+      email,
+      password,
+    }),
+  })
 
-    if (resp.status !== 200) {
-        throw new Error(`Failed to update user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
-    }
+  if (resp.status !== 200) {
+    throw new Error(`Failed to update user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`)
+  }
 }
 
-export async function verifyUser(code: string): Promise<void> {
-    const userStore = useUserStore();
-    if (!(await userStore.isAuthenticated)) {
-        throw new Error("User is not logged in");
-    }
+export async function verifyUser (code: string): Promise<void> {
+  const userStore = useUserStore()
+  if (!(await userStore.isAuthenticated)) {
+    throw new Error('User is not logged in')
+  }
 
-    const resp = await fetch(`${IDP_API_BASE_URL}/users/verify/check`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": `Bearer ${userStore.token}`,
-        },
-        body: code
-    });
+  const resp = await fetch(`${IDP_API_BASE_URL}/users/verify/check`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${userStore.token}`,
+    },
+    body: code,
+  })
 
-    if (resp.status !== 200) {
-        throw new Error(`Failed to verify user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
-    }
+  if (resp.status !== 200) {
+    throw new Error(`Failed to verify user (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`)
+  }
 }
 
-export async function resendVerificationCode(): Promise<void> {
-    const userStore = useUserStore();
-    if (!(await userStore.isAuthenticated)) {
-        throw new Error("User is not logged in");
-    }
+export async function resendVerificationCode (): Promise<void> {
+  const userStore = useUserStore()
+  if (!(await userStore.isAuthenticated)) {
+    throw new Error('User is not logged in')
+  }
 
-    const resp = await fetch(`${IDP_API_BASE_URL}/users/verify/resend`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": `Bearer ${userStore.token}`,
-        },
-        body: ""
-    });
+  const resp = await fetch(`${IDP_API_BASE_URL}/users/verify/resend`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${userStore.token}`,
+    },
+    body: '',
+  })
 
-    if (resp.status !== 200) {
-        throw new Error(`Failed to resend verification code (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`);
-    }
+  if (resp.status !== 200) {
+    throw new Error(`Failed to resend verification code (code ${resp.status} "${resp.statusText}"): ${await resp.text()}`)
+  }
 }

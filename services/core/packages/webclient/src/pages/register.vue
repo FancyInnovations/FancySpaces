@@ -1,263 +1,263 @@
 <script lang="ts" setup>
 
-import {onMounted} from "vue";
-import {useUserStore} from "@/stores/user";
-import {registerUser, validateUser} from "@/api/auth/users";
-import {createToken, validateToken} from "@/api/auth/tokens";
-import {useNotificationStore} from "@/stores/notifications";
-import router from "@/router";
-import {useHead} from "@vueuse/head";
+  import { useHead } from '@vueuse/head'
+  import { onMounted } from 'vue'
+  import { createToken, validateToken } from '@/api/auth/tokens'
+  import { registerUser, validateUser } from '@/api/auth/users'
+  import router from '@/router'
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
-const userStore = useUserStore();
-const notifications = useNotificationStore();
+  const userStore = useUserStore()
+  const notifications = useNotificationStore()
 
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const showPassword = ref(false);
-const repeatedPassword = ref('');
-const showRepeatedPassword = ref(false);
+  const username = ref('')
+  const email = ref('')
+  const password = ref('')
+  const showPassword = ref(false)
+  const repeatedPassword = ref('')
+  const showRepeatedPassword = ref(false)
 
-const usernameRule = (value: string) => {
-    if (!value) return 'Username is required';
+  function usernameRule (value: string) {
+    if (!value) return 'Username is required'
 
-    if (value.length < 5) return 'Username must be at least 5 characters long';
+    if (value.length < 5) return 'Username must be at least 5 characters long'
 
-    if (value.length > 25) return 'Username must not exceed 25 characters';
-    return true;
-};
+    if (value.length > 25) return 'Username must not exceed 25 characters'
+    return true
+  }
 
-const emailRule = (value: string) => {
-    if (!value) return 'E-Mail is required';
+  function emailRule (value: string) {
+    if (!value) return 'E-Mail is required'
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(value)) return 'Invalid E-Mail format';
+    const emailPattern = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
+    if (!emailPattern.test(value)) return 'Invalid E-Mail format'
 
-    return true;
-};
+    return true
+  }
 
-const passwordRule = (value: string) => {
-    if (!value) return 'Password is required';
+  function passwordRule (value: string) {
+    if (!value) return 'Password is required'
 
-    if (value.length < 16) return 'Password must be at least 16 characters long';
+    if (value.length < 16) return 'Password must be at least 16 characters long'
 
-    if (value.length > 64) return 'Password must not exceed 64 characters';
+    if (value.length > 64) return 'Password must not exceed 64 characters'
 
-    if (!/[A-Z]/.test(value)) return 'Password must contain at least one uppercase letter';
+    if (!/[A-Z]/.test(value)) return 'Password must contain at least one uppercase letter'
 
-    if (!/[a-z]/.test(value)) return 'Password must contain at least one lowercase letter';
+    if (!/[a-z]/.test(value)) return 'Password must contain at least one lowercase letter'
 
-    if (!/[0-9]/.test(value)) return 'Password must contain at least one number';
+    if (!/\d/.test(value)) return 'Password must contain at least one number'
 
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return 'Password must contain at least one special character';
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return 'Password must contain at least one special character'
 
-    return true;
-};
+    return true
+  }
 
-const repeatedPasswordRule = (value: string) => {
-    if (!value) return 'Please repeat your password';
+  function repeatedPasswordRule (value: string) {
+    if (!value) return 'Please repeat your password'
 
-    if (value !== password.value) return 'Passwords do not match';
+    if (value !== password.value) return 'Passwords do not match'
 
-    return true;
-};
+    return true
+  }
 
-const isEverythingValid = computed(() => {
-    return usernameRule(username.value) === true &&
-        emailRule(email.value) === true &&
-        passwordRule(password.value) === true &&
-        repeatedPasswordRule(repeatedPassword.value) === true;
-});
+  const isEverythingValid = computed(() => {
+    return usernameRule(username.value) === true
+      && emailRule(email.value) === true
+      && passwordRule(password.value) === true
+      && repeatedPasswordRule(repeatedPassword.value) === true
+  })
 
-onMounted(async () => {
-  useHead({
-    title: `FancySpaces - Register`,
-    meta: [
-      {
-        name: 'description',
-        content: 'Create a new account on FancySpaces to manage your projects and collaborate with your team.'
-      }
-    ]
-  });
+  onMounted(async () => {
+    useHead({
+      title: `FancySpaces - Register`,
+      meta: [
+        {
+          name: 'description',
+          content: 'Create a new account on FancySpaces to manage your projects and collaborate with your team.',
+        },
+      ],
+    })
 
     if (await userStore.isAuthenticated) {
-        await router.push("/");
+      await router.push('/')
     }
-});
+  })
 
-async function register() {
+  async function register () {
     if (!isEverythingValid.value) {
-        return;
+      return
     }
 
     // create user
     try {
-        await registerUser(username.value, email.value, password.value);
+      await registerUser(username.value, email.value, password.value)
     } catch (error: any) {
-        console.error(`Registration failed: ${error.message}`);
-        notifications.error(error.message);
-        return;
+      console.error(`Registration failed: ${error.message}`)
+      notifications.error(error.message)
+      return
     }
 
     // get user info
-    let user;
+    let user
     try {
-        user = await validateUser(email.value, password.value);
+      user = await validateUser(email.value, password.value)
     } catch (error: any) {
-        console.error(`User validation failed: ${error.message}`);
-        notifications.error(error.message);
-        return;
+      console.error(`User validation failed: ${error.message}`)
+      notifications.error(error.message)
+      return
     }
-    userStore.setUser(user);
+    userStore.setUser(user)
 
     // create token
-    let token: string;
+    let token: string
     try {
-        token = await createToken(userStore.user!.id, password.value);
+      token = await createToken(userStore.user!.id, password.value)
     } catch (error: any) {
-        console.error(`Token creation failed: ${error.message}`);
-        notifications.error(error.message);
-        return;
+      console.error(`Token creation failed: ${error.message}`)
+      notifications.error(error.message)
+      return
     }
-    userStore.setToken(token);
+    userStore.setToken(token)
 
     // validate token
     try {
-        const valid = validateToken(userStore.token!);
-        if (!valid) {
-            console.error('Token is invalid');
-            notifications.error('Token is invalid');
-            return;
-        }
+      const valid = validateToken(userStore.token!)
+      if (!valid) {
+        console.error('Token is invalid')
+        notifications.error('Token is invalid')
+        return
+      }
     } catch (error: any) {
-        console.error(`Token validation failed: ${error.message}`);
-        notifications.error(error.message);
-        return;
+      console.error(`Token validation failed: ${error.message}`)
+      notifications.error(error.message)
+      return
     }
 
-    notifications.info("Registration successful!");
-    await router.push("/");
-}
+    notifications.info('Registration successful!')
+    await router.push('/')
+  }
 
 </script>
 
 <template>
-    <v-container>
-        <v-row justify="center">
-            <v-col md="4">
-                <h1 class="text-center">Sign up with</h1>
-            </v-col>
-        </v-row>
+  <v-container>
+    <v-row justify="center">
+      <v-col md="4">
+        <h1 class="text-center">Sign up with</h1>
+      </v-col>
+    </v-row>
 
-        <v-row justify="center">
-            <v-col class="d-flex justify-space-evenly" md="4">
-                <v-btn
-                    color="primary"
-                    variant="outlined"
-                >
-                    <v-icon left>mdi-google</v-icon>
-                    Google
-                </v-btn>
+    <v-row justify="center">
+      <v-col class="d-flex justify-space-evenly" md="4">
+        <v-btn
+          color="primary"
+          variant="outlined"
+        >
+          <v-icon left>mdi-google</v-icon>
+          Google
+        </v-btn>
 
-                <v-btn
-                    class="mx-2"
-                    color="primary"
-                    variant="outlined"
-                >
-                    <v-icon left>mdi-github</v-icon>
-                    GitHub
-                </v-btn>
+        <v-btn
+          class="mx-2"
+          color="primary"
+          variant="outlined"
+        >
+          <v-icon left>mdi-github</v-icon>
+          GitHub
+        </v-btn>
 
-                <v-btn
-                    color="primary"
-                    variant="outlined"
-                >
-                    <v-icon left>mdi-chat</v-icon>
-                    Discord
-                </v-btn>
-            </v-col>
-        </v-row>
+        <v-btn
+          color="primary"
+          variant="outlined"
+        >
+          <v-icon left>mdi-chat</v-icon>
+          Discord
+        </v-btn>
+      </v-col>
+    </v-row>
 
-        <v-row justify="center">
-            <v-col md="4">
-                <v-divider class="my-4"/>
-            </v-col>
-        </v-row>
+    <v-row justify="center">
+      <v-col md="4">
+        <v-divider class="my-4" />
+      </v-col>
+    </v-row>
 
-        <v-row justify="center">
-            <v-col md="4">
-                <h1 class="text-center">Or create an account yourself</h1>
-                <p class="text-center">Already got an account? <a href="/login">Sign in here</a>.</p>
-            </v-col>
-        </v-row>
+    <v-row justify="center">
+      <v-col md="4">
+        <h1 class="text-center">Or create an account yourself</h1>
+        <p class="text-center">Already got an account? <a href="/login">Sign in here</a>.</p>
+      </v-col>
+    </v-row>
 
-        <v-row justify="center">
-            <v-col md="2">
-                <v-text-field
-                    v-model="username"
-                    :rules="[usernameRule]"
-                    autofocus
-                    color="primary"
-                    label="Username"
-                />
-            </v-col>
+    <v-row justify="center">
+      <v-col md="2">
+        <v-text-field
+          v-model="username"
+          autofocus
+          color="primary"
+          label="Username"
+          :rules="[usernameRule]"
+        />
+      </v-col>
 
-            <v-col md="2">
-                <v-text-field
-                    v-model="email"
-                    :rules="[emailRule]"
-                    color="primary"
-                    label="E-Mail"
-                />
-            </v-col>
-        </v-row>
+      <v-col md="2">
+        <v-text-field
+          v-model="email"
+          color="primary"
+          label="E-Mail"
+          :rules="[emailRule]"
+        />
+      </v-col>
+    </v-row>
 
-        <v-row justify="center">
-            <v-col md="4">
-                <v-text-field
-                    v-model="password"
-                    :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    :rules="[passwordRule]"
-                    :type="showPassword ? 'text' : 'password'"
-                    color="primary"
-                    label="Password"
-                    @click:append-inner="showPassword = !showPassword"
-                />
-            </v-col>
-        </v-row>
+    <v-row justify="center">
+      <v-col md="4">
+        <v-text-field
+          v-model="password"
+          :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          color="primary"
+          label="Password"
+          :rules="[passwordRule]"
+          :type="showPassword ? 'text' : 'password'"
+          @click:append-inner="showPassword = !showPassword"
+        />
+      </v-col>
+    </v-row>
 
-        <v-row justify="center">
-            <v-col md="4">
-                <v-text-field
-                    v-model="repeatedPassword"
-                    :append-inner-icon="showRepeatedPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    :rules="[repeatedPasswordRule]"
-                    :type="showRepeatedPassword ? 'text' : 'password'"
-                    color="primary"
-                    label="Repeat Password"
-                    @click:append-inner="showRepeatedPassword = !showRepeatedPassword"
-                />
-            </v-col>
-        </v-row>
+    <v-row justify="center">
+      <v-col md="4">
+        <v-text-field
+          v-model="repeatedPassword"
+          :append-inner-icon="showRepeatedPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          color="primary"
+          label="Repeat Password"
+          :rules="[repeatedPasswordRule]"
+          :type="showRepeatedPassword ? 'text' : 'password'"
+          @click:append-inner="showRepeatedPassword = !showRepeatedPassword"
+        />
+      </v-col>
+    </v-row>
 
-        <v-row justify="center">
-            <v-col md="4">
-                <p>By creating an account, you agree to FancySpaces' <a href="">Terms</a> and <a href="">Privacy Policy</a>.</p>
-            </v-col>
-        </v-row>
+    <v-row justify="center">
+      <v-col md="4">
+        <p>By creating an account, you agree to FancySpaces' <a href="">Terms</a> and <a href="">Privacy Policy</a>.</p>
+      </v-col>
+    </v-row>
 
-        <v-row justify="center">
-            <v-col md="4">
-                <v-btn
-                    :disabled="!isEverythingValid"
-                    color="primary"
-                    @click="register"
-                >
-                    Register
-                </v-btn>
-            </v-col>
-        </v-row>
-    </v-container>
+    <v-row justify="center">
+      <v-col md="4">
+        <v-btn
+          color="primary"
+          :disabled="!isEverythingValid"
+          @click="register"
+        >
+          Register
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style scoped>

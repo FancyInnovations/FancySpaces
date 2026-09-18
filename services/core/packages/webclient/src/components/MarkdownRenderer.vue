@@ -1,29 +1,29 @@
 <script setup>
-import {computed} from 'vue'
-import MarkdownIt from 'markdown-it'
-import DOMPurify from 'dompurify'
+  import DOMPurify from 'dompurify'
+  import MarkdownIt from 'markdown-it'
+  import { computed } from 'vue'
 
-const md = new MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true
-})
+  const md = new MarkdownIt({
+    html: true,
+    linkify: true,
+    typographer: true,
+  })
 
-const props = defineProps({
-  markdown: {
-    type: String,
-    default: ''
-  }
-})
+  const props = defineProps({
+    markdown: {
+      type: String,
+      default: '',
+    },
+  })
 
-const renderedHtml = computed(() => {
-  const unsafeHtml = md.render(props.markdown)
-  return DOMPurify.sanitize(unsafeHtml)
-})
+  const renderedHtml = computed(() => {
+    const unsafeHtml = md.render(props.markdown)
+    return DOMPurify.sanitize(unsafeHtml)
+  })
 </script>
 
 <template>
-  <div class="markdown-content" v-html="renderedHtml"></div>
+  <div class="markdown-content" v-html="renderedHtml" />
 </template>
 
 <style scoped>
@@ -68,7 +68,7 @@ const renderedHtml = computed(() => {
   background-color: transparent;
 }
 
-::v-deep ul, ::v-deep ol{
+::v-deep ul, ::v-deep ol {
   padding-left: 1.5em;
 }
 

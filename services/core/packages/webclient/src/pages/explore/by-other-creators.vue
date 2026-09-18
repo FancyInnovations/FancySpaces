@@ -1,27 +1,27 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import {useHead} from "@vueuse/head";
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getSpace } from '@/api/spaces/spaces'
 
-useHead({
-  title: 'Explore Projects by Other Creators - FancySpaces',
-  meta: [
-    {
-      name: 'description',
-      content: 'Discover and explore projects created by other talented creators on FancySpaces.'
-    }
-  ]
-});
+  useHead({
+    title: 'Explore Projects by Other Creators - FancySpaces',
+    meta: [
+      {
+        name: 'description',
+        content: 'Discover and explore projects created by other talented creators on FancySpaces.',
+      },
+    ],
+  })
 
-const spaces = ref<Space[]>();
+  const spaces = ref<Space[]>()
 
-onMounted(async () => {
-  spaces.value = [];
-  spaces.value.push(await getSpace("orbisguard"));
-  spaces.value.push(await getSpace("orbismines"));
-  spaces.value.push(await getSpace("wiflowscoreboard"));
-});
+  onMounted(async () => {
+    spaces.value = []
+    spaces.value.push(await getSpace('orbisguard'))
+    spaces.value.push(await getSpace('orbismines'))
+    spaces.value.push(await getSpace('wiflowscoreboard'))
+  })
 
 </script>
 

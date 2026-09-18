@@ -1,47 +1,47 @@
 <script lang="ts" setup>
 
-import {getDownloadCountForSpace, getSpacesOfCreator} from "@/api/spaces/spaces";
-import type {Space} from "@/api/spaces/types";
-import type {User} from "@/api/auth/types";
+  import type { User } from '@/api/auth/types'
+  import type { Space } from '@/api/spaces/types'
+  import { getDownloadCountForSpace, getSpacesOfCreator } from '@/api/spaces/spaces'
 
-const props = defineProps<{
-  user?: User;
-}>();
+  const props = defineProps<{
+    user?: User
+  }>()
 
-const spaces = ref<Space[]>([]);
-const totalDownloads = ref(0);
+  const spaces = ref<Space[]>([])
+  const totalDownloads = ref(0)
 
-const bio = computed(() => {
-  if (!props.user?.metadata || !props.user?.metadata['public_biography']) {
-    return "No biography set.";
+  const bio = computed(() => {
+    if (!props.user?.metadata || !props.user?.metadata['public_biography']) {
+      return 'No biography set.'
+    }
+
+    return props.user?.metadata['public_biography']
+  })
+
+  const profilePicture = computed(() => {
+    if (!props.user?.metadata || !props.user?.metadata['public_profile_picture']) {
+      return '/na-logo.png'
+    }
+
+    return props.user?.metadata['public_profile_picture']
+  })
+
+  watch(() => props.user, async () => {
+    await updateSpaces()
+  }, { immediate: true })
+
+  async function updateSpaces () {
+    if (!props.user) {
+      return
+    }
+
+    spaces.value = await getSpacesOfCreator(props.user!.id)
+
+    for (const sp of spaces.value) {
+      totalDownloads.value += await getDownloadCountForSpace(sp.id)
+    }
   }
-
-  return props.user?.metadata['public_biography'];
-});
-
-const profilePicture = computed(() => {
-  if (!props.user?.metadata || !props.user?.metadata['public_profile_picture']) {
-    return "/na-logo.png";
-  }
-
-  return props.user?.metadata['public_profile_picture'];
-});
-
-watch(() => props.user, async () => {
-  await updateSpaces();
-}, {immediate: true});
-
-async function updateSpaces() {
-  if (!props.user) {
-    return;
-  }
-
-  spaces.value = await getSpacesOfCreator(props.user!.id);
-
-  for (let sp of spaces.value) {
-    totalDownloads.value += await getDownloadCountForSpace(sp.id);
-  }
-}
 
 </script>
 
@@ -54,13 +54,13 @@ async function updateSpaces() {
       <div class="d-flex justify-space-between">
         <div class="d-flex flex-column justify-center">
           <v-img
-            :src="profilePicture"
             alt="User Profile Picture"
             height="100"
             max-height="100"
             max-width="100"
             min-height="100"
             min-width="100"
+            :src="profilePicture"
             width="100"
           />
         </div>
@@ -77,14 +77,13 @@ async function updateSpaces() {
             <p class="text-body-2">{{ spaces.length }} spaces</p>
             <p class="text-body-2 mx-4">-</p>
             <p class="text-body-2">{{ totalDownloads }} downloads</p>
-            <slot name="metadata">
-            </slot>
+
+            <slot name="metadata" />
           </div>
         </div>
 
         <div class="d-flex flex-column justify-center">
-          <slot name="quick-actions">
-          </slot>
+          <slot name="quick-actions" />
         </div>
       </div>
     </v-card-text>

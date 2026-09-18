@@ -9,7 +9,7 @@
     elevation="12"
     rounded="xl"
   >
-    <slot/>
+    <slot />
   </v-card>
 </template>
 

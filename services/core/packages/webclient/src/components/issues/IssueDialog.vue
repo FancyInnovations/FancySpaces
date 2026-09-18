@@ -1,90 +1,89 @@
 <script lang="ts" setup>
 
-import Dialog from "@/components/common/Dialog.vue";
-import IssueDialogSidebar from "@/components/issues/IssueDialogSidebar.vue";
-import {useIssueDialogStore} from "@/stores/issue-dialog";
-import type {IssueComment} from "@/api/issues/types";
-import {updateIssue} from "@/api/issues/issues";
-import {useNotificationStore} from "@/stores/notifications";
-import Card from "@/components/common/Card.vue";
+  import type { IssueComment } from '@/api/issues/types'
+  import { updateIssue } from '@/api/issues/issues'
+  import Card from '@/components/common/Card.vue'
+  import Dialog from '@/components/common/Dialog.vue'
+  import IssueDialogSidebar from '@/components/issues/IssueDialogSidebar.vue'
+  import { useIssueDialogStore } from '@/stores/issue-dialog'
+  import { useNotificationStore } from '@/stores/notifications'
 
-const notificationStore = useNotificationStore();
-const issueDialogStore = useIssueDialogStore();
-const isLoggedIn = ref(false);
+  const notificationStore = useNotificationStore()
+  const issueDialogStore = useIssueDialogStore()
+  const isLoggedIn = ref(false)
 
-const comments = computed<IssueComment[]>(() => {
-  // return [
-  //   {
-  //     id: 'CMT123',
-  //     issue: '7G5B1',
-  //     author: 'user789',
-  //     content: 'I have encountered this bug as well. It seems to occur when performing [specific action].',
-  //     created_at: new Date(),
-  //     updated_at: new Date()
-  //   },
-  //   {
-  //     id: 'CMT124',
-  //     issue: '7G5B1',
-  //     author: 'user321',
-  //     content: 'A temporary workaround is to [workaround details], but a permanent fix is needed.',
-  //     created_at: new Date(),
-  //     updated_at: new Date()
-  //   },
-  //   {
-  //     id: 'CMT125',
-  //     issue: '7G5B1',
-  //     author: 'user654',
-  //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
-  //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
-  //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
-  //   },
-  //   {
-  //     id: 'CMT125',
-  //     issue: '7G5B1',
-  //     author: 'user654',
-  //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
-  //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
-  //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
-  //   },
-  //   {
-  //     id: 'CMT125',
-  //     issue: '7G5B1',
-  //     author: 'user654',
-  //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
-  //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
-  //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
-  //   }
-  // ];
+  const comments = computed<IssueComment[]>(() => {
+    // return [
+    //   {
+    //     id: 'CMT123',
+    //     issue: '7G5B1',
+    //     author: 'user789',
+    //     content: 'I have encountered this bug as well. It seems to occur when performing [specific action].',
+    //     created_at: new Date(),
+    //     updated_at: new Date()
+    //   },
+    //   {
+    //     id: 'CMT124',
+    //     issue: '7G5B1',
+    //     author: 'user321',
+    //     content: 'A temporary workaround is to [workaround details], but a permanent fix is needed.',
+    //     created_at: new Date(),
+    //     updated_at: new Date()
+    //   },
+    //   {
+    //     id: 'CMT125',
+    //     issue: '7G5B1',
+    //     author: 'user654',
+    //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
+    //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
+    //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
+    //   },
+    //   {
+    //     id: 'CMT125',
+    //     issue: '7G5B1',
+    //     author: 'user654',
+    //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
+    //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
+    //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
+    //   },
+    //   {
+    //     id: 'CMT125',
+    //     issue: '7G5B1',
+    //     author: 'user654',
+    //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
+    //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
+    //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
+    //   }
+    // ];
 
-  return [];
-});
+    return []
+  })
 
-function copyLink() {
-  const issueLink = `${window.location.origin}/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`;
-  navigator.clipboard.writeText(issueLink);
+  function copyLink () {
+    const issueLink = `${window.location.origin}/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`
+    navigator.clipboard.writeText(issueLink)
 
-  notificationStore.info("Issue link copied to clipboard!");
-}
-
-function copyID() {
-  const issueID = issueDialogStore.issue?.id;
-  if (issueID) {
-    navigator.clipboard.writeText(issueID);
-    notificationStore.info("Issue ID copied to clipboard!");
+    notificationStore.info('Issue link copied to clipboard!')
   }
-}
 
-async function statusChanged(newStatus: string) {
-  if (!issueDialogStore.issue) return;
+  function copyID () {
+    const issueID = issueDialogStore.issue?.id
+    if (issueID) {
+      navigator.clipboard.writeText(issueID)
+      notificationStore.info('Issue ID copied to clipboard!')
+    }
+  }
 
-  const newIssue = { ...issueDialogStore.issue! };
-  newIssue.status = newStatus as any;
-  await updateIssue(newIssue.space, newIssue.id, newIssue);
-}
+  async function statusChanged (newStatus: string) {
+    if (!issueDialogStore.issue) return
 
-onMounted(() => {
-  isLoggedIn.value = localStorage.getItem("fs_api_key") !== null;
-});
+    const newIssue = { ...issueDialogStore.issue!, status: newStatus as any }
+    await updateIssue(newIssue.space, newIssue.id, newIssue)
+  }
+
+  onMounted(() => {
+    isLoggedIn.value = localStorage.getItem('fs_api_key') !== null
+  })
 
 </script>
 
@@ -102,28 +101,28 @@ onMounted(() => {
           <v-select
             v-if="issueDialogStore.issue && isLoggedIn"
             v-model="issueDialogStore.issue!.status"
-            :items="[
-                    { title: 'Backlog', value: 'backlog' },
-                    { title: 'Planned', value: 'planned' },
-                    { title: 'In Progress', value: 'in_progress' },
-                    { title: 'Done', value: 'done' },
-                    { title: 'Closed', value: 'closed' },
-
-                  ]"
             class="mr-4"
             color="primary"
             density="compact"
             hide-details
+            :items="[
+              { title: 'Backlog', value: 'backlog' },
+              { title: 'Planned', value: 'planned' },
+              { title: 'In Progress', value: 'in_progress' },
+              { title: 'Done', value: 'done' },
+              { title: 'Closed', value: 'closed' },
+
+            ]"
             max-width="200"
             min-width="200"
             variant="solo"
-            @update:modelValue="statusChanged"
+            @update:model-value="statusChanged"
           />
 
           <v-btn
-            :href="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`"
             class="mr-2"
             color="secondary"
+            :href="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`"
             icon="mdi-open-in-new"
             target="_blank"
             variant="text"
@@ -140,9 +139,9 @@ onMounted(() => {
 
       <div class="issue-dialog-inner d-flex">
         <IssueDialogSidebar
+          class="ma-4"
           :comments="comments"
           :issue="issueDialogStore.issue!"
-          class="ma-4"
         />
 
         <div class="issue-dialog-inner pr-4 flex-grow-1">
@@ -157,8 +156,8 @@ onMounted(() => {
 
             <v-card-text>
               <MarkdownRenderer
-                :markdown="issueDialogStore.issue?.description"
                 class="issue-description"
+                :markdown="issueDialogStore.issue?.description"
               />
             </v-card-text>
           </Card>
@@ -176,6 +175,7 @@ onMounted(() => {
               <p v-if="comments?.length === 0">
                 No comments yet.
               </p>
+
               <div v-else class="issue-comments">
                 <Card
                   v-for="comment in comments"
@@ -188,8 +188,10 @@ onMounted(() => {
                       <div class="d-flex align-center">
                         <span class="font-weight-medium">{{ comment.author }}</span>
                       </div>
+
                       <span class="text-caption grey--text">{{ comment.created_at.toLocaleString() }}</span>
                     </div>
+
                     <MarkdownRenderer
                       :markdown="comment.content"
                     />
@@ -220,8 +222,8 @@ onMounted(() => {
 
         <v-btn
           v-if="isLoggedIn"
-          :to="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}/edit`"
           class="mr-2"
+          :to="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}/edit`"
           variant="text"
           @click="issueDialogStore.close()"
         >

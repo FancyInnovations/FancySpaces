@@ -1,34 +1,34 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import type {KVValue, SpaceDatabase, SpaceDatabaseCollection} from "@/api/storage/types";
-import {kvGetAll} from "@/api/storage/kv/kv";
-import Card from "@/components/common/Card.vue";
+  import type { Space } from '@/api/spaces/types'
+  import type { KVValue, SpaceDatabase, SpaceDatabaseCollection } from '@/api/storage/types'
+  import { kvGetAll } from '@/api/storage/kv/kv'
+  import Card from '@/components/common/Card.vue'
 
-const props = defineProps<{
-  space: Space
-  database: SpaceDatabase
-  collection: SpaceDatabaseCollection
-}>();
+  const props = defineProps<{
+    space: Space
+    database: SpaceDatabase
+    collection: SpaceDatabaseCollection
+  }>()
 
-const values = ref<KVValue[]>([]);
+  const values = ref<KVValue[]>([])
 
-const tableHeaders = [
-  { title: 'Key', value: 'key' },
-  { title: 'Type', value: 'type' },
-  { title: 'Value', value: 'value' },
-];
+  const tableHeaders = [
+    { title: 'Key', value: 'key' },
+    { title: 'Type', value: 'type' },
+    { title: 'Value', value: 'value' },
+  ]
 
-onMounted(async () => {
-  const data = await kvGetAll(props.database.name, props.collection.name);
-  for (const key in data) {
-    values.value.push({
-      key: key,
-      value: data[key],
-      type: typeof data[key]
-    });
-  }
-});
+  onMounted(async () => {
+    const data = await kvGetAll(props.database.name, props.collection.name)
+    for (const key in data) {
+      values.value.push({
+        key: key,
+        value: data[key],
+        type: typeof data[key],
+      })
+    }
+  })
 
 </script>
 
@@ -40,9 +40,9 @@ onMounted(async () => {
 
         <v-card-text>
           <v-data-table
+            class="bg-transparent"
             :headers="tableHeaders"
             :items="values"
-            class="bg-transparent"
           >
             <template #item.value="{ item }">
               <pre>{{ JSON.stringify(item.value, null, 2) }}</pre>

@@ -1,21 +1,21 @@
 <script lang="ts" setup>
 
-import {mapCategoryToDisplayname, mapLinkToDisplayname, mapLinkToIcon, type Space} from "@/api/spaces/types";
-import {useUserStore} from "@/stores/user";
+  import { mapCategoryToDisplayname, mapLinkToDisplayname, mapLinkToIcon, type Space } from '@/api/spaces/types'
+  import { useUserStore } from '@/stores/user'
 
-const userStore = useUserStore();
+  const userStore = useUserStore()
 
-const props = defineProps<{
-  space?: Space
-}>();
+  const props = defineProps<{
+    space?: Space
+  }>()
 
-const isMember = computed(() => {
-  if (!props.space) return false;
-  if (!userStore.isAuthenticated) return false;
+  const isMember = computed(() => {
+    if (!props.space) return false
+    if (!userStore.isAuthenticated) return false
 
-  const userID =  userStore.user?.id;
-  return props.space.creator == userID || props.space.members.some(member => member.user_id === userID);
-});
+    const userID = userStore.user?.id
+    return props.space.creator == userID || props.space.members.some(member => member.user_id === userID)
+  })
 
 </script>
 
@@ -31,119 +31,120 @@ const isMember = computed(() => {
         <v-list-item-subtitle>{{ mapCategoryToDisplayname(space?.categories[0]) }}</v-list-item-subtitle>
       </v-list-item>
 
-      <v-divider class="mt-2"/>
+      <v-divider class="mt-2" />
 
       <v-list-item
-        :to="`/spaces/${space?.slug}`"
         exact
         link
         prepend-icon="mdi-information-slab-circle-outline"
         title="Information"
+        :to="`/spaces/${space?.slug}`"
       />
 
       <v-list-item
         v-if="space?.blog_settings.enabled"
-        :to="`/spaces/${space?.slug}/blog`"
         link
         prepend-icon="mdi-notebook-outline"
         title="Blog"
+        :to="`/spaces/${space?.slug}/blog`"
       />
 
-<!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/docs`"-->
-<!--        link-->
-<!--        prepend-icon="mdi-book-open-variant-outline"-->
-<!--        title="Documentation"-->
-<!--      />-->
+      <!--      <v-list-item-->
+      <!--        :to="`/spaces/${space?.slug}/docs`"-->
+      <!--        link-->
+      <!--        prepend-icon="mdi-book-open-variant-outline"-->
+      <!--        title="Documentation"-->
+      <!--      />-->
 
-<!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/source`"-->
-<!--        link-->
-<!--        prepend-icon="mdi-source-branch"-->
-<!--        title="Source Code"-->
-<!--      />-->
+      <!--      <v-list-item-->
+      <!--        :to="`/spaces/${space?.slug}/source`"-->
+      <!--        link-->
+      <!--        prepend-icon="mdi-source-branch"-->
+      <!--        title="Source Code"-->
+      <!--      />-->
 
       <v-list-item
         v-if="space?.release_settings.enabled"
-        :to="`/spaces/${space?.slug}/versions`"
         link
         prepend-icon="mdi-file-download-outline"
         title="Downloads"
+        :to="`/spaces/${space?.slug}/versions`"
       />
 
       <v-list-item
         v-if="space?.maven_repository_settings.enabled"
-        :to="`/spaces/${space?.slug}/maven-repos`"
         link
         prepend-icon="mdi-database-outline"
         title="Maven Repository"
+        :to="`/spaces/${space?.slug}/maven-repos`"
       />
 
       <v-list-item
         v-if="space?.maven_repository_settings.enabled"
-        :to="`/spaces/${space?.slug}/javadoc`"
         link
         prepend-icon="mdi-book-outline"
         title="JavaDoc"
+        :to="`/spaces/${space?.slug}/javadoc`"
       />
 
       <v-list-item
         v-if="space?.issue_settings.enabled"
-        :to="`/spaces/${space?.slug}/issues`"
         link
         prepend-icon="mdi-format-list-checks"
         title="Issues"
+        :to="`/spaces/${space?.slug}/issues`"
       />
 
-<!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/support-tickets`"-->
-<!--        link-->
-<!--        prepend-icon="mdi-bug-outline"-->
-<!--        title="Support Tickets"-->
-<!--      />-->
+      <!--      <v-list-item-->
+      <!--        :to="`/spaces/${space?.slug}/support-tickets`"-->
+      <!--        link-->
+      <!--        prepend-icon="mdi-bug-outline"-->
+      <!--        title="Support Tickets"-->
+      <!--      />-->
 
-<!--      <v-list-item-->
-<!--        :to="`/spaces/${space?.slug}/roadmap`"-->
-<!--        link-->
-<!--        prepend-icon="mdi-road-variant"-->
-<!--        title="Roadmap"-->
-<!--      />-->
+      <!--      <v-list-item-->
+      <!--        :to="`/spaces/${space?.slug}/roadmap`"-->
+      <!--        link-->
+      <!--        prepend-icon="mdi-road-variant"-->
+      <!--        title="Roadmap"-->
+      <!--      />-->
 
       <v-list-item
         v-if="space?.storage_settings.enabled && isMember"
-        :to="`/spaces/${space?.slug}/storage`"
         link
         prepend-icon="mdi-library-shelves"
         title="Storage"
+        :to="`/spaces/${space?.slug}/storage`"
       />
 
       <v-list-item
         v-if="space?.analytics_settings.enabled"
-        :to="`/spaces/${space?.slug}/analytics`"
         disabled
         link
         prepend-icon="mdi-chart-box-outline"
         title="Analytics Portal"
+        :to="`/spaces/${space?.slug}/analytics`"
       />
 
       <v-list-item
         v-if="space?.secrets_settings.enabled && isMember"
-        :to="`/spaces/${space?.slug}/secrets`"
         link
         prepend-icon="mdi-shield-key-outline"
         title="Secrets"
+        :to="`/spaces/${space?.slug}/secrets`"
       />
 
-      <v-divider v-if="space && space.links && space.links.length > 0"/>
+      <v-divider v-if="space && space.links && space.links.length > 0" />
       <v-list-subheader v-if="space && space.links && space.links.length > 0">External Links</v-list-subheader>
 
       <v-list-item
-        v-for="(link) in space?.links" :key="link.name"
+        v-for="(link) in space?.links"
+        :key="link.name"
         :href="link.url"
-        :prepend-icon="mapLinkToIcon(link.name)"
-        :title="mapLinkToDisplayname(link.name)"
         link
+        :prepend-icon="mapLinkToIcon(link.name)"
         target="_blank"
+        :title="mapLinkToDisplayname(link.name)"
       />
 
       <v-divider v-if="isMember" />
@@ -151,26 +152,26 @@ const isMember = computed(() => {
 
       <v-list-item
         v-if="isMember"
-        :to="`/spaces/${space?.slug}/settings`"
         link
         prepend-icon="mdi-cog-outline"
         title="Settings"
+        :to="`/spaces/${space?.slug}/settings`"
       />
 
       <v-list-item
         v-if="isMember"
-        :to="`/spaces/${space?.slug}/features`"
         link
         prepend-icon="mdi-star-outline"
         title="Features"
+        :to="`/spaces/${space?.slug}/features`"
       />
 
       <v-list-item
         v-if="isMember"
-        :to="`/spaces/${space?.slug}/members`"
         link
         prepend-icon="mdi-account-multiple-outline"
         title="Members"
+        :to="`/spaces/${space?.slug}/members`"
       />
 
     </v-list>

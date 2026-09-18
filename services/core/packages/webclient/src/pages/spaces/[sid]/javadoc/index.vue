@@ -1,86 +1,82 @@
 <script lang="ts" setup>
 
-import type {Space} from "@/api/spaces/types";
-import {getSpace} from "@/api/spaces/spaces";
-import SpaceSidebar from "@/components/SpaceSidebar.vue";
-import {useHead} from "@vueuse/head";
-import type {
-  SpaceMavenRepository,
-  SpaceMavenRepositoryArtifact,
-  SpaceMavenRepositoryArtifactVersion
-} from "@/api/maven/types";
-import {getAllMavenArtifacts, getAllMavenRepositories} from "@/api/maven/maven";
-import SpaceHeader from "@/components/SpaceHeader.vue";
-import Card from "@/components/common/Card.vue";
+  import type {
+    SpaceMavenRepository,
+    SpaceMavenRepositoryArtifact,
+    SpaceMavenRepositoryArtifactVersion,
+  } from '@/api/maven/types'
+  import type { Space } from '@/api/spaces/types'
+  import { useHead } from '@vueuse/head'
+  import { getAllMavenArtifacts, getAllMavenRepositories } from '@/api/maven/maven'
+  import { getSpace } from '@/api/spaces/spaces'
+  import Card from '@/components/common/Card.vue'
+  import SpaceHeader from '@/components/SpaceHeader.vue'
+  import SpaceSidebar from '@/components/SpaceSidebar.vue'
 
-const router = useRouter();
-const route = useRoute();
+  const router = useRouter()
+  const route = useRoute()
 
-const space = ref<Space>();
-const repos = ref<SpaceMavenRepository[]>([]);
-const artifacts = ref<SpaceMavenRepositoryArtifact[]>([]);
-const versions = computed(() => {
-  return selectedArtifact.value?.versions.sort((a, b) => {
-    return b.published_at.getTime() - a.published_at.getTime();
-  }) || [];
-});
+  const space = ref<Space>()
+  const repos = ref<SpaceMavenRepository[]>([])
+  const artifacts = ref<SpaceMavenRepositoryArtifact[]>([])
+  const versions = computed(() => {
+    return selectedArtifact.value?.versions.sort((a, b) => {
+      return b.published_at.getTime() - a.published_at.getTime()
+    }) || []
+  })
 
-const selectedRepo = ref<SpaceMavenRepository>();
-const selectedArtifact = ref<SpaceMavenRepositoryArtifact>();
-const selectedVersion = ref<SpaceMavenRepositoryArtifactVersion>();
+  const selectedRepo = ref<SpaceMavenRepository>()
+  const selectedArtifact = ref<SpaceMavenRepositoryArtifact>()
+  const selectedVersion = ref<SpaceMavenRepositoryArtifactVersion>()
 
-const javadocURL = computed(() => {
-  if (!space.value || !selectedRepo.value || !selectedArtifact.value || !selectedVersion.value) {
-    return '';
-  }
+  const javadocURL = computed(() => {
+    if (!space.value || !selectedRepo.value || !selectedArtifact.value || !selectedVersion.value) {
+      return ''
+    }
 
-  const baseURL = window.location.origin;
-  return `${baseURL}/javadoc/${space.value?.id}/${selectedRepo.value.name}/${selectedArtifact.value.group + ':' + selectedArtifact.value.id}/${selectedVersion.value.version}/index.html`;
-});
+    const baseURL = window.location.origin
+    return `${baseURL}/javadoc/${space.value?.id}/${selectedRepo.value.name}/${selectedArtifact.value.group + ':' + selectedArtifact.value.id}/${selectedVersion.value.version}/index.html`
+  })
 
-watch(selectedRepo, async (newRepo) => {
-  if (newRepo) {
-    artifacts.value = await getAllMavenArtifacts(space.value!.id, newRepo.name);
-    selectedArtifact.value = artifacts.value[0];
-  } else {
-    artifacts.value = [];
-    selectedArtifact.value = undefined;
-  }
-});
+  watch(selectedRepo, async newRepo => {
+    if (newRepo) {
+      artifacts.value = await getAllMavenArtifacts(space.value!.id, newRepo.name)
+      selectedArtifact.value = artifacts.value[0]
+    } else {
+      artifacts.value = []
+      selectedArtifact.value = undefined
+    }
+  })
 
-watch(selectedArtifact, (newArtifact) => {
-  if (newArtifact) {
-    selectedVersion.value = versions.value[0];
-  } else {
-    selectedVersion.value = undefined;
-  }
-});
+  watch(selectedArtifact, newArtifact => {
+    selectedVersion.value = newArtifact ? versions.value[0] : undefined
+  })
 
-onMounted(async () => {
-  const spaceID = (route.params as any).sid as string;
-  space.value = await getSpace(spaceID);
+  onMounted(async () => {
+    const spaceID = (route.params as any).sid as string
+    space.value = await getSpace(spaceID)
 
-  if (!space.value.maven_repository_settings.enabled) {
-    router.push(`/spaces/${space.value.slug}`);
-    return;
-  }
+    if (!space.value.maven_repository_settings.enabled) {
+      router.push(`/spaces/${space.value.slug}`)
+      return
+    }
 
-  repos.value = await getAllMavenRepositories(space.value.id);
+    repos.value = await getAllMavenRepositories(space.value.id)
 
-  if (repos.value.length > 0) {
-    selectedRepo.value = repos.value[0];
-  }
+    if (repos.value.length > 0) {
+      selectedRepo.value = repos.value[0]
+    }
 
-  useHead({
-    title: `${space.value.title} javadoc - FancySpaces`,
-    meta: [
-      {
-        name: 'description',
-        content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`
-      }
-    ]
-  });
-});
+    useHead({
+      title: `${space.value.title} javadoc - FancySpaces`,
+      meta: [
+        {
+          name: 'description',
+          content: space.value.summary || `Explore the ${space.value.title} project space on FancySpaces.`,
+        },
+      ],
+    })
+  })
 </script>
 
 <template>
@@ -93,11 +89,11 @@ onMounted(async () => {
       </v-col>
 
       <v-col>
-        <SpaceHeader :space="space"></SpaceHeader>
+        <SpaceHeader :space="space" />
 
         <hr
           class="grey-border-color mt-4"
-        />
+        >
       </v-col>
     </v-row>
 
@@ -109,36 +105,36 @@ onMounted(async () => {
           <v-card-text class="d-flex flex-wrap align-center">
             <v-select
               v-model="selectedRepo"
-              :item-value="(item) => item"
-              :items="repos"
               color="primary"
               density="compact"
               hide-details
               item-title="name"
+              :item-value="(item) => item"
+              :items="repos"
               label="Select repository"
             />
 
             <v-select
               v-model="selectedArtifact"
-              :item-title="(item) => item.group + ':' + item.id"
-              :item-value="(item) => item"
-              :items="artifacts"
               class="ml-4"
               color="primary"
               density="compact"
               hide-details
+              :item-title="(item) => item.group + ':' + item.id"
+              :item-value="(item) => item"
+              :items="artifacts"
               label="Select artifact"
             />
 
             <v-select
               v-model="selectedVersion"
-              :item-value="(item) => item"
-              :items="versions"
               class="ml-4"
               color="primary"
               density="compact"
               hide-details
               item-title="version"
+              :item-value="(item) => item"
+              :items="versions"
               label="Select version"
             />
           </v-card-text>
@@ -166,10 +162,11 @@ onMounted(async () => {
           <v-card-text>
             <iframe
               v-if="javadocURL"
-              :src="javadocURL"
               height="750px"
+              :src="javadocURL"
               width="100%"
             />
+
             <span v-else>
               Please select a repository, artifact, and version to view the javadoc.
             </span>
