@@ -3,16 +3,20 @@
   import type { SpaceMavenRepository, SpaceMavenRepositoryArtifact } from '@/api/maven/types'
   import type { Space } from '@/api/spaces/types'
   import { useHead } from '@vueuse/head'
-  import { getAllMavenArtifacts, getMavenRepository } from '@/api/maven/maven'
+  import { deleteMavenRepository, getAllMavenArtifacts, getMavenRepository } from '@/api/maven/maven'
   import { getSpace } from '@/api/spaces/spaces'
   import Card from '@/components/common/Card.vue'
   import SpaceHeader from '@/components/SpaceHeader.vue'
   import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useConfirmationStore } from '@/stores/confirmation'
+  import { useNotificationStore } from '@/stores/notifications'
   import { useUserStore } from '@/stores/user'
 
   const route = useRoute()
   const router = useRouter()
   const userStore = useUserStore()
+  const confirmationStore = useConfirmationStore()
+  const notifications = useNotificationStore()
 
   const isLoggedIn = ref(false)
 
@@ -20,8 +24,19 @@
 
   const repo = ref<SpaceMavenRepository>()
   const artifacts = ref<SpaceMavenRepositoryArtifact[]>([])
+  const canManage = computed(() => {
+    if (!space.value || !isLoggedIn.value || !userStore.user) return false
+    return space.value.creator === userStore.user.id || space.value.members.some(member => member.user_id === userStore.user?.id && ['member', 'admin'].includes(member.role))
+  })
 
   const howToUseTab = ref('build.gradle.kts')
+
+  function latestVersion (artifact: SpaceMavenRepositoryArtifact) {
+    return artifact.versions.reduce<SpaceMavenRepositoryArtifact['versions'][number] | undefined>((latest, version) => {
+      if (!latest || new Date(version.published_at).getTime() > new Date(latest.published_at).getTime()) return version
+      return latest
+    }, undefined)
+  }
 
   const tableHeaders = [
     { title: 'Group ID', value: 'group' },
@@ -29,17 +44,13 @@
     { title: 'Versions', key: 'versions', value: (art: SpaceMavenRepositoryArtifact) => art.versions.length || 'N/A' },
     {
       title: 'Latest version', key: 'latest-version', value: (art: SpaceMavenRepositoryArtifact) => {
-        const latest = art.versions.sort((a, b) => {
-          return new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
-        })[0]
+        const latest = latestVersion(art)
         return latest ? latest.version : 'N/A'
       },
     },
     {
       title: 'Last update', key: 'last-update', value: (art: SpaceMavenRepositoryArtifact) => {
-        const latest = art.versions.sort((a, b) => {
-          return new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
-        })[0]
+        const latest = latestVersion(art)
         return latest ? new Date(latest.published_at).toLocaleDateString() : 'N/A'
       },
     },
@@ -76,6 +87,26 @@
     router.push(`/spaces/${space.value?.slug}/maven-repos/${repo.value?.name}/${item.group}:${item.id}`)
   }
 
+  function confirmDelete () {
+    if (!space.value || !repo.value) return
+    confirmationStore.confirmation = {
+      shown: true,
+      persistent: true,
+      title: 'Delete Maven repository',
+      text: `Delete ${repo.value.name}? All artifacts in this repository will no longer be available. This action cannot be undone.`,
+      yesText: 'Delete',
+      onConfirm: async () => {
+        try {
+          await deleteMavenRepository(space.value!.id, repo.value!.name)
+          notifications.info('Repository deleted successfully')
+          await router.push(`/spaces/${space.value!.slug}/maven-repos`)
+        } catch (error_) {
+          notifications.error(error_ instanceof Error ? error_.message : 'Unable to delete repository.')
+        }
+      },
+    }
+  }
+
 </script>
 
 <template>
@@ -96,9 +127,8 @@
 
           <template #quick-actions>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="canManage"
               color="primary"
-              disabled
               size="large"
               :to="`/spaces/${space?.slug}/maven-repos/new`"
               variant="tonal"
@@ -205,7 +235,7 @@
         </Card>
 
         <Card
-          v-if="isLoggedIn"
+          v-if="canManage"
           class="bg-transparent"
           elevation="6"
         >
@@ -214,7 +244,7 @@
               block
               class="mb-2"
               color="primary"
-              :to="`/spaces/${space?.slug}/maven-repo/${repo?.name}/edit`"
+              :to="`/spaces/${space?.slug}/maven-repos/${encodeURIComponent(repo?.name || '')}/edit`"
               variant="tonal"
             >
               Edit Repo
@@ -223,8 +253,8 @@
             <v-btn
               block
               color="error"
-              :to="`/spaces/${space?.slug}/maven-repo`"
               variant="tonal"
+              @click="confirmDelete"
             >
               Delete Repo
             </v-btn>

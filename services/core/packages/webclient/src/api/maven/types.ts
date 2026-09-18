@@ -6,6 +6,11 @@ export interface SpaceMavenRepository {
   internal_mirror?: SpaceMavenRepositoryInternalMirror | null
 }
 
+export interface MavenRepositoryMutation {
+  name: string
+  public: boolean
+}
+
 export interface SpaceMavenRepositoryInternalMirror {
   space_id: string
   repository: string

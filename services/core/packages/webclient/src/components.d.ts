@@ -34,6 +34,7 @@ declare module 'vue' {
     IssueTypeChip: typeof import('./components/issues/IssueTypeChip.vue')['default']
     KVCollectionDataPage: typeof import('./components/storage/KVCollectionDataPage.vue')['default']
     MarkdownRenderer: typeof import('./components/MarkdownRenderer.vue')['default']
+    MavenRepositoryForm: typeof import('./components/maven/MavenRepositoryForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SpaceCard: typeof import('./components/SpaceCard.vue')['default']

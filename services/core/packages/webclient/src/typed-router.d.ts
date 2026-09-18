@@ -240,6 +240,20 @@ declare module 'vue-router/auto-routes' {
       { sid: ParamValue<false>, mvrid: ParamValue<false>, mvaid: ParamValue<false> },
       | never
     >,
+    '/spaces/[sid]/maven-repos/[mvrid]/edit': RouteRecordInfo<
+      '/spaces/[sid]/maven-repos/[mvrid]/edit',
+      '/spaces/:sid/maven-repos/:mvrid/edit',
+      { sid: ParamValue<true>, mvrid: ParamValue<true> },
+      { sid: ParamValue<false>, mvrid: ParamValue<false> },
+      | never
+    >,
+    '/spaces/[sid]/maven-repos/new': RouteRecordInfo<
+      '/spaces/[sid]/maven-repos/new',
+      '/spaces/:sid/maven-repos/new',
+      { sid: ParamValue<true> },
+      { sid: ParamValue<false> },
+      | never
+    >,
     '/spaces/[sid]/secrets/': RouteRecordInfo<
       '/spaces/[sid]/secrets/',
       '/spaces/:sid/secrets',
@@ -541,6 +555,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/spaces/[sid]/maven-repos/[mvrid]/[mvaid]/index.vue': {
       routes:
         | '/spaces/[sid]/maven-repos/[mvrid]/[mvaid]/'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/maven-repos/[mvrid]/edit.vue': {
+      routes:
+        | '/spaces/[sid]/maven-repos/[mvrid]/edit'
+      views:
+        | never
+    }
+    'src/pages/spaces/[sid]/maven-repos/new.vue': {
+      routes:
+        | '/spaces/[sid]/maven-repos/new'
       views:
         | never
     }

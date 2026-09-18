@@ -18,6 +18,10 @@
 
   const space = ref<Space>()
   const repos = ref<SpaceMavenRepository[]>()
+  const canManage = computed(() => {
+    if (!space.value || !isLoggedIn.value || !userStore.user) return false
+    return space.value.creator === userStore.user.id || space.value.members.some(member => member.user_id === userStore.user?.id && ['member', 'admin'].includes(member.role))
+  })
 
   onMounted(async () => {
     isLoggedIn.value = await userStore.isAuthenticated
@@ -62,9 +66,8 @@
 
           <template #quick-actions>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="canManage"
               color="primary"
-              disabled
               size="large"
               :to="`/spaces/${space?.slug}/maven-repos/new`"
               variant="tonal"
@@ -81,38 +84,39 @@
     </v-row>
 
     <v-row>
-      <v-col
-        v-for="repo in repos"
-        v-if="repos && repos.length > 0"
-        :key="repo.name"
-        md="3"
-      >
-        <Card>
-          <v-card-title class="mt-2">
-            Repository: {{ repo.name }}
-          </v-card-title>
+      <template v-if="repos && repos.length > 0">
+        <v-col
+          v-for="repo in repos"
+          :key="repo.name"
+          md="3"
+        >
+          <Card>
+            <v-card-title class="mt-2">
+              Repository: {{ repo.name }}
+            </v-card-title>
 
-          <v-card-text>
-            <p><strong>Public:</strong> {{ repo.public ? 'Yes' : 'No' }}</p>
-            <p><strong>Created at:</strong> {{ repo.created_at.toLocaleString() }}</p>
+            <v-card-text>
+              <p><strong>Public:</strong> {{ repo.public ? 'Yes' : 'No' }}</p>
+              <p><strong>Created at:</strong> {{ repo.created_at.toLocaleString() }}</p>
 
-            <template v-if="repo.internal_mirror">
-              <p><strong>Internal Mirror:</strong> {{ repo.internal_mirror?.space_id }} /
-                {{ repo.internal_mirror?.repository }}</p>
-            </template>
-          </v-card-text>
+              <template v-if="repo.internal_mirror">
+                <p><strong>Internal Mirror:</strong> {{ repo.internal_mirror?.space_id }} /
+                  {{ repo.internal_mirror?.repository }}</p>
+              </template>
+            </v-card-text>
 
-          <v-card-actions>
-            <v-btn
-              color="primary"
-              :to="`/spaces/${space?.slug}/maven-repos/${repo.name}`"
-              variant="text"
-            >
-              View Repository
-            </v-btn>
-          </v-card-actions>
-        </Card>
-      </v-col>
+            <v-card-actions>
+              <v-btn
+                color="primary"
+                :to="`/spaces/${space?.slug}/maven-repos/${repo.name}`"
+                variant="text"
+              >
+                View Repository
+              </v-btn>
+            </v-card-actions>
+          </Card>
+        </v-col>
+      </template>
 
       <v-col
         v-else
