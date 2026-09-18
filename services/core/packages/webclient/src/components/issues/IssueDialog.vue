@@ -1,106 +1,114 @@
 <script lang="ts" setup>
 
   import type { IssueComment } from '@/api/issues/types'
-  import { updateIssue } from '@/api/issues/issues'
+  import { addIssueComment, getIssueComments, updateIssue } from '@/api/issues/issues'
+  import { getSpace } from '@/api/spaces/spaces'
+  import type { Space } from '@/api/spaces/types'
   import Card from '@/components/common/Card.vue'
   import Dialog from '@/components/common/Dialog.vue'
   import IssueDialogSidebar from '@/components/issues/IssueDialogSidebar.vue'
   import { useIssueDialogStore } from '@/stores/issue-dialog'
   import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
   const notificationStore = useNotificationStore()
   const issueDialogStore = useIssueDialogStore()
-  const isLoggedIn = ref(false)
+  const userStore = useUserStore()
+  const comments = ref<IssueComment[]>([])
+  const commentText = ref('')
+  const loadingComments = ref(false)
+  const submittingComment = ref(false)
+  const issueSpace = ref<Space>()
 
-  const comments = computed<IssueComment[]>(() => {
-    // return [
-    //   {
-    //     id: 'CMT123',
-    //     issue: '7G5B1',
-    //     author: 'user789',
-    //     content: 'I have encountered this bug as well. It seems to occur when performing [specific action].',
-    //     created_at: new Date(),
-    //     updated_at: new Date()
-    //   },
-    //   {
-    //     id: 'CMT124',
-    //     issue: '7G5B1',
-    //     author: 'user321',
-    //     content: 'A temporary workaround is to [workaround details], but a permanent fix is needed.',
-    //     created_at: new Date(),
-    //     updated_at: new Date()
-    //   },
-    //   {
-    //     id: 'CMT125',
-    //     issue: '7G5B1',
-    //     author: 'user654',
-    //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
-    //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
-    //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
-    //   },
-    //   {
-    //     id: 'CMT125',
-    //     issue: '7G5B1',
-    //     author: 'user654',
-    //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
-    //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
-    //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
-    //   },
-    //   {
-    //     id: 'CMT125',
-    //     issue: '7G5B1',
-    //     author: 'user654',
-    //     content: 'The development team is actively investigating this issue and will provide updates as they become available.',
-    //     created_at: new Date(2025, 0, 26, 10, 0, 0, 0),
-    //     updated_at: new Date(2025, 0, 26, 10, 0, 0, 0)
-    //   }
-    // ];
-
-    return []
+  const canWrite = computed(() => {
+    const userID = userStore.user?.id
+    if (!userID || !issueSpace.value) return false
+    return issueSpace.value.creator === userID || issueSpace.value.members.some(member => member.user_id === userID && ['member', 'admin'].includes(member.role))
   })
 
-  function copyLink () {
-    const issueLink = `${window.location.origin}/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`
-    navigator.clipboard.writeText(issueLink)
+  async function loadComments () {
+    if (!issueDialogStore.issue) {
+      comments.value = []
+      return
+    }
+    loadingComments.value = true
+    try {
+      comments.value = await getIssueComments(issueDialogStore.issue.space, issueDialogStore.issue.id)
+    } catch (error) {
+      notificationStore.error(error instanceof Error ? error.message : 'Failed to load comments.')
+    } finally {
+      loadingComments.value = false
+    }
+  }
 
+  async function loadIssueContext () {
+    issueSpace.value = undefined
+    if (!issueDialogStore.issue) {
+      comments.value = []
+      return
+    }
+    try {
+      issueSpace.value = await getSpace(issueDialogStore.issue.space)
+    } catch {
+      // The issue itself remains viewable if its space metadata is unavailable.
+    }
+    await loadComments()
+  }
+
+  watch(() => issueDialogStore.issue?.id, loadIssueContext, { immediate: true })
+
+  async function statusChanged (newStatus: string) {
+    if (!issueDialogStore.issue) return
+    try {
+      const updated = await updateIssue(issueDialogStore.issue.space, issueDialogStore.issue.id, { status: newStatus as any })
+      issueDialogStore.issue = updated
+      notificationStore.info('Issue status updated successfully')
+    } catch (error) {
+      notificationStore.error(error instanceof Error ? error.message : 'Failed to update issue status.')
+    }
+  }
+
+  async function addComment () {
+    if (!issueDialogStore.issue || !commentText.value.trim()) return
+    submittingComment.value = true
+    try {
+      comments.value.push(await addIssueComment(issueDialogStore.issue.space, issueDialogStore.issue.id, commentText.value))
+      commentText.value = ''
+    } catch (error) {
+      notificationStore.error(error instanceof Error ? error.message : 'Failed to add comment.')
+    } finally {
+      submittingComment.value = false
+    }
+  }
+
+  function copyLink () {
+    const issue = issueDialogStore.issue
+    if (!issue) return
+    navigator.clipboard.writeText(`${window.location.origin}/spaces/${issue.space}/issues/${issue.id}`)
     notificationStore.info('Issue link copied to clipboard!')
   }
 
   function copyID () {
-    const issueID = issueDialogStore.issue?.id
-    if (issueID) {
-      navigator.clipboard.writeText(issueID)
-      notificationStore.info('Issue ID copied to clipboard!')
-    }
-  }
-
-  async function statusChanged (newStatus: string) {
     if (!issueDialogStore.issue) return
-
-    const newIssue = { ...issueDialogStore.issue!, status: newStatus as any }
-    await updateIssue(newIssue.space, newIssue.id, newIssue)
+    navigator.clipboard.writeText(issueDialogStore.issue.id)
+    notificationStore.info('Issue ID copied to clipboard!')
   }
 
-  onMounted(() => {
-    isLoggedIn.value = localStorage.getItem('fs_api_key') !== null
+  onMounted(async () => {
+    await userStore.isAuthenticated
   })
 
 </script>
 
 <template>
-  <Dialog
-    :shown="issueDialogStore.isOpen"
-    width="64%"
-  >
+  <Dialog :shown="issueDialogStore.isOpen" width="64%">
     <div class="rounded-xl">
-
       <div class="py-2 border-b d-flex align-center px-4">
         <h1 class="ml-2 text-h4 text-secondary">{{ issueDialogStore.issue?.title }}</h1>
-
         <div class="flex-grow-1 d-flex justify-end align-center">
           <v-select
-            v-if="issueDialogStore.issue && isLoggedIn"
-            v-model="issueDialogStore.issue!.status"
+            v-if="issueDialogStore.issue && canWrite"
+            v-model="issueDialogStore.issue.status"
             class="mr-4"
             color="primary"
             density="compact"
@@ -111,92 +119,40 @@
               { title: 'In Progress', value: 'in_progress' },
               { title: 'Done', value: 'done' },
               { title: 'Closed', value: 'closed' },
-
             ]"
             max-width="200"
-            min-width="200"
             variant="solo"
             @update:model-value="statusChanged"
           />
-
-          <v-btn
-            class="mr-2"
-            color="secondary"
-            :href="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`"
-            icon="mdi-open-in-new"
-            target="_blank"
-            variant="text"
-          />
-
-          <v-btn
-            color="secondary"
-            icon="mdi-close"
-            variant="text"
-            @click="() => issueDialogStore.close()"
-          />
+          <v-btn class="mr-2" color="secondary" :href="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}`" icon="mdi-open-in-new" target="_blank" variant="text" />
+          <v-btn color="secondary" icon="mdi-close" variant="text" @click="issueDialogStore.close()" />
         </div>
       </div>
 
       <div class="issue-dialog-inner d-flex">
-        <IssueDialogSidebar
-          class="ma-4"
-          :comments="comments"
-          :issue="issueDialogStore.issue!"
-        />
-
+        <IssueDialogSidebar class="ma-4" :comments="comments" :issue="issueDialogStore.issue!" />
         <div class="issue-dialog-inner pr-4 flex-grow-1">
-          <Card
-            class="mt-4 bg-transparent"
-            color="#150D1950"
-            min-width="600"
-          >
-            <v-card-title class="mt-2">
-              Description
-            </v-card-title>
-
-            <v-card-text>
-              <MarkdownRenderer
-                class="issue-description"
-                :markdown="issueDialogStore.issue?.description"
-              />
-            </v-card-text>
+          <Card class="mt-4 bg-transparent" color="#150D1950">
+            <v-card-title class="mt-2">Description</v-card-title>
+            <v-card-text><MarkdownRenderer class="issue-description" :markdown="issueDialogStore.issue?.description" /></v-card-text>
           </Card>
 
-          <Card
-            class="my-4 bg-transparent"
-            color="#150D1950"
-            min-width="600"
-          >
-            <v-card-title class="mt-2">
-              Comments ({{ comments?.length }})
-            </v-card-title>
-
+          <Card class="my-4 bg-transparent" color="#150D1950">
+            <v-card-title class="mt-2">Comments ({{ comments.length }})</v-card-title>
             <v-card-text>
-              <p v-if="comments?.length === 0">
-                No comments yet.
-              </p>
-
-              <div v-else class="issue-comments">
-                <Card
-                  v-for="comment in comments"
-                  :key="comment.id"
-                  class="bg-transparent mb-3"
-                  elevation="6"
-                >
+              <p v-if="loadingComments">Loading comments…</p>
+              <p v-else-if="comments.length === 0">No comments yet.</p>
+              <template v-else>
+                <Card v-for="comment in comments" :key="comment.id" class="bg-transparent mb-3" elevation="6">
                   <v-card-text>
-                    <div class="d-flex justify-space-between mb-2">
-                      <div class="d-flex align-center">
-                        <span class="font-weight-medium">{{ comment.author }}</span>
-                      </div>
-
-                      <span class="text-caption grey--text">{{ comment.created_at.toLocaleString() }}</span>
-                    </div>
-
-                    <MarkdownRenderer
-                      :markdown="comment.content"
-                    />
+                    <div class="d-flex justify-space-between mb-2"><span class="font-weight-medium">{{ comment.author }}</span><span class="text-caption grey--text">{{ comment.created_at.toLocaleString() }}</span></div>
+                    <MarkdownRenderer :markdown="comment.content" />
                   </v-card-text>
                 </Card>
+              </template>
+              <div v-if="canWrite" class="mt-4">
+                <v-textarea v-model="commentText" auto-grow color="primary" label="Add a comment" rows="3" />
+                <v-btn color="primary" :disabled="!commentText.trim() || submittingComment" :loading="submittingComment" @click="addComment">Add Comment</v-btn>
               </div>
             </v-card-text>
           </Card>
@@ -204,31 +160,9 @@
       </div>
 
       <div class="d-flex justify-end pa-2 border-t">
-        <v-btn
-          class="mr-2"
-          variant="text"
-          @click="copyLink"
-        >
-          Copy Link
-        </v-btn>
-
-        <v-btn
-          class="mr-2"
-          variant="text"
-          @click="copyID"
-        >
-          Copy ID
-        </v-btn>
-
-        <v-btn
-          v-if="isLoggedIn"
-          class="mr-2"
-          :to="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}/edit`"
-          variant="text"
-          @click="issueDialogStore.close()"
-        >
-          Edit
-        </v-btn>
+        <v-btn class="mr-2" variant="text" @click="copyLink">Copy Link</v-btn>
+        <v-btn class="mr-2" variant="text" @click="copyID">Copy ID</v-btn>
+        <v-btn v-if="canWrite" class="mr-2" :to="`/spaces/${issueDialogStore.issue?.space}/issues/${issueDialogStore.issue?.id}/edit`" variant="text" @click="issueDialogStore.close()">Edit</v-btn>
       </div>
     </div>
   </Dialog>

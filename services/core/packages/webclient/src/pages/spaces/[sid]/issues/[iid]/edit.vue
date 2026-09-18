@@ -7,56 +7,73 @@
   import { getSpace } from '@/api/spaces/spaces'
   import SpaceHeader from '@/components/SpaceHeader.vue'
   import SpaceSidebar from '@/components/SpaceSidebar.vue'
+  import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
   const router = useRouter()
   const route = useRoute()
 
   const space = ref<Space>()
   const issue = ref<Issue>()
+  const loadError = ref('')
+  const saving = ref(false)
+  const userStore = useUserStore()
+  const notificationStore = useNotificationStore()
+
+  const canWrite = computed(() => {
+    const userID = userStore.user?.id
+    if (!userID || !space.value) return false
+    return space.value.creator === userID || space.value.members.some(member => member.user_id === userID && ['member', 'admin'].includes(member.role))
+  })
 
   onMounted(async () => {
-    const spaceID = (route.params as any).sid as string
-    space.value = await getSpace(spaceID)
-
-    if (!space.value.issue_settings.enabled) {
-      router.push(`/spaces/${space.value.slug}`)
-      return
+    try {
+      await userStore.isAuthenticated
+      const spaceID = (route.params as any).sid as string
+      space.value = await getSpace(spaceID)
+      if (!space.value.issue_settings.enabled) {
+        await router.push(`/spaces/${space.value.slug}`)
+        return
+      }
+      const issueID = (route.params as any).iid as string
+      issue.value = await getIssue(spaceID, issueID)
+      useHead({
+        title: `${space.value.title} - FancySpaces`,
+        meta: [{ name: 'description', content: space.value.summary || 'Edit this issue on FancySpaces.' }],
+      })
+    } catch (error) {
+      loadError.value = error instanceof Error ? error.message : 'Failed to load issue.'
     }
-
-    const issueID = (route.params as any).iid as string
-    issue.value = await getIssue(spaceID, issueID)
-
-    useHead({
-      title: `${space.value.title} - FancySpaces`,
-      meta: [
-        {
-          name: 'description',
-          content: space.value.summary || 'Create a new issue in this space on FancySpaces.',
-        },
-      ],
-    })
   })
 
   async function editIssueReq () {
-    if (!space.value || !issue.value) return
-
-    await updateIssue(space.value!.id, issue.value.id, issue.value)
-
-    await router.push(`/spaces/${space.value?.slug}/issues/${issue.value.id}`)
+    if (!space.value || !issue.value || !canWrite.value || saving.value) return
+    saving.value = true
+    try {
+      const saved = await updateIssue(space.value.id, issue.value.id, issue.value)
+      issue.value = saved
+      await router.push(`/spaces/${space.value.slug}/issues/${issue.value.id}`)
+    } catch (error) {
+      notificationStore.error(error instanceof Error ? error.message : 'Failed to update issue.')
+    } finally {
+      saving.value = false
+    }
   }
 
   async function deleteIssueReq () {
-    if (!space.value || !issue.value) return
-
-    await deleteIssue(space.value!.id, issue.value.id)
-
-    await router.push(`/spaces/${space.value?.slug}/issues`)
+    if (!space.value || !issue.value || !canWrite.value) return
+    try {
+      await deleteIssue(space.value.id, issue.value.id)
+      await router.push(`/spaces/${space.value.slug}/issues`)
+    } catch (error) {
+      notificationStore.error(error instanceof Error ? error.message : 'Failed to archive issue.')
+    }
   }
 
 </script>
 
 <template>
-  <v-container v-if="issue" width="90%">
+  <v-container v-if="issue && canWrite && !loadError" width="90%">
     <v-row>
       <v-col class="flex-grow-0 pa-0">
         <SpaceSidebar
@@ -211,6 +228,8 @@
           class="mr-4"
           color="primary"
           variant="tonal"
+          :disabled="saving"
+          :loading="saving"
           @click="editIssueReq"
         >
           Edit Issue
@@ -226,6 +245,7 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-container v-else class="text-center">{{ loadError || 'You do not have permission to edit this issue.' }}</v-container>
 </template>
 
 <style scoped>

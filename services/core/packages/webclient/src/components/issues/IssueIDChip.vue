@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 
   import type { Issue } from '@/api/issues/types'
+  import { getIssue } from '@/api/issues/issues'
   import { useIssueDialogStore } from '@/stores/issue-dialog'
 
   const issueDialogStore = useIssueDialogStore()
+  const loading = ref(false)
 
   const props = defineProps<{
     issueName?: string
@@ -16,7 +18,7 @@
     if (props.issueName) {
       const parts = props.issueName.split('-')
       if (parts.length === 0) return ''
-      return parts[parts.length - 1];
+      return parts[parts.length - 1]
     }
     return ''
   })
@@ -31,11 +33,18 @@
     return ''
   })
 
-  function openDialog () {
+  async function openDialog () {
     if (props.issue) {
       issueDialogStore.open(props.issue)
     } else if (props.issueName) {
-    // TODO load issue by name
+      loading.value = true
+      try {
+        issueDialogStore.open(await getIssue(issueSpace.value, issueID.value))
+      } catch {
+        // The chip still remains useful as a non-interactive reference when the issue is unavailable.
+      } finally {
+        loading.value = false
+      }
     }
   }
 
@@ -54,6 +63,7 @@
         :density="props.density || 'default'"
         color="primary"
         prepend-icon="mdi-sign-text"
+        :loading="loading"
         rounded
         v-bind="menuProps"
         variant="tonal"

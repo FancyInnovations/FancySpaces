@@ -5,10 +5,6 @@
   import IssueIDChip from '@/components/issues/IssueIDChip.vue'
   import IssuePriorityChip from '@/components/issues/IssuePriorityChip.vue'
   import IssueTypeChip from '@/components/issues/IssueTypeChip.vue'
-  import { useIssueDialogStore } from '@/stores/issue-dialog'
-
-  const issueDialogStore = useIssueDialogStore()
-
   const props = defineProps<{
     space: Space
     issue: Issue

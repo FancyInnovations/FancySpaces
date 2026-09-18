@@ -16,8 +16,10 @@
   const formattedCreatedAt = ref('')
   const formattedUpdatedAt = ref('')
   const formattedResolvedAt = ref('')
+  let refreshTimer: ReturnType<typeof setInterval> | undefined
 
   function formatDate (date: Date): string {
+    if (Number.isNaN(date.getTime())) return 'Unknown'
     const now = new Date()
     const diff = now.getTime() - date.getTime()
     const diffInHours = diff / (1000 * 60 * 60)
@@ -53,13 +55,17 @@
       ? formatDate(new Date(props.issue?.resolved_at))
       : 'Unresolved'
 
-    setInterval(() => {
+    refreshTimer = setInterval(() => {
       formattedCreatedAt.value = formatDate(new Date(props.issue?.created_at || ''))
       formattedUpdatedAt.value = formatDate(new Date(props.issue?.updated_at || ''))
       formattedResolvedAt.value = props.issue?.resolved_at
         ? formatDate(new Date(props.issue?.resolved_at))
         : 'Unresolved'
     }, 1000)
+  })
+
+  onBeforeUnmount(() => {
+    if (refreshTimer) clearInterval(refreshTimer)
   })
 
 </script>

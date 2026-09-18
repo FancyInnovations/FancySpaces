@@ -50,6 +50,9 @@
   })
 
   const externalLink = computed(() => {
+    if (props.issue.external_url) {
+      return props.issue.external_url
+    }
     if (!props.issue.external_source) {
       return null
     }
@@ -79,6 +82,7 @@
     :href="externalLink"
     :prepend-icon="icon"
     rounded
+    target="_blank"
     variant="tonal"
   >
     <p

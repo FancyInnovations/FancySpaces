@@ -3,28 +3,30 @@
   import type { Issue } from '@/api/issues/types'
   import type { Space } from '@/api/spaces/types'
   import { useHead } from '@vueuse/head'
-  import { getAllIssues } from '@/api/issues/issues'
+  import { getIssues, updateIssue } from '@/api/issues/issues'
   import { getSpace } from '@/api/spaces/spaces'
   import Card from '@/components/common/Card.vue'
   import SpaceHeader from '@/components/SpaceHeader.vue'
   import SpaceSidebar from '@/components/SpaceSidebar.vue'
   import { useUserStore } from '@/stores/user'
+  import { useNotificationStore } from '@/stores/notifications'
 
   const router = useRouter()
   const route = useRoute()
   const userStore = useUserStore()
-
-  const isLoggedIn = ref(false)
+  const notificationStore = useNotificationStore()
 
   const space = ref<Space>()
   const issues = ref<Issue[]>([])
+  const loading = ref(true)
+  const errorMessage = ref('')
 
   const openIssues = computed(() => {
     return issues.value.filter(issue => issue.status !== 'closed')
   })
 
   const closedIssues = computed(() => {
-    return issues.value.filter(issue => issue.status === 'closed')
+    return issues.value.filter(issue => issue.status === 'done' || issue.status === 'closed')
   })
 
   const filteredIssues = computed(() => {
@@ -47,42 +49,61 @@
   const priorityFilter = ref()
   const statusFilter = ref()
 
-  onMounted(async () => {
-    isLoggedIn.value = await userStore.isAuthenticated
-
-    const spaceID = (route.params as any).sid as string
-    space.value = await getSpace(spaceID)
-
-    if (!space.value.issue_settings.enabled) {
-      router.push(`/spaces/${space.value.slug}`)
-      return
-    }
-
-    issues.value = await getAllIssues(space.value.id)
-
-    // load displayType from localStorage
-    const savedDisplayType = localStorage.getItem(`issues_display_type`)
-    if (savedDisplayType === 'board' || savedDisplayType === 'list') {
-      displayType.value = savedDisplayType
-    }
-
-    useHead({
-      title: `${space.value.title} issues - FancySpaces`,
-      meta: [
-        {
-          name: 'description',
-          content: space.value.summary || 'View issues for this space on FancySpaces.',
-        },
-      ],
-    })
+  const canWrite = computed(() => {
+    const userID = userStore.user?.id
+    if (!userID || !space.value) return false
+    return space.value.creator === userID || space.value.members.some(member => member.user_id === userID && ['member', 'admin'].includes(member.role))
   })
+
+  async function load () {
+    loading.value = true
+    errorMessage.value = ''
+    try {
+      await userStore.isAuthenticated
+      const spaceID = (route.params as any).sid as string
+      space.value = await getSpace(spaceID)
+
+      if (!space.value.issue_settings.enabled) {
+        await router.push(`/spaces/${space.value.slug}`)
+        return
+      }
+
+      issues.value = (await getIssues(space.value.id, { limit: 200 })).items
+      const savedDisplayType = localStorage.getItem(`issues_display_type_${space.value.id}`)
+      if (savedDisplayType === 'board' || savedDisplayType === 'list') displayType.value = savedDisplayType
+
+      useHead({
+        title: `${space.value.title} issues - FancySpaces`,
+        meta: [{ name: 'description', content: space.value.summary || 'View issues for this space on FancySpaces.' }],
+      })
+    } catch (error) {
+      errorMessage.value = error instanceof Error ? error.message : 'Failed to load issues.'
+    } finally {
+      loading.value = false
+    }
+  }
+
+  onMounted(load)
 
   // Watch for changes in displayType and save to localStorage
   watch(displayType, newType => {
     if (space.value) {
-      localStorage.setItem(`issues_display_type`, newType)
+      localStorage.setItem(`issues_display_type_${space.value.id}`, newType)
     }
   })
+
+  async function statusChanged (issue: Issue, newStatus: Issue['status']) {
+    const previousStatus = issue.status
+    issue.status = newStatus
+    try {
+      const saved = await updateIssue(issue.space, issue.id, { status: newStatus })
+      Object.assign(issue, saved)
+      notificationStore.info('Issue status updated successfully')
+    } catch (error) {
+      issue.status = previousStatus
+      notificationStore.error(error instanceof Error ? error.message : 'Failed to update issue status.')
+    }
+  }
 
 </script>
 
@@ -101,12 +122,12 @@
             <p class="text-body-2 mx-4">-</p>
             <p class="text-body-2">{{ openIssues.length }} open issues</p>
             <p class="text-body-2 mx-4">-</p>
-            <p class="text-body-2">{{ closedIssues.length }} closed issues</p>
+            <p class="text-body-2">{{ closedIssues.length }} resolved issues</p>
           </template>
 
           <template #quick-actions>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="canWrite"
               color="primary"
               size="large"
               :to="`/spaces/${space?.slug}/issues/new`"
@@ -123,7 +144,24 @@
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row v-if="loading" justify="center">
+      <v-col cols="12" md="8">
+        <Card><v-card-text class="text-center">Loading issues…</v-card-text></Card>
+      </v-col>
+    </v-row>
+
+    <v-row v-else-if="errorMessage" justify="center">
+      <v-col cols="12" md="8">
+        <Card>
+          <v-card-text class="text-center">
+            <p class="mb-4">{{ errorMessage }}</p>
+            <v-btn color="primary" @click="load">Retry</v-btn>
+          </v-card-text>
+        </Card>
+      </v-col>
+    </v-row>
+
+    <v-row v-else>
       <v-col
         class="d-flex align-center justify-space-between flex-wrap"
       >
@@ -233,12 +271,13 @@
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row v-if="!loading && !errorMessage && space">
       <v-col>
         <IssueBoard
           v-if="displayType === 'board'"
           :issues="filteredIssues"
           :space="space!"
+          @status-change="statusChanged"
         />
 
         <IssueTable

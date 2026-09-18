@@ -7,10 +7,12 @@
   import SpaceHeader from '@/components/SpaceHeader.vue'
   import SpaceSidebar from '@/components/SpaceSidebar.vue'
   import { useNotificationStore } from '@/stores/notifications'
+  import { useUserStore } from '@/stores/user'
 
   const router = useRouter()
   const route = useRoute()
   const notifications = useNotificationStore()
+  const userStore = useUserStore()
 
   const space = ref<Space>()
 
@@ -18,29 +20,35 @@
   const description = ref('')
   const type = ref('task')
   const priority = ref('medium')
+  const submitting = ref(false)
+  const loadError = ref('')
+
+  const canWrite = computed(() => {
+    const userID = userStore.user?.id
+    if (!userID || !space.value) return false
+    return space.value.creator === userID || space.value.members.some(member => member.user_id === userID && ['member', 'admin'].includes(member.role))
+  })
 
   onMounted(async () => {
-    const spaceID = (route.params as any).sid as string
-    space.value = await getSpace(spaceID)
-
-    if (!space.value.issue_settings.enabled) {
-      router.push(`/spaces/${space.value.slug}`)
-      return
+    try {
+      await userStore.isAuthenticated
+      const spaceID = (route.params as any).sid as string
+      space.value = await getSpace(spaceID)
+      if (!space.value.issue_settings.enabled) {
+        await router.push(`/spaces/${space.value.slug}`)
+        return
+      }
+      useHead({
+        title: `${space.value.title} - FancySpaces`,
+        meta: [{ name: 'description', content: space.value.summary || 'Create a new issue in this space on FancySpaces.' }],
+      })
+    } catch (error) {
+      loadError.value = error instanceof Error ? error.message : 'Failed to load space.'
     }
-
-    useHead({
-      title: `${space.value.title} - FancySpaces`,
-      meta: [
-        {
-          name: 'description',
-          content: space.value.summary || 'Create a new issue in this space on FancySpaces.',
-        },
-      ],
-    })
   })
 
   async function createNewIssue () {
-    if (!space.value) return
+    if (!space.value || !canWrite.value || submitting.value) return
 
     if (!title.value.trim()) {
       notifications.error('Title is required.')
@@ -57,25 +65,32 @@
       return
     }
 
-    const issue = await createIssue(space.value!.id, {
-      title: title.value,
-      description: description.value,
-      type: type.value as any,
-      priority: priority.value as any,
-    })
+    submitting.value = true
+    try {
+      const issue = await createIssue(space.value.id, {
+        title: title.value,
+        description: description.value,
+        type: type.value as any,
+        priority: priority.value as any,
+      })
 
-    title.value = ''
-    description.value = ''
-    type.value = 'task'
-    priority.value = 'medium'
+      title.value = ''
+      description.value = ''
+      type.value = 'task'
+      priority.value = 'medium'
 
-    await router.push(`/spaces/${space.value?.slug}/issues/${issue.id}`)
+      await router.push(`/spaces/${space.value.slug}/issues/${issue.id}`)
+    } catch (error) {
+      notifications.error(error instanceof Error ? error.message : 'Failed to create issue.')
+    } finally {
+      submitting.value = false
+    }
   }
 
 </script>
 
 <template>
-  <v-container width="90%">
+  <v-container v-if="!loadError" width="90%">
     <v-row>
       <v-col class="flex-grow-0 pa-0">
         <SpaceSidebar
@@ -166,6 +181,8 @@
             <v-btn
               class="mt-4"
               color="primary"
+              :disabled="!canWrite || submitting"
+              :loading="submitting"
               @click="createNewIssue"
             >
               Create Issue
@@ -175,6 +192,7 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-container v-else class="text-center">{{ loadError }}</v-container>
 </template>
 
 <style scoped>

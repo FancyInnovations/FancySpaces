@@ -35,6 +35,7 @@ func (s *Service) syncGitHub(space spaces.Space) error {
 
 	createdIssues := 0
 	updatedIssues := 0
+	seenIssueIDs := make(map[string]struct{}, len(ghIssues))
 
 	for _, ghIssue := range ghIssues {
 		if ghIssue.IsPullRequest() {
@@ -66,7 +67,9 @@ func (s *Service) syncGitHub(space spaces.Space) error {
 			Reporter:         ghIssue.GetUser().GetLogin(),
 			CreatedAt:        ghIssue.GetCreatedAt().Time,
 			UpdatedAt:        ghIssue.GetUpdatedAt().Time,
-			ExternalSource:   "github",
+			ExternalSource:   issues.ExternalSourceGitHub,
+			ExternalID:       strconv.Itoa(ghIssue.GetNumber()),
+			ExternalURL:      ghIssue.GetHTMLURL(),
 			FixVersion:       "",
 			AffectedVersions: nil,
 			ResolvedAt:       resolvedAt,
@@ -75,6 +78,7 @@ func (s *Service) syncGitHub(space spaces.Space) error {
 				"github_url": ghIssue.GetHTMLURL(),
 			},
 		}
+		seenIssueIDs[fsIssue.ID] = struct{}{}
 
 		existingIssue, exists := fsIssuesMap[fsIssue.ID]
 		if !exists {
@@ -91,6 +95,19 @@ func (s *Service) syncGitHub(space spaces.Space) error {
 
 			createdIssues++
 		} else {
+			// GitHub owns the title, body and open/closed state. Preserve FancySpaces
+			// planning metadata so a sync cannot erase local triage decisions.
+			if existingIssue.ArchivedAt != nil {
+				continue
+			}
+			fsIssue.CreatedAt = existingIssue.CreatedAt
+			fsIssue.Type = existingIssue.Type
+			fsIssue.Priority = existingIssue.Priority
+			fsIssue.Assignee = existingIssue.Assignee
+			fsIssue.FixVersion = existingIssue.FixVersion
+			fsIssue.AffectedVersions = existingIssue.AffectedVersions
+			fsIssue.ParentIssue = existingIssue.ParentIssue
+			fsIssue.ExtraFields = existingIssue.ExtraFields
 			if hasIssueChange(&existingIssue, &fsIssue) {
 				slog.Debug(
 					"Updating FancySpaces issue from GitHub issue",
@@ -106,6 +123,27 @@ func (s *Service) syncGitHub(space spaces.Space) error {
 			}
 		}
 
+	}
+
+	// When no label filter is active, an external issue missing from GitHub's
+	// complete listing was deleted. Archive the local projection instead of
+	// leaving a permanently stale issue visible.
+	if space.IssueSettings.GitHubSyncLabel == "" {
+		for _, existing := range fsIssues {
+			if existing.ExternalSource != issues.ExternalSourceGitHub || existing.ArchivedAt != nil {
+				continue
+			}
+			if _, seen := seenIssueIDs[existing.ID]; seen {
+				continue
+			}
+			now := time.Now()
+			existing.ArchivedAt = &now
+			existing.UpdatedAt = now
+			if err := s.issuesStore.ForceUpdateIssue(&existing); err != nil {
+				return fmt.Errorf("failed to archive deleted GitHub issue %s: %w", existing.ID, err)
+			}
+			updatedIssues++
+		}
 	}
 
 	timeElapsed := time.Since(startTime)
