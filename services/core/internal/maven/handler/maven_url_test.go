@@ -21,11 +21,11 @@ func TestGroupFromURL(t *testing.T) {
 		},
 		{
 			url:      "/space4/repo4/io/github/user/project/maven-metadata.xml",
-			expected: "io.github.user.project",
+			expected: "io.github.user",
 		},
 		{
 			url:      "/space5/repo5/com/example/lib/maven-metadata.xml.sha1",
-			expected: "com.example.lib",
+			expected: "com.example",
 		},
 	}
 

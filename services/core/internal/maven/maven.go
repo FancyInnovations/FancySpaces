@@ -193,13 +193,15 @@ func (s *Store) DeleteArtifact(ctx context.Context, spaceID, repoName, groupID, 
 		return err
 	}
 
+	groupPath := strings.ReplaceAll(groupID, ".", "/")
+
 	// Delete all artifact files from file storage
 	for _, version := range artifact.Versions {
 		for _, file := range version.Files {
-			if err := s.fileStore.DeleteArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version.Version, file.Name); err != nil {
+			if err := s.fileStore.DeleteArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version.Version, file.Name); err != nil {
 				return err
 			}
-			if err := s.fileCache.DeleteArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version.Version, file.Name); err != nil {
+			if err := s.fileCache.DeleteArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version.Version, file.Name); err != nil {
 				return err
 			}
 		}
@@ -236,12 +238,14 @@ func (s *Store) DeleteArtifactVersion(ctx context.Context, spaceID, repoName, gr
 		return ErrArtifactVersionNotFound
 	}
 
+	groupPath := strings.ReplaceAll(groupID, ".", "/")
+
 	// Delete all artifact files from file storage
 	for _, file := range versionToDelete.Files {
-		if err := s.fileStore.DeleteArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version, file.Name); err != nil {
+		if err := s.fileStore.DeleteArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, file.Name); err != nil {
 			return err
 		}
-		if err := s.fileCache.DeleteArtifactFile(ctx, spaceID, repoName, groupID, artifactID, version, file.Name); err != nil {
+		if err := s.fileCache.DeleteArtifactFile(ctx, spaceID, repoName, groupPath, artifactID, version, file.Name); err != nil {
 			return err
 		}
 	}
@@ -322,7 +326,17 @@ func (s *Store) GetJavadocFile(ctx context.Context, space *spacesModel.Space, re
 	key := fmt.Sprintf("%s/%s/%s/%s/%s", space.ID, repo.Name, artifact.Group, artifact.ID, version)
 
 	if !s.javadocCache.IsJavadocCached(key) {
-		javadocData, err := s.DownloadArtifactFile(ctx, space.ID, repo.Name, artifact.Group, artifact.ID, version, fmt.Sprintf("%s-%s-javadoc.jar", artifact.ID, version))
+		javadocFileName := fmt.Sprintf("%s-%s-javadoc.jar", artifact.ID, version)
+		if v := artifact.GetVersion(version); v != nil {
+			for _, f := range v.Files {
+				if strings.HasSuffix(f.Name, "-javadoc.jar") {
+					javadocFileName = f.Name
+					break
+				}
+			}
+		}
+
+		javadocData, err := s.DownloadArtifactFile(ctx, space.ID, repo.Name, artifact.Group, artifact.ID, version, javadocFileName)
 		if err != nil {
 			return nil, err
 		}

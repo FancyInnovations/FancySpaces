@@ -2,8 +2,13 @@ package handler
 
 import (
 	"context"
+	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -194,18 +199,10 @@ func (h *Handler) handleStoreFile(w http.ResponseWriter, r *http.Request, space 
 		return
 	}
 
-	artifactVersion := artifact.GetVersion(version)
-	if artifactVersion == nil {
-		// create version
-		artifactVersion = &maven.ArtifactVersion{
-			Version:     version,
-			PublishedAt: time.Now(),
-			Files:       []*maven.ArtifactVersionFile{},
-		}
-		artifact.Versions = append(artifact.Versions, artifactVersion)
-	} else {
-		// update published at
-		artifactVersion.PublishedAt = time.Now()
+	fileName, err := FilenameFromURL(r.URL.String())
+	if err != nil {
+		problems.NotFound("Maven Artifact File", "<url>").WriteToHTTP(w)
+		return
 	}
 
 	body, err := io.ReadAll(r.Body)
@@ -215,10 +212,16 @@ func (h *Handler) handleStoreFile(w http.ResponseWriter, r *http.Request, space 
 		return
 	}
 
-	fileName, err := FilenameFromURL(r.URL.String())
-	if err != nil {
-		problems.NotFound("Maven Artifact File", "<url>").WriteToHTTP(w)
-		return
+	artifactVersion := artifact.GetVersion(version)
+	if artifactVersion == nil {
+		artifactVersion = &maven.ArtifactVersion{
+			Version:     version,
+			PublishedAt: time.Now(),
+			Files:       []*maven.ArtifactVersionFile{},
+		}
+		artifact.Versions = append(artifact.Versions, artifactVersion)
+	} else {
+		artifactVersion.PublishedAt = time.Now()
 	}
 
 	artifactVersionFile := artifactVersion.GetFile(fileName)
@@ -280,28 +283,79 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 		return
 	}
 
-	version, err := VersionFromURL(r.URL.String())
-	if err != nil {
-		slog.Error("Failed to parse version from URL", slog.String("error", err.Error()))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	if IsMetadataURL(r.URL.String()) {
-		metadata := artifact.ToMetadataXML()
+		var metadata maven.MetadataXML
+		if version, err := VersionFromURL(r.URL.String()); err == nil && version != "" {
+			metadata = artifact.ToVersionMetadataXML(version)
+		} else {
+			metadata = artifact.ToMetadataXML()
+		}
 
-		w.Header().Set("Content-Type", "application/xml")
-		w.WriteHeader(http.StatusOK)
-
-		encoder := xml.NewEncoder(w)
-		defer encoder.Close()
-
-		encoder.Indent("", "  ")
-		if err := encoder.Encode(metadata); err != nil {
+		xmlData, err := xml.MarshalIndent(metadata, "", "  ")
+		if err != nil {
 			slog.Error("Failed to encode metadata XML", sloki.WrapError(err))
 			problems.InternalServerError("").WriteToHTTP(w)
 			return
 		}
+		xmlPayload := append([]byte(xml.Header), xmlData...)
+		xmlPayload = append(xmlPayload, '\n')
+
+		reqFilename, _ := FilenameFromURL(r.URL.String())
+		switch {
+		case reqFilename == "maven-metadata.xml":
+			w.Header().Set("Content-Type", "application/xml")
+			w.WriteHeader(http.StatusOK)
+			if r.Method == http.MethodHead {
+				return
+			}
+			w.Write(xmlPayload)
+		case reqFilename == "maven-metadata.xml.sha1" || strings.HasSuffix(reqFilename, ".xml.sha1"):
+			hash := fmt.Sprintf("%x", sha1.Sum(xmlPayload))
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusOK)
+			if r.Method == http.MethodHead {
+				return
+			}
+			w.Write([]byte(hash))
+		case reqFilename == "maven-metadata.xml.md5" || strings.HasSuffix(reqFilename, ".xml.md5"):
+			hash := fmt.Sprintf("%x", md5.Sum(xmlPayload))
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusOK)
+			if r.Method == http.MethodHead {
+				return
+			}
+			w.Write([]byte(hash))
+		case reqFilename == "maven-metadata.xml.sha256" || strings.HasSuffix(reqFilename, ".xml.sha256"):
+			hash := fmt.Sprintf("%x", sha256.Sum256(xmlPayload))
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusOK)
+			if r.Method == http.MethodHead {
+				return
+			}
+			w.Write([]byte(hash))
+		case reqFilename == "maven-metadata.xml.sha512" || strings.HasSuffix(reqFilename, ".xml.sha512"):
+			hash := fmt.Sprintf("%x", sha512.Sum512(xmlPayload))
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusOK)
+			if r.Method == http.MethodHead {
+				return
+			}
+			w.Write([]byte(hash))
+		default:
+			w.Header().Set("Content-Type", "application/xml")
+			w.WriteHeader(http.StatusOK)
+			if r.Method == http.MethodHead {
+				return
+			}
+			w.Write(xmlPayload)
+		}
+		return
+	}
+
+	version, err := VersionFromURL(r.URL.String())
+	if err != nil {
+		slog.Error("Failed to parse version from URL", slog.String("error", err.Error()))
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -322,13 +376,13 @@ func (h *Handler) handleFetchFile(w http.ResponseWriter, r *http.Request, space 
 		return
 	}
 
-	if artifactVersionFile.Name == artifactID+"-"+version+".jar" && h.analytics != nil {
+	if (artifactVersionFile.Name == artifactID+"-"+version+".jar" || (strings.HasSuffix(artifactVersionFile.Name, ".jar") && !strings.Contains(artifactVersionFile.Name, "-sources") && !strings.Contains(artifactVersionFile.Name, "-javadoc"))) && h.analytics != nil {
 		if err := h.analytics.LogMavenArtifactDownload(r.Context(), space.ID, repo.Name, group, artifactID, version, r); err != nil {
 			slog.Error("Failed to log maven artifact download", sloki.WrapError(err))
 		}
 	}
 
-	data, err := h.store.DownloadArtifactFile(r.Context(), space.ID, repo.Name, group, artifactID, version, fileName)
+	data, err := h.store.DownloadArtifactFile(r.Context(), space.ID, repo.Name, group, artifactID, version, artifactVersionFile.Name)
 	if err != nil {
 		slog.Error("Failed to get artifact file", sloki.WrapError(err))
 		problems.InternalServerError("").WriteToHTTP(w)
