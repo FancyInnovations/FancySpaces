@@ -438,12 +438,29 @@ func TestStore_Create(t *testing.T) {
 				Description: "This is the first space.",
 				Categories:  []spaces.Category{spaces.CategoryMinecraftPlugin},
 				IconURL:     "https://example.com/icon1.png",
-				Status:      spaces.StatusDraft,
+				Status:      spaces.StatusApproved,
 				CreatedAt:   now,
 				Creator:     "user-1",
 				Members:     []spaces.Member{},
 				Links:       []spaces.Link{},
+				IssueSettings: spaces.IssueSettings{
+					Enabled: true,
+				},
+				ReleaseSettings: spaces.ReleaseSettings{
+					Enabled: true,
+				},
+				MavenRepositorySettings: spaces.MavenRepositorySettings{
+					Enabled: true,
+				},
+				StorageSettings: spaces.StorageSettings{
+					Enabled: false,
+				},
 				AnalyticsSettings: spaces.AnalyticsSettings{
+					Enabled:         true,
+					RequireWriteKey: true,
+					WriteKey:        "test-write-key",
+				},
+				SecretsSettings: spaces.SecretsSettings{
 					Enabled: true,
 				},
 			},
@@ -539,10 +556,14 @@ func TestStore_Create(t *testing.T) {
 				if got.CreatedAt.IsZero() {
 					t.Errorf("Expected non-zero CreatedAt, got zero")
 				}
+				if len(got.AnalyticsSettings.WriteKey) == 0 {
+					t.Errorf("Expected non-empty analytics write key, got empty")
+				}
 
 				// Normalize dynamic fields for comparison
 				got.ID = ""
 				got.CreatedAt = now
+				got.AnalyticsSettings.WriteKey = "test-write-key"
 			}
 
 			if diff := cmp.Diff(tc.Exp, got); diff != "" {

@@ -8,6 +8,7 @@ import (
 	"github.com/OliverSchlueter/goutils/idgen"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 	"github.com/fancyinnovations/fancyspaces/integrations/spaces-go-sdk/spaces"
+	"github.com/google/uuid"
 )
 
 type DB interface {
@@ -119,11 +120,11 @@ func (s *Store) Create(creator *idp.User, req *CreateOrUpdateSpaceReq) (*spaces.
 		},
 		AnalyticsSettings: spaces.AnalyticsSettings{
 			Enabled:         true,
-			RequireWriteKey: false,
-			WriteKey:        "",
+			RequireWriteKey: true,
+			WriteKey:        uuid.New().String(),
 		},
 		SecretsSettings: spaces.SecretsSettings{
-			Enabled: false,
+			Enabled: true,
 		},
 	}
 

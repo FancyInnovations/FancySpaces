@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -16,7 +15,6 @@ import (
 	"github.com/OliverSchlueter/goutils/middleware"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/app"
-	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/keys"
 	"github.com/justinas/alice"
@@ -70,9 +68,6 @@ func main() {
 		env.MustGetStr(minioAccessKeyEnv),
 		env.MustGetStr(minioSecretKeyEnv),
 	)
-
-	// Load users
-	loadUsers()
 
 	// Setup HTTP server
 	port := "8080"
@@ -144,27 +139,5 @@ func main() {
 		containers.DisconnectMinIO(mio)
 
 		slog.Info("Shutdown complete")
-	}
-}
-
-func loadUsers() {
-	usersFilePath := env.MustGetStr(usersPathEnv)
-
-	data, err := os.ReadFile(usersFilePath)
-	if err != nil {
-		slog.Error("Could not read users file", sloki.WrapError(err))
-		os.Exit(1)
-		return
-	}
-
-	var users []idp.User
-	if err := json.Unmarshal(data, &users); err != nil {
-		slog.Error("Could not parse users file", sloki.WrapError(err))
-		os.Exit(1)
-		return
-	}
-
-	for _, user := range users {
-		auth.Users[user.ID] = &user
 	}
 }

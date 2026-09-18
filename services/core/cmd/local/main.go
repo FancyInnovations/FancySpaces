@@ -8,14 +8,12 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/OliverSchlueter/goutils/broker"
 	"github.com/OliverSchlueter/goutils/containers"
 	"github.com/OliverSchlueter/goutils/middleware"
 	"github.com/OliverSchlueter/goutils/sloki"
 	"github.com/fancyinnovations/fancyspaces/core/internal/app"
-	"github.com/fancyinnovations/fancyspaces/core/internal/auth"
 	"github.com/fancyinnovations/fancyspaces/core/internal/fflags"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/idp"
 	"github.com/fancyinnovations/fancyspaces/integrations/idp-go-sdk/keys"
@@ -44,22 +42,6 @@ func main() {
 	mc := containers.ConnectToMongoE2E("fancyspaces_e2e")
 	ch := containers.ConnectToClickhouseE2E("fancyspaces_e2e")
 	mio := containers.ConnectToMinIOE2E()
-
-	// Setup default admin user
-	auth.Users["oliver"] = &idp.User{
-		ID:        "oliver",
-		Provider:  idp.ProviderBasic,
-		Name:      "Oliver",
-		Email:     "oliver@fancyinnovations.com",
-		Verified:  true,
-		Password:  idp.PasswordHash("hello"),
-		Roles:     []string{"admin", "user"},
-		CreatedAt: time.Date(2025, 12, 3, 19, 0, 0, 0, time.UTC),
-		IsActive:  true,
-		Metadata: map[string]string{
-			"api_key": "hello",
-		},
-	}
 
 	// Setup HTTP server
 	port := "8080"
